@@ -1,0 +1,20 @@
+{
+  "name": "rihla-mate",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "check": "turbo check",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "keygen": "tsx scripts/keygen.ts"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^22.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}
