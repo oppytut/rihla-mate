@@ -3,6 +3,11 @@ import type { AnyMiddlewareFunction } from "@trpc/server";
 import type { TRPCContext } from "@/lib/trpc/context";
 import { db } from "@/lib/db/client";
 import { isLicenseValid, getLicenseByKey } from "@/lib/license/store";
+import {
+  type LicenseFeature,
+  type LicensePlan,
+  PLAN_FEATURES,
+} from "@rihla-mate/shared";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -159,3 +164,70 @@ export const requireProLicense: AnyMiddlewareFunction = async ({ ctx, next }) =>
 
   return next({ ctx });
 };
+
+/**
+ * tRPC middleware factory that requires a specific feature to be available
+ * under the current license.
+ *
+ * Must be used **after** {@link licenseMiddleware} so that `ctx.license` is
+ * already populated.
+ *
+ * @param feature - The {@link LicenseFeature} to check for.
+ * @returns A tRPC middleware that throws `TRPCError` with code `FORBIDDEN` if
+ *          the feature is not included in the current license plan.
+ *
+ * @throws TRPCError FORBIDDEN if `ctx.license` is `null` or the feature is not
+ *         part of the license's plan features.
+ *
+ * Usage: `publicProcedure.use(licenseMiddleware).use(requireFeature("seo"))`
+ */
+export function requireFeature(
+  feature: LicenseFeature,
+): AnyMiddlewareFunction {
+  return async ({ ctx, next }) => {
+    if (!ctx.license) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "A valid license is required",
+      });
+    }
+
+    const plan = ctx.license.type as LicensePlan;
+    const features = PLAN_FEATURES[plan];
+
+    if (!features || !features.includes(feature)) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Feature "${feature}" is not available on your current license plan`,
+      });
+    }
+
+    return next({ ctx });
+  };
+}
+
+/**
+ * Check whether a specific feature is available for a given license plan.
+ *
+ * This is a pure (synchronous) lookup function — it does not hit the database.
+ * Callers are responsible for knowing the current license plan (e.g. from
+ * context, session, or database query) and passing it in.
+ *
+ * @param feature - The {@link LicenseFeature} to check.
+ * @param plan - The {@link LicensePlan} to check against.
+ * @returns `true` if the feature is included in the plan, `false` otherwise.
+ *
+ * @example
+ * ```ts
+ * if (checkAccess("analytics", "pro")) {
+ *   // show analytics panel
+ * }
+ * ```
+ */
+export function checkAccess(
+  feature: LicenseFeature,
+  plan: LicensePlan,
+): boolean {
+  const features = PLAN_FEATURES[plan];
+  return features ? features.includes(feature) : false;
+}
