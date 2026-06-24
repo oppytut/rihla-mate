@@ -1,0 +1,82 @@
+services:
+  app:
+    image: ghcr.io/rihlamate/rihla-mate:latest
+    container_name: rihla-mate-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://${DB_USER:-rihlamate}:${DB_PASSWORD}@db:5432/${DB_NAME:-rihlamate}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
+      - LICENSE_KEY=${LICENSE_KEY:-}
+      - LICENSE_PUBLIC_KEY=${LICENSE_PUBLIC_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - MIDTRANS_SERVER_KEY=${MIDTRANS_SERVER_KEY:-}
+      - MIDTRANS_CLIENT_KEY=${MIDTRANS_CLIENT_KEY:-}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=${NEXT_PUBLIC_MIDTRANS_CLIENT_KEY:-}
+      - STORAGE_DRIVER=${STORAGE_DRIVER:-local}
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
+      - S3_BUCKET=${S3_BUCKET:-}
+      - S3_REGION=${S3_REGION:-}
+    volumes:
+      - uploads:/app/uploads
+      - license_state:/app/.rihla-mate
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rihla-mate
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:16-alpine
+    container_name: rihla-mate-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER:-rihlamate}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME:-rihlamate}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - rihla-mate
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-rihlamate} -d ${DB_NAME:-rihlamate}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: rihla-mate-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 3600 --cleanup rihla-mate-app
+    networks:
+      - rihla-mate
+
+volumes:
+  pgdata:
+    driver: local
+  uploads:
+    driver: local
+  license_state:
+    driver: local
+
+networks:
+  rihla-mate:
+    driver: bridge

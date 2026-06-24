@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: rihla-mate-db-dev
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=rihlamate
+      - POSTGRES_PASSWORD=rihlamate_dev
+      - POSTGRES_DB=rihlamate_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rihlamate -d rihlamate_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  pgdata_dev:
+    driver: local
