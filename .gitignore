@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+drizzle/
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+coverage/
+.rihla-mate/
+uploads/
+pgdata/
+.DS_Store
+*.log
