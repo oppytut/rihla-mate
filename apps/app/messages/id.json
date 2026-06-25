@@ -1,0 +1,183 @@
+{
+  "installer": {
+    "title": "Instalasi Rihla Mate",
+    "systemCheck": "Pemeriksaan Sistem",
+    "databaseSetup": "Setup Database",
+    "adminAccount": "Akun Admin",
+    "licenseActivation": "Aktivasi Lisensi",
+    "branding": "Branding",
+    "next": "Lanjut",
+    "back": "Kembali",
+    "complete": "Selesai",
+    "startTrial": "Mulai Uji Coba Gratis",
+    "activateLicense": "Aktivasi Lisensi",
+    "licenseKey": "Kunci Lisensi"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Selamat datang",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "bookings": "Pemesanan",
+      "customers": "Pelanggan",
+      "packages": "Paket",
+      "settings": "Pengaturan",
+      "users": "Pengguna"
+    },
+    "user": {
+      "signedInAs": "Login sebagai",
+      "signOut": "Keluar"
+    },
+    "overview": {
+      "totalBookings": "Total Pemesanan",
+      "activePackages": "Paket Aktif",
+      "totalCustomers": "Total Pelanggan",
+      "revenue": "Pendapatan"
+    }
+  },
+  "packages": {
+    "title": "Paket",
+    "createTitle": "Tambah Paket Baru",
+    "editTitle": "Edit Paket",
+    "backToList": "← Kembali ke Daftar",
+    "addPackage": "Tambah Paket",
+    "search": "Cari paket...",
+    "allStatus": "Semua Status",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Diarsipkan"
+    },
+    "fields": {
+      "title": "Judul Paket",
+      "slug": "Slug URL",
+      "description": "Deskripsi",
+      "category": "Kategori",
+      "durationDays": "Durasi (hari)",
+      "price": "Harga",
+      "currency": "Mata Uang",
+      "departureCity": "Kota Keberangkatan",
+      "status": "Status",
+      "featuredImage": "URL Gambar Utama",
+      "itinerary": "Itinerary (JSON)",
+      "inclusions": "Fasilitas Termasuk (JSON)",
+      "exclusions": "Fasilitas Tidak Termasuk (JSON)",
+      "availableDates": "Tanggal Tersedia (JSON)",
+      "gallery": "Galeri Gambar (JSON)",
+      "section": {
+        "basic": "Informasi Dasar",
+        "pricing": "Harga",
+        "media": "Media",
+        "content": "Konten"
+      }
+    },
+    "columns": {
+      "title": "Judul",
+      "slug": "Slug",
+      "category": "Kategori",
+      "duration": "Durasi",
+      "price": "Harga",
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "invalidJson": "Format JSON tidak valid",
+    "createSuccess": "Paket berhasil dibuat",
+    "updateSuccess": "Paket berhasil diperbarui",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "deleteSuccess": "Paket berhasil dihapus",
+    "noResults": "Tidak ada paket yang sesuai dengan kriteria pencarian.",
+    "clearFilters": "Hapus Filter",
+    "empty": "Belum ada paket. Klik tombol di atas untuk menambahkan.",
+    "days": "hari",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus paket ini?",
+    "pageInfo": "Halaman {page} dari {total}",
+    "category": {
+      "standard": "Standar",
+      "premium": "Premium",
+      "vip": "VIP",
+      "economy": "Ekonomi"
+    },
+    "validation": {
+      "titleRequired": "Judul wajib diisi",
+      "slugRequired": "Slug wajib diisi",
+      "slugInvalid": "Slug harus huruf kecil alfanumerik dengan tanda hubung",
+      "priceRequired": "Harga wajib diisi",
+      "priceInvalid": "Format harga tidak valid",
+      "durationMin": "Durasi minimal 1 hari"
+    }
+  },
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "success": "Berhasil",
+    "previous": "Sebelumnya",
+    "next": "Berikutnya"
+  },
+  "bookings": {
+    "title": "Pemesanan",
+    "createTitle": "Pemesanan Baru",
+    "editTitle": "Edit Pemesanan",
+    "backToList": "← Kembali ke Daftar",
+    "addBooking": "Tambah Pemesanan",
+    "search": "Cari pemesanan...",
+    "allStatus": "Semua Status",
+    "status": {
+      "pending": "Tertunda",
+      "confirmed": "Dikonfirmasi",
+      "cancelled": "Dibatalkan",
+      "completed": "Selesai"
+    },
+    "fields": {
+      "package": "Paket",
+      "departureDate": "Tanggal Keberangkatan",
+      "customerName": "Nama Pelanggan",
+      "customerEmail": "Email Pelanggan",
+      "customerPhone": "Telepon Pelanggan",
+      "travelers": "Jumlah Peserta",
+      "totalPrice": "Total Harga",
+      "status": "Status",
+      "paymentRef": "Referensi Pembayaran",
+      "notes": "Catatan",
+      "section": {
+        "customer": "Informasi Pelanggan",
+        "booking": "Detail Pemesanan",
+        "payment": "Pembayaran"
+      }
+    },
+    "columns": {
+      "customer": "Pelanggan",
+      "package": "Paket",
+      "date": "Tanggal",
+      "travelers": "Peserta",
+      "total": "Total",
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "createSuccess": "Pemesanan berhasil dibuat",
+    "updateSuccess": "Pemesanan berhasil diperbarui",
+    "deleteSuccess": "Pemesanan berhasil dihapus",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "noResults": "Tidak ada pemesanan yang sesuai dengan kriteria pencarian.",
+    "clearFilters": "Hapus Filter",
+    "empty": "Belum ada pemesanan. Klik tombol di atas untuk menambahkan.",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus pemesanan ini?",
+    "pageInfo": "Halaman {page} dari {total}",
+    "pickDate": "Pilih tanggal",
+    "noDateSelected": "Belum ada tanggal dipilih",
+    "selectPackage": "Pilih paket",
+    "validation": {
+      "customerNameRequired": "Nama pelanggan wajib diisi",
+      "packageRequired": "Paket wajib dipilih",
+      "dateRequired": "Tanggal keberangkatan wajib diisi",
+      "priceRequired": "Total harga wajib diisi",
+      "priceInvalid": "Format harga tidak valid",
+      "travelersMin": "Minimal 1 peserta"
+    }
+  }
+}
