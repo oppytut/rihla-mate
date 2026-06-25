@@ -6,7 +6,7 @@ const DATABASE_URL = process.env.DATABASE_URL ?? "postgres://rihlamate:rihlamate
 
 const pool = new Pool({ connectionString: DATABASE_URL });
 
-async function main() {
+export async function main() {
   const userId = randomUUID();
   const email = "playwright@rihlamate.test";
   const password = "testpass123";
@@ -70,7 +70,11 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("Seed failed:", err);
-  process.exit(1);
-});
+// Only run when executed directly (not imported)
+const isMain = require.main === module || process.argv[1]?.endsWith("playwright-seed.ts");
+if (isMain) {
+  main().catch((err) => {
+    console.error("Seed failed:", err);
+    process.exit(1);
+  });
+}
