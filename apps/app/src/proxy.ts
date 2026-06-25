@@ -16,9 +16,14 @@ const PUBLIC_ROUTES = [
   "/installer",
   "/api/auth",
   "/api/trpc",
+  "/api/health",
   "/_next",
   "/favicon.ico",
 ];
+
+// Paths that bypass the intl middleware entirely (API routes, static assets, Next.js internals).
+// These never get locale prefix rewriting — they must be served from the root app/ directory.
+const BYPASS_INTL = /^\/(?:api\/|_next\/|favicon\.ico)/;
 
 function isPublicRoute(pathname: string): boolean {
   return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
@@ -39,6 +44,11 @@ export default async function proxy(request: NextRequest) {
 
   // Allow public routes through without a license check.
   if (isPublicRoute(pathname)) {
+    // API routes, static assets, and Next.js internals must NOT go through
+    // intl middleware — locale prefix rewriting breaks API route resolution.
+    if (BYPASS_INTL.test(pathname)) {
+      return NextResponse.next();
+    }
     return intlMiddleware(request);
   }
 
