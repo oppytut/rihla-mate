@@ -1,11 +1,12 @@
-import { pgTable, uuid, varchar, integer, numeric, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, varchar, integer, numeric, text, timestamp, date } from "drizzle-orm/pg-core";
 import { packages } from "./packages";
 
 export const bookings = pgTable("bookings", {
   id: uuid("id").primaryKey().defaultRandom(),
   packageId: uuid("package_id")
     .notNull()
-    .references(() => packages.id),
+    .references(() => packages.id, { onDelete: "cascade" }),
+  departureDate: date("departure_date").notNull(),
   customerName: varchar("customer_name", { length: 255 }).notNull(),
   customerEmail: varchar("customer_email", { length: 255 }),
   customerPhone: varchar("customer_phone", { length: 50 }),
