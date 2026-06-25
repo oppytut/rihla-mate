@@ -34,9 +34,14 @@ export type TRPCContext = {
 export async function createTRPCContext(
   opts: FetchCreateContextFnOptions
 ): Promise<TRPCContext> {
-  const session = await auth.api.getSession({
-    headers: opts.req.headers,
-  });
+  let session: Session | null = null;
+  try {
+    session = await auth.api.getSession({
+      headers: opts.req.headers,
+    });
+  } catch (err) {
+    console.error("[tRPC] Failed to resolve session:", err);
+  }
 
   return {
     headers: opts.req.headers,
