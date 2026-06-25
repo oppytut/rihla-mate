@@ -30,8 +30,17 @@ export function register() {
       }
 
       if (licenseKey && (await isLicenseValid(db, licenseKey))) {
-        scheduleCheckIn(db, licenseKey);
+        const scheduler = scheduleCheckIn(db, licenseKey);
         console.log("[Instrumentation] License check-in scheduled every 24h");
+
+        const shutdown = () => {
+          scheduler.stop();
+          console.log("[Instrumentation] License check-in stopped");
+        };
+
+        process.on("SIGTERM", shutdown);
+        process.on("SIGINT", shutdown);
+        process.on("beforeExit", shutdown);
       } else {
         console.log("[Instrumentation] No active license — check-in skipped");
       }
