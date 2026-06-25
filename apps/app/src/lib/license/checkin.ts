@@ -1,6 +1,7 @@
 import { db as defaultDb } from "@/lib/db/client";
 import { getLicenseByKey, createLicense, licenseKeys } from "@/lib/license/store";
 import type { LicenseKey } from "@/lib/license/store";
+import type { LicensePlan } from "@rihla-mate/shared";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { env } from "@/env";
@@ -10,6 +11,7 @@ const validateResponseSchema = z.object({
   reason: z.string().optional(),
   expiresAt: z.string().optional(),
   seats: z.number().optional(),
+  plan: z.string().optional(),
 });
 
 export interface LicenseCheckInResult {
@@ -17,6 +19,7 @@ export interface LicenseCheckInResult {
   reason?: string;
   expiresAt?: Date;
   seats?: number;
+  plan?: string;
 }
 
 interface ValidateResponse {
@@ -24,6 +27,7 @@ interface ValidateResponse {
   reason?: string;
   expiresAt?: string;
   seats?: number;
+  plan?: string;
 }
 
 /** Reads the license server base URL from environment, defaulting to localhost:4000. */
@@ -79,7 +83,7 @@ export async function updateLocalLicense(
 
   const created = await createLicense(db, {
     key: licenseKey,
-    type: "pro",
+    type: (serverResponse.plan as LicensePlan | undefined) ?? "pro",
     seats: serverResponse.seats ?? 1,
     expiresAt: serverResponse.expiresAt
       ? new Date(serverResponse.expiresAt)
@@ -119,22 +123,49 @@ export async function checkIn(
       ? new Date(serverResponse.expiresAt)
       : undefined,
     seats: serverResponse.seats,
+    plan: serverResponse.plan,
   };
 }
 
 /**
- * Schedules periodic license check-ins via `setInterval`.
- * Calls {@link checkIn} every `intervalMs` (default: 24 hours).
- * Returns the timer ID for cancellation with `clearInterval`.
+ * Schedules periodic license check-ins via recursive `setTimeout` with
+ * exponential backoff on failures. Returns a `stop` handle for cancellation.
+ *
+ * Calls {@link checkIn} every `intervalMs` (default: 24 hours). On failure
+ * the delay doubles up to a maximum of `intervalMs`; on success it resets.
  */
 export function scheduleCheckIn(
   db: typeof defaultDb,
   licenseKey: string,
   intervalMs: number = 86_400_000,
-): ReturnType<typeof setInterval> {
-  const intervalId = setInterval(() => {
-    checkIn(db, licenseKey).catch((err) => console.error("[checkin] Scheduled check-in failed:", err));
-  }, intervalMs);
+): { stop: () => void } {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let stopped = false;
 
-  return intervalId;
+  const run = async (delayMs: number) => {
+    if (stopped) return;
+
+    timer = setTimeout(async () => {
+      try {
+        await checkIn(db, licenseKey);
+        run(intervalMs);
+      } catch (err) {
+        console.error("[checkin] Scheduled check-in failed:", err);
+        const nextDelay = Math.min(delayMs * 2, intervalMs);
+        run(nextDelay);
+      }
+    }, delayMs);
+  };
+
+  run(intervalMs);
+
+  return {
+    stop: () => {
+      stopped = true;
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    },
+  };
 }

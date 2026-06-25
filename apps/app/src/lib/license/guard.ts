@@ -17,7 +17,7 @@ import {
 export interface LicenseInfo {
   key: string;
   valid: boolean;
-  type: string;
+  type: LicensePlan | "trial";
   seats: number;
 }
 
@@ -101,12 +101,6 @@ export async function validateRequestLicense(
  * Usage: `publicProcedure.use(licenseMiddleware)`
  */
 export const licenseMiddleware: AnyMiddlewareFunction = async ({ ctx, next }) => {
-  const { key } = getLicenseFromHeaders(ctx.headers);
-
-  if (!key) {
-    return next({ ctx: { ...ctx, license: null } });
-  }
-
   const { valid, license } = await validateRequestLicense(db, ctx.headers);
 
   if (!valid || !license) {
@@ -192,7 +186,7 @@ export function requireFeature(
       });
     }
 
-    const plan = ctx.license.type as LicensePlan;
+    const plan: LicensePlan = ctx.license.type === "trial" ? "starter" : ctx.license.type;
     const features = PLAN_FEATURES[plan];
 
     if (!features || !features.includes(feature)) {

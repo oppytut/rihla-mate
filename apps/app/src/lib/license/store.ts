@@ -1,6 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { pgTable, uuid, varchar, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { eq, and, isNull, or, gt, sql } from "drizzle-orm";
+import type { LicensePlan } from "@rihla-mate/shared";
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -9,7 +10,7 @@ import { eq, and, isNull, or, gt, sql } from "drizzle-orm";
 export const licenseKeys = pgTable("license_keys", {
   id: uuid("id").primaryKey().defaultRandom(),
   key: varchar("key", { length: 255 }).notNull().unique(),
-  type: varchar("type", { length: 50 }).notNull().$type<"trial" | "pro" | "enterprise">(),
+  type: varchar("type", { length: 50 }).notNull().$type<LicensePlan | "trial">(),
   seats: integer("seats").notNull().default(1),
   issuedAt: timestamp("issued_at", { withTimezone: true }).notNull().defaultNow(),
   expiresAt: timestamp("expires_at", { withTimezone: true }),
