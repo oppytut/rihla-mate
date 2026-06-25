@@ -1,7 +1,10 @@
 {
   "name": "rihla-mate",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -12,9 +15,10 @@
     "keygen": "tsx scripts/keygen.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^22.0.0",
     "turbo": "^2.0.0",
-    "typescript": "^5.5.0",
-    "@types/node": "^22.0.0"
+    "typescript": "^5.5.0"
   },
   "packageManager": "pnpm@9.0.0"
 }
