@@ -15,8 +15,10 @@
     "keygen": "tsx scripts/keygen.ts"
   },
   "devDependencies": {
+    "@better-auth/utils": "0.4.2",
     "@playwright/test": "^1.61.1",
     "@types/node": "^22.0.0",
+    "tsx": "^4.22.4",
     "turbo": "^2.0.0",
     "typescript": "^5.5.0"
   },

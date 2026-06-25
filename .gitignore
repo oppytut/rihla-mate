@@ -12,3 +12,5 @@ uploads/
 pgdata/
 .DS_Store
 *.log
+.turbo/cache/
+.playwright-mcp/
