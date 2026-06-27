@@ -1,0 +1,156 @@
+import { test, expect } from "@playwright/test";
+import { BASE_URL } from "./helpers/auth";
+
+const SEL = {
+  customerName: "#customerName",
+  packageId: "#packageId",
+  travelers: "#travelers",
+  totalPrice: "#totalPrice",
+  departureDateButton: 'button[aria-label="Departure Date"]',
+  submitButton: 'button[type="submit"]',
+  popoverContent: '[data-slot="popover-content"]',
+  calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
+  calendarDay: (date: string) =>
+    `[data-slot="calendar"] button[data-day*="${date}"]`,
+  editButton: '[data-testid^="booking-edit-"]',
+  editCustomerName: '[data-testid="booking-customer-name"]',
+  editTravelers: '[data-testid="booking-travelers"]',
+  editSubmit: '[data-testid="booking-submit"]',
+} as const;
+
+async function cleanupPlaywrightBookings(context: {
+  request: {
+    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}) {
+  const api = context.request;
+  try {
+    const listRes = await api.get(
+      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
+        JSON.stringify({ search: "Playwright Test Customer Edit" }),
+      )}`,
+    );
+    if (!listRes.ok()) return;
+
+    const body: any = await listRes.json();
+    const items: Array<{ id: string }> =
+      body?.[0]?.result?.data?.items ??
+      body?.[0]?.result?.data?.json?.items ??
+      [];
+    for (const item of items) {
+      if (item.id) {
+        await api
+          .get(
+            `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
+              JSON.stringify({ id: item.id }),
+            )}`,
+          )
+          .catch(() => {});
+      }
+    }
+  } catch {
+  }
+}
+
+test.describe("booking edit flow", () => {
+  test.beforeEach(async ({ context }) => {
+    await cleanupPlaywrightBookings(context);
+  });
+
+  test("creates a booking, then edits it from the list page", async ({ page }) => {
+    await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
+      waitUntil: "load",
+    });
+
+    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+
+    await page.fill(SEL.customerName, "Playwright Test Customer Edit");
+
+    const packageSelect = page.locator(SEL.packageId);
+    await page.waitForFunction(
+      (sel) => {
+        const el = document.querySelector(sel) as HTMLSelectElement;
+        return el && el.options.length > 1;
+      },
+      SEL.packageId,
+      { timeout: 10000 },
+    );
+    await packageSelect.selectOption({ index: 2 });
+
+    await page.locator(SEL.departureDateButton).click();
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "visible",
+      timeout: 5000,
+    });
+
+    const monthsAhead =
+      (2026 - new Date().getFullYear()) * 12 +
+      (7 - (new Date().getMonth() + 1));
+    for (let i = 0; i < monthsAhead; i++) {
+      await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
+    }
+    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
+
+    await page.fill(SEL.travelers, "2");
+    await page.fill(SEL.totalPrice, "1500000");
+
+    // Confirm React hydration before submitting the form
+    await page.locator(SEL.departureDateButton).click();
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "visible",
+      timeout: 5000,
+    });
+    await page.keyboard.press("Escape");
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "hidden",
+      timeout: 5000,
+    });
+
+    await page.locator(SEL.submitButton).click();
+
+    await page.waitForURL(
+      (url) =>
+        url.href.includes("/dashboard/bookings") &&
+        !url.href.includes("/new"),
+      { timeout: 15000 },
+    ).catch(async () => {
+      // Submission may show a validation error (e.g. duplicate booking).
+      // If no redirect happened, try a different package.
+      await page.selectOption(SEL.packageId, { index: 3 });
+      await page.locator(SEL.submitButton).click();
+      await page.waitForURL(
+        (url) =>
+          url.href.includes("/dashboard/bookings") &&
+          !url.href.includes("/new"),
+        { timeout: 15000 },
+      );
+    });
+
+    await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+
+    const firstEditButton = page.locator(SEL.editButton).first();
+    await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
+    await firstEditButton.click();
+
+    await page.waitForSelector(SEL.editCustomerName, {
+      state: "attached",
+      timeout: 10000,
+    });
+
+    await page.locator(SEL.editCustomerName).fill("Playwright Test Customer Edit (edited)");
+    await page.locator(SEL.editTravelers).fill("3");
+
+    // Confirm React hydration before submitting the edit form
+    await page.waitForTimeout(2000);
+
+    await page.locator(SEL.editSubmit).click();
+
+    await page.waitForURL(
+      (url) =>
+        url.href.includes("/dashboard/bookings") &&
+        !url.href.includes("/new"),
+      { timeout: 15000 },
+    );
+  });
+});
