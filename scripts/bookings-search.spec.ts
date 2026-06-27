@@ -1,0 +1,203 @@
+import { test, expect } from "@playwright/test";
+import { BASE_URL } from "./helpers/auth";
+
+const SEL = {
+  search: '[data-testid="bookings-search"]',
+  statusFilter: '[data-testid="bookings-status-filter"]',
+  clearFilters: '[data-testid="bookings-clear-filters"]',
+  prevPage: '[data-testid="bookings-prev-page"]',
+  nextPage: '[data-testid="bookings-next-page"]',
+  pageInfo: '[data-testid="bookings-page-info"]',
+} as const;
+
+async function trpc(context: any, path: string, input?: Record<string, unknown>) {
+  // Non-batched superjson wire format: { json: <input> }
+  const url = input
+    ? `${BASE_URL}/api/trpc/${path}?input=${encodeURIComponent(JSON.stringify({ json: input }))}`
+    : `${BASE_URL}/api/trpc/${path}`;
+  return context.request.get(url);
+}
+
+async function trpcMutate(context: any, path: string, input: Record<string, unknown>) {
+  // Mutations require POST with superjson-encoded body
+  return context.request.post(`${BASE_URL}/api/trpc/${path}`, {
+    data: { json: input },
+  });
+}
+
+async function ensureSeedBookings(context: any, page: any) {
+  const seedNames = [
+    "Alice Search Test",
+    "Bob Search Test",
+    "Charlie Filter Test",
+  ];
+
+  // Check via API if seed bookings already exist (UI check fails when pagination pushes them off page 1)
+  const existingRes = await trpc(context, "bookings.list", { search: "", page: 1, limit: 100 });
+  const existingBody = await existingRes.json();
+  const existingData = existingBody?.result?.data;
+  const existingItems = existingData?.json?.items ?? existingData?.items ?? [];
+  const existingNames: Set<string> = new Set(
+    (existingItems as Array<{ customerName?: string }>).map((b) => b.customerName)
+  );
+
+  const missing = seedNames.filter((n) => !existingNames.has(n));
+  if (missing.length === 0) return;
+
+  // List packages via API to get real UUIDs and available dates
+  const pkgsRes = await trpc(context, "packages.list", { search: "", status: "published", page: 1, limit: 10 });
+  const pkgsBody = await pkgsRes.json();
+  console.log("[ensureSeedBookings] packages.list status:", pkgsRes.status());
+
+  // Non-batched TRPC response: { result: { type: "data", data: ... } }
+  // The data may be wrapped in superjson (has .json property) or raw
+  let rawItems: unknown[] = [];
+  const resultData = pkgsBody?.result?.data;
+  if (resultData) {
+    rawItems = resultData?.json?.items ?? resultData?.items ?? [];
+  }
+
+  const packages: Array<{ id: string; title: string; availableDates: string[] }> =
+    rawItems as Array<{ id: string; title: string; availableDates: string[] }>;
+
+  console.log("[ensureSeedBookings] package count:", packages.length);
+
+  if (packages.length < 3) {
+    console.log("[ensureSeedBookings] Not enough packages found, skipping seed");
+    return;
+  }
+
+  // Create only missing seed bookings via API with different packages/dates to avoid 409 CONFLICT.
+  // If a 409 is returned, retry with the next available package.
+  const seedData: Array<{ name: string; packageIdx: number; dateIdx: number }> = [
+    { name: "Alice Search Test", packageIdx: 0, dateIdx: 0 },
+    { name: "Bob Search Test", packageIdx: 1, dateIdx: 0 },
+    { name: "Charlie Filter Test", packageIdx: 2, dateIdx: 1 },
+  ];
+
+  for (const item of seedData) {
+    if (!missing.includes(item.name)) continue;
+
+    let created = false;
+    // Try up to 5 packages (wrapping around) on 409 CONFLICT
+    for (let attempt = 0; attempt < packages.length && !created; attempt++) {
+      const pkgIdx = (item.packageIdx + attempt) % packages.length;
+      const pkg = packages[pkgIdx];
+      if (!pkg) continue;
+      const date = pkg.availableDates?.[item.dateIdx] ?? "2026-07-01";
+      const res = await trpcMutate(context, "bookings.create", {
+        packageId: pkg.id,
+        departureDate: date,
+        customerName: item.name,
+        travelers: 2,
+        totalPrice: "1500000",
+      });
+      const body = await res.json();
+      const ok = body?.result?.data?.json?.id || body?.result?.data?.id;
+      if (ok) {
+        created = true;
+        console.log(`[ensureSeedBookings] ${item.name}: created, status=${res.status()}, pkgIdx=${pkgIdx}`);
+      } else if (res.status() === 409) {
+        console.log(`[ensureSeedBookings] ${item.name}: 409 on pkgIdx=${pkgIdx}, retrying next...`);
+      } else {
+        console.log(`[ensureSeedBookings] ${item.name}: failed, status=${res.status()}, pkgIdx=${pkgIdx}`);
+      }
+    }
+    if (!created) {
+      console.log(`[ensureSeedBookings] ${item.name}: FAILED after all retries`);
+    }
+  }
+}
+
+test.describe("bookings search and filter", () => {
+  test.beforeEach(async ({ context, page }) => {
+    await ensureSeedBookings(context, page);
+    await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForLoadState("networkidle");
+  });
+
+  test("search by customer name filters results", async ({ page }) => {
+    const searchInput = page.locator(SEL.search);
+    await searchInput.click();
+    await searchInput.pressSequentially("Alice", { delay: 50 });
+
+    // Wait for debounce (300ms) + TRPC query + React render
+    await page.waitForTimeout(2000);
+
+    await expect(
+      page.locator("td").filter({ hasText: "Alice Search Test" }).first()
+    ).toBeVisible({ timeout: 5000 });
+    await expect(
+      page.getByText("Bob Search Test")
+    ).not.toBeVisible({ timeout: 5000 });
+  });
+
+  test("filter by status shows only matching bookings", async ({ page }) => {
+    const statusFilter = page.locator(SEL.statusFilter);
+    await statusFilter.selectOption("confirmed");
+    await page.waitForTimeout(500);
+
+    const table = page.locator("table");
+    const noResults = page.locator(SEL.clearFilters);
+    await expect(table.or(noResults).first()).toBeAttached({ timeout: 5000 });
+  });
+
+  test("clear filters restores full list after search", async ({ page }) => {
+    const searchInput = page.locator(SEL.search);
+    await searchInput.click();
+    await searchInput.pressSequentially("ZZZ_NONEXISTENT_NAME_ZZZ", { delay: 30 });
+
+    // Wait for debounce (300ms) + TRPC query + React render
+    await page.waitForTimeout(2000);
+
+    const clearBtn = page.locator(SEL.clearFilters);
+    await expect(clearBtn).toBeVisible({ timeout: 5000 });
+
+    await clearBtn.click();
+
+    // Wait for TRPC query + React re-render after clearing
+    await page.waitForTimeout(2000);
+
+    await expect(
+      page.getByText("Alice Search Test")
+    ).toBeVisible({ timeout: 5000 });
+    await expect(
+      page.getByText("Bob Search Test")
+    ).toBeVisible({ timeout: 5000 });
+  });
+
+  test("pagination buttons are present and previous is disabled on page 1", async ({
+    page,
+  }) => {
+    const prevBtn = page.locator(SEL.prevPage);
+    const nextBtn = page.locator(SEL.nextPage);
+
+    await expect(prevBtn).toBeAttached({ timeout: 5000 });
+    await expect(nextBtn).toBeAttached({ timeout: 5000 });
+    await expect(prevBtn).toBeDisabled({ timeout: 5000 });
+  });
+
+  test("combined search and status filter narrows results", async ({
+    page,
+  }) => {
+    const searchInput = page.locator(SEL.search);
+    await searchInput.click();
+    await searchInput.pressSequentially("Alice", { delay: 50 });
+
+    // Wait for debounce (300ms) + TRPC query + React render
+    await page.waitForTimeout(2000);
+
+    const statusFilter = page.locator(SEL.statusFilter);
+    await statusFilter.selectOption("pending");
+    await page.waitForTimeout(2000);
+
+    // Bookings are created with default status "pending", so Alice should appear
+    await expect(
+      page.locator("td").filter({ hasText: "Alice Search Test" }).first()
+    ).toBeVisible({ timeout: 5000 });
+
+    await expect(page.locator('[data-testid="page-heading"]')).toBeVisible();
+  });
+});

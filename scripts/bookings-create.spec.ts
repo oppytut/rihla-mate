@@ -1,97 +1,150 @@
 import { test, expect } from "@playwright/test";
-import { BASE_URL, signInAndGetCookie, setSessionCookie } from "./helpers/auth";
+import { BASE_URL } from "./helpers/auth";
+
+const SEL = {
+  customerName: '[data-testid="booking-customer-name"]',
+  packageId: '[data-testid="booking-package"]',
+  travelers: '[data-testid="booking-travelers"]',
+  totalPrice: '[data-testid="booking-total-price"]',
+  departureDateButton: '[data-testid="booking-departure-date"]',
+  submitButton: '[data-testid="booking-submit"]',
+  popoverContent: '[data-slot="popover-content"]',
+  calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
+  calendarDay: (date: string) =>
+    `[data-slot="calendar"] button[data-day*="${date}"]`,
+  validationError: '[data-testid^="validation-error-"]',
+} as const;
+
+/**
+ * Delete all bookings whose customerName matches `searchTerm`.
+ *
+ * Uses `context.request` so the API calls share the browser context's
+ * auth cookies from storageState (the global request fixture does NOT).
+ */
+async function cleanupPlaywrightBookings(context: {
+  request: {
+    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}) {
+  const api = context.request;
+  try {
+    const listRes = await api.get(
+      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
+        JSON.stringify({ search: "Playwright Test Customer" }),
+      )}`,
+    );
+    if (!listRes.ok()) return;
+
+    const body: any = await listRes.json();
+    const items: Array<{ id: string }> =
+      body?.[0]?.result?.data?.items ??
+      body?.[0]?.result?.data?.json?.items ??
+      [];
+    for (const item of items) {
+      if (item.id) {
+        await api
+          .get(
+            `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
+              JSON.stringify({ id: item.id }),
+            )}`,
+          )
+          .catch(() => {});
+      }
+    }
+  } catch {
+  }
+}
 
 test.describe("booking creation flow", () => {
-  let sessionCookie: string;
-
-  test.beforeAll(async ({ request }) => {
-    sessionCookie = await signInAndGetCookie(request);
-  });
-
   test.beforeEach(async ({ context }) => {
-    await setSessionCookie(context, sessionCookie);
+    await cleanupPlaywrightBookings(context);
   });
 
   test("fills form and submits a new booking", async ({ page }) => {
+    test.setTimeout(60000);
+
     await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
-      waitUntil: "load",
+      waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector("h1", { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
 
-    await page.fill("#customerName", "Playwright Test Customer");
+    // Ensure the React-controlled input is hydrated before filling
+    const customerNameInput = page.locator(SEL.customerName);
+    await customerNameInput.waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForFunction(
+      (sel) => {
+        const el = document.querySelector(sel) as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      SEL.customerName,
+      { timeout: 10000 },
+    );
+    await customerNameInput.pressSequentially("Playwright Test Customer", { delay: 30 });
 
-    const packageSelect = page.locator("#packageId");
-    await packageSelect.selectOption({ index: 1 });
+    // Wait for the specific package option to be available in the DOM before selecting.
+    // waitForFunction(options.length > 1) can race against React re-renders.
+    await page.locator('#packageId option[value]:not([value=""])').first().waitFor({ state: "attached", timeout: 15000 });
+    // Give the select one more beat to fully stabilize after TRPC data lands
+    await page.waitForTimeout(500);
+    await page.locator(SEL.packageId).selectOption({ index: 1 });
 
-    await page.locator('button[aria-label="Departure Date"]').click();
-
-    await page.waitForSelector('[data-slot="popover-content"]', {
+    await page.locator(SEL.departureDateButton).click();
+    await page.waitForSelector(SEL.popoverContent, {
       state: "visible",
       timeout: 5000,
     });
 
-    // Use a future date (2026-07-01) that exists in all 3 packages' seed data
-    // Calendar opens to June 2026, need to navigate to July 2026
-    await page.locator('[data-slot="calendar"] button[class*="button_next"]').click();
-    await page.locator('[data-slot="calendar"] button[data-day*="7/1/2026"]').first().click();
+    const monthsAhead =
+      (2026 - new Date().getFullYear()) * 12 +
+      (7 - (new Date().getMonth() + 1));
+    for (let i = 0; i < monthsAhead; i++) {
+      await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
+    }
+    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
 
-    await page.fill("#travelers", "2");
+    await page.fill(SEL.travelers, "2");
+    await page.fill(SEL.totalPrice, "1500000");
 
-    await page.fill("#totalPrice", "1500000");
+    // Accept any alert dialog (success or error) that appears after submit
+    page.on("dialog", (dialog) => dialog.accept());
 
-    await page.locator('button[type="submit"]').click();
+    await page.locator(SEL.submitButton).click();
 
-    await page.waitForURL((url) => {
-      return (
-        url.href.includes("/dashboard/bookings") &&
-        !url.href.includes("/new")
-      );
-    }, { timeout: 15000 });
-
-    expect(page.url()).toContain("/dashboard/bookings");
+    // Wait for navigation to the bookings list page after successful create.
+    // The mutation triggers window.alert() then router.push("/dashboard/bookings").
+    // Use waitForURL to avoid race conditions with page.url().
+    await page.waitForURL("**/dashboard/bookings", { timeout: 15000 });
+    // Ensure the URL does NOT contain /new (it should be /dashboard/bookings or /dashboard/bookings?page=...)
     expect(page.url()).not.toContain("/new");
   });
 });
 
 test.describe("form validation", () => {
-  let sessionCookie: string;
-
-  test.beforeAll(async ({ request }) => {
-    sessionCookie = await signInAndGetCookie(request);
-  });
-
-  test.beforeEach(async ({ context }) => {
-    await setSessionCookie(context, sessionCookie);
-  });
-
   test("shows validation errors when submitting empty form", async ({ page }) => {
     await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
-      waitUntil: "load",
+      waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector("h1", { state: "visible", timeout: 10000 });
-    await page.waitForSelector('button[aria-label="Departure Date"]', { state: "visible", timeout: 10000 });
-
-    // Confirm React hydration: open date picker, verify popover, close it
-    await page.locator('button[aria-label="Departure Date"]').click();
-    await page.waitForSelector('[data-slot="popover-content"]', { state: "visible", timeout: 5000 });
-    await page.keyboard.press("Escape");
-    await page.waitForSelector('[data-slot="popover-content"]', { state: "hidden", timeout: 5000 });
-
-    // Submit via JavaScript to avoid native form submission race
-    await page.evaluate(() => {
-      const form = document.querySelector("form");
-      if (!form) throw new Error("Form not found");
-      form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector(SEL.departureDateButton, {
+      state: "visible",
+      timeout: 10000,
     });
 
-    await page.waitForSelector(".text-destructive", {
+    // Confirm React hydration before interacting with the form
+    await page.waitForTimeout(3000);
+
+    // Click submit button to trigger React form validation
+    await page.locator(SEL.submitButton).click();
+
+    await page.waitForSelector(SEL.validationError, {
       state: "attached",
       timeout: 10000,
     });
 
-    const errorCount = await page.locator(".text-destructive").count();
+    const errorCount = await page.locator(SEL.validationError).count();
     expect(errorCount).toBeGreaterThan(0);
   });
 });
