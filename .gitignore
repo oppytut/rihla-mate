@@ -16,3 +16,5 @@ pgdata/
 .playwright-mcp/
 playwright-report/
 test-results/
+.playwright-storage.json
+.playwright-auth.json
