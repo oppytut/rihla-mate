@@ -12,6 +12,25 @@ const BOOKING_STATUSES = [
   "completed",
 ] as const;
 
+/**
+ * Normalize jsonb `availableDates` to a plain string array.
+ * Drizzle/node-postgres may return jsonb columns as raw JSON strings or
+ * already-parsed arrays depending on driver/connection state, so we handle
+ * both to avoid intermittent "date not available" validation failures.
+ */
+function normalizeAvailableDates(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw as string[];
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed as string[];
+    } catch {
+    }
+  }
+  console.error("[bookings] Unexpected availableDates type:", typeof raw, raw);
+  return [];
+}
+
 export const bookingsRouter = createTRPCRouter({
   list: adminProcedure
     .input(
@@ -136,8 +155,12 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
 
-      const availableDates: string[] = pkg[0].availableDates as string[];
+      const availableDates = normalizeAvailableDates(pkg[0].availableDates);
       if (!availableDates.includes(input.departureDate)) {
+        console.error(
+          "[bookings.create] date validation failed",
+          { packageId: input.packageId, departureDate: input.departureDate, availableDates }
+        );
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Selected departure date is not available for this package",
@@ -244,8 +267,12 @@ export const bookingsRouter = createTRPCRouter({
         }
 
         if (data.departureDate !== undefined) {
-          const availableDates: string[] = pkg[0].availableDates as string[];
+          const availableDates = normalizeAvailableDates(pkg[0].availableDates);
           if (!availableDates.includes(data.departureDate)) {
+            console.error(
+              "[bookings.update] date validation failed",
+              { packageId: targetPackageId, departureDate: data.departureDate, availableDates }
+            );
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "Selected departure date is not available for this package",
