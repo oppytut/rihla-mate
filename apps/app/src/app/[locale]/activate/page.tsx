@@ -86,6 +86,7 @@ export default function ActivatePage() {
                   type="text"
                   value={licenseKey}
                   onChange={(e) => setLicenseKey(e.target.value)}
+                  data-testid="activate-license-key"
                   placeholder="RM-XXXX-XXXX-XXXX-XXXX"
                   className="flex-1 h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                 />
@@ -93,6 +94,7 @@ export default function ActivatePage() {
                   onClick={handleActivate}
                   disabled={!licenseKey.trim() || activateMutation.isPending}
                   variant="default"
+                  data-testid="activate-submit"
                 >
                   {activateMutation.isPending ? "Activating..." : "Activate"}
                 </Button>
@@ -114,6 +116,7 @@ export default function ActivatePage() {
                 disabled={startTrialMutation.isPending}
                 variant="outline"
                 className="w-full"
+                data-testid="activate-start-trial"
               >
                 {startTrialMutation.isPending ? "Starting Trial..." : "Start Free Trial"}
               </Button>

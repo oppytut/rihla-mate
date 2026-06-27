@@ -45,11 +45,12 @@ export default function DashboardPage() {
             <p className="text-xs text-muted-foreground">Travel Agency Platform</p>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1" data-testid="sidebar-nav">
             {navItems.map((item) => (
               <a
                 key={item.key}
                 href={item.href}
+                data-testid={`sidebar-link-${item.key}`}
                 className={cn(
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   item.active
@@ -102,6 +103,7 @@ export default function DashboardPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    data-testid="sign-out-button"
                     disabled
                     className="w-full"
                   >
@@ -115,7 +117,7 @@ export default function DashboardPage() {
 
         <main className="flex-1 lg:ml-64">
           <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-            <h1 className="text-2xl font-semibold text-foreground">
+            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
               {t("dashboard.title")}
             </h1>
             {userQuery.isLoading ? (
@@ -143,6 +145,7 @@ export default function DashboardPage() {
                 {statCards.map((stat, index) => (
                   <div
                     key={index}
+                    data-testid={`stat-card-${index}`}
                     className="bg-card border border-border rounded-lg p-4"
                   >
                     <p className="text-sm text-muted-foreground">{stat.label}</p>

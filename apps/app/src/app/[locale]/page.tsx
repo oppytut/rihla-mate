@@ -21,6 +21,7 @@ export default function Home() {
             <a
               href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
               className="font-medium text-zinc-950 dark:text-zinc-50"
+              data-testid="home-templates-link"
             >
               Templates
             </a>{" "}
@@ -28,6 +29,7 @@ export default function Home() {
             <a
               href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
               className="font-medium text-zinc-950 dark:text-zinc-50"
+              data-testid="home-learning-link"
             >
               Learning
             </a>{" "}
@@ -40,6 +42,7 @@ export default function Home() {
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="home-deploy-link"
           >
             <Image
               className="dark:invert"
@@ -55,6 +58,7 @@ export default function Home() {
             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="home-docs-link"
           >
             Documentation
           </a>

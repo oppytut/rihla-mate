@@ -286,6 +286,7 @@ export default function InstallerPage() {
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    data-testid="installer-admin-name"
                     placeholder="Admin User"
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
@@ -303,6 +304,7 @@ export default function InstallerPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    data-testid="installer-admin-email"
                     placeholder="admin@example.com"
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
@@ -320,6 +322,7 @@ export default function InstallerPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    data-testid="installer-admin-password"
                     placeholder="Min. 8 characters"
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
@@ -354,6 +357,7 @@ export default function InstallerPage() {
                     type="text"
                     value={licenseKey}
                     onChange={(e) => setLicenseKey(e.target.value)}
+                    data-testid="installer-license-key"
                     placeholder="RM-XXXX-XXXX-XXXX-XXXX"
                     className="flex-1 h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
@@ -361,6 +365,7 @@ export default function InstallerPage() {
                     onClick={handleActivate}
                     disabled={!licenseKey.trim() || activateMutation.isPending}
                     variant="default"
+                    data-testid="installer-activate"
                   >
                     {activateMutation.isPending ? "Activating..." : "Activate"}
                   </Button>
@@ -382,6 +387,7 @@ export default function InstallerPage() {
                   disabled={startTrialMutation.isPending}
                   variant="outline"
                   className="w-full"
+                  data-testid="installer-start-trial"
                 >
                   {startTrialMutation.isPending
                     ? "Starting Trial..."
@@ -493,6 +499,7 @@ export default function InstallerPage() {
                     startTrialMutation.isPending ||
                     activateMutation.isPending
                   }
+                  data-testid="installer-back"
                 >
                   {t("installer.back")}
                 </Button>
@@ -504,6 +511,7 @@ export default function InstallerPage() {
                 <Button
                   onClick={() => setStep(1)}
                   disabled={!canProceedFromSystemCheck}
+                  data-testid="installer-next-step-0"
                 >
                   {t("installer.next")}
                 </Button>
@@ -513,6 +521,7 @@ export default function InstallerPage() {
                 <Button
                   onClick={() => setStep(2)}
                   disabled={!systemCheckQuery.data?.database}
+                  data-testid="installer-next-step-1"
                 >
                   {t("installer.next")}
                 </Button>
@@ -527,6 +536,7 @@ export default function InstallerPage() {
                     !name.trim() ||
                     setupAdminMutation.isPending
                   }
+                  data-testid="installer-create-account"
                 >
                   {setupAdminMutation.isPending
                     ? "Creating..."
@@ -540,13 +550,14 @@ export default function InstallerPage() {
                   disabled={
                     !trialKey && !activateResult && !setupComplete
                   }
+                  data-testid="installer-next-step-3"
                 >
                   {t("installer.next")}
                 </Button>
               )}
 
               {step === 4 && !setupComplete && (
-                <Button onClick={handleComplete}>
+                <Button onClick={handleComplete} data-testid="installer-complete">
                   {t("installer.complete")}
                 </Button>
               )}

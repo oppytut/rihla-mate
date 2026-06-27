@@ -112,7 +112,7 @@ export default function PackagesPage() {
             <p className="text-xs text-muted-foreground">Travel Agency Platform</p>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1" data-testid="sidebar-nav">
             {[
               { key: "dashboard", href: "/dashboard", active: false },
               { key: "bookings", href: "/dashboard/bookings", active: false },
@@ -123,6 +123,7 @@ export default function PackagesPage() {
               <Link
                 key={item.key}
                 href={item.href}
+                data-testid={`sidebar-link-${item.key}`}
                 className={cn(
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   item.active
@@ -139,10 +140,10 @@ export default function PackagesPage() {
         <main className="flex-1 lg:ml-64">
           <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h1 className="text-2xl font-semibold text-foreground">
+              <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
                 {t("packages.title")}
               </h1>
-              <Button asChild>
+              <Button asChild data-testid="packages-add-new">
                 <Link href="/dashboard/packages/new">
                   {t("packages.addPackage")}
                 </Link>
@@ -154,6 +155,7 @@ export default function PackagesPage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <input
                 type="text"
+                data-testid="packages-search"
                 placeholder={t("packages.search")}
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
@@ -166,6 +168,7 @@ export default function PackagesPage() {
                   setStatus(e.target.value);
                   setPage(1);
                 }}
+                data-testid="packages-status-filter"
                 aria-label={t("packages.allStatus")}
                 className="px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               >
@@ -257,6 +260,7 @@ export default function PackagesPage() {
                         setStatus("");
                         setPage(1);
                       }}
+                      data-testid="packages-clear-filters"
                     >
                       {t("packages.clearFilters")}
                     </Button>
@@ -264,7 +268,7 @@ export default function PackagesPage() {
                 ) : (
                   <>
                     <p className="text-muted-foreground mb-4">{t("packages.empty")}</p>
-                    <Button asChild>
+                    <Button asChild data-testid="packages-add-new-empty">
                       <Link href="/dashboard/packages/new">
                         {t("packages.addPackage")}
                       </Link>
@@ -337,6 +341,7 @@ export default function PackagesPage() {
                                 variant="outline"
                                 size="sm"
                                 asChild
+                                data-testid={`package-edit-${pkg.id}`}
                               >
                                 <Link href={`/dashboard/packages/${pkg.id}`} aria-label={t("packages.edit")}>
                                   {t("packages.edit")}
@@ -347,6 +352,7 @@ export default function PackagesPage() {
                                 size="sm"
                                 onClick={() => handleDelete(pkg.id)}
                                 disabled={deleteMutation.isPending}
+                                data-testid={`package-delete-${pkg.id}`}
                                 aria-label={t("packages.delete")}
                               >
                                 {t("packages.delete")}
@@ -360,7 +366,7 @@ export default function PackagesPage() {
                 </div>
 
                 <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground" data-testid="packages-page-info">
                     {t("packages.pageInfo", { page, total: totalPages || 1 })}
                   </p>
                   <div className="flex items-center gap-2">
@@ -369,6 +375,7 @@ export default function PackagesPage() {
                       size="sm"
                       disabled={page === 1}
                       onClick={() => setPage((p) => p - 1)}
+                      data-testid="packages-prev-page"
                       aria-label={t("common.previous")}
                     >
                       {t("common.previous")}
@@ -378,6 +385,7 @@ export default function PackagesPage() {
                       size="sm"
                       disabled={page >= totalPages}
                       onClick={() => setPage((p) => p + 1)}
+                      data-testid="packages-next-page"
                       aria-label={t("common.next")}
                     >
                       {t("common.next")}

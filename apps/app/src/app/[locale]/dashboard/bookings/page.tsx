@@ -123,7 +123,7 @@ export default function BookingsPage() {
             <p className="text-xs text-muted-foreground">Travel Agency Platform</p>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1">
+          <nav className="flex-1 px-3 py-4 space-y-1" data-testid="sidebar-nav">
             {[
               { key: "dashboard", href: "/dashboard", active: false },
               { key: "bookings", href: "/dashboard/bookings", active: true },
@@ -134,6 +134,7 @@ export default function BookingsPage() {
               <Link
                 key={item.key}
                 href={item.href}
+                data-testid={`sidebar-link-${item.key}`}
                 className={cn(
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   item.active
@@ -150,10 +151,10 @@ export default function BookingsPage() {
         <main className="flex-1 lg:ml-64">
           <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h1 className="text-2xl font-semibold text-foreground">
+              <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
                 {t("bookings.title")}
               </h1>
-              <Button asChild>
+              <Button asChild data-testid="bookings-add-new">
                 <Link href="/dashboard/bookings/new">
                   {t("bookings.addBooking")}
                 </Link>
@@ -165,6 +166,7 @@ export default function BookingsPage() {
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <input
                 type="text"
+                data-testid="bookings-search"
                 placeholder={t("bookings.search")}
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
@@ -177,6 +179,7 @@ export default function BookingsPage() {
                   setStatus(e.target.value);
                   setPage(1);
                 }}
+                data-testid="bookings-status-filter"
                 aria-label={t("bookings.allStatus")}
                 className="px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
               >
@@ -269,6 +272,7 @@ export default function BookingsPage() {
                         setStatus("");
                         setPage(1);
                       }}
+                      data-testid="bookings-clear-filters"
                     >
                       {t("bookings.clearFilters")}
                     </Button>
@@ -276,7 +280,7 @@ export default function BookingsPage() {
                 ) : (
                   <>
                     <p className="text-muted-foreground mb-4">{t("bookings.empty")}</p>
-                    <Button asChild>
+                    <Button asChild data-testid="bookings-add-new-empty">
                       <Link href="/dashboard/bookings/new">
                         {t("bookings.addBooking")}
                       </Link>
@@ -349,6 +353,7 @@ export default function BookingsPage() {
                                 variant="outline"
                                 size="sm"
                                 asChild
+                                data-testid={`booking-edit-${booking.id}`}
                               >
                                 <Link href={`/dashboard/bookings/${booking.id}`} aria-label={t("bookings.edit")}>
                                   {t("bookings.edit")}
@@ -359,6 +364,7 @@ export default function BookingsPage() {
                                 size="sm"
                                 onClick={() => handleDelete(booking.id)}
                                 disabled={deleteMutation.isPending}
+                                data-testid={`booking-delete-${booking.id}`}
                                 aria-label={t("bookings.delete")}
                               >
                                 {t("bookings.delete")}
@@ -372,7 +378,7 @@ export default function BookingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground" data-testid="bookings-page-info">
                     {t("bookings.pageInfo", { page, total: totalPages || 1 })}
                   </p>
                   <div className="flex items-center gap-2">
@@ -381,6 +387,7 @@ export default function BookingsPage() {
                       size="sm"
                       disabled={page === 1}
                       onClick={() => setPage((p) => p - 1)}
+                      data-testid="bookings-prev-page"
                       aria-label={t("common.previous")}
                     >
                       {t("common.previous")}
@@ -390,6 +397,7 @@ export default function BookingsPage() {
                       size="sm"
                       disabled={page >= totalPages}
                       onClick={() => setPage((p) => p + 1)}
+                      data-testid="bookings-next-page"
                       aria-label={t("common.next")}
                     >
                       {t("common.next")}

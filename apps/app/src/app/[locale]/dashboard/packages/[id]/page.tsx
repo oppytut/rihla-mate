@@ -115,10 +115,13 @@ function PackageFormContent({
     field: K,
     value: PackageForm[K]
   ) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    if (field === "title" && !isEditMode) {
-      setForm((prev) => ({ ...prev, slug: slugify(value as string) }));
-    }
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === "title" && !isEditMode) {
+        next.slug = slugify(value as string);
+      }
+      return next;
+    });
     setSubmitError(null);
   };
 
@@ -210,18 +213,19 @@ function PackageFormContent({
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/packages"
+              data-testid="packages-back-to-list"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("packages.backToList")}
             </Link>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground mt-2">
+          <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
             {isEditMode ? t("packages.editTitle") : t("packages.createTitle")}
           </h1>
         </header>
 
         <div className="px-4 lg:px-8 py-6">
-          <form onSubmit={handleSubmit} className="max-w-3xl">
+          <form onSubmit={handleSubmit} noValidate className="max-w-3xl">
             <div className="bg-card border border-border rounded-lg p-6 space-y-8">
               <section className="space-y-4">
                 <h2 className="text-lg font-medium text-foreground border-b border-border pb-2">
@@ -242,6 +246,7 @@ function PackageFormContent({
                     onChange={(e) => updateField("title", e.target.value)}
                     required
                     disabled={isSubmitting}
+                    data-testid="package-title"
                     aria-label={t("packages.fields.title")}
                     aria-describedby={fieldErrors.title ? "title-error" : undefined}
                     className={cn(
@@ -250,7 +255,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.title && (
-                    <p id="title-error" className="text-sm text-destructive">
+                    <p id="title-error" className="text-sm text-destructive" data-testid="validation-error-title">
                       {fieldErrors.title}
                     </p>
                   )}
@@ -270,6 +275,7 @@ function PackageFormContent({
                     onChange={(e) => updateField("slug", e.target.value)}
                     required
                     disabled={isSubmitting}
+                    data-testid="package-slug"
                     aria-label={t("packages.fields.slug")}
                     aria-describedby={fieldErrors.slug ? "slug-error" : undefined}
                     className={cn(
@@ -278,7 +284,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.slug && (
-                    <p id="slug-error" className="text-sm text-destructive">
+                    <p id="slug-error" className="text-sm text-destructive" data-testid="validation-error-slug">
                       {fieldErrors.slug}
                     </p>
                   )}
@@ -297,6 +303,7 @@ function PackageFormContent({
                     onChange={(e) => updateField("description", e.target.value)}
                     rows={4}
                     disabled={isSubmitting}
+                    data-testid="package-description"
                     aria-label={t("packages.fields.description")}
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none"
                   />
@@ -315,6 +322,7 @@ function PackageFormContent({
                       value={form.category}
                       onChange={(e) => updateField("category", e.target.value)}
                       disabled={isSubmitting}
+                      data-testid="package-category"
                       aria-label={t("packages.fields.category")}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -343,6 +351,7 @@ function PackageFormContent({
                       }}
                       required
                       disabled={isSubmitting}
+                      data-testid="package-duration-days"
                       aria-label={t("packages.fields.durationDays")}
                       aria-describedby={fieldErrors.durationDays ? "durationDays-error" : undefined}
                       className={cn(
@@ -351,7 +360,7 @@ function PackageFormContent({
                       )}
                     />
                     {fieldErrors.durationDays && (
-                      <p id="durationDays-error" className="text-sm text-destructive">
+                      <p id="durationDays-error" className="text-sm text-destructive" data-testid="validation-error-durationDays">
                         {fieldErrors.durationDays}
                       </p>
                     )}
@@ -371,6 +380,7 @@ function PackageFormContent({
                     value={form.departureCity}
                     onChange={(e) => updateField("departureCity", e.target.value)}
                     disabled={isSubmitting}
+                    data-testid="package-departure-city"
                     aria-label={t("packages.fields.departureCity")}
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   />
@@ -388,6 +398,7 @@ function PackageFormContent({
                     value={form.status}
                     onChange={(e) => updateField("status", e.target.value)}
                     disabled={isSubmitting}
+                    data-testid="package-status"
                     aria-label={t("packages.fields.status")}
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -419,6 +430,7 @@ function PackageFormContent({
                       required
                       disabled={isSubmitting}
                       placeholder="1500000"
+                      data-testid="package-price"
                       aria-label={t("packages.fields.price")}
                       aria-describedby={fieldErrors.price ? "price-error" : undefined}
                       className={cn(
@@ -427,7 +439,7 @@ function PackageFormContent({
                       )}
                     />
                     {fieldErrors.price && (
-                      <p id="price-error" className="text-sm text-destructive">
+                      <p id="price-error" className="text-sm text-destructive" data-testid="validation-error-price">
                         {fieldErrors.price}
                       </p>
                     )}
@@ -445,6 +457,7 @@ function PackageFormContent({
                       value={form.currency}
                       onChange={(e) => updateField("currency", e.target.value)}
                       disabled={isSubmitting}
+                      data-testid="package-currency"
                       aria-label={t("packages.fields.currency")}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -474,6 +487,7 @@ function PackageFormContent({
                     onChange={(e) => updateField("featuredImage", e.target.value)}
                     disabled={isSubmitting}
                     placeholder="https://example.com/image.jpg"
+                    data-testid="package-featured-image"
                     aria-label={t("packages.fields.featuredImage")}
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   />
@@ -493,6 +507,7 @@ function PackageFormContent({
                     rows={3}
                     disabled={isSubmitting}
                     placeholder='["https://...", "https://..."]'
+                    data-testid="package-gallery"
                     aria-label={t("packages.fields.gallery")}
                     aria-describedby={fieldErrors.gallery ? "gallery-error" : undefined}
                     className={cn(
@@ -503,7 +518,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.gallery && (
-                    <p id="gallery-error" className="text-sm text-destructive">
+                    <p id="gallery-error" className="text-sm text-destructive" data-testid="validation-error-gallery">
                       {fieldErrors.gallery}
                     </p>
                   )}
@@ -529,6 +544,7 @@ function PackageFormContent({
                     rows={4}
                     disabled={isSubmitting}
                     placeholder='[{"day": 1, "description": "..."}]'
+                    data-testid="package-itinerary"
                     aria-label={t("packages.fields.itinerary")}
                     aria-describedby={fieldErrors.itinerary ? "itinerary-error" : undefined}
                     className={cn(
@@ -539,7 +555,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.itinerary && (
-                    <p id="itinerary-error" className="text-sm text-destructive">
+                    <p id="itinerary-error" className="text-sm text-destructive" data-testid="validation-error-itinerary">
                       {fieldErrors.itinerary}
                     </p>
                   )}
@@ -559,6 +575,7 @@ function PackageFormContent({
                     rows={3}
                     disabled={isSubmitting}
                     placeholder='["Hotel", "Transport"]'
+                    data-testid="package-inclusions"
                     aria-label={t("packages.fields.inclusions")}
                     aria-describedby={fieldErrors.inclusions ? "inclusions-error" : undefined}
                     className={cn(
@@ -569,7 +586,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.inclusions && (
-                    <p id="inclusions-error" className="text-sm text-destructive">
+                    <p id="inclusions-error" className="text-sm text-destructive" data-testid="validation-error-inclusions">
                       {fieldErrors.inclusions}
                     </p>
                   )}
@@ -589,6 +606,7 @@ function PackageFormContent({
                     rows={3}
                     disabled={isSubmitting}
                     placeholder='["Tiket pesawat"]'
+                    data-testid="package-exclusions"
                     aria-label={t("packages.fields.exclusions")}
                     aria-describedby={fieldErrors.exclusions ? "exclusions-error" : undefined}
                     className={cn(
@@ -599,7 +617,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.exclusions && (
-                    <p id="exclusions-error" className="text-sm text-destructive">
+                    <p id="exclusions-error" className="text-sm text-destructive" data-testid="validation-error-exclusions">
                       {fieldErrors.exclusions}
                     </p>
                   )}
@@ -621,6 +639,7 @@ function PackageFormContent({
                     rows={2}
                     disabled={isSubmitting}
                     placeholder='["2026-07-01", "2026-08-15"]'
+                    data-testid="package-available-dates"
                     aria-label={t("packages.fields.availableDates")}
                     aria-describedby={fieldErrors.availableDates ? "availableDates-error" : undefined}
                     className={cn(
@@ -631,7 +650,7 @@ function PackageFormContent({
                     )}
                   />
                   {fieldErrors.availableDates && (
-                    <p id="availableDates-error" className="text-sm text-destructive">
+                    <p id="availableDates-error" className="text-sm text-destructive" data-testid="validation-error-availableDates">
                       {fieldErrors.availableDates}
                     </p>
                   )}
@@ -645,13 +664,13 @@ function PackageFormContent({
               )}
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} data-testid="package-submit">
                   {isSubmitting
                     ? t("packages.saving")
                     : t("packages.save")}
                 </Button>
                 <Link href="/dashboard/packages">
-                  <Button type="button" variant="outline" disabled={isSubmitting}>
+                  <Button type="button" variant="outline" disabled={isSubmitting} data-testid="package-cancel">
                     {t("packages.backToList")}
                   </Button>
                 </Link>

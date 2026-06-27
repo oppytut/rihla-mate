@@ -171,12 +171,13 @@ function BookingFormContent({
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/bookings"
+              data-testid="bookings-back-to-list"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("bookings.backToList")}
             </Link>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground mt-2">
+          <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
             {t("bookings.editTitle")}
           </h1>
         </header>
@@ -202,6 +203,7 @@ function BookingFormContent({
                     onChange={(e) => updateField("packageId", e.target.value)}
                     required
                     disabled={isSubmitting}
+                    data-testid="booking-package"
                     aria-label={t("bookings.fields.package")}
                     aria-describedby={fieldErrors.packageId ? "packageId-error" : undefined}
                     className={cn(
@@ -236,6 +238,7 @@ function BookingFormContent({
                         type="button"
                         id="departureDate"
                         disabled={isSubmitting}
+                        data-testid="booking-departure-date"
                         aria-label={t("bookings.fields.departureDate")}
                         aria-describedby={fieldErrors.departureDate ? "departureDate-error" : undefined}
                         className={cn(
@@ -291,6 +294,7 @@ function BookingFormContent({
                       }}
                       required
                       disabled={isSubmitting}
+                      data-testid="booking-travelers"
                       aria-label={t("bookings.fields.travelers")}
                       aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
                       className={cn(
@@ -317,6 +321,7 @@ function BookingFormContent({
                       value={form.status}
                       onChange={(e) => updateField("status", e.target.value as BookingStatus)}
                       disabled={isSubmitting}
+                      data-testid="booking-status"
                       aria-label={t("bookings.fields.status")}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
@@ -342,13 +347,14 @@ function BookingFormContent({
                     {t("bookings.fields.customerName")} *
                   </label>
                   <input
-                    id="customerName"
-                    type="text"
-                    value={form.customerName}
-                    onChange={(e) => updateField("customerName", e.target.value)}
-                    required
-                    disabled={isSubmitting}
-                    aria-label={t("bookings.fields.customerName")}
+                      id="customerName"
+                      type="text"
+                      value={form.customerName}
+                      onChange={(e) => updateField("customerName", e.target.value)}
+                      required
+                      disabled={isSubmitting}
+                      data-testid="booking-customer-name"
+                      aria-label={t("bookings.fields.customerName")}
                     aria-describedby={fieldErrors.customerName ? "customerName-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
@@ -376,6 +382,7 @@ function BookingFormContent({
                       value={form.customerEmail}
                       onChange={(e) => updateField("customerEmail", e.target.value)}
                       disabled={isSubmitting}
+                      data-testid="booking-customer-email"
                       aria-label={t("bookings.fields.customerEmail")}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     />
@@ -394,6 +401,7 @@ function BookingFormContent({
                       value={form.customerPhone}
                       onChange={(e) => updateField("customerPhone", e.target.value)}
                       disabled={isSubmitting}
+                      data-testid="booking-customer-phone"
                       aria-label={t("bookings.fields.customerPhone")}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     />
@@ -422,6 +430,7 @@ function BookingFormContent({
                       required
                       disabled={isSubmitting}
                       placeholder="1500000"
+                      data-testid="booking-total-price"
                       aria-label={t("bookings.fields.totalPrice")}
                       aria-describedby={fieldErrors.totalPrice ? "totalPrice-error" : undefined}
                       className={cn(
@@ -468,6 +477,7 @@ function BookingFormContent({
                     onChange={(e) => updateField("notes", e.target.value)}
                     rows={3}
                     disabled={isSubmitting}
+                    data-testid="booking-notes"
                     aria-label={t("bookings.fields.notes")}
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none"
                   />
@@ -481,13 +491,13 @@ function BookingFormContent({
               )}
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting} data-testid="booking-submit">
                   {isSubmitting
                     ? t("bookings.saving")
                     : t("bookings.save")}
                 </Button>
                 <Link href="/dashboard/bookings">
-                  <Button type="button" variant="outline" disabled={isSubmitting}>
+                  <Button type="button" variant="outline" disabled={isSubmitting} data-testid="booking-cancel">
                     {t("bookings.backToList")}
                   </Button>
                 </Link>
