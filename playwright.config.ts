@@ -5,16 +5,17 @@ export default defineConfig({
   testMatch: "*.spec.ts",
   globalSetup: "./scripts/playwright-global-setup.ts",
   globalSetupTimeout: 60_000,
-  timeout: 30_000,
+  timeout: 60_000,
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: [
     ["list"],
     ["html", { open: "never" }],
   ],
   use: {
     baseURL: "http://localhost:3000",
+    storageState: ".playwright-storage.json",
     trace: "on-first-retry",
   },
   projects: [

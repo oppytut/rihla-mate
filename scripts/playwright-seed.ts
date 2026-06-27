@@ -23,7 +23,7 @@ export async function main() {
   try {
     await client.query("BEGIN");
 
-    // Clean up existing test user
+    // Clean up all previous test data to prevent duplicate booking conflicts
     await client.query(
       "DELETE FROM sessions WHERE user_id IN (SELECT id FROM users WHERE email = $1)",
       [email]
@@ -33,6 +33,7 @@ export async function main() {
       [email]
     );
     await client.query("DELETE FROM verifications WHERE identifier = $1", [email]);
+    await client.query("DELETE FROM bookings");
     await client.query("DELETE FROM users WHERE email = $1", [email]);
 
     // Insert user (matching Better Auth users table)
@@ -60,7 +61,12 @@ export async function main() {
     );
 
     await client.query("COMMIT");
-    console.log(`SESSION_TOKEN=${sessionToken}`);
+    // Write token to a JSON file consumed by globalSetup for storageState.
+    const { writeFileSync } = await import("fs");
+    writeFileSync(
+      ".playwright-auth.json",
+      JSON.stringify({ sessionToken, email, password })
+    );
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;

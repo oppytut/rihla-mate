@@ -15,6 +15,7 @@
     "keygen": "tsx scripts/keygen.ts"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@better-auth/utils": "0.4.2",
     "@playwright/test": "^1.61.1",
     "@types/node": "^22.0.0",
