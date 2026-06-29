@@ -1,4 +1,4 @@
-import { createLicense, getLicenseByKey } from "@/lib/license/store";
+import { createLicense, getLicenseByKey, invalidateLicenseCache } from "@/lib/license/store";
 import type { db as DrizzleDb } from "@/lib/db/client";
 
 // ---------------------------------------------------------------------------
@@ -93,6 +93,8 @@ export async function startTrial(
     metadata: metadata ?? {},
   });
 
+  invalidateLicenseCache();
+
   return key;
 }
 
@@ -125,9 +127,7 @@ export async function getTrialStatus(
     daysLeft = 0;
     active = false;
   } else {
-    daysLeft = Math.ceil(
-      (expiresAt.getTime() - now) / (1000 * 60 * 60 * 24),
-    );
+    daysLeft = Math.ceil((expiresAt.getTime() - now) / (1000 * 60 * 60 * 24));
     active = license.revokedAt === null;
   }
 
@@ -159,19 +159,14 @@ export async function extendTrial(
   }
 
   const now = Date.now();
-  const currentExpiry = license.expiresAt
-    ? new Date(license.expiresAt).getTime()
-    : now;
+  const currentExpiry = license.expiresAt ? new Date(license.expiresAt).getTime() : now;
 
   const base = Math.max(currentExpiry, now);
   const newExpiry = new Date(base + additionalDays * 24 * 60 * 60 * 1000);
 
   const { eq } = await import("drizzle-orm");
   const { licenseKeys } = await import("@/lib/license/store");
-  await db
-    .update(licenseKeys)
-    .set({ expiresAt: newExpiry })
-    .where(eq(licenseKeys.key, licenseKey));
+  await db.update(licenseKeys).set({ expiresAt: newExpiry }).where(eq(licenseKeys.key, licenseKey));
 
   return getTrialStatus(db, licenseKey);
 }
@@ -187,10 +182,7 @@ export async function extendTrial(
  * @returns `true` when the trial is expired, `false` otherwise.
  * @throws When no license with the given key exists.
  */
-export async function isTrialExpired(
-  db: typeof DrizzleDb,
-  licenseKey: string,
-): Promise<boolean> {
+export async function isTrialExpired(db: typeof DrizzleDb, licenseKey: string): Promise<boolean> {
   const status = await getTrialStatus(db, licenseKey);
   return status.isExpired;
 }

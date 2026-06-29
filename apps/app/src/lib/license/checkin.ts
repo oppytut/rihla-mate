@@ -1,10 +1,16 @@
 import { db as defaultDb } from "@/lib/db/client";
-import { getLicenseByKey, createLicense, licenseKeys } from "@/lib/license/store";
+import {
+  getLicenseByKey,
+  createLicense,
+  invalidateLicenseCache,
+  licenseKeys,
+} from "@/lib/license/store";
 import type { LicenseKey } from "@/lib/license/store";
 import type { LicensePlan } from "@rihla-mate/shared";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { env } from "@/env";
+import { logger } from "@/lib/utils/logger";
 
 const validateResponseSchema = z.object({
   valid: z.boolean(),
@@ -40,9 +46,7 @@ export function getLicenseServerUrl(): string {
  * Returns `{ valid: false, reason: "NETWORK_ERROR" }` on fetch failure.
  * Returns `{ valid: false, reason: "INVALID_LICENSE" }` on non-2xx responses.
  */
-export async function verifyLicenseWithServer(
-  licenseKey: string,
-): Promise<ValidateResponse> {
+export async function verifyLicenseWithServer(licenseKey: string): Promise<ValidateResponse> {
   const serverUrl = getLicenseServerUrl();
   const url = `${serverUrl}/api/validate/${encodeURIComponent(licenseKey)}`;
 
@@ -50,7 +54,7 @@ export async function verifyLicenseWithServer(
   try {
     response = await fetch(url);
   } catch (err) {
-    console.error("[checkin] Network error during license validation:", err);
+    logger.error("Network error during license validation", { component: "checkin" }, err);
     return { valid: false, reason: "NETWORK_ERROR" };
   }
 
@@ -85,13 +89,13 @@ export async function updateLocalLicense(
     key: licenseKey,
     type: (serverResponse.plan as LicensePlan | undefined) ?? "pro",
     seats: serverResponse.seats ?? 1,
-    expiresAt: serverResponse.expiresAt
-      ? new Date(serverResponse.expiresAt)
-      : undefined,
+    expiresAt: serverResponse.expiresAt ? new Date(serverResponse.expiresAt) : undefined,
     metadata: {
       lastCheckinAt: new Date().toISOString(),
     },
   });
+
+  invalidateLicenseCache(licenseKey);
 
   return created;
 }
@@ -119,9 +123,7 @@ export async function checkIn(
 
   return {
     valid: true,
-    expiresAt: serverResponse.expiresAt
-      ? new Date(serverResponse.expiresAt)
-      : undefined,
+    expiresAt: serverResponse.expiresAt ? new Date(serverResponse.expiresAt) : undefined,
     seats: serverResponse.seats,
     plan: serverResponse.plan,
   };
@@ -150,7 +152,7 @@ export function scheduleCheckIn(
         await checkIn(db, licenseKey);
         run(intervalMs);
       } catch (err) {
-        console.error("[checkin] Scheduled check-in failed:", err);
+        logger.error("Scheduled check-in failed", { component: "checkin" }, err);
         const nextDelay = Math.min(delayMs * 2, intervalMs);
         run(nextDelay);
       }

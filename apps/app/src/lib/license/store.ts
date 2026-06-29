@@ -17,6 +17,22 @@ const CACHE_TTL_MS = 60_000;
 const licenseValidCache = new Map<string, CacheEntry<boolean>>();
 let licenseCountCache: CacheEntry<number> | null = null;
 
+/**
+ * Invalidate the license cache.
+ *
+ * When a `key` is provided, only that entry is removed from
+ * `licenseValidCache`.  When no key is given, the entire cache
+ * (both `licenseValidCache` and `licenseCountCache`) is cleared.
+ */
+export function invalidateLicenseCache(key?: string): void {
+  if (key) {
+    licenseValidCache.delete(key);
+  } else {
+    licenseValidCache.clear();
+    licenseCountCache = null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Schema
 // ---------------------------------------------------------------------------
