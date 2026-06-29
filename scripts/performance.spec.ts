@@ -43,17 +43,13 @@ test.describe("performance", () => {
 
       const loadTime = Date.now() - startTime;
 
-      const threshold = hasDynamicData
-        ? MAX_LOAD_TIME_MS * 1.5
-        : MAX_LOAD_TIME_MS;
+      const threshold = hasDynamicData ? MAX_LOAD_TIME_MS * 1.5 : MAX_LOAD_TIME_MS;
 
       expect(loadTime).toBeLessThan(threshold);
     });
   }
 
-  test("dashboard stat cards render without blocking layout", async ({
-    page,
-  }) => {
+  test("dashboard stat cards render without blocking layout", async ({ page }) => {
     const startTime = Date.now();
 
     await page.goto(`${BASE_URL}/en/dashboard`, {
@@ -76,9 +72,7 @@ test.describe("performance", () => {
     await expect(statCards).toHaveCount(4, { timeout: 5000 });
   });
 
-  test("sidebar navigation renders immediately on dashboard load", async ({
-    page,
-  }) => {
+  test("sidebar navigation renders immediately on dashboard load", async ({ page }) => {
     const startTime = Date.now();
 
     await page.goto(`${BASE_URL}/en/dashboard`, {
@@ -108,7 +102,7 @@ test.describe("performance", () => {
     const table = page.locator("table");
     const emptyState = page.locator('[data-testid="bookings-add-new-empty"]');
 
-    await expect(table.or(emptyState).first()).toBeAttached({
+    await expect(table.or(emptyState).first()).toBeVisible({
       timeout: MAX_LCP_MS,
     });
 
@@ -131,7 +125,7 @@ test.describe("performance", () => {
     const table = page.locator("table");
     const emptyState = page.locator('[data-testid="packages-add-new-empty"]');
 
-    await expect(table.or(emptyState).first()).toBeAttached({
+    await expect(table.or(emptyState).first()).toBeVisible({
       timeout: MAX_LCP_MS,
     });
 

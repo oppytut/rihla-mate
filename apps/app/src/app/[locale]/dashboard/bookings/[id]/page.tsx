@@ -5,14 +5,16 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay, formatDateForStorage } from "@/lib/utils/format";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
+import { validateBooking } from "@/lib/utils/validation";
 
-type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
+type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed" | "paid";
 
 type BookingForm = {
   packageId: string;
@@ -40,21 +42,6 @@ const initialForm: BookingForm = {
   notes: "",
 };
 
-function formatDateForDisplay(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function formatDateForStorage(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 function BookingFormContent({
   initialData,
   isEditMode,
@@ -73,9 +60,7 @@ function BookingFormContent({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const packagesQuery = useQuery(
-    trpc.packages.list.queryOptions({ limit: 100 })
-  );
+  const packagesQuery = useQuery(trpc.packages.list.queryOptions({ limit: 100 }));
 
   useEffect(() => {
     document.title = `${isEditMode ? t("bookings.editTitle") : t("bookings.createTitle")} - Rihla Mate`;
@@ -90,53 +75,43 @@ function BookingFormContent({
       onError: (error) => {
         setSubmitError(error.message || t("common.error"));
       },
-    })
+    }),
   );
 
   const isSubmitting = updateMutation.isPending;
 
-  const updateField = <K extends keyof BookingForm>(
-    field: K,
-    value: BookingForm[K]
-  ) => {
+  const updateField = <K extends keyof BookingForm>(field: K, value: BookingForm[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setSubmitError(null);
   };
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-    let hasErrors = false;
-
-    if (!form.packageId.trim()) {
-      errors.packageId = t("bookings.validation.packageRequired");
-      hasErrors = true;
+    const result = validateBooking({
+      packageId: form.packageId,
+      departureDate: form.departureDate,
+      customerName: form.customerName,
+      totalPrice: form.totalPrice,
+      travelers: form.travelers,
+      customerEmail: form.customerEmail || undefined,
+      customerPhone: form.customerPhone || undefined,
+      status: form.status,
+    });
+    const errorMap: Record<string, string> = {
+      customerName: t("bookings.validation.customerNameRequired"),
+      packageId: t("bookings.validation.packageRequired"),
+      departureDate: t("bookings.validation.dateRequired"),
+      totalPrice: t("bookings.validation.priceRequired"),
+      travelers: t("bookings.validation.travelersMin"),
+      customerEmail: t("bookings.validation.emailInvalid"),
+      customerPhone: t("bookings.validation.phoneInvalid"),
+      status: t("bookings.validation.statusInvalid"),
+    };
+    const translatedErrors: Record<string, string> = {};
+    for (const [key, msg] of Object.entries(result.errors)) {
+      translatedErrors[key] = errorMap[key] || msg;
     }
-
-    if (!form.departureDate.trim()) {
-      errors.departureDate = t("bookings.validation.dateRequired");
-      hasErrors = true;
-    }
-
-    if (!form.customerName.trim()) {
-      errors.customerName = t("bookings.validation.customerNameRequired");
-      hasErrors = true;
-    }
-
-    if (!form.totalPrice.trim()) {
-      errors.totalPrice = t("bookings.validation.priceRequired");
-      hasErrors = true;
-    } else if (!/^\d+(\.\d{1,2})?$/.test(form.totalPrice)) {
-      errors.totalPrice = t("bookings.validation.priceInvalid");
-      hasErrors = true;
-    }
-
-    if (form.travelers < 1) {
-      errors.travelers = t("bookings.validation.travelersMin");
-      hasErrors = true;
-    }
-
-    setFieldErrors(errors);
-    return !hasErrors;
+    setFieldErrors(translatedErrors);
+    return result.valid;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -160,9 +135,7 @@ function BookingFormContent({
     });
   };
 
-  const selectedDate = form.departureDate
-    ? new Date(form.departureDate + "T00:00:00")
-    : undefined;
+  const selectedDate = form.departureDate ? new Date(form.departureDate + "T00:00:00") : undefined;
 
   return (
     <div className="min-h-screen bg-background antialiased">
@@ -191,10 +164,7 @@ function BookingFormContent({
                 </h2>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="packageId"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="packageId" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.package")} *
                   </label>
                   <select
@@ -208,7 +178,7 @@ function BookingFormContent({
                     aria-describedby={fieldErrors.packageId ? "packageId-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                      fieldErrors.packageId ? "border-destructive" : "border-border"
+                      fieldErrors.packageId ? "border-destructive" : "border-border",
                     )}
                   >
                     <option value="">{t("bookings.selectPackage")}</option>
@@ -240,10 +210,12 @@ function BookingFormContent({
                         disabled={isSubmitting}
                         data-testid="booking-departure-date"
                         aria-label={t("bookings.fields.departureDate")}
-                        aria-describedby={fieldErrors.departureDate ? "departureDate-error" : undefined}
+                        aria-describedby={
+                          fieldErrors.departureDate ? "departureDate-error" : undefined
+                        }
                         className={cn(
                           "w-full px-3 py-2 bg-background border rounded-md text-left text-foreground flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                          fieldErrors.departureDate ? "border-destructive" : "border-border"
+                          fieldErrors.departureDate ? "border-destructive" : "border-border",
                         )}
                       >
                         <span className={form.departureDate ? "" : "text-muted-foreground"}>
@@ -299,7 +271,7 @@ function BookingFormContent({
                       aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
                       className={cn(
                         "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                        fieldErrors.travelers ? "border-destructive" : "border-border"
+                        fieldErrors.travelers ? "border-destructive" : "border-border",
                       )}
                     />
                     {fieldErrors.travelers && (
@@ -310,10 +282,7 @@ function BookingFormContent({
                   </div>
 
                   <div className="space-y-2">
-                    <label
-                      htmlFor="status"
-                      className="block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="status" className="block text-sm font-medium text-foreground">
                       {t("bookings.fields.status")}
                     </label>
                     <select
@@ -329,6 +298,7 @@ function BookingFormContent({
                       <option value="confirmed">{t("bookings.status.confirmed")}</option>
                       <option value="cancelled">{t("bookings.status.cancelled")}</option>
                       <option value="completed">{t("bookings.status.completed")}</option>
+                      <option value="paid">{t("bookings.status.paid")}</option>
                     </select>
                   </div>
                 </div>
@@ -347,18 +317,18 @@ function BookingFormContent({
                     {t("bookings.fields.customerName")} *
                   </label>
                   <input
-                      id="customerName"
-                      type="text"
-                      value={form.customerName}
-                      onChange={(e) => updateField("customerName", e.target.value)}
-                      required
-                      disabled={isSubmitting}
-                      data-testid="booking-customer-name"
-                      aria-label={t("bookings.fields.customerName")}
+                    id="customerName"
+                    type="text"
+                    value={form.customerName}
+                    onChange={(e) => updateField("customerName", e.target.value)}
+                    required
+                    disabled={isSubmitting}
+                    data-testid="booking-customer-name"
+                    aria-label={t("bookings.fields.customerName")}
                     aria-describedby={fieldErrors.customerName ? "customerName-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                      fieldErrors.customerName ? "border-destructive" : "border-border"
+                      fieldErrors.customerName ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.customerName && (
@@ -435,7 +405,7 @@ function BookingFormContent({
                       aria-describedby={fieldErrors.totalPrice ? "totalPrice-error" : undefined}
                       className={cn(
                         "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                        fieldErrors.totalPrice ? "border-destructive" : "border-border"
+                        fieldErrors.totalPrice ? "border-destructive" : "border-border",
                       )}
                     />
                     {fieldErrors.totalPrice && (
@@ -465,10 +435,7 @@ function BookingFormContent({
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="notes"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="notes" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.notes")}
                   </label>
                   <textarea
@@ -492,12 +459,15 @@ function BookingFormContent({
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
                 <Button type="submit" disabled={isSubmitting} data-testid="booking-submit">
-                  {isSubmitting
-                    ? t("bookings.saving")
-                    : t("bookings.save")}
+                  {isSubmitting ? t("bookings.saving") : t("bookings.save")}
                 </Button>
                 <Link href="/dashboard/bookings">
-                  <Button type="button" variant="outline" disabled={isSubmitting} data-testid="booking-cancel">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                    data-testid="booking-cancel"
+                  >
                     {t("bookings.backToList")}
                   </Button>
                 </Link>
@@ -512,9 +482,7 @@ function BookingFormContent({
 
 function EditBookingPage({ bookingId }: { bookingId: string }) {
   const trpc = useTRPC();
-  const bookingQuery = useQuery(
-    trpc.bookings.getById.queryOptions({ id: bookingId })
-  );
+  const bookingQuery = useQuery(trpc.bookings.getById.queryOptions({ id: bookingId }));
 
   const [initialData, setInitialData] = useState<BookingForm | null>(null);
   const initialized = useRef(false);
@@ -572,13 +540,7 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
     );
   }
 
-  return (
-    <BookingFormContent
-      initialData={initialData}
-      isEditMode={true}
-      bookingId={bookingId}
-    />
-  );
+  return <BookingFormContent initialData={initialData} isEditMode={true} bookingId={bookingId} />;
 }
 
 export default function BookingFormPage() {

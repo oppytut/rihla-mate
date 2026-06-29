@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { formatDisplayDate } from "@/lib/utils/format";
+import { validateBooking } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -37,12 +39,6 @@ const initialForm: BookingForm = {
   notes: "",
 };
 
-function formatDisplayDate(dateStr: string): string {
-  if (!dateStr) return "";
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-}
-
 export default function BookingCreatePage() {
   const t = useTranslations();
   const trpc = useTRPC();
@@ -56,9 +52,7 @@ export default function BookingCreatePage() {
     document.title = `${t("bookings.createTitle")} - Rihla Mate`;
   }, [t]);
 
-  const packagesQuery = useQuery(
-    trpc.packages.list.queryOptions({ page: 1, limit: 100 })
-  );
+  const packagesQuery = useQuery(trpc.packages.list.queryOptions({ page: 1, limit: 100 }));
 
   const createMutation = useMutation(
     trpc.bookings.create.mutationOptions({
@@ -69,53 +63,44 @@ export default function BookingCreatePage() {
       onError: (error) => {
         setSubmitError(error.message || t("common.error"));
       },
-    })
+    }),
   );
 
   const isSubmitting = createMutation.isPending;
 
-  const updateField = <K extends keyof BookingForm>(
-    field: K,
-    value: BookingForm[K]
-  ) => {
+  const updateField = <K extends keyof BookingForm>(field: K, value: BookingForm[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setSubmitError(null);
   };
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-    let hasErrors = false;
-
-    if (!form.customerName.trim()) {
-      errors.customerName = t("bookings.validation.customerNameRequired");
-      hasErrors = true;
+    const result = validateBooking({
+      packageId: form.packageId,
+      departureDate: form.departureDate,
+      customerName: form.customerName,
+      totalPrice: form.totalPrice,
+      travelers: form.travelers,
+      customerEmail: form.customerEmail || undefined,
+      customerPhone: form.customerPhone || undefined,
+      status: form.status,
+    });
+    // Map English validation error keys to translated messages
+    const errorMap: Record<string, string> = {
+      customerName: t("bookings.validation.customerNameRequired"),
+      packageId: t("bookings.validation.packageRequired"),
+      departureDate: t("bookings.validation.dateRequired"),
+      totalPrice: t("bookings.validation.priceRequired"),
+      travelers: t("bookings.validation.travelersMin"),
+      customerEmail: t("bookings.validation.emailInvalid"),
+      customerPhone: t("bookings.validation.phoneInvalid"),
+      status: t("bookings.validation.statusInvalid"),
+    };
+    const translatedErrors: Record<string, string> = {};
+    for (const [key, msg] of Object.entries(result.errors)) {
+      translatedErrors[key] = errorMap[key] || msg;
     }
-
-    if (!form.packageId) {
-      errors.packageId = t("bookings.validation.packageRequired");
-      hasErrors = true;
-    }
-
-    if (!form.departureDate) {
-      errors.departureDate = t("bookings.validation.dateRequired");
-      hasErrors = true;
-    }
-
-    if (!form.totalPrice.trim()) {
-      errors.totalPrice = t("bookings.validation.priceRequired");
-      hasErrors = true;
-    } else if (!/^\d+(\.\d{1,2})?$/.test(form.totalPrice)) {
-      errors.totalPrice = t("bookings.validation.priceInvalid");
-      hasErrors = true;
-    }
-
-    if (form.travelers < 1) {
-      errors.travelers = t("bookings.validation.travelersMin");
-      hasErrors = true;
-    }
-
-    setFieldErrors(errors);
-    return !hasErrors;
+    setFieldErrors(translatedErrors);
+    return result.valid;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -132,7 +117,7 @@ export default function BookingCreatePage() {
       customerPhone: form.customerPhone || undefined,
       travelers: form.travelers,
       totalPrice: form.totalPrice,
-      status: form.status as "pending" | "confirmed" | "cancelled" | "completed",
+      status: form.status as "pending" | "confirmed" | "cancelled" | "completed" | "paid",
       paymentRef: form.paymentRef || undefined,
       notes: form.notes || undefined,
     };
@@ -169,25 +154,22 @@ export default function BookingCreatePage() {
                 </h2>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="packageId"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="packageId" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.package")} *
                   </label>
-                <select
-                     id="packageId"
-                     data-testid="booking-package"
-                     value={form.packageId}
-                     onChange={(e) => updateField("packageId", e.target.value)}
-                     disabled={isSubmitting}
-                     aria-label={t("bookings.fields.package")}
-                     aria-describedby={fieldErrors.packageId ? "packageId-error" : undefined}
-                     className={cn(
-                       "w-full px-3 py-2 bg-background border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                       fieldErrors.packageId ? "border-destructive" : "border-border"
-                     )}
-                   >
+                  <select
+                    id="packageId"
+                    data-testid="booking-package"
+                    value={form.packageId}
+                    onChange={(e) => updateField("packageId", e.target.value)}
+                    disabled={isSubmitting}
+                    aria-label={t("bookings.fields.package")}
+                    aria-describedby={fieldErrors.packageId ? "packageId-error" : undefined}
+                    className={cn(
+                      "w-full px-3 py-2 bg-background border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                      fieldErrors.packageId ? "border-destructive" : "border-border",
+                    )}
+                  >
                     <option value="">{t("bookings.selectPackage")}</option>
                     {packages.map((pkg) => (
                       <option key={pkg.id} value={pkg.id}>
@@ -196,7 +178,11 @@ export default function BookingCreatePage() {
                     ))}
                   </select>
                   {fieldErrors.packageId && (
-                    <p id="packageId-error" data-testid="validation-error-packageId" className="text-sm text-destructive">
+                    <p
+                      id="packageId-error"
+                      data-testid="validation-error-packageId"
+                      className="text-sm text-destructive"
+                    >
                       {fieldErrors.packageId}
                     </p>
                   )}
@@ -212,17 +198,19 @@ export default function BookingCreatePage() {
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
-                         type="button"
-                         variant="outline"
-                         data-testid="booking-departure-date"
-                         disabled={isSubmitting}
-                         className={cn(
-                           "w-full justify-start text-left font-normal",
-                           !form.departureDate && "text-muted-foreground"
-                         )}
-                         aria-label={t("bookings.fields.departureDate")}
-                         aria-describedby={fieldErrors.departureDate ? "departureDate-error" : undefined}
-                       >
+                        type="button"
+                        variant="outline"
+                        data-testid="booking-departure-date"
+                        disabled={isSubmitting}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !form.departureDate && "text-muted-foreground",
+                        )}
+                        aria-label={t("bookings.fields.departureDate")}
+                        aria-describedby={
+                          fieldErrors.departureDate ? "departureDate-error" : undefined
+                        }
+                      >
                         {form.departureDate
                           ? formatDisplayDate(form.departureDate)
                           : t("bookings.pickDate")}
@@ -249,7 +237,11 @@ export default function BookingCreatePage() {
                     </PopoverContent>
                   </Popover>
                   {fieldErrors.departureDate && (
-                    <p id="departureDate-error" data-testid="validation-error-departureDate" className="text-sm text-destructive">
+                    <p
+                      id="departureDate-error"
+                      data-testid="validation-error-departureDate"
+                      className="text-sm text-destructive"
+                    >
                       {fieldErrors.departureDate}
                     </p>
                   )}
@@ -257,10 +249,7 @@ export default function BookingCreatePage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label
-                      htmlFor="status"
-                      className="block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="status" className="block text-sm font-medium text-foreground">
                       {t("bookings.fields.status")}
                     </label>
                     <select
@@ -276,6 +265,7 @@ export default function BookingCreatePage() {
                       <option value="confirmed">{t("bookings.status.confirmed")}</option>
                       <option value="cancelled">{t("bookings.status.cancelled")}</option>
                       <option value="completed">{t("bookings.status.completed")}</option>
+                      <option value="paid">{t("bookings.status.paid")}</option>
                     </select>
                   </div>
 
@@ -287,26 +277,30 @@ export default function BookingCreatePage() {
                       {t("bookings.fields.travelers")} *
                     </label>
                     <input
-                       id="travelers"
-                       type="number"
-                       min={1}
-                       data-testid="booking-travelers"
-                       value={form.travelers}
-                       onChange={(e) => {
-                         const val = parseInt(e.target.value, 10);
-                         updateField("travelers", isNaN(val) ? 0 : val);
-                       }}
-                       required
-                       disabled={isSubmitting}
-                       aria-label={t("bookings.fields.travelers")}
-                       aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
-                       className={cn(
-                         "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                         fieldErrors.travelers ? "border-destructive" : "border-border"
-                       )}
-                     />
+                      id="travelers"
+                      type="number"
+                      min={1}
+                      data-testid="booking-travelers"
+                      value={form.travelers}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        updateField("travelers", isNaN(val) ? 0 : val);
+                      }}
+                      required
+                      disabled={isSubmitting}
+                      aria-label={t("bookings.fields.travelers")}
+                      aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
+                      className={cn(
+                        "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                        fieldErrors.travelers ? "border-destructive" : "border-border",
+                      )}
+                    />
                     {fieldErrors.travelers && (
-                      <p id="travelers-error" data-testid="validation-error-travelers" className="text-sm text-destructive">
+                      <p
+                        id="travelers-error"
+                        data-testid="validation-error-travelers"
+                        className="text-sm text-destructive"
+                      >
                         {fieldErrors.travelers}
                       </p>
                     )}
@@ -314,30 +308,31 @@ export default function BookingCreatePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="totalPrice"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="totalPrice" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.totalPrice")} *
                   </label>
                   <input
-                     id="totalPrice"
-                     type="text"
-                     data-testid="booking-total-price"
-                     value={form.totalPrice}
-                     onChange={(e) => updateField("totalPrice", e.target.value)}
-                     required
-                     disabled={isSubmitting}
-                     placeholder="1500000"
-                     aria-label={t("bookings.fields.totalPrice")}
-                     aria-describedby={fieldErrors.totalPrice ? "totalPrice-error" : undefined}
-                     className={cn(
-                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                       fieldErrors.totalPrice ? "border-destructive" : "border-border"
-                     )}
-                   />
+                    id="totalPrice"
+                    type="text"
+                    data-testid="booking-total-price"
+                    value={form.totalPrice}
+                    onChange={(e) => updateField("totalPrice", e.target.value)}
+                    required
+                    disabled={isSubmitting}
+                    placeholder="1500000"
+                    aria-label={t("bookings.fields.totalPrice")}
+                    aria-describedby={fieldErrors.totalPrice ? "totalPrice-error" : undefined}
+                    className={cn(
+                      "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                      fieldErrors.totalPrice ? "border-destructive" : "border-border",
+                    )}
+                  />
                   {fieldErrors.totalPrice && (
-                    <p id="totalPrice-error" data-testid="validation-error-totalPrice" className="text-sm text-destructive">
+                    <p
+                      id="totalPrice-error"
+                      data-testid="validation-error-totalPrice"
+                      className="text-sm text-destructive"
+                    >
                       {fieldErrors.totalPrice}
                     </p>
                   )}
@@ -357,22 +352,26 @@ export default function BookingCreatePage() {
                     {t("bookings.fields.customerName")} *
                   </label>
                   <input
-                     id="customerName"
-                     type="text"
-                     data-testid="booking-customer-name"
-                     value={form.customerName}
-                     onChange={(e) => updateField("customerName", e.target.value)}
-                     required
-                     disabled={isSubmitting}
-                     aria-label={t("bookings.fields.customerName")}
-                     aria-describedby={fieldErrors.customerName ? "customerName-error" : undefined}
-                     className={cn(
-                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                       fieldErrors.customerName ? "border-destructive" : "border-border"
-                     )}
-                   />
+                    id="customerName"
+                    type="text"
+                    data-testid="booking-customer-name"
+                    value={form.customerName}
+                    onChange={(e) => updateField("customerName", e.target.value)}
+                    required
+                    disabled={isSubmitting}
+                    aria-label={t("bookings.fields.customerName")}
+                    aria-describedby={fieldErrors.customerName ? "customerName-error" : undefined}
+                    className={cn(
+                      "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
+                      fieldErrors.customerName ? "border-destructive" : "border-border",
+                    )}
+                  />
                   {fieldErrors.customerName && (
-                    <p id="customerName-error" data-testid="validation-error-customerName" className="text-sm text-destructive">
+                    <p
+                      id="customerName-error"
+                      data-testid="validation-error-customerName"
+                      className="text-sm text-destructive"
+                    >
                       {fieldErrors.customerName}
                     </p>
                   )}
@@ -425,10 +424,7 @@ export default function BookingCreatePage() {
                 </h2>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="paymentRef"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="paymentRef" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.paymentRef")}
                   </label>
                   <input
@@ -444,10 +440,7 @@ export default function BookingCreatePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="notes"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="notes" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.notes")}
                   </label>
                   <textarea
@@ -470,13 +463,16 @@ export default function BookingCreatePage() {
               )}
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
-                 <Button type="submit" data-testid="booking-submit" disabled={isSubmitting}>
-                   {isSubmitting
-                     ? t("bookings.saving")
-                     : t("bookings.save")}
-                 </Button>
+                <Button type="submit" data-testid="booking-submit" disabled={isSubmitting}>
+                  {isSubmitting ? t("bookings.saving") : t("bookings.save")}
+                </Button>
                 <Link href="/dashboard/bookings">
-                  <Button type="button" variant="outline" disabled={isSubmitting} data-testid="booking-cancel">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                    data-testid="booking-cancel"
+                  >
                     {t("bookings.backToList")}
                   </Button>
                 </Link>

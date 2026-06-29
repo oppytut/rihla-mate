@@ -10,7 +10,7 @@ const SEL = {
   pageInfo: '[data-testid="bookings-page-info"]',
 } as const;
 
-async function trpc(context: any, path: string, input?: Record<string, unknown>) {
+async function trpc(context: PlaywrightContext, path: string, input?: Record<string, unknown>) {
   // Non-batched superjson wire format: { json: <input> }
   const url = input
     ? `${BASE_URL}/api/trpc/${path}?input=${encodeURIComponent(JSON.stringify({ json: input }))}`
@@ -18,19 +18,42 @@ async function trpc(context: any, path: string, input?: Record<string, unknown>)
   return context.request.get(url);
 }
 
-async function trpcMutate(context: any, path: string, input: Record<string, unknown>) {
+async function trpcMutate(
+  context: PlaywrightContext,
+  path: string,
+  input: Record<string, unknown>,
+) {
   // Mutations require POST with superjson-encoded body
   return context.request.post(`${BASE_URL}/api/trpc/${path}`, {
     data: { json: input },
   });
 }
 
-async function ensureSeedBookings(context: any, page: any) {
-  const seedNames = [
-    "Alice Search Test",
-    "Bob Search Test",
-    "Charlie Filter Test",
-  ];
+interface PlaywrightPage {
+  goto(url: string, options?: Record<string, unknown>): Promise<unknown>;
+  waitForSelector(selector: string, options?: Record<string, unknown>): Promise<unknown>;
+  waitForTimeout(ms: number): Promise<void>;
+  waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
+  fill(selector: string, value: string): Promise<void>;
+  click(selector: string): Promise<void>;
+  locator(selector: string): { fill: (value: string) => Promise<void> };
+  selectOption(selector: string, value: string): Promise<void>;
+  getByRole(
+    role: string,
+    options?: Record<string, unknown>,
+  ): { pressSequentially: (text: string) => Promise<void> };
+  on(event: string, handler: (dialog: { accept: () => Promise<void> }) => void): void;
+}
+
+interface PlaywrightContext {
+  request: {
+    get(url: string): Promise<unknown>;
+    post(url: string, options?: { data?: unknown }): Promise<unknown>;
+  };
+}
+
+async function ensureSeedBookings(context: PlaywrightContext, _page: PlaywrightPage) {
+  const seedNames = ["Alice Search Test", "Bob Search Test", "Charlie Filter Test"];
 
   // Check via API if seed bookings already exist (UI check fails when pagination pushes them off page 1)
   const existingRes = await trpc(context, "bookings.list", { search: "", page: 1, limit: 100 });
@@ -38,14 +61,19 @@ async function ensureSeedBookings(context: any, page: any) {
   const existingData = existingBody?.result?.data;
   const existingItems = existingData?.json?.items ?? existingData?.items ?? [];
   const existingNames: Set<string> = new Set(
-    (existingItems as Array<{ customerName?: string }>).map((b) => b.customerName)
+    (existingItems as Array<{ customerName?: string }>).map((b) => b.customerName),
   );
 
   const missing = seedNames.filter((n) => !existingNames.has(n));
   if (missing.length === 0) return;
 
   // List packages via API to get real UUIDs and available dates
-  const pkgsRes = await trpc(context, "packages.list", { search: "", status: "published", page: 1, limit: 10 });
+  const pkgsRes = await trpc(context, "packages.list", {
+    search: "",
+    status: "published",
+    page: 1,
+    limit: 10,
+  });
   const pkgsBody = await pkgsRes.json();
   console.log("[ensureSeedBookings] packages.list status:", pkgsRes.status());
 
@@ -96,11 +124,15 @@ async function ensureSeedBookings(context: any, page: any) {
       const ok = body?.result?.data?.json?.id || body?.result?.data?.id;
       if (ok) {
         created = true;
-        console.log(`[ensureSeedBookings] ${item.name}: created, status=${res.status()}, pkgIdx=${pkgIdx}`);
+        console.log(
+          `[ensureSeedBookings] ${item.name}: created, status=${res.status()}, pkgIdx=${pkgIdx}`,
+        );
       } else if (res.status() === 409) {
         console.log(`[ensureSeedBookings] ${item.name}: 409 on pkgIdx=${pkgIdx}, retrying next...`);
       } else {
-        console.log(`[ensureSeedBookings] ${item.name}: failed, status=${res.status()}, pkgIdx=${pkgIdx}`);
+        console.log(
+          `[ensureSeedBookings] ${item.name}: failed, status=${res.status()}, pkgIdx=${pkgIdx}`,
+        );
       }
     }
     if (!created) {
@@ -126,12 +158,10 @@ test.describe("bookings search and filter", () => {
     // Wait for debounce (300ms) + TRPC query + React render
     await page.waitForTimeout(2000);
 
-    await expect(
-      page.locator("td").filter({ hasText: "Alice Search Test" }).first()
-    ).toBeVisible({ timeout: 5000 });
-    await expect(
-      page.getByText("Bob Search Test")
-    ).not.toBeVisible({ timeout: 5000 });
+    await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByText("Bob Search Test")).not.toBeVisible({ timeout: 5000 });
   });
 
   test("filter by status shows only matching bookings", async ({ page }) => {
@@ -141,7 +171,7 @@ test.describe("bookings search and filter", () => {
 
     const table = page.locator("table");
     const noResults = page.locator(SEL.clearFilters);
-    await expect(table.or(noResults).first()).toBeAttached({ timeout: 5000 });
+    await expect(table.or(noResults).first()).toBeVisible({ timeout: 5000 });
   });
 
   test("clear filters restores full list after search", async ({ page }) => {
@@ -160,28 +190,20 @@ test.describe("bookings search and filter", () => {
     // Wait for TRPC query + React re-render after clearing
     await page.waitForTimeout(2000);
 
-    await expect(
-      page.getByText("Alice Search Test")
-    ).toBeVisible({ timeout: 5000 });
-    await expect(
-      page.getByText("Bob Search Test")
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Alice Search Test")).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("Bob Search Test")).toBeVisible({ timeout: 5000 });
   });
 
-  test("pagination buttons are present and previous is disabled on page 1", async ({
-    page,
-  }) => {
+  test("pagination buttons are present and previous is disabled on page 1", async ({ page }) => {
     const prevBtn = page.locator(SEL.prevPage);
     const nextBtn = page.locator(SEL.nextPage);
 
-    await expect(prevBtn).toBeAttached({ timeout: 5000 });
-    await expect(nextBtn).toBeAttached({ timeout: 5000 });
+    await expect(prevBtn).toBeVisible({ timeout: 5000 });
+    await expect(nextBtn).toBeVisible({ timeout: 5000 });
     await expect(prevBtn).toBeDisabled({ timeout: 5000 });
   });
 
-  test("combined search and status filter narrows results", async ({
-    page,
-  }) => {
+  test("combined search and status filter narrows results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.click();
     await searchInput.pressSequentially("Alice", { delay: 50 });
@@ -194,9 +216,9 @@ test.describe("bookings search and filter", () => {
     await page.waitForTimeout(2000);
 
     // Bookings are created with default status "pending", so Alice should appear
-    await expect(
-      page.locator("td").filter({ hasText: "Alice Search Test" }).first()
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
+      timeout: 5000,
+    });
 
     await expect(page.locator('[data-testid="page-heading"]')).toBeVisible();
   });

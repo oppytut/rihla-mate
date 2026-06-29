@@ -26,8 +26,29 @@ const SEL = {
   pageInfo: '[data-testid="packages-page-info"]',
 } as const;
 
+interface PackagesPage {
+  goto(url: string, options?: Record<string, unknown>): Promise<unknown>;
+  waitForSelector(selector: string, options?: Record<string, unknown>): Promise<unknown>;
+  waitForFunction(fn: () => boolean, options?: Record<string, unknown>): Promise<unknown>;
+  waitForTimeout(ms: number): Promise<void>;
+  waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
+  fill(selector: string, value: string): Promise<void>;
+  click(selector: string): Promise<void>;
+  locator(selector: string): {
+    pressSequentially: (text: string, options?: Record<string, unknown>) => Promise<void>;
+  };
+  selectOption(selector: string, value: string): Promise<void>;
+  on(event: string, handler: (dialog: { accept: () => Promise<void> }) => void): void;
+}
+
+interface PackagesContext {
+  request: {
+    get(url: string): Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}
+
 async function createPackageViaForm(
-  page: any,
+  page: PackagesPage,
   title: string,
   slug: string,
   statusValue: string,
@@ -39,10 +60,13 @@ async function createPackageViaForm(
   await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
 
   // Wait for React hydration — controlled inputs need onChange handlers attached
-  await page.waitForFunction(() => {
-    const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
-    return el && !el.disabled;
-  }, { timeout: 10000 });
+  await page.waitForFunction(
+    () => {
+      const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+      return el && !el.disabled;
+    },
+    { timeout: 10000 },
+  );
 
   await page.locator(SEL.title).pressSequentially(title, { delay: 30 });
   await page.locator(SEL.slug).pressSequentially(slug, { delay: 30 });
@@ -55,10 +79,7 @@ async function createPackageViaForm(
   await page.selectOption(SEL.currency, "IDR");
   await page.fill(SEL.featuredImage, "https://example.com/search-test.jpg");
   await page.fill(SEL.gallery, '["https://example.com/gallery-search.jpg"]');
-  await page.fill(
-    SEL.itinerary,
-    '[{"day": 1, "description": "Search test day"}]',
-  );
+  await page.fill(SEL.itinerary, '[{"day": 1, "description": "Search test day"}]');
   await page.fill(SEL.inclusions, '["Breakfast"]');
   await page.fill(SEL.exclusions, '["Flights"]');
   await page.fill(SEL.availableDates, '["2026-07-01"]');
@@ -75,11 +96,7 @@ async function createPackageViaForm(
   await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
 }
 
-async function cleanupSearchPackages(context: {
-  request: {
-    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
-  };
-}) {
+async function cleanupSearchPackages(context: PackagesContext) {
   const api = context.request;
   try {
     const listRes = await api.get(
@@ -88,11 +105,9 @@ async function cleanupSearchPackages(context: {
       )}`,
     );
     if (!listRes.ok()) return;
-    const body: any = await listRes.json();
+    const body: unknown = await listRes.json();
     const items: Array<{ id: string }> =
-      body?.[0]?.result?.data?.items ??
-      body?.[0]?.result?.data?.json?.items ??
-      [];
+      body?.[0]?.result?.data?.items ?? body?.[0]?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api
@@ -109,7 +124,7 @@ async function cleanupSearchPackages(context: {
   }
 }
 
-async function ensureSeedPackages(page: any, context: any) {
+async function ensureSeedPackages(page: PackagesPage, context: PackagesContext) {
   // Always delete existing seed packages first to avoid duplicates
   await cleanupSearchPackages(context);
   await page.waitForTimeout(500);
@@ -182,20 +197,16 @@ test.describe("packages search and filter", () => {
     });
   });
 
-  test("pagination buttons are present and previous is disabled on page 1", async ({
-    page,
-  }) => {
+  test("pagination buttons are present and previous is disabled on page 1", async ({ page }) => {
     const prevBtn = page.locator(SEL.prevPage);
     const nextBtn = page.locator(SEL.nextPage);
 
-    await expect(prevBtn).toBeAttached({ timeout: 5000 });
-    await expect(nextBtn).toBeAttached({ timeout: 5000 });
+    await expect(prevBtn).toBeVisible({ timeout: 5000 });
+    await expect(nextBtn).toBeVisible({ timeout: 5000 });
     await expect(prevBtn).toBeDisabled({ timeout: 5000 });
   });
 
-  test("combined search and status filter narrows results", async ({
-    page,
-  }) => {
+  test("combined search and status filter narrows results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Beta");
     await page.waitForTimeout(600);

@@ -7,7 +7,10 @@ test.describe("Dashboard Overview Page Smoke Test", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
 
     const headingCount = await page.getByRole("heading").count();
     expect(headingCount).toBeGreaterThan(0);
@@ -16,7 +19,7 @@ test.describe("Dashboard Overview Page Smoke Test", () => {
     await expect(statCards).toHaveCount(4, { timeout: 10000 });
 
     const navLinks = page.locator('[data-testid^="sidebar-link-"]');
-    await expect(navLinks.first()).toBeAttached({ timeout: 10000 });
+    await expect(navLinks.first()).toBeVisible({ timeout: 10000 });
 
     expect(page.url()).toContain("/dashboard");
     expect(page.url()).not.toContain("/bookings");

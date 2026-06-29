@@ -9,7 +9,9 @@
     "lint": "next lint",
     "check": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.20",
@@ -49,10 +51,12 @@
     "@types/pg": "^8.15.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.7.0",
     "drizzle-kit": "^0.31.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.6"
   }
 }

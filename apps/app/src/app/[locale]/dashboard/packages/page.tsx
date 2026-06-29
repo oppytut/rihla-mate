@@ -5,6 +5,8 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/format";
+import { getStatusBadgeClass } from "@/lib/utils/badge";
 import Link from "next/link";
 import { useState, useCallback, useRef, useEffect } from "react";
 
@@ -47,7 +49,7 @@ export default function PackagesPage() {
       status: status || undefined,
       page,
       limit: PAGE_SIZE,
-    })
+    }),
   );
 
   const deleteMutation = useMutation(
@@ -59,36 +61,13 @@ export default function PackagesPage() {
       onError: (error) => {
         window.alert(`${t("common.error")}: ${error.message}`);
       },
-    })
+    }),
   );
 
   const packages = packagesQuery.data?.items ?? [];
   const total = packagesQuery.data?.total ?? 0;
   const totalPages = Math.ceil(total / PAGE_SIZE);
   const hasFilters = search !== "" || status !== "";
-
-  const formatPrice = (price: string | number, currency: string = "IDR") => {
-    const num = typeof price === "string" ? parseFloat(price) : price;
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
-
-  const getStatusBadgeClass = (pkgStatus: string) => {
-    switch (pkgStatus) {
-      case "published":
-        return "bg-green-500/10 text-green-600 dark:text-green-400";
-      case "draft":
-        return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
-      case "archived":
-        return "bg-muted text-muted-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
 
   const handleDelete = (pkgId: string) => {
     if (window.confirm(t("packages.deleteConfirm"))) {
@@ -128,7 +107,7 @@ export default function PackagesPage() {
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   item.active
                     ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground",
                 )}
               >
                 {t(`dashboard.sidebar.${item.key}`)}
@@ -144,9 +123,7 @@ export default function PackagesPage() {
                 {t("packages.title")}
               </h1>
               <Button asChild data-testid="packages-add-new">
-                <Link href="/dashboard/packages/new">
-                  {t("packages.addPackage")}
-                </Link>
+                <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
               </Button>
             </div>
           </header>
@@ -269,9 +246,7 @@ export default function PackagesPage() {
                   <>
                     <p className="text-muted-foreground mb-4">{t("packages.empty")}</p>
                     <Button asChild data-testid="packages-add-new-empty">
-                      <Link href="/dashboard/packages/new">
-                        {t("packages.addPackage")}
-                      </Link>
+                      <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
                     </Button>
                   </>
                 )}
@@ -316,9 +291,7 @@ export default function PackagesPage() {
                           <td className="px-4 py-3 text-muted-foreground">
                             <span className="block max-w-[150px] truncate">{pkg.slug}</span>
                           </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {pkg.category || "-"}
-                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">{pkg.category || "-"}</td>
                           <td className="px-4 py-3 text-muted-foreground">
                             {pkg.durationDays} {t("packages.days")}
                           </td>
@@ -329,7 +302,7 @@ export default function PackagesPage() {
                             <span
                               className={cn(
                                 "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                                getStatusBadgeClass(pkg.status)
+                                getStatusBadgeClass(pkg.status),
                               )}
                             >
                               {t(`packages.status.${pkg.status}`)}
@@ -343,7 +316,10 @@ export default function PackagesPage() {
                                 asChild
                                 data-testid={`package-edit-${pkg.id}`}
                               >
-                                <Link href={`/dashboard/packages/${pkg.id}`} aria-label={t("packages.edit")}>
+                                <Link
+                                  href={`/dashboard/packages/${pkg.id}`}
+                                  aria-label={t("packages.edit")}
+                                >
                                   {t("packages.edit")}
                                 </Link>
                               </Button>

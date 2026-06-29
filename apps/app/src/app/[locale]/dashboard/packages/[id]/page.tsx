@@ -5,6 +5,8 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/lib/utils/slug";
+import { validatePackage } from "@/lib/utils/validation";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -45,25 +47,6 @@ const initialForm: PackageForm = {
   gallery: "[]",
 };
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .trim();
-}
-
-function tryParseJson(value: string): { valid: boolean; error?: string } {
-  if (!value.trim()) return { valid: true };
-  try {
-    JSON.parse(value);
-    return { valid: true };
-  } catch {
-    return { valid: false, error: "Invalid JSON format" };
-  }
-}
-
 function PackageFormContent({
   initialData,
   isEditMode,
@@ -94,7 +77,7 @@ function PackageFormContent({
       onError: (error) => {
         setSubmitError(error.message || t("common.error"));
       },
-    })
+    }),
   );
 
   const updateMutation = useMutation(
@@ -106,15 +89,12 @@ function PackageFormContent({
       onError: (error) => {
         setSubmitError(error.message || t("common.error"));
       },
-    })
+    }),
   );
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
-  const updateField = <K extends keyof PackageForm>(
-    field: K,
-    value: PackageForm[K]
-  ) => {
+  const updateField = <K extends keyof PackageForm>(field: K, value: PackageForm[K]) => {
     setForm((prev) => {
       const next = { ...prev, [field]: value };
       if (field === "title" && !isEditMode) {
@@ -126,53 +106,34 @@ function PackageFormContent({
   };
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-    let hasErrors = false;
-
-    if (!form.title.trim()) {
-      errors.title = t("packages.validation.titleRequired");
-      hasErrors = true;
+    const result = validatePackage({
+      title: form.title,
+      slug: form.slug,
+      price: form.price,
+      durationDays: form.durationDays,
+      itinerary: form.itinerary,
+      inclusions: form.inclusions,
+      exclusions: form.exclusions,
+      availableDates: form.availableDates,
+      gallery: form.gallery,
+    });
+    const errorMap: Record<string, string> = {
+      title: t("packages.validation.titleRequired"),
+      slug: t("packages.validation.slugRequired"),
+      price: t("packages.validation.priceRequired"),
+      durationDays: t("packages.validation.durationMin"),
+      itinerary: t("packages.invalidJson"),
+      inclusions: t("packages.invalidJson"),
+      exclusions: t("packages.invalidJson"),
+      availableDates: t("packages.invalidJson"),
+      gallery: t("packages.invalidJson"),
+    };
+    const translatedErrors: Record<string, string> = {};
+    for (const [key, msg] of Object.entries(result.errors)) {
+      translatedErrors[key] = errorMap[key] || msg;
     }
-
-    if (!form.slug.trim()) {
-      errors.slug = t("packages.validation.slugRequired");
-      hasErrors = true;
-    } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(form.slug)) {
-      errors.slug = t("packages.validation.slugInvalid");
-      hasErrors = true;
-    }
-
-    if (!form.price.trim()) {
-      errors.price = t("packages.validation.priceRequired");
-      hasErrors = true;
-    } else if (!/^\d+(\.\d{1,2})?$/.test(form.price)) {
-      errors.price = t("packages.validation.priceInvalid");
-      hasErrors = true;
-    }
-
-    if (form.durationDays < 1) {
-      errors.durationDays = t("packages.validation.durationMin");
-      hasErrors = true;
-    }
-
-    const jsonFields = [
-      "itinerary",
-      "inclusions",
-      "exclusions",
-      "availableDates",
-      "gallery",
-    ] as const;
-
-    for (const field of jsonFields) {
-      const result = tryParseJson(form[field]);
-      if (!result.valid) {
-        errors[field] = t("packages.invalidJson");
-        hasErrors = true;
-      }
-    }
-
-    setFieldErrors(errors);
-    return !hasErrors;
+    setFieldErrors(translatedErrors);
+    return result.valid;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -233,10 +194,7 @@ function PackageFormContent({
                 </h2>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="title" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.title")} *
                   </label>
                   <input
@@ -251,21 +209,22 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.title ? "title-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                      fieldErrors.title ? "border-destructive" : "border-border"
+                      fieldErrors.title ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.title && (
-                    <p id="title-error" className="text-sm text-destructive" data-testid="validation-error-title">
+                    <p
+                      id="title-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-title"
+                    >
                       {fieldErrors.title}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="slug"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="slug" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.slug")} *
                   </label>
                   <input
@@ -280,11 +239,15 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.slug ? "slug-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                      fieldErrors.slug ? "border-destructive" : "border-border"
+                      fieldErrors.slug ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.slug && (
-                    <p id="slug-error" className="text-sm text-destructive" data-testid="validation-error-slug">
+                    <p
+                      id="slug-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-slug"
+                    >
                       {fieldErrors.slug}
                     </p>
                   )}
@@ -311,10 +274,7 @@ function PackageFormContent({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label
-                      htmlFor="category"
-                      className="block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="category" className="block text-sm font-medium text-foreground">
                       {t("packages.fields.category")}
                     </label>
                     <select
@@ -356,11 +316,15 @@ function PackageFormContent({
                       aria-describedby={fieldErrors.durationDays ? "durationDays-error" : undefined}
                       className={cn(
                         "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                        fieldErrors.durationDays ? "border-destructive" : "border-border"
+                        fieldErrors.durationDays ? "border-destructive" : "border-border",
                       )}
                     />
                     {fieldErrors.durationDays && (
-                      <p id="durationDays-error" className="text-sm text-destructive" data-testid="validation-error-durationDays">
+                      <p
+                        id="durationDays-error"
+                        className="text-sm text-destructive"
+                        data-testid="validation-error-durationDays"
+                      >
                         {fieldErrors.durationDays}
                       </p>
                     )}
@@ -387,10 +351,7 @@ function PackageFormContent({
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="status"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="status" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.status")}
                   </label>
                   <select
@@ -416,10 +377,7 @@ function PackageFormContent({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label
-                      htmlFor="price"
-                      className="block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="price" className="block text-sm font-medium text-foreground">
                       {t("packages.fields.price")} *
                     </label>
                     <input
@@ -435,21 +393,22 @@ function PackageFormContent({
                       aria-describedby={fieldErrors.price ? "price-error" : undefined}
                       className={cn(
                         "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                        fieldErrors.price ? "border-destructive" : "border-border"
+                        fieldErrors.price ? "border-destructive" : "border-border",
                       )}
                     />
                     {fieldErrors.price && (
-                      <p id="price-error" className="text-sm text-destructive" data-testid="validation-error-price">
+                      <p
+                        id="price-error"
+                        className="text-sm text-destructive"
+                        data-testid="validation-error-price"
+                      >
                         {fieldErrors.price}
                       </p>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <label
-                      htmlFor="currency"
-                      className="block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="currency" className="block text-sm font-medium text-foreground">
                       {t("packages.fields.currency")}
                     </label>
                     <select
@@ -494,10 +453,7 @@ function PackageFormContent({
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="gallery"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="gallery" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.gallery")}
                   </label>
                   <textarea
@@ -512,13 +468,15 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.gallery ? "gallery-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
-                      fieldErrors.gallery
-                        ? "border-destructive"
-                        : "border-border"
+                      fieldErrors.gallery ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.gallery && (
-                    <p id="gallery-error" className="text-sm text-destructive" data-testid="validation-error-gallery">
+                    <p
+                      id="gallery-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-gallery"
+                    >
                       {fieldErrors.gallery}
                     </p>
                   )}
@@ -531,10 +489,7 @@ function PackageFormContent({
                 </h2>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="itinerary"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="itinerary" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.itinerary")}
                   </label>
                   <textarea
@@ -549,23 +504,22 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.itinerary ? "itinerary-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
-                      fieldErrors.itinerary
-                        ? "border-destructive"
-                        : "border-border"
+                      fieldErrors.itinerary ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.itinerary && (
-                    <p id="itinerary-error" className="text-sm text-destructive" data-testid="validation-error-itinerary">
+                    <p
+                      id="itinerary-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-itinerary"
+                    >
                       {fieldErrors.itinerary}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="inclusions"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="inclusions" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.inclusions")}
                   </label>
                   <textarea
@@ -580,23 +534,22 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.inclusions ? "inclusions-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
-                      fieldErrors.inclusions
-                        ? "border-destructive"
-                        : "border-border"
+                      fieldErrors.inclusions ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.inclusions && (
-                    <p id="inclusions-error" className="text-sm text-destructive" data-testid="validation-error-inclusions">
+                    <p
+                      id="inclusions-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-inclusions"
+                    >
                       {fieldErrors.inclusions}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="exclusions"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="exclusions" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.exclusions")}
                   </label>
                   <textarea
@@ -611,13 +564,15 @@ function PackageFormContent({
                     aria-describedby={fieldErrors.exclusions ? "exclusions-error" : undefined}
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
-                      fieldErrors.exclusions
-                        ? "border-destructive"
-                        : "border-border"
+                      fieldErrors.exclusions ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.exclusions && (
-                    <p id="exclusions-error" className="text-sm text-destructive" data-testid="validation-error-exclusions">
+                    <p
+                      id="exclusions-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-exclusions"
+                    >
                       {fieldErrors.exclusions}
                     </p>
                   )}
@@ -633,24 +588,26 @@ function PackageFormContent({
                   <textarea
                     id="availableDates"
                     value={form.availableDates}
-                    onChange={(e) =>
-                      updateField("availableDates", e.target.value)
-                    }
+                    onChange={(e) => updateField("availableDates", e.target.value)}
                     rows={2}
                     disabled={isSubmitting}
                     placeholder='["2026-07-01", "2026-08-15"]'
                     data-testid="package-available-dates"
                     aria-label={t("packages.fields.availableDates")}
-                    aria-describedby={fieldErrors.availableDates ? "availableDates-error" : undefined}
+                    aria-describedby={
+                      fieldErrors.availableDates ? "availableDates-error" : undefined
+                    }
                     className={cn(
                       "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
-                      fieldErrors.availableDates
-                        ? "border-destructive"
-                        : "border-border"
+                      fieldErrors.availableDates ? "border-destructive" : "border-border",
                     )}
                   />
                   {fieldErrors.availableDates && (
-                    <p id="availableDates-error" className="text-sm text-destructive" data-testid="validation-error-availableDates">
+                    <p
+                      id="availableDates-error"
+                      className="text-sm text-destructive"
+                      data-testid="validation-error-availableDates"
+                    >
                       {fieldErrors.availableDates}
                     </p>
                   )}
@@ -665,12 +622,15 @@ function PackageFormContent({
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
                 <Button type="submit" disabled={isSubmitting} data-testid="package-submit">
-                  {isSubmitting
-                    ? t("packages.saving")
-                    : t("packages.save")}
+                  {isSubmitting ? t("packages.saving") : t("packages.save")}
                 </Button>
                 <Link href="/dashboard/packages">
-                  <Button type="button" variant="outline" disabled={isSubmitting} data-testid="package-cancel">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSubmitting}
+                    data-testid="package-cancel"
+                  >
                     {t("packages.backToList")}
                   </Button>
                 </Link>
@@ -685,9 +645,7 @@ function PackageFormContent({
 
 function EditPackagePage({ packageId }: { packageId: string }) {
   const trpc = useTRPC();
-  const packageQuery = useQuery(
-    trpc.packages.getById.queryOptions({ id: packageId })
-  );
+  const packageQuery = useQuery(trpc.packages.getById.queryOptions({ id: packageId }));
 
   const [initialData, setInitialData] = useState<PackageForm | null>(null);
   const initialized = useRef(false);
@@ -709,9 +667,7 @@ function EditPackagePage({ packageId }: { packageId: string }) {
         itinerary: pkg.itinerary ? JSON.stringify(pkg.itinerary) : "[]",
         inclusions: pkg.inclusions ? JSON.stringify(pkg.inclusions) : "[]",
         exclusions: pkg.exclusions ? JSON.stringify(pkg.exclusions) : "[]",
-        availableDates: pkg.availableDates
-          ? JSON.stringify(pkg.availableDates)
-          : "[]",
+        availableDates: pkg.availableDates ? JSON.stringify(pkg.availableDates) : "[]",
         gallery: pkg.gallery ? JSON.stringify(pkg.gallery) : "[]",
       });
       initialized.current = true;
@@ -752,13 +708,7 @@ function EditPackagePage({ packageId }: { packageId: string }) {
     );
   }
 
-  return (
-    <PackageFormContent
-      initialData={initialData}
-      isEditMode={true}
-      packageId={packageId}
-    />
-  );
+  return <PackageFormContent initialData={initialData} isEditMode={true} packageId={packageId} />;
 }
 
 export default function PackageFormPage() {
@@ -770,11 +720,5 @@ export default function PackageFormPage() {
     return <EditPackagePage packageId={packageId} />;
   }
 
-  return (
-    <PackageFormContent
-      initialData={null}
-      isEditMode={false}
-      packageId={packageId}
-    />
-  );
+  return <PackageFormContent initialData={null} isEditMode={false} packageId={packageId} />;
 }
