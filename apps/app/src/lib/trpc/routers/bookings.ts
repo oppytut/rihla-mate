@@ -1,16 +1,11 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq, ilike, and, count, desc, sql } from "drizzle-orm";
+import { eq, ilike, and, count, desc } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
 
-const BOOKING_STATUSES = [
-  "pending",
-  "confirmed",
-  "cancelled",
-  "completed",
-] as const;
+export const BOOKING_STATUSES = ["pending", "confirmed", "cancelled", "completed", "paid"] as const;
 
 /**
  * Normalize jsonb `availableDates` to a plain string array.
@@ -25,6 +20,7 @@ function normalizeAvailableDates(raw: unknown): string[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed as string[];
     } catch {
+      void 0;
     }
   }
   console.error("[bookings] Unexpected availableDates type:", typeof raw, raw);
@@ -39,7 +35,7 @@ export const bookingsRouter = createTRPCRouter({
         status: z.string().optional(),
         page: z.number().int().min(1).default(1),
         limit: z.number().int().min(1).max(100).default(20),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { search, status, page, limit } = input;
@@ -80,10 +76,7 @@ export const bookingsRouter = createTRPCRouter({
           .orderBy(desc(bookings.createdAt), desc(bookings.id))
           .limit(limit)
           .offset(offset),
-        ctx.db
-          .select({ count: count() })
-          .from(bookings)
-          .where(where),
+        ctx.db.select({ count: count() }).from(bookings).where(where),
       ]);
 
       const total = totalResult[0]?.count ?? 0;
@@ -139,7 +132,7 @@ export const bookingsRouter = createTRPCRouter({
         status: z.enum(BOOKING_STATUSES).default("pending"),
         paymentRef: z.string().max(255).optional().or(z.literal("")),
         notes: z.string().optional().or(z.literal("")),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const pkg = await ctx.db
@@ -157,10 +150,11 @@ export const bookingsRouter = createTRPCRouter({
 
       const availableDates = normalizeAvailableDates(pkg[0].availableDates);
       if (!availableDates.includes(input.departureDate)) {
-        console.error(
-          "[bookings.create] date validation failed",
-          { packageId: input.packageId, departureDate: input.departureDate, availableDates }
-        );
+        console.error("[bookings.create] date validation failed", {
+          packageId: input.packageId,
+          departureDate: input.departureDate,
+          availableDates,
+        });
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Selected departure date is not available for this package",
@@ -173,8 +167,8 @@ export const bookingsRouter = createTRPCRouter({
         .where(
           and(
             eq(bookings.packageId, input.packageId),
-            eq(bookings.departureDate, input.departureDate)
-          )
+            eq(bookings.departureDate, input.departureDate),
+          ),
         )
         .limit(1);
 
@@ -224,7 +218,7 @@ export const bookingsRouter = createTRPCRouter({
         status: z.enum(BOOKING_STATUSES).optional(),
         paymentRef: z.string().max(255).optional().or(z.literal("")),
         notes: z.string().optional().or(z.literal("")),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
@@ -269,10 +263,11 @@ export const bookingsRouter = createTRPCRouter({
         if (data.departureDate !== undefined) {
           const availableDates = normalizeAvailableDates(pkg[0].availableDates);
           if (!availableDates.includes(data.departureDate)) {
-            console.error(
-              "[bookings.update] date validation failed",
-              { packageId: targetPackageId, departureDate: data.departureDate, availableDates }
-            );
+            console.error("[bookings.update] date validation failed", {
+              packageId: targetPackageId,
+              departureDate: data.departureDate,
+              availableDates,
+            });
             throw new TRPCError({
               code: "BAD_REQUEST",
               message: "Selected departure date is not available for this package",
@@ -285,8 +280,8 @@ export const bookingsRouter = createTRPCRouter({
             .where(
               and(
                 eq(bookings.packageId, targetPackageId),
-                eq(bookings.departureDate, data.departureDate)
-              )
+                eq(bookings.departureDate, data.departureDate),
+              ),
             )
             .limit(1);
 

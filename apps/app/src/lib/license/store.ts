@@ -4,6 +4,20 @@ import { eq, and, isNull, or, gt, sql } from "drizzle-orm";
 import type { LicensePlan } from "@rihla-mate/shared";
 
 // ---------------------------------------------------------------------------
+// Cache
+// ---------------------------------------------------------------------------
+
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
+}
+
+const CACHE_TTL_MS = 60_000;
+
+const licenseValidCache = new Map<string, CacheEntry<boolean>>();
+let licenseCountCache: CacheEntry<number> | null = null;
+
+// ---------------------------------------------------------------------------
 // Schema
 // ---------------------------------------------------------------------------
 
@@ -39,10 +53,7 @@ type Db = NodePgDatabase<Record<string, unknown>>;
  *
  * @returns The newly created license-key row.
  */
-export async function createLicense(
-  db: Db,
-  data: CreateLicenseInput,
-): Promise<LicenseKey> {
+export async function createLicense(db: Db, data: CreateLicenseInput): Promise<LicenseKey> {
   const [row] = await db.insert(licenseKeys).values(data).returning();
   return row;
 }
@@ -52,15 +63,8 @@ export async function createLicense(
  *
  * @returns The matching row, or `undefined` when no row is found.
  */
-export async function getLicenseByKey(
-  db: Db,
-  key: string,
-): Promise<LicenseKey | undefined> {
-  const rows = await db
-    .select()
-    .from(licenseKeys)
-    .where(eq(licenseKeys.key, key))
-    .limit(1);
+export async function getLicenseByKey(db: Db, key: string): Promise<LicenseKey | undefined> {
+  const rows = await db.select().from(licenseKeys).where(eq(licenseKeys.key, key)).limit(1);
   return rows[0];
 }
 
@@ -69,10 +73,7 @@ export async function getLicenseByKey(
  *
  * @returns The updated row, or `undefined` when the key does not exist.
  */
-export async function revokeLicense(
-  db: Db,
-  key: string,
-): Promise<LicenseKey | undefined> {
+export async function revokeLicense(db: Db, key: string): Promise<LicenseKey | undefined> {
   const [row] = await db
     .update(licenseKeys)
     .set({ revokedAt: sql`now()` })
@@ -91,10 +92,12 @@ export async function revokeLicense(
  *
  * @returns `true` when the license is valid, `false` otherwise.
  */
-export async function isLicenseValid(
-  db: Db,
-  key: string,
-): Promise<boolean> {
+export async function isLicenseValid(db: Db, key: string): Promise<boolean> {
+  const cached = licenseValidCache.get(key);
+  if (cached && Date.now() < cached.expiresAt) {
+    return cached.value;
+  }
+
   const rows = await db
     .select({ id: licenseKeys.id })
     .from(licenseKeys)
@@ -102,14 +105,15 @@ export async function isLicenseValid(
       and(
         eq(licenseKeys.key, key),
         isNull(licenseKeys.revokedAt),
-        or(
-          isNull(licenseKeys.expiresAt),
-          gt(licenseKeys.expiresAt, sql`now()`),
-        ),
+        or(isNull(licenseKeys.expiresAt), gt(licenseKeys.expiresAt, sql`now()`)),
       ),
     )
     .limit(1);
-  return rows.length > 0;
+
+  const result = rows.length > 0;
+  licenseValidCache.set(key, { value: result, expiresAt: Date.now() + CACHE_TTL_MS });
+
+  return result;
 }
 
 /**
@@ -117,20 +121,23 @@ export async function isLicenseValid(
  *
  * @returns The count of active licenses.
  */
-export async function getActiveLicenseCount(
-  db: Db,
-): Promise<number> {
+export async function getActiveLicenseCount(db: Db): Promise<number> {
+  if (licenseCountCache && Date.now() < licenseCountCache.expiresAt) {
+    return licenseCountCache.value;
+  }
+
   const [result] = await db
     .select({ count: sql<number>`count(*)` })
     .from(licenseKeys)
     .where(
       and(
         isNull(licenseKeys.revokedAt),
-        or(
-          isNull(licenseKeys.expiresAt),
-          gt(licenseKeys.expiresAt, sql`now()`),
-        ),
+        or(isNull(licenseKeys.expiresAt), gt(licenseKeys.expiresAt, sql`now()`)),
       ),
     );
-  return result?.count ?? 0;
+
+  const count = result?.count ?? 0;
+  licenseCountCache = { value: count, expiresAt: Date.now() + CACHE_TTL_MS };
+
+  return count;
 }
