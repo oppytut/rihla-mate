@@ -2,6 +2,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { type NextRequest } from "next/server";
 import { appRouter } from "@/lib/trpc/routers/_app";
 import { createTRPCContext } from "@/lib/trpc/context";
+import { logger } from "@/lib/utils/logger";
 
 const handler = (req: NextRequest) =>
   fetchRequestHandler({
@@ -10,7 +11,7 @@ const handler = (req: NextRequest) =>
     router: appRouter,
     createContext: createTRPCContext,
     onError: ({ path, error }) => {
-      console.error("[tRPC] Unhandled error:", path, error);
+      logger.error("[tRPC] Unhandled error:", { component: "trpc-route", path }, error);
     },
   });
 

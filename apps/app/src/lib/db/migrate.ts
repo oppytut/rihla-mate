@@ -1,5 +1,6 @@
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { db } from "./client";
+import { logger } from "@/lib/utils/logger";
 
 async function main() {
   console.log("Running migrations...");
@@ -9,6 +10,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("Migration failed:", err);
+  logger.error("Migration failed:", { component: "migrate" }, err);
   process.exit(1);
 });

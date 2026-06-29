@@ -1,6 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { packages, bookings } from "./schema";
+import { logger } from "@/lib/utils/logger";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool, { schema: { packages, bookings } });
@@ -263,6 +264,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("Seed failed:", err);
+  logger.error("Seed failed:", { component: "seed" }, err);
   process.exit(1);
 });

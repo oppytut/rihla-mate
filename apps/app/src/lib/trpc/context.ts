@@ -1,6 +1,7 @@
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { db } from "@/lib/db/client";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/utils/logger";
 
 export type Session = {
   session: {
@@ -31,16 +32,14 @@ export type TRPCContext = {
   session: Session | null;
 };
 
-export async function createTRPCContext(
-  opts: FetchCreateContextFnOptions
-): Promise<TRPCContext> {
+export async function createTRPCContext(opts: FetchCreateContextFnOptions): Promise<TRPCContext> {
   let session: Session | null = null;
   try {
     session = await auth.api.getSession({
       headers: opts.req.headers,
     });
   } catch (err) {
-    console.error("[tRPC] Failed to resolve session:", err);
+    logger.error("[tRPC] Failed to resolve session:", { component: "context" }, err);
   }
 
   return {

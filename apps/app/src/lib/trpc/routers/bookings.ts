@@ -4,6 +4,7 @@ import { eq, ilike, and, count, desc } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
+import { logger } from "@/lib/utils/logger";
 
 export const BOOKING_STATUSES = ["pending", "confirmed", "cancelled", "completed", "paid"] as const;
 
@@ -23,7 +24,11 @@ function normalizeAvailableDates(raw: unknown): string[] {
       void 0;
     }
   }
-  console.error("[bookings] Unexpected availableDates type:", typeof raw, raw);
+  logger.error("[bookings] Unexpected availableDates type:", {
+    component: "bookings",
+    type: typeof raw,
+    value: raw,
+  });
   return [];
 }
 
@@ -150,7 +155,8 @@ export const bookingsRouter = createTRPCRouter({
 
       const availableDates = normalizeAvailableDates(pkg[0].availableDates);
       if (!availableDates.includes(input.departureDate)) {
-        console.error("[bookings.create] date validation failed", {
+        logger.error("[bookings.create] date validation failed", {
+          component: "bookings",
           packageId: input.packageId,
           departureDate: input.departureDate,
           availableDates,
@@ -263,7 +269,8 @@ export const bookingsRouter = createTRPCRouter({
         if (data.departureDate !== undefined) {
           const availableDates = normalizeAvailableDates(pkg[0].availableDates);
           if (!availableDates.includes(data.departureDate)) {
-            console.error("[bookings.update] date validation failed", {
+            logger.error("[bookings.update] date validation failed", {
+              component: "bookings",
               packageId: targetPackageId,
               departureDate: data.departureDate,
               availableDates,
