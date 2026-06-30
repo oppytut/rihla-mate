@@ -41,6 +41,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth",
   "/api/trpc",
   "/api/health",
+  "/sign-in",
 ];
 
 function isPublicRoute(pathname: string): boolean {
@@ -98,7 +99,7 @@ export default async function middleware(request: NextRequest) {
 
     if (!session?.session) {
       const url = request.nextUrl.clone();
-      url.pathname = locale + "/api/auth/sign-in";
+      url.pathname = locale + "/sign-in";
       return NextResponse.redirect(url);
     }
   }

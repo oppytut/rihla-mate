@@ -191,5 +191,44 @@
   "users": {
     "title": "Pengguna",
     "empty": "Belum ada pengguna."
+  },
+  "auth": {
+    "signIn": "Masuk",
+    "signInToAccount": "Masuk ke akun Anda",
+    "signInFailed": "Gagal masuk. Periksa email dan kata sandi Anda.",
+    "signInWithGoogle": "Lanjutkan dengan Google",
+    "signOut": "Keluar",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "orContinueWith": "atau lanjutkan dengan",
+    "signInHelp": "Hubungi administrator untuk mendapatkan akses"
+  },
+  "landing": {
+    "title": "Rihla Mate",
+    "subtitle": "Manajemen Biro Perjalanan yang Sederhana",
+    "description": "Kelola pemesanan, paket, pelanggan, dan lainnya \u2014 semua dalam satu tempat. Dibangun untuk biro perjalanan yang mengutamakan efisiensi.",
+    "cta": "Mulai Sekarang",
+    "signIn": "Masuk",
+    "features": {
+      "bookings": {
+        "title": "Pemesanan Cerdas",
+        "description": "Buat, lacak, dan kelola semua pemesanan perjalanan Anda dari satu dashboard dengan pembaruan status waktu nyata."
+      },
+      "packages": {
+        "title": "Paket Perjalanan",
+        "description": "Rancang dan publikasikan paket perjalanan tak terbatas dengan itinerary, tingkat harga, dan kalender ketersediaan."
+      },
+      "customers": {
+        "title": "Manajemen Pelanggan",
+        "description": "Simpan database pelanggan terpusat dengan riwayat pemesanan, preferensi, dan informasi kontak."
+      },
+      "analytics": {
+        "title": "Wawasan & Analitik",
+        "description": "Pahami bisnis Anda dengan pelacakan pendapatan, tren pemesanan, dan metrik kinerja."
+      }
+    },
+    "footer": {
+      "copyright": "\u00a9 {year} Rihla Mate. Hak cipta dilindungi."
+    }
   }
 }
