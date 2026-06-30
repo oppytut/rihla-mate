@@ -83,7 +83,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://rihlamate:${{ secrets.POSTGRES_PASSWORD || 'rihlamate' }}@localhost:5432/rihlamate_dev
+      DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-test-secret-key-for-build-only' }}
       BETTER_AUTH_URL: http://localhost:3000
 
