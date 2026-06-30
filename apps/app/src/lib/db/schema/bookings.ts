@@ -1,4 +1,13 @@
-import { pgTable, uuid, varchar, integer, numeric, text, timestamp, date } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  varchar,
+  integer,
+  numeric,
+  text,
+  timestamp,
+  date,
+} from "drizzle-orm/pg-core";
 import { packages } from "./packages";
 
 export const bookings = pgTable("bookings", {
@@ -14,7 +23,16 @@ export const bookings = pgTable("bookings", {
   totalPrice: numeric("total_price", { precision: 12, scale: 2 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
   paymentRef: varchar("payment_ref", { length: 255 }),
+  midtransOrderId: varchar("midtrans_order_id", { length: 255 }),
+  midtransTransactionId: varchar("midtrans_transaction_id", { length: 255 }),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  paymentChannel: varchar("payment_channel", { length: 100 }),
+  grossAmount: numeric("gross_amount", { precision: 12, scale: 2 }),
+  transactionStatus: varchar("transaction_status", { length: 50 }),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
