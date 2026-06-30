@@ -84,7 +84,7 @@ jobs:
 
     env:
       DATABASE_URL: postgres://rihlamate:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/rihlamate_dev
-      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-test-secret-key-for-build-only' }}
       BETTER_AUTH_URL: http://localhost:3000
 
     steps:
