@@ -31,10 +31,7 @@ export function rateLimitMiddleware(config?: Partial<RateLimitConfig>) {
       return next();
     }
 
-    const licenseId =
-      c.req.header("X-License-Id") ??
-      c.req.header("x-forwarded-for") ??
-      "unknown";
+    const licenseId = c.req.header("X-License-Id") ?? c.req.header("x-forwarded-for") ?? "unknown";
 
     const key = `rl:${licenseId}`;
 
@@ -46,15 +43,13 @@ export function rateLimitMiddleware(config?: Partial<RateLimitConfig>) {
       }
 
       if (current > cfg.maxRequests) {
-        return c.json(
-          { error: "Too many requests", retryAfter: cfg.windowSeconds },
-          429,
-        );
+        return c.json({ error: "Too many requests", retryAfter: cfg.windowSeconds }, 429);
       }
 
       await next();
-    } catch {
-      await next();
+    } catch (err) {
+      console.error("[rate-limit] Redis error:", err);
+      return c.json({ error: "Rate limit service unavailable" }, 503);
     }
   };
 }

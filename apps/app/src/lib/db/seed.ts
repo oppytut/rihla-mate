@@ -7,12 +7,12 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool, { schema: { packages, bookings } });
 
 async function main() {
-  console.log("Seeding database...");
+  logger.info("Seeding database...", { component: "seed" });
 
   // Clear existing data (order matters for FK constraints)
-  console.log("Truncating bookings...");
+  logger.info("Truncating bookings...", { component: "seed" });
   await db.delete(bookings);
-  console.log("Truncating packages...");
+  logger.info("Truncating packages...", { component: "seed" });
   await db.delete(packages);
 
   const packageData = [
@@ -176,12 +176,12 @@ async function main() {
     },
   ];
 
-  console.log("Inserting packages...");
+  logger.info("Inserting packages...", { component: "seed" });
   const insertedPackages = await db
     .insert(packages)
     .values(packageData)
     .returning({ id: packages.id, title: packages.title });
-  console.log(`Inserted ${insertedPackages.length} packages.`);
+  logger.info(`Inserted ${insertedPackages.length} packages.`, { component: "seed" });
 
   const [pkgBali, pkgKomodo, pkgJogja] = insertedPackages;
 
@@ -248,22 +248,24 @@ async function main() {
     },
   ];
 
-  console.log("Inserting bookings...");
+  logger.info("Inserting bookings...", { component: "seed" });
   const insertedBookings = await db
     .insert(bookings)
     .values(bookingData)
     .returning({ id: bookings.id, customerName: bookings.customerName, status: bookings.status });
-  console.log(`Inserted ${insertedBookings.length} bookings.`);
+  logger.info(`Inserted ${insertedBookings.length} bookings.`, { component: "seed" });
   for (const b of insertedBookings) {
-    console.log(`  ${b.customerName}: ${b.status}`);
+    logger.info(`  ${b.customerName}: ${b.status}`, { component: "seed" });
   }
 
-  console.log("Seed complete.");
+  logger.info("Seed complete.", { component: "seed" });
   await pool.end();
-  process.exit(0);
 }
 
-main().catch((err) => {
-  logger.error("Seed failed:", { component: "seed" }, err);
-  process.exit(1);
-});
+const isMainModule = process.argv[1]?.endsWith("seed.ts") || process.argv[1]?.endsWith("seed.js");
+if (isMainModule) {
+  main().catch((err) => {
+    logger.error("Seed failed", { component: "seed" }, err);
+    process.exit(1);
+  });
+}

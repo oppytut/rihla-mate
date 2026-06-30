@@ -20,8 +20,12 @@ function normalizeAvailableDates(raw: unknown): string[] {
     try {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) return parsed as string[];
-    } catch {
-      void 0;
+    } catch (err) {
+      logger.error(
+        "[bookings] Failed to parse availableDates JSON:",
+        { component: "bookings" },
+        err,
+      );
     }
   }
   logger.error("[bookings] Unexpected availableDates type:", {
@@ -58,7 +62,7 @@ export const bookingsRouter = createTRPCRouter({
 
       const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-      const [items, totalResult] = await Promise.all([
+      const [itemsResult, countResult] = await Promise.allSettled([
         ctx.db
           .select({
             id: bookings.id,
@@ -84,7 +88,16 @@ export const bookingsRouter = createTRPCRouter({
         ctx.db.select({ count: count() }).from(bookings).where(where),
       ]);
 
-      const total = totalResult[0]?.count ?? 0;
+      if (itemsResult.status === "rejected") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch bookings",
+          cause: itemsResult.reason,
+        });
+      }
+
+      const items = itemsResult.value;
+      const total = countResult.status === "fulfilled" ? (countResult.value[0]?.count ?? 0) : 0;
 
       return { items, total, page, limit };
     }),

@@ -12,6 +12,7 @@ import { validateBooking } from "@/lib/utils/validation";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type BookingForm = {
   packageId: string;
@@ -57,7 +58,7 @@ export default function BookingCreatePage() {
   const createMutation = useMutation(
     trpc.bookings.create.mutationOptions({
       onSuccess: () => {
-        window.alert(t("bookings.createSuccess"));
+        toast.success(t("bookings.createSuccess"));
         router.push("/dashboard/bookings");
       },
       onError: (error) => {

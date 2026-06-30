@@ -3,6 +3,12 @@ import { parseArgs } from "node:util";
 import { generateLicenseKey } from "../src/lib/keygen";
 import { generateKeyPair } from "../src/lib/signing";
 
+// Minimal logger for CLI output — structured logging lib not available in this package
+const cliLog = {
+  info: (msg: string) => console.log(msg),
+  error: (msg: string) => console.error(msg),
+};
+
 function printHelp() {
   console.log(`
 Usage: npm run keygen -- [options]
@@ -44,29 +50,24 @@ async function main() {
 
   if (values.help) {
     printHelp();
-    process.exit(0);
+    return;
   }
 
   if (values["generate-keys"]) {
     const { publicKey, privateKey } = await generateKeyPair();
     console.log("Ed25519 Key Pair (hex-encoded):");
     console.log(`LICENSE_PUBLIC_KEY=${Buffer.from(publicKey).toString("hex")}`);
-    console.log(
-      `LICENSE_PRIVATE_KEY=${Buffer.from(privateKey).toString("hex")}`,
-    );
-    process.exit(0);
+    console.log(`LICENSE_PRIVATE_KEY=${Buffer.from(privateKey).toString("hex")}`);
+    return;
   }
 
   if (!values["customer-id"]) {
-    console.error(
-      "Error: --customer-id is required. Use --help for usage info.",
-    );
-    process.exit(1);
+    cliLog.error("Error: --customer-id is required. Use --help for usage info.");
+    return;
   }
 
   const expiresAt =
-    values["expires-at"] ??
-    new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+    values["expires-at"] ?? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
 
   const licenseId = `lic_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 
@@ -89,7 +90,11 @@ async function main() {
   console.log(`License Key: ${key}`);
 }
 
-main().catch((err) => {
-  console.error("Error:", err);
-  process.exit(1);
-});
+const isMainModule =
+  process.argv[1]?.endsWith("keygen-cli.ts") || process.argv[1]?.endsWith("keygen-cli.js");
+if (isMainModule) {
+  main().catch((err) => {
+    cliLog.error(`Error: ${err}`);
+    process.exit(1);
+  });
+}

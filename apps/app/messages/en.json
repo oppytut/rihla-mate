@@ -39,7 +39,7 @@
     "title": "Packages",
     "createTitle": "Add New Package",
     "editTitle": "Edit Package",
-    "backToList": "← Back to List",
+    "backToList": "\u2190 Back to List",
     "addPackage": "Add Package",
     "search": "Search packages...",
     "allStatus": "All Status",
@@ -120,7 +120,7 @@
     "title": "Bookings",
     "createTitle": "New Booking",
     "editTitle": "Edit Booking",
-    "backToList": "← Back to List",
+    "backToList": "\u2190 Back to List",
     "addBooking": "Add Booking",
     "search": "Search bookings...",
     "allStatus": "All Status",
@@ -179,5 +179,17 @@
       "priceInvalid": "Invalid price format",
       "travelersMin": "Must have at least 1 traveler"
     }
+  },
+  "customers": {
+    "title": "Customers",
+    "empty": "No customers yet."
+  },
+  "settings": {
+    "title": "Settings",
+    "empty": "Settings page coming soon."
+  },
+  "users": {
+    "title": "Users",
+    "empty": "No users yet."
   }
 }

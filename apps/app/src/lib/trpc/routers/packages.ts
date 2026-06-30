@@ -32,7 +32,7 @@ export const packagesRouter = createTRPCRouter({
         status: z.string().optional(),
         page: z.number().int().min(1).default(1),
         limit: z.number().int().min(1).max(100).default(20),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { search, status, page, limit } = input;
@@ -50,7 +50,7 @@ export const packagesRouter = createTRPCRouter({
 
       const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-      const [items, totalResult] = await Promise.all([
+      const [itemsResult, countResult] = await Promise.allSettled([
         ctx.db
           .select({
             id: packages.id,
@@ -68,13 +68,19 @@ export const packagesRouter = createTRPCRouter({
           .orderBy(desc(packages.createdAt), desc(packages.id))
           .limit(limit)
           .offset(offset),
-        ctx.db
-          .select({ count: count() })
-          .from(packages)
-          .where(where),
+        ctx.db.select({ count: count() }).from(packages).where(where),
       ]);
 
-      const total = totalResult[0]?.count ?? 0;
+      if (itemsResult.status === "rejected") {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to fetch packages",
+          cause: itemsResult.reason,
+        });
+      }
+
+      const items = itemsResult.value;
+      const total = countResult.status === "fulfilled" ? (countResult.value[0]?.count ?? 0) : 0;
 
       return { items, total, page, limit };
     }),
@@ -82,11 +88,7 @@ export const packagesRouter = createTRPCRouter({
   getById: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      const result = await ctx.db
-        .select()
-        .from(packages)
-        .where(eq(packages.id, input.id))
-        .limit(1);
+      const result = await ctx.db.select().from(packages).where(eq(packages.id, input.id)).limit(1);
 
       if (result.length === 0) {
         throw new TRPCError({
@@ -106,10 +108,7 @@ export const packagesRouter = createTRPCRouter({
           .string()
           .min(1)
           .max(255)
-          .regex(
-            /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-            "Slug must be lowercase alphanumeric with hyphens"
-          ),
+          .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens"),
         description: z.string().optional(),
         durationDays: z.number().int().min(1),
         price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
@@ -123,7 +122,7 @@ export const packagesRouter = createTRPCRouter({
         gallery: z.string().default("[]"),
         category: z.string().max(50).default("standard"),
         status: z.string().max(50).default("draft"),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existingSlug = await ctx.db
@@ -140,7 +139,7 @@ export const packagesRouter = createTRPCRouter({
       }
 
       const jsonbValues = Object.fromEntries(
-        JSONB_FIELDS.map((field) => [field, parseJsonField(input[field], field)])
+        JSONB_FIELDS.map((field) => [field, parseJsonField(input[field], field)]),
       );
 
       const result = await ctx.db
@@ -160,10 +159,7 @@ export const packagesRouter = createTRPCRouter({
           .string()
           .min(1)
           .max(255)
-          .regex(
-            /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-            "Slug must be lowercase alphanumeric with hyphens"
-          )
+          .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens")
           .optional(),
         description: z.string().optional(),
         durationDays: z.number().int().min(1).optional(),
@@ -181,7 +177,7 @@ export const packagesRouter = createTRPCRouter({
         gallery: z.string().optional(),
         category: z.string().max(50).optional(),
         status: z.string().max(50).optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;

@@ -3,13 +3,16 @@ import { db } from "./client";
 import { logger } from "@/lib/utils/logger";
 
 async function main() {
-  console.log("Running migrations...");
+  logger.info("Running migrations...", { component: "migrate" });
   await migrate(db, { migrationsFolder: "./drizzle" });
-  console.log("Migrations complete.");
-  process.exit(0);
+  logger.info("Migrations complete.", { component: "migrate" });
 }
 
-main().catch((err) => {
-  logger.error("Migration failed:", { component: "migrate" }, err);
-  process.exit(1);
-});
+const isMainModule =
+  process.argv[1]?.endsWith("migrate.ts") || process.argv[1]?.endsWith("migrate.js");
+if (isMainModule) {
+  main().catch((err) => {
+    logger.error("Migration failed", { component: "migrate" }, err);
+    process.exit(1);
+  });
+}

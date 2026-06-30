@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { validateBooking } from "@/lib/utils/validation";
+import { toast } from "sonner";
 
 type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed" | "paid";
 
@@ -69,7 +70,7 @@ function BookingFormContent({
   const updateMutation = useMutation(
     trpc.bookings.update.mutationOptions({
       onSuccess: () => {
-        window.alert(t("bookings.updateSuccess"));
+        toast.success(t("bookings.updateSuccess"));
         router.push("/dashboard/bookings");
       },
       onError: (error) => {

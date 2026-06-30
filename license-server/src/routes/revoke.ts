@@ -40,9 +40,8 @@ app.post("/", zValidator("json", revokeSchema), async (c) => {
     .where(eq(schema.licenses.id, body.licenseId));
 
   if (body.reason) {
-    console.log(
-      `[REVOKE] License ${body.licenseId} revoked. Reason: ${body.reason}`,
-    );
+    // Logging intentionally uses console — no structured logger in license-server
+    console.log(`[REVOKE] License ${body.licenseId} revoked. Reason: ${body.reason}`);
   }
 
   const response: RevokeResponse = { success: true };

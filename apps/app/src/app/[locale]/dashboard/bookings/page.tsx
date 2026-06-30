@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 10;
@@ -47,19 +48,19 @@ export default function BookingsPage() {
       status: status || undefined,
       page,
       limit: PAGE_SIZE,
-    })
+    }),
   );
 
   const deleteMutation = useMutation(
     trpc.bookings.delete.mutationOptions({
       onSuccess: () => {
-        window.alert(t("bookings.deleteSuccess"));
+        toast.success(t("bookings.deleteSuccess"));
         bookingsQuery.refetch();
       },
       onError: (error) => {
-        window.alert(`${t("common.error")}: ${error.message}`);
+        toast.error(`${t("common.error")}: ${error.message}`);
       },
-    })
+    }),
   );
 
   const bookings = bookingsQuery.data?.items ?? [];
@@ -139,7 +140,7 @@ export default function BookingsPage() {
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   item.active
                     ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground",
                 )}
               >
                 {t(`dashboard.sidebar.${item.key}`)}
@@ -155,9 +156,7 @@ export default function BookingsPage() {
                 {t("bookings.title")}
               </h1>
               <Button asChild data-testid="bookings-add-new">
-                <Link href="/dashboard/bookings/new">
-                  {t("bookings.addBooking")}
-                </Link>
+                <Link href="/dashboard/bookings/new">{t("bookings.addBooking")}</Link>
               </Button>
             </div>
           </header>
@@ -281,9 +280,7 @@ export default function BookingsPage() {
                   <>
                     <p className="text-muted-foreground mb-4">{t("bookings.empty")}</p>
                     <Button asChild data-testid="bookings-add-new-empty">
-                      <Link href="/dashboard/bookings/new">
-                        {t("bookings.addBooking")}
-                      </Link>
+                      <Link href="/dashboard/bookings/new">{t("bookings.addBooking")}</Link>
                     </Button>
                   </>
                 )}
@@ -323,17 +320,19 @@ export default function BookingsPage() {
                       {bookings.map((booking) => (
                         <tr key={booking.id} className="hover:bg-muted/30 transition-colors">
                           <td className="px-4 py-3 font-medium text-foreground">
-                            <span className="block max-w-[200px] truncate">{booking.customerName}</span>
+                            <span className="block max-w-[200px] truncate">
+                              {booking.customerName}
+                            </span>
                           </td>
                           <td className="px-4 py-3 text-muted-foreground">
-                            <span className="block max-w-[150px] truncate">{booking.packageTitle || "-"}</span>
+                            <span className="block max-w-[150px] truncate">
+                              {booking.packageTitle || "-"}
+                            </span>
                           </td>
                           <td className="px-4 py-3 text-muted-foreground">
                             {formatDate(booking.departureDate)}
                           </td>
-                          <td className="px-4 py-3 text-muted-foreground">
-                            {booking.travelers}
-                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">{booking.travelers}</td>
                           <td className="px-4 py-3 text-muted-foreground">
                             {formatPrice(booking.totalPrice)}
                           </td>
@@ -341,7 +340,7 @@ export default function BookingsPage() {
                             <span
                               className={cn(
                                 "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
-                                getStatusBadgeClass(booking.status)
+                                getStatusBadgeClass(booking.status),
                               )}
                             >
                               {t(`bookings.status.${booking.status}`)}
@@ -355,7 +354,10 @@ export default function BookingsPage() {
                                 asChild
                                 data-testid={`booking-edit-${booking.id}`}
                               >
-                                <Link href={`/dashboard/bookings/${booking.id}`} aria-label={t("bookings.edit")}>
+                                <Link
+                                  href={`/dashboard/bookings/${booking.id}`}
+                                  aria-label={t("bookings.edit")}
+                                >
                                   {t("bookings.edit")}
                                 </Link>
                               </Button>

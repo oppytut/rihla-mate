@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/utils/logger";
 
 export default function InstallerPage() {
   const t = useTranslations();
@@ -43,10 +44,10 @@ export default function InstallerPage() {
         setStep(3);
       },
       onError: (err) => {
-        console.error("[installer] setupAdmin error:", err);
+        logger.error("setupAdmin failed", { component: "installer" }, err);
         setAdminError(err.message || "Failed to create admin account");
       },
-    })
+    }),
   );
 
   // Step 3: License mutations
@@ -57,10 +58,10 @@ export default function InstallerPage() {
         setLicenseError(null);
       },
       onError: (err) => {
-        console.error("[installer] startTrial error:", err);
+        logger.error("startTrial failed", { component: "installer" }, err);
         setLicenseError(err.message || "Failed to start trial");
       },
-    })
+    }),
   );
 
   const activateMutation = useMutation(
@@ -74,10 +75,10 @@ export default function InstallerPage() {
         setLicenseError(null);
       },
       onError: (err) => {
-        console.error("[installer] activate error:", err);
+        logger.error("activate failed", { component: "installer" }, err);
         setLicenseError(err.message || "Failed to activate license");
       },
-    })
+    }),
   );
 
   const handleSetupAdmin = () => {
@@ -119,9 +120,7 @@ export default function InstallerPage() {
         <h1 className="text-2xl font-semibold text-center mb-2 text-foreground">
           {t("installer.title")}
         </h1>
-        <p className="text-center text-muted-foreground text-sm mb-6">
-          {stepTitles[step]}
-        </p>
+        <p className="text-center text-muted-foreground text-sm mb-6">{stepTitles[step]}</p>
 
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -134,18 +133,13 @@ export default function InstallerPage() {
                     ? "bg-primary text-primary-foreground"
                     : i < step
                       ? "bg-primary/20 text-primary"
-                      : "bg-muted text-muted-foreground"
+                      : "bg-muted text-muted-foreground",
                 )}
               >
                 {i < step ? "✓" : i + 1}
               </div>
               {i < 4 && (
-                <div
-                  className={cn(
-                    "w-6 h-0.5 mx-0.5",
-                    i < step ? "bg-primary/20" : "bg-muted"
-                  )}
-                />
+                <div className={cn("w-6 h-0.5 mx-0.5", i < step ? "bg-primary/20" : "bg-muted")} />
               )}
             </div>
           ))}
@@ -158,9 +152,7 @@ export default function InstallerPage() {
               {systemCheckQuery.isLoading && (
                 <div className="flex items-center justify-center py-8">
                   <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <span className="ml-3 text-muted-foreground">
-                    {t("common.loading")}
-                  </span>
+                  <span className="ml-3 text-muted-foreground">{t("common.loading")}</span>
                 </div>
               )}
 
@@ -176,22 +168,16 @@ export default function InstallerPage() {
                 <div className="space-y-3">
                   {/* Database status */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">
-                      Database
-                    </span>
+                    <span className="text-sm font-medium text-foreground">Database</span>
                     <div className="flex items-center gap-2">
                       {systemCheckQuery.data.database ? (
                         <>
-                          <span className="text-xs text-muted-foreground">
-                            Connected
-                          </span>
+                          <span className="text-xs text-muted-foreground">Connected</span>
                           <span className="text-green-600 text-lg">✓</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-xs text-muted-foreground">
-                            Not Connected
-                          </span>
+                          <span className="text-xs text-muted-foreground">Not Connected</span>
                           <span className="text-destructive text-lg">✗</span>
                         </>
                       )}
@@ -200,9 +186,7 @@ export default function InstallerPage() {
 
                   {/* Disk space */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">
-                      Disk Space
-                    </span>
+                    <span className="text-sm font-medium text-foreground">Disk Space</span>
                     <div className="flex items-center gap-2">
                       {systemCheckQuery.data.diskSpace ? (
                         <span className="text-xs text-muted-foreground">
@@ -210,9 +194,7 @@ export default function InstallerPage() {
                           {systemCheckQuery.data.diskSpace.total}GB available
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">
-                          Unknown
-                        </span>
+                        <span className="text-xs text-muted-foreground">Unknown</span>
                       )}
                       {systemCheckQuery.data.diskSpace && (
                         <span className="text-green-600 text-lg">✓</span>
@@ -222,9 +204,7 @@ export default function InstallerPage() {
 
                   {/* Node version */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">
-                      Node Version
-                    </span>
+                    <span className="text-sm font-medium text-foreground">Node Version</span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">
                         {systemCheckQuery.data.nodeVersion}
@@ -241,8 +221,8 @@ export default function InstallerPage() {
           {step === 1 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                The database connection is configured via environment variables.
-                Your database is ready to use.
+                The database connection is configured via environment variables. Your database is
+                ready to use.
               </p>
               {systemCheckQuery.data?.database ? (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
@@ -255,9 +235,7 @@ export default function InstallerPage() {
                 </div>
               ) : (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4">
-                  <p className="text-sm text-destructive font-medium">
-                    Database Not Connected
-                  </p>
+                  <p className="text-sm text-destructive font-medium">Database Not Connected</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Please configure your DATABASE_URL environment variable.
                   </p>
@@ -275,10 +253,7 @@ export default function InstallerPage() {
 
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <label
-                    htmlFor="admin-name"
-                    className="text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="admin-name" className="text-sm font-medium text-foreground">
                     Name
                   </label>
                   <input
@@ -293,10 +268,7 @@ export default function InstallerPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label
-                    htmlFor="admin-email"
-                    className="text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="admin-email" className="text-sm font-medium text-foreground">
                     Email
                   </label>
                   <input
@@ -311,10 +283,7 @@ export default function InstallerPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label
-                    htmlFor="admin-password"
-                    className="text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="admin-password" className="text-sm font-medium text-foreground">
                     Password
                   </label>
                   <input
@@ -345,10 +314,7 @@ export default function InstallerPage() {
               </p>
 
               <div className="space-y-3">
-                <label
-                  htmlFor="license-key"
-                  className="text-sm font-medium text-foreground"
-                >
+                <label htmlFor="license-key" className="text-sm font-medium text-foreground">
                   {t("installer.licenseKey")}
                 </label>
                 <div className="flex gap-2">
@@ -389,9 +355,7 @@ export default function InstallerPage() {
                   className="w-full"
                   data-testid="installer-start-trial"
                 >
-                  {startTrialMutation.isPending
-                    ? "Starting Trial..."
-                    : t("installer.startTrial")}
+                  {startTrialMutation.isPending ? "Starting Trial..." : t("installer.startTrial")}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
                   Get full access for 14 days, no credit card required
@@ -423,9 +387,7 @@ export default function InstallerPage() {
                     {activateResult.seats !== undefined && (
                       <p className="text-xs text-muted-foreground">
                         Seats:{" "}
-                        <span className="text-foreground font-medium">
-                          {activateResult.seats}
-                        </span>
+                        <span className="text-foreground font-medium">{activateResult.seats}</span>
                       </p>
                     )}
                   </div>
@@ -434,16 +396,10 @@ export default function InstallerPage() {
 
               {trialKey && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">
-                    Trial Started Successfully!
-                  </p>
+                  <p className="text-sm font-medium text-foreground">Trial Started Successfully!</p>
                   <div className="bg-muted rounded-md p-3">
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Your trial key:
-                    </p>
-                    <code className="text-sm font-mono text-foreground break-all">
-                      {trialKey}
-                    </code>
+                    <p className="text-xs text-muted-foreground mb-1">Your trial key:</p>
+                    <code className="text-sm font-mono text-foreground break-all">{trialKey}</code>
                   </div>
                 </div>
               )}
@@ -464,12 +420,10 @@ export default function InstallerPage() {
                   <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                     <span className="text-green-600 text-2xl">✓</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground mb-2">
-                    Setup Complete!
-                  </h2>
+                  <h2 className="text-lg font-semibold text-foreground mb-2">Setup Complete!</h2>
                   <p className="text-sm text-muted-foreground">
-                    Your Rihla Mate installation is ready. You can now log in
-                    with your admin account.
+                    Your Rihla Mate installation is ready. You can now log in with your admin
+                    account.
                   </p>
                 </div>
               ) : (
@@ -538,18 +492,14 @@ export default function InstallerPage() {
                   }
                   data-testid="installer-create-account"
                 >
-                  {setupAdminMutation.isPending
-                    ? "Creating..."
-                    : "Create Account"}
+                  {setupAdminMutation.isPending ? "Creating..." : "Create Account"}
                 </Button>
               )}
 
               {step === 3 && (
                 <Button
                   onClick={() => setStep(4)}
-                  disabled={
-                    !trialKey && !activateResult && !setupComplete
-                  }
+                  disabled={!trialKey && !activateResult && !setupComplete}
                   data-testid="installer-next-step-3"
                 >
                   {t("installer.next")}
