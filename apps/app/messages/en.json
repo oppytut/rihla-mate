@@ -128,7 +128,35 @@
       "pending": "Pending",
       "confirmed": "Confirmed",
       "cancelled": "Cancelled",
-      "completed": "Completed"
+      "completed": "Completed",
+      "paid": "Paid"
+    },
+    "payNow": "Pay Now",
+    "paying": "Processing Payment...",
+    "paymentStatus": {
+      "title": "Payment Status",
+      "pending": "Payment Pending",
+      "paid": "Payment Successful",
+      "cancelled": "Payment Cancelled",
+      "failed": "Payment Failed",
+      "expired": "Payment Expired",
+      "unknown": "Payment Status Unknown"
+    },
+    "snap": {
+      "success": "Payment successful! Your booking has been confirmed.",
+      "pending": "Payment is being processed. Please wait for confirmation.",
+      "error": "Payment failed. Please try again.",
+      "close": "You closed the payment window. You can pay again later."
+    },
+    "payment": {
+      "title": "Payment Information",
+      "orderId": "Order ID",
+      "transactionId": "Transaction ID",
+      "method": "Payment Method",
+      "grossAmount": "Amount",
+      "paidAt": "Paid At",
+      "notConfigured": "Payment gateway is not configured.",
+      "viewDetails": "View Payment Details"
     },
     "fields": {
       "package": "Package",
