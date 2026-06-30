@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["npm"],
+  "labels": ["dependencies"],
+  "schedule": ["every weekend"],
+  "packageRules": [
+    {
+      "description": "Group all non-major updates into one PR",
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch"
+    },
+    {
+      "description": "Automerge patch updates for devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    }
+  ],
+  "prBodyNotes": [
+    "This repository uses pnpm workspaces. After merging, run `pnpm install` locally to update the lockfile.",
+    "Workspace locations: `apps/*`, `packages/*`"
+  ]
+}

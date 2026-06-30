@@ -10,6 +10,7 @@ import { validatePackage } from "@/lib/utils/validation";
 import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type PackageForm = {
   title: string;
@@ -71,7 +72,7 @@ function PackageFormContent({
   const createMutation = useMutation(
     trpc.packages.create.mutationOptions({
       onSuccess: () => {
-        window.alert(t("packages.createSuccess"));
+        toast.success(t("packages.createSuccess"));
         router.push("/dashboard/packages");
       },
       onError: (error) => {
@@ -83,7 +84,7 @@ function PackageFormContent({
   const updateMutation = useMutation(
     trpc.packages.update.mutationOptions({
       onSuccess: () => {
-        window.alert(t("packages.updateSuccess"));
+        toast.success(t("packages.updateSuccess"));
         router.push("/dashboard/packages");
       },
       onError: (error) => {

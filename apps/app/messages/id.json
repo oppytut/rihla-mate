@@ -39,7 +39,7 @@
     "title": "Paket",
     "createTitle": "Tambah Paket Baru",
     "editTitle": "Edit Paket",
-    "backToList": "← Kembali ke Daftar",
+    "backToList": "\u2190 Kembali ke Daftar",
     "addPackage": "Tambah Paket",
     "search": "Cari paket...",
     "allStatus": "Semua Status",
@@ -120,7 +120,7 @@
     "title": "Pemesanan",
     "createTitle": "Pemesanan Baru",
     "editTitle": "Edit Pemesanan",
-    "backToList": "← Kembali ke Daftar",
+    "backToList": "\u2190 Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
     "search": "Cari pemesanan...",
     "allStatus": "Semua Status",
@@ -179,5 +179,17 @@
       "priceInvalid": "Format harga tidak valid",
       "travelersMin": "Minimal 1 peserta"
     }
+  },
+  "customers": {
+    "title": "Pelanggan",
+    "empty": "Belum ada pelanggan."
+  },
+  "settings": {
+    "title": "Pengaturan",
+    "empty": "Halaman pengaturan akan segera hadir."
+  },
+  "users": {
+    "title": "Pengguna",
+    "empty": "Belum ada pengguna."
   }
 }

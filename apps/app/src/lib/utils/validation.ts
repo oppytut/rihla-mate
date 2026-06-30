@@ -1,4 +1,5 @@
 import { BOOKING_STATUSES } from "../trpc/routers/bookings";
+import { logger } from "@/lib/utils/logger";
 
 export interface BookingValidationInput {
   packageId: string;
@@ -41,11 +42,19 @@ export function validateBooking(input: BookingValidationInput): BookingValidatio
     errors.travelers = "Minimum 1 traveler required";
   }
 
-  if (input.customerEmail && input.customerEmail.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.customerEmail.trim())) {
+  if (
+    input.customerEmail &&
+    input.customerEmail.trim() !== "" &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.customerEmail.trim())
+  ) {
     errors.customerEmail = "Invalid email format";
   }
 
-  if (input.customerPhone && input.customerPhone.trim() !== "" && !/^[\d\s()+\-.]{6,20}$/.test(input.customerPhone.trim())) {
+  if (
+    input.customerPhone &&
+    input.customerPhone.trim() !== "" &&
+    !/^[\d\s()+\-.]{6,20}$/.test(input.customerPhone.trim())
+  ) {
     errors.customerPhone = "Invalid phone number format";
   }
 
@@ -111,7 +120,12 @@ export function validatePackage(input: PackageValidationInput): PackageValidatio
     if (field.value && field.value.trim() !== "") {
       try {
         JSON.parse(field.value);
-      } catch {
+      } catch (err) {
+        logger.error(
+          "[validation] Failed to parse JSON field:",
+          { component: "validation", field: field.key },
+          err,
+        );
         errors[field.key] = "Invalid JSON format";
       }
     }

@@ -1,0 +1,198 @@
+import { test, expect } from "@playwright/test";
+import { BASE_URL } from "./helpers/auth";
+
+const SEL = {
+  customerName: '[data-testid="booking-customer-name"]',
+  packageId: '[data-testid="booking-package"]',
+  travelers: '[data-testid="booking-travelers"]',
+  totalPrice: '[data-testid="booking-total-price"]',
+  departureDateButton: '[data-testid="booking-departure-date"]',
+  submitButton: '[data-testid="booking-submit"]',
+  popoverContent: '[data-slot="popover-content"]',
+  calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
+  calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
+  editButton: '[data-testid^="booking-edit-"]',
+  deleteButton: '[data-testid^="booking-delete-"]',
+} as const;
+
+/**
+ * Delete all bookings whose customerName matches "Playwright Test Lifecycle".
+ *
+ * Uses `context.request` so the API calls share the browser context's
+ * auth cookies from storageState (the global request fixture does NOT).
+ */
+async function cleanupPlaywrightLifecycleBookings(context: {
+  request: {
+    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}) {
+  const api = context.request;
+  try {
+    const listRes = await api.get(
+      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
+        JSON.stringify({ search: "Playwright Test Lifecycle" }),
+      )}`,
+    );
+    if (!listRes.ok()) return;
+
+    const body = (await listRes.json()) as Record<string, unknown>;
+    const result = body?.[0] as
+      | {
+          result?: {
+            data?: { items?: Array<{ id: string }>; json?: { items?: Array<{ id: string }> } };
+          };
+        }
+      | undefined;
+    const items: Array<{ id: string }> =
+      result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
+    for (const item of items) {
+      if (item.id) {
+        await api.get(
+          `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
+            JSON.stringify({ id: item.id }),
+          )}`,
+        );
+      }
+    }
+  } catch {
+    // Cleanup failures are non-critical — ignore and continue
+  }
+}
+
+test.describe("booking lifecycle", () => {
+  test.beforeEach(async ({ context }) => {
+    await cleanupPlaywrightLifecycleBookings(context);
+  });
+
+  test("create, edit, and delete a booking in a single flow", async ({ page }) => {
+    test.setTimeout(90000);
+
+    // ── CREATE PHASE ───────────────────────────────────────────────────
+    await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
+
+    // Ensure the React-controlled input is hydrated before filling
+    const customerNameInput = page.locator(SEL.customerName);
+    await customerNameInput.waitFor({ state: "visible", timeout: 10000 });
+    await page.waitForFunction(
+      (sel) => {
+        const el = document.querySelector(sel) as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      SEL.customerName,
+      { timeout: 10000 },
+    );
+    await customerNameInput.pressSequentially("Playwright Test Lifecycle", { delay: 30 });
+
+    // Wait for package options to be available
+    await page
+      .locator('#packageId option[value]:not([value=""])')
+      .first()
+      .waitFor({ state: "attached", timeout: 15000 });
+    await page.waitForTimeout(500);
+    await page.locator(SEL.packageId).selectOption({ index: 1 });
+
+    // Open date picker and navigate to July 1, 2026
+    await page.locator(SEL.departureDateButton).click();
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "visible",
+      timeout: 5000,
+    });
+
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (7 - (new Date().getMonth() + 1));
+    for (let i = 0; i < monthsAhead; i++) {
+      await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
+    }
+    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
+
+    await page.fill(SEL.travelers, "2");
+    await page.fill(SEL.totalPrice, "1500000");
+
+    // Confirm React hydration before submitting the form
+    await page.locator(SEL.departureDateButton).click();
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "visible",
+      timeout: 5000,
+    });
+    await page.keyboard.press("Escape");
+    await page.waitForSelector(SEL.popoverContent, {
+      state: "hidden",
+      timeout: 5000,
+    });
+
+    await page.locator(SEL.submitButton).click();
+
+    // Wait for redirect to the list page after successful create
+    await page
+      .waitForURL((url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"), {
+        timeout: 15000,
+      })
+      .catch(async () => {
+        // Submission may show a validation error (e.g. duplicate booking).
+        // If no redirect happened, try a different package.
+        await page.locator(SEL.packageId).selectOption({ index: 2 });
+        await page.locator(SEL.submitButton).click();
+        await page
+          .waitForURL(
+            (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+            { timeout: 15000 },
+          )
+          .catch(async () => {
+            // Try one more package index
+            await page.locator(SEL.packageId).selectOption({ index: 3 });
+            await page.locator(SEL.submitButton).click();
+            await page.waitForURL(
+              (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+              { timeout: 15000 },
+            );
+          });
+      });
+
+    // ── EDIT PHASE ─────────────────────────────────────────────────────
+    await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+
+    const firstEditButton = page.locator(SEL.editButton).first();
+    await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
+    await firstEditButton.click();
+
+    await page.waitForSelector(SEL.customerName, {
+      state: "attached",
+      timeout: 10000,
+    });
+
+    await page.locator(SEL.customerName).fill("Playwright Test Lifecycle (edited)");
+    await page.locator(SEL.travelers).fill("3");
+
+    // Confirm React hydration before submitting the edit form
+    await page.waitForTimeout(2000);
+
+    await page.locator(SEL.submitButton).click();
+
+    await page.waitForURL(
+      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+      { timeout: 15000 },
+    );
+
+    // ── DELETE PHASE ───────────────────────────────────────────────────
+    await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+
+    // Handle window.confirm dialog
+    page.once("dialog", (dialog) => dialog.accept());
+
+    // Click the first delete button
+    await page.locator(SEL.deleteButton).first().click();
+
+    // Handle window.alert success dialog
+    page.once("dialog", (dialog) => dialog.accept());
+
+    // Verify the booking is no longer visible
+    await expect(page.getByText("Playwright Test Lifecycle")).not.toBeVisible({ timeout: 10000 });
+  });
+});

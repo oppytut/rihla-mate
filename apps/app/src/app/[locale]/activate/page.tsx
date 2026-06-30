@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
+import { logger } from "@/lib/utils/logger";
 
 export default function ActivatePage() {
   const trpc = useTRPC();
@@ -27,10 +28,10 @@ export default function ActivatePage() {
         setTimeout(() => router.push("/dashboard"), 1500);
       },
       onError: (err) => {
-        console.error("[activate] startTrial error:", err);
+        logger.error("startTrial failed", { component: "activate" }, err);
         setError(err.message || "Failed to start trial");
       },
-    })
+    }),
   );
 
   const activateMutation = useMutation(
@@ -45,10 +46,10 @@ export default function ActivatePage() {
         setTimeout(() => router.push("/dashboard"), 1500);
       },
       onError: (err) => {
-        console.error("[activate] activate error:", err);
+        logger.error("activate failed", { component: "activate" }, err);
         setError(err.message || "Failed to activate license");
       },
-    })
+    }),
   );
 
   const handleStartTrial = () => {
@@ -65,19 +66,14 @@ export default function ActivatePage() {
     <div className="min-h-screen bg-background antialiased">
       <div className="mx-auto max-w-md mt-20 px-4">
         <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-card-foreground mb-2">
-            Activate License
-          </h1>
+          <h1 className="text-2xl font-semibold text-card-foreground mb-2">Activate License</h1>
           <p className="text-muted-foreground text-sm mb-6">
             Enter your license key to activate Rihla Mate, or start a free 14-day trial.
           </p>
 
           <div className="space-y-6">
             <div className="space-y-3">
-              <label
-                htmlFor="license-key"
-                className="text-sm font-medium text-foreground"
-              >
+              <label htmlFor="license-key" className="text-sm font-medium text-foreground">
                 Enter License Key
               </label>
               <div className="flex gap-2">
@@ -133,7 +129,10 @@ export default function ActivatePage() {
                 <div className="bg-muted rounded-md p-3 space-y-1">
                   {activateResult.plan && (
                     <p className="text-xs text-muted-foreground">
-                      Plan: <span className="text-foreground font-medium capitalize">{activateResult.plan}</span>
+                      Plan:{" "}
+                      <span className="text-foreground font-medium capitalize">
+                        {activateResult.plan}
+                      </span>
                     </p>
                   )}
                   {activateResult.expiresAt && (
@@ -146,7 +145,8 @@ export default function ActivatePage() {
                   )}
                   {activateResult.seats !== undefined && (
                     <p className="text-xs text-muted-foreground">
-                      Seats: <span className="text-foreground font-medium">{activateResult.seats}</span>
+                      Seats:{" "}
+                      <span className="text-foreground font-medium">{activateResult.seats}</span>
                     </p>
                   )}
                 </div>
@@ -155,14 +155,10 @@ export default function ActivatePage() {
 
             {trialKey && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">
-                  Trial Started Successfully!
-                </p>
+                <p className="text-sm font-medium text-foreground">Trial Started Successfully!</p>
                 <div className="bg-muted rounded-md p-3">
                   <p className="text-xs text-muted-foreground mb-1">Your trial key:</p>
-                  <code className="text-sm font-mono text-foreground break-all">
-                    {trialKey}
-                  </code>
+                  <code className="text-sm font-mono text-foreground break-all">{trialKey}</code>
                 </div>
               </div>
             )}

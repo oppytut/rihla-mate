@@ -1,4 +1,5 @@
 import { scheduleCheckIn } from "@/lib/license/checkin";
+import { logger } from "@/lib/utils/logger";
 import { db } from "@/lib/db/client";
 import { isLicenseValid, licenseKeys } from "@/lib/license/store";
 import { env } from "@/env";
@@ -16,10 +17,7 @@ export function register() {
           .where(
             and(
               isNull(licenseKeys.revokedAt),
-              or(
-                isNull(licenseKeys.expiresAt),
-                gt(licenseKeys.expiresAt, sql`now()`),
-              ),
+              or(isNull(licenseKeys.expiresAt), gt(licenseKeys.expiresAt, sql`now()`)),
             ),
           )
           .limit(1);
@@ -31,18 +29,18 @@ export function register() {
 
       if (licenseKey && (await isLicenseValid(db, licenseKey))) {
         const scheduler = scheduleCheckIn(db, licenseKey);
-        console.log("[Instrumentation] License check-in scheduled every 24h");
+        logger.info("License check-in scheduled every 24h", { component: "instrumentation" });
 
         const shutdown = () => {
           scheduler.stop();
-          console.log("[Instrumentation] License check-in stopped");
+          logger.info("License check-in stopped", { component: "instrumentation" });
         };
 
         process.on("SIGTERM", shutdown);
         process.on("SIGINT", shutdown);
         process.on("beforeExit", shutdown);
       } else {
-        console.log("[Instrumentation] No active license — check-in skipped");
+        logger.info("No active license — check-in skipped", { component: "instrumentation" });
       }
     })();
   }

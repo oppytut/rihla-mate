@@ -9,6 +9,7 @@ import { formatPrice } from "@/lib/utils/format";
 import { getStatusBadgeClass } from "@/lib/utils/badge";
 import Link from "next/link";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 10;
@@ -55,11 +56,11 @@ export default function PackagesPage() {
   const deleteMutation = useMutation(
     trpc.packages.delete.mutationOptions({
       onSuccess: () => {
-        window.alert(t("packages.deleteSuccess"));
+        toast.success(t("packages.deleteSuccess"));
         packagesQuery.refetch();
       },
       onError: (error) => {
-        window.alert(`${t("common.error")}: ${error.message}`);
+        toast.error(`${t("common.error")}: ${error.message}`);
       },
     }),
   );

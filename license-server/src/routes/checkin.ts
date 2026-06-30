@@ -52,8 +52,8 @@ app.post("/", zValidator("json", checkinSchema), async (c) => {
   let tamperedWarning: string | undefined;
   if (body.moduleHash && EXPECTED_MODULE_HASH) {
     if (body.moduleHash !== EXPECTED_MODULE_HASH) {
-      tamperedWarning =
-        "Module hash mismatch detected. Application may have been modified.";
+      tamperedWarning = "Module hash mismatch detected. Application may have been modified.";
+      // Logging intentionally uses console — no structured logger in license-server
       console.warn(
         `[TAMPER] License ${body.licenseId}, instance ${body.instanceId}: module hash mismatch`,
       );
@@ -66,9 +66,7 @@ app.post("/", zValidator("json", checkinSchema), async (c) => {
 
   const now = new Date();
   const expiresAt = new Date(license.expiresAt);
-  const graceEnd = new Date(
-    expiresAt.getTime() + license.gracePeriodDays * 24 * 60 * 60 * 1000,
-  );
+  const graceEnd = new Date(expiresAt.getTime() + license.gracePeriodDays * 24 * 60 * 60 * 1000);
 
   if (now > graceEnd) {
     await db
