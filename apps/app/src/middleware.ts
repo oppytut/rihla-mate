@@ -41,6 +41,8 @@ const PUBLIC_PREFIXES = [
   "/api/auth",
   "/api/trpc",
   "/api/health",
+  "/api/midtrans",
+  "/sign-in",
 ];
 
 function isPublicRoute(pathname: string): boolean {
@@ -59,9 +61,7 @@ function isHomepage(pathname: string): boolean {
 }
 
 function isStaticAsset(pathname: string): boolean {
-  return /\.(png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|eot|css|js|json|txt)$/i.test(
-    pathname,
-  );
+  return /\.(png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|eot|css|js|json|txt)$/i.test(pathname);
 }
 
 async function checkLicense(): Promise<boolean> {
@@ -98,7 +98,7 @@ export default async function middleware(request: NextRequest) {
 
     if (!session?.session) {
       const url = request.nextUrl.clone();
-      url.pathname = locale + "/api/auth/sign-in";
+      url.pathname = locale + "/sign-in";
       return NextResponse.redirect(url);
     }
   }
@@ -115,7 +115,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

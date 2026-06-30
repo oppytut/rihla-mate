@@ -191,5 +191,44 @@
   "users": {
     "title": "Users",
     "empty": "No users yet."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInToAccount": "Sign in to your account",
+    "signInFailed": "Sign in failed. Check your email and password.",
+    "signInWithGoogle": "Continue with Google",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "orContinueWith": "or continue with",
+    "signInHelp": "Contact your administrator for access"
+  },
+  "landing": {
+    "title": "Rihla Mate",
+    "subtitle": "Travel Agency Management Made Simple",
+    "description": "Manage bookings, packages, customers, and more \u2014 all in one place. Built for travel agencies that value efficiency.",
+    "cta": "Get Started",
+    "signIn": "Sign In",
+    "features": {
+      "bookings": {
+        "title": "Smart Bookings",
+        "description": "Create, track, and manage all your travel bookings from a single dashboard with real-time status updates."
+      },
+      "packages": {
+        "title": "Travel Packages",
+        "description": "Design and publish unlimited travel packages with itineraries, pricing tiers, and availability calendars."
+      },
+      "customers": {
+        "title": "Customer Management",
+        "description": "Keep a centralized database of your customers with booking history, preferences, and contact information."
+      },
+      "analytics": {
+        "title": "Insights & Analytics",
+        "description": "Understand your business with revenue tracking, booking trends, and performance metrics."
+      }
+    },
+    "footer": {
+      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved."
+    }
   }
 }

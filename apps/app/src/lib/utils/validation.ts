@@ -1,4 +1,4 @@
-import { BOOKING_STATUSES } from "../trpc/routers/bookings";
+import { BOOKING_STATUSES } from "@/lib/utils/constants";
 import { logger } from "@/lib/utils/logger";
 
 export interface BookingValidationInput {

@@ -6,7 +6,9 @@ import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
 import { logger } from "@/lib/utils/logger";
 
-export const BOOKING_STATUSES = ["pending", "confirmed", "cancelled", "completed", "paid"] as const;
+import { BOOKING_STATUSES } from "@/lib/utils/constants";
+
+export { BOOKING_STATUSES };
 
 /**
  * Normalize jsonb `availableDates` to a plain string array.
