@@ -62,6 +62,11 @@ jobs:
     needs: [unit-tests]
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -121,7 +126,7 @@ jobs:
         run: pnpm exec playwright install chromium --with-deps
 
       - name: Run Playwright E2E tests
-        run: rtk playwright test
+        run: rtk playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           CI: true
 
@@ -129,7 +134,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shardIndex }}
           path: |
             test-results/
             playwright-report/

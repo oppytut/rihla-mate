@@ -62,6 +62,11 @@ jobs:
     needs: [unit-tests]
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        shardIndex: [1, 2]
+        shardTotal: [2]
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -121,12 +126,12 @@ jobs:
         run: pnpm exec playwright install chromium --with-deps
 
       - name: Run Playwright smoke tests
-        run: pnpm exec playwright test --config playwright.config.ts
+        run: pnpm exec playwright test --config playwright.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shardIndex }}
           path: playwright-report/
           retention-days: 7
