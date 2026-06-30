@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 
 // server-only is compiled inside Next.js — not available to vitest
 vi.mock("server-only", () => ({}));
@@ -69,6 +69,7 @@ describe("server.ts exports", () => {
 
     it("is created via createTRPCOptionsProxy", () => {
       expect(mockCreateTRPCOptionsProxy).toHaveBeenCalledTimes(1);
+      // @ts-expect-error vitest infers empty tuple type for Mock<() => {}>, but the call happens at import time
       const callArgs = mockCreateTRPCOptionsProxy.mock.calls[0][0];
       expect(callArgs).toHaveProperty("router");
       expect(callArgs).toHaveProperty("ctx");
