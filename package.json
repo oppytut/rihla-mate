@@ -13,7 +13,8 @@
     "db:generate": "turbo db:generate",
     "db:migrate": "turbo db:migrate",
     "keygen": "tsx scripts/keygen.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "pnpm -C apps/app test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
@@ -30,7 +31,9 @@
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mjs,cjs}": [
       "prettier --write",
-      "eslint --fix --max-warnings 0"
+      "eslint --fix --max-warnings 0",
+      "apps/app/node_modules/.bin/vitest related --run --config apps/app/vitest.config.mts",
+      "bash -c 'tsc --noEmit -p apps/app/tsconfig.json'"
     ],
     "*.{json,md,yaml,yml}": [
       "prettier --write"
