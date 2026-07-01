@@ -115,6 +115,8 @@ jobs:
         run: |
           pnpm db:generate
           pnpm db:migrate
+        env:
+          DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
 
       - name: Seed test user
         run: pnpm tsx scripts/playwright-seed.ts
