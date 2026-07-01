@@ -101,7 +101,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
   try {
     const listRes = await api.get(
       `${BASE_URL}/api/trpc/packages.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Search Pkg" }),
+        JSON.stringify({ json: { search: "Search Pkg" } }),
       )}`,
     );
     if (!listRes.ok()) return;
@@ -113,7 +113,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
         await api
           .get(
             `${BASE_URL}/api/trpc/packages.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ id: item.id }),
+              JSON.stringify({ json: { id: item.id } }),
             )}`,
           )
           .catch(() => {});

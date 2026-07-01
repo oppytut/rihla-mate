@@ -10,7 +10,7 @@ async function cleanupPlaywrightPackages(context: {
   try {
     const listRes = await api.get(
       `${BASE_URL}/api/trpc/packages.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Playwright Test" }),
+        JSON.stringify({ json: { search: "Playwright Test" } }),
       )}`,
     );
     if (!listRes.ok()) return;
@@ -24,7 +24,7 @@ async function cleanupPlaywrightPackages(context: {
         await api
           .get(
             `${BASE_URL}/api/trpc/packages.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ id: item.id }),
+              JSON.stringify({ json: { id: item.id } }),
             )}`,
           )
           .catch(() => {});
