@@ -79,6 +79,7 @@ test.describe("packages edit flow", () => {
 
     // Verify redirect to packages list (Next.js router.push = client-side, no "load")
     await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
+    await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
     expect(page.url()).toContain("/dashboard/packages");
     expect(page.url()).not.toContain("/new");
@@ -125,6 +126,7 @@ test.describe("packages edit flow", () => {
 
     // Verify redirect to packages list after edit
     await page.waitForURL("**/dashboard/packages**", { timeout: 25000 });
+    await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
 
     expect(page.url()).toContain("/dashboard/packages");
