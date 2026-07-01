@@ -61,6 +61,22 @@ export async function main() {
     );
 
     await client.query("COMMIT");
+
+    // Seed a license key so proxy.ts checkLicense() passes in CI.
+    // Without this, getActiveLicenseCount() returns 0 and all dashboard
+    // routes redirect to /activate — causing performance tests to timeout.
+    await client.query("BEGIN");
+    await client.query(
+      "DELETE FROM license_keys WHERE key = $1",
+      ["CI-TEST-LICENSE-KEY"]
+    );
+    await client.query(
+      `INSERT INTO license_keys (key, type, seats, issued_at, expires_at)
+       VALUES ($1, $2, $3, $4, $5)`,
+      ["CI-TEST-LICENSE-KEY", "pro", 10, now, new Date("2030-12-31T00:00:00Z")]
+    );
+    await client.query("COMMIT");
+
     // Write token to a JSON file consumed by globalSetup for storageState.
     const { writeFileSync } = await import("fs");
     writeFileSync(
