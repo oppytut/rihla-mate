@@ -9,10 +9,7 @@ export default defineConfig({
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  reporter: [
-    ["list"],
-    ["html", { open: "never" }],
-  ],
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: "http://localhost:3000",
     storageState: ".playwright-storage.json",
@@ -25,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm --filter @rihla-mate/app dev",
+    command: process.env.WEB_SERVER_COMMAND ?? "pnpm --filter @rihla-mate/app dev",
     port: 3000,
     timeout: 120_000,
     reuseExistingServer: !process.env.CI,

@@ -86,6 +86,7 @@ jobs:
       DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-test-secret-key-for-build-only' }}
       BETTER_AUTH_URL: http://localhost:3000
+      WEB_SERVER_COMMAND: pnpm --filter @rihla-mate/app start
 
     steps:
       - uses: actions/checkout@v4
