@@ -122,7 +122,8 @@ jobs:
         run: pnpm tsx scripts/playwright-seed.ts
 
       - name: Seed packages and bookings
-        run: pnpm tsx apps/app/src/lib/db/seed.ts
+        run: pnpm tsx src/lib/db/seed.ts
+        working-directory: apps/app
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps
