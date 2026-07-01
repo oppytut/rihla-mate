@@ -114,7 +114,7 @@ jobs:
       - name: Generate DB migrations
         run: |
           pnpm db:generate
-          pnpm db:migrate
+          cd apps/app && npx drizzle-kit migrate
         env:
           DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
 
