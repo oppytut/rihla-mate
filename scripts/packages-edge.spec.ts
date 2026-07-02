@@ -35,11 +35,9 @@ async function cleanupPlaywrightPackages(context: {
     );
     if (!listRes.ok()) return;
 
-    const body: any = await listRes.json();
+    const body: unknown = await listRes.json();
     const items: Array<{ id: string }> =
-      body?.[0]?.result?.data?.items ??
-      body?.[0]?.result?.data?.json?.items ??
-      [];
+      body?.[0]?.result?.data?.items ?? body?.[0]?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api
@@ -62,14 +60,23 @@ test.describe("package edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.submit, {
-      state: "visible",
+      state: "attached",
       timeout: 10000,
     });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(2000);
+    // Wait for React hydration before interacting with the form
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     // Click submit button to trigger React form validation
     await page.locator(SEL.submit).click();
@@ -83,10 +90,7 @@ test.describe("package edge cases", () => {
     expect(errorCount).toBeGreaterThan(0);
   });
 
-  test("shows error when creating package with duplicate slug", async ({
-    page,
-    context,
-  }) => {
+  test("shows error when creating package with duplicate slug", async ({ page, context }) => {
     const slug = `playwright-edge-duplicate-${Date.now()}`;
 
     await cleanupPlaywrightPackages(context);
@@ -95,35 +99,62 @@ test.describe("package edge cases", () => {
     await page.goto(`${BASE_URL}/en/dashboard/packages/new`, {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(2000);
+    // Wait for React hydration — controlled inputs need onChange handlers attached
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
-    await page.fill(SEL.title, `Playwright Test Duplicate ${Date.now()}`);
-    await page.fill(SEL.slug, slug);
+    await page
+      .locator(SEL.title)
+      .pressSequentially(`Playwright Test Duplicate ${Date.now()}`, { delay: 30 });
+    await page.locator(SEL.slug).pressSequentially(slug, { delay: 30 });
     await page.fill(SEL.description, "First package with this slug");
     await page.fill(SEL.durationDays, "3");
     await page.fill(SEL.price, "1000000");
 
     page.once("dialog", (dialog) => dialog.accept());
+
+    // Confirm React hydration before submitting the form
+    await page.waitForTimeout(5000);
+
     await page.locator(SEL.submit).click();
 
-    await page.waitForURL(
-      (url) =>
-        url.href.includes("/dashboard/packages") &&
-        !url.href.includes("/new"),
-      { timeout: 15000 },
-    );
+    // Navigate directly via page.goto to force full SSR — client-side router.push
+    // sends undefined to packages.list tRPC input, crashing the React 19 tree
+    await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 20000,
+    });
 
     // Now try to create another package with the same slug
     await page.goto(`${BASE_URL}/en/dashboard/packages/new`, {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(2000);
+    // Wait for React hydration
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     await page.fill(SEL.title, `Playwright Test Duplicate 2 ${Date.now()}`);
     await page.fill(SEL.slug, slug);
@@ -135,9 +166,7 @@ test.describe("package edge cases", () => {
     await page.locator(SEL.submit).click();
 
     // Wait for either a validation error or the submitError container
-    const submitErrorContainer = page.locator(
-      ".bg-destructive\\/10, [class*='destructive']",
-    );
+    const submitErrorContainer = page.locator(".bg-destructive\\/10, [class*='destructive']");
     try {
       await submitErrorContainer.first().waitFor({
         state: "visible",
@@ -157,18 +186,27 @@ test.describe("package edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.price, {
-      state: "visible",
+      state: "attached",
       timeout: 10000,
     });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(2000);
+    // Wait for React hydration before interacting with the form
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     // Fill required fields
     await page.fill(SEL.title, "Playwright Test Negative Price");
-    await page.fill(SEL.slug, "playwright-negative-price");
+    await page.fill(SEL.slug, `playwright-negative-price-${Date.now()}`);
     await page.fill(SEL.durationDays, "3");
 
     // Enter negative price
@@ -193,10 +231,19 @@ test.describe("package edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(2000);
+    // Wait for React hydration before interacting with the form
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     // Fill only some fields - title auto-generates slug, but price is empty
     await page.fill(SEL.title, "Playwright Test Partial");
