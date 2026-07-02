@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq, ilike, and, count, desc } from "drizzle-orm";
+import { eq, ilike, and, count, desc, sql } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
@@ -79,6 +79,15 @@ export const bookingsRouter = createTRPCRouter({
             paymentRef: bookings.paymentRef,
             notes: bookings.notes,
             createdAt: bookings.createdAt,
+            midtransOrderId: bookings.midtransOrderId,
+            paymentToken: bookings.midtransOrderId,
+            transactionId: bookings.midtransTransactionId,
+            paymentMethod: bookings.paymentMethod,
+            grossAmount: bookings.grossAmount,
+            transactionStatus: bookings.transactionStatus,
+            paymentStatus: bookings.transactionStatus,
+            redirectUrl: sql`NULL`.mapWith(String),
+            paidAt: sql`NULL`.mapWith(String),
             packageTitle: packages.title,
           })
           .from(bookings)
@@ -122,6 +131,15 @@ export const bookingsRouter = createTRPCRouter({
           notes: bookings.notes,
           createdAt: bookings.createdAt,
           updatedAt: bookings.updatedAt,
+          midtransOrderId: bookings.midtransOrderId,
+          paymentToken: bookings.midtransOrderId,
+          transactionId: bookings.midtransTransactionId,
+          paymentMethod: bookings.paymentMethod,
+          grossAmount: bookings.grossAmount,
+          transactionStatus: bookings.transactionStatus,
+          paymentStatus: bookings.transactionStatus,
+          redirectUrl: sql`NULL`.mapWith(String),
+          paidAt: sql`NULL`.mapWith(String),
           packageTitle: packages.title,
         })
         .from(bookings)

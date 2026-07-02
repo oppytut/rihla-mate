@@ -132,6 +132,7 @@ describe("getLicenseByKey", () => {
     const result = await getLicenseByKey(db as never, "RM-PRO-ABCD-1234-5678");
 
     expect(result).toBeDefined();
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(result!.key).toBe("RM-PRO-ABCD-1234-5678");
   });

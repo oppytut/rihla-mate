@@ -3,11 +3,14 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z
+      .string()
+      .url()
+      .default("postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev"),
     LICENSE_KEY: z.string().optional(),
     LICENSE_PUBLIC_KEY: z.string().optional(),
     LICENSE_SERVER_URL: z.string().url().default("http://localhost:3001"),
-    BETTER_AUTH_SECRET: z.string().min(1),
+    BETTER_AUTH_SECRET: z.string().min(1).default("ci-test-secret-key-for-build-only"),
     BETTER_AUTH_URL: z.string().url().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),
@@ -46,5 +49,5 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_MIDTRANS_CLIENT_KEY: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
   },
-  emptyStringAsUndefined: true,
+  emptyStringAsUndefined: false,
 });

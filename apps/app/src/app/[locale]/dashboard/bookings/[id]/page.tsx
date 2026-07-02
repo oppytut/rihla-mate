@@ -14,6 +14,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { validateBooking } from "@/lib/utils/validation";
 import { toast } from "sonner";
+import { SnapPayment } from "@/components/payment/snap-payment";
 
 type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed" | "paid";
 
@@ -249,10 +250,7 @@ function BookingFormContent({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label
-                    htmlFor="travelers"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="travelers" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.travelers")} *
                   </label>
                   <input
@@ -310,10 +308,7 @@ function BookingFormContent({
               </h2>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="customerName"
-                  className="block text-sm font-medium text-foreground"
-                >
+                <label htmlFor="customerName" className="block text-sm font-medium text-foreground">
                   {t("bookings.fields.customerName")} *
                 </label>
                 <input
@@ -386,10 +381,7 @@ function BookingFormContent({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label
-                    htmlFor="totalPrice"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="totalPrice" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.totalPrice")} *
                   </label>
                   <input
@@ -416,10 +408,7 @@ function BookingFormContent({
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="paymentRef"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="paymentRef" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.paymentRef")}
                   </label>
                   <input
@@ -480,11 +469,48 @@ function BookingFormContent({
 }
 
 function EditBookingPage({ bookingId }: { bookingId: string }) {
+  const t = useTranslations();
   const trpc = useTRPC();
+  const router = useRouter();
   const bookingQuery = useQuery(trpc.bookings.getById.queryOptions({ id: bookingId }));
 
   const [initialData, setInitialData] = useState<BookingForm | null>(null);
   const initialized = useRef(false);
+
+  const [snapToken, setSnapToken] = useState<string | null>(null);
+
+  const payMutation = useMutation(
+    trpc.midtrans.createTransaction.mutationOptions({
+      onSuccess: (result) => {
+        if (result.token) {
+          setSnapToken(result.token);
+        } else {
+          router.push(`/dashboard/bookings/${bookingId}/payment?status=success`);
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message || t("common.error"));
+      },
+    }),
+  );
+
+  const handlePayNow = () => {
+    payMutation.mutate({ bookingId });
+  };
+
+  const handleSnapSuccess = () => {
+    router.push(`/dashboard/bookings/${bookingId}/payment?status=success`);
+  };
+
+  const handleSnapError = () => {
+    toast.error(t("bookings.snap.error"));
+    setSnapToken(null);
+  };
+
+  const handleSnapClose = () => {
+    toast.info(t("bookings.snap.close"));
+    setSnapToken(null);
+  };
 
   useEffect(() => {
     if (bookingQuery.data && !initialized.current) {
@@ -535,7 +561,106 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
     );
   }
 
-  return <BookingFormContent initialData={initialData} isEditMode={true} bookingId={bookingId} />;
+  const booking = bookingQuery.data;
+  const isPending = booking?.status === "pending";
+  const hasPayment = booking?.transactionStatus != null;
+
+  return (
+    <>
+      {isPending && (
+        <div className="px-4 lg:px-8 pt-6" data-testid="booking-pay-now">
+          <div className="bg-card border border-border rounded-lg p-4 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">{t("bookings.paymentStatus.pending")}</p>
+            <Button
+              onClick={handlePayNow}
+              disabled={payMutation.isPending}
+              data-testid="pay-now-button"
+            >
+              {payMutation.isPending ? t("bookings.paying") : t("bookings.payNow")}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <BookingFormContent initialData={initialData} isEditMode={true} bookingId={bookingId} />
+
+      {hasPayment && (
+        <div className="px-4 lg:px-8 py-6">
+          <div className="bg-card border border-border rounded-lg p-6 max-w-3xl">
+            <h2 className="text-lg font-medium text-foreground border-b border-border pb-2 mb-4">
+              {t("bookings.payment.title")}
+            </h2>
+            <div className="space-y-3">
+              {booking.midtransOrderId && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.orderId")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {booking.midtransOrderId}
+                  </span>
+                </div>
+              )}
+              {booking.transactionId && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.transactionId")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {booking.transactionId}
+                  </span>
+                </div>
+              )}
+              {booking.paymentMethod && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.method")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {booking.paymentMethod}
+                  </span>
+                </div>
+              )}
+              {booking.grossAmount && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.grossAmount")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">{booking.grossAmount}</span>
+                </div>
+              )}
+              {booking.transactionStatus && (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.paidAt")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {booking.transactionStatus}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="mt-4 pt-4 border-t border-border">
+              <Link
+                href={`/dashboard/bookings/${bookingId}/payment`}
+                className="text-sm text-primary hover:underline"
+                data-testid="booking-view-payment"
+              >
+                {t("bookings.payment.viewDetails")}
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <SnapPayment
+        token={snapToken}
+        onSuccess={handleSnapSuccess}
+        onError={handleSnapError}
+        onClose={handleSnapClose}
+      />
+    </>
+  );
 }
 
 export default function BookingFormPage() {

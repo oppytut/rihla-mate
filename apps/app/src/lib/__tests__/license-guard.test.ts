@@ -290,6 +290,7 @@ describe("licenseMiddleware", () => {
     await licenseMiddleware(args);
 
     expect(nextFn).toHaveBeenCalledTimes(1);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const calledCtx = nextFn.mock.calls[0]![0].ctx;
     expect(calledCtx.license).toEqual({

@@ -1,6 +1,7 @@
 name: Playwright Smoke Tests
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths-ignore:
@@ -42,7 +43,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -83,9 +84,10 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgres://rihlamate:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/rihlamate_dev
+      DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
       BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-test-secret-key-for-build-only' }}
       BETTER_AUTH_URL: http://localhost:3000
+      WEB_SERVER_COMMAND: pnpm --filter @rihla-mate/app start
 
     steps:
       - uses: actions/checkout@v4
@@ -97,7 +99,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -114,13 +116,16 @@ jobs:
       - name: Generate DB migrations
         run: |
           pnpm db:generate
-          pnpm db:migrate
+          cd apps/app && npx drizzle-kit migrate
+        env:
+          DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
 
       - name: Seed test user
         run: pnpm tsx scripts/playwright-seed.ts
 
       - name: Seed packages and bookings
-        run: pnpm tsx apps/app/src/lib/db/seed.ts
+        run: pnpm tsx src/lib/db/seed.ts
+        working-directory: apps/app
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install chromium --with-deps

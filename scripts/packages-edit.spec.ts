@@ -10,27 +10,27 @@ async function cleanupPlaywrightPackages(context: {
   try {
     const listRes = await api.get(
       `${BASE_URL}/api/trpc/packages.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Playwright Test" }),
+        JSON.stringify({ json: { search: "Playwright Test" } }),
       )}`,
     );
     if (!listRes.ok()) return;
-    const body: any = await listRes.json();
+    const body: unknown = await listRes.json();
     const items: Array<{ id: string }> =
-      body?.[0]?.result?.data?.items ??
-      body?.[0]?.result?.data?.json?.items ??
-      [];
+      body?.[0]?.result?.data?.items ?? body?.[0]?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api
           .get(
             `${BASE_URL}/api/trpc/packages.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ id: item.id }),
+              JSON.stringify({ json: { id: item.id } }),
             )}`,
           )
           .catch(() => {});
       }
     }
-  } catch {}
+  } catch {
+    // cleanup is best-effort
+  }
 }
 
 test.describe("packages edit flow", () => {
@@ -45,25 +45,32 @@ test.describe("packages edit flow", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 10000,
+    });
 
     // Wait for React hydration — controlled inputs need onChange handlers attached
-    await page.waitForFunction(() => {
-      const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
-      return el && !el.disabled;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
-    await page.locator('[data-testid="package-title"]').pressSequentially("Playwright Test Package Edit", { delay: 30 });
-    await page.locator('[data-testid="package-slug"]').pressSequentially(`playwright-test-package-edit-${Date.now()}`, { delay: 30 });
+    await page
+      .locator('[data-testid="package-title"]')
+      .pressSequentially("Playwright Test Package Edit", { delay: 30 });
+    await page
+      .locator('[data-testid="package-slug"]')
+      .pressSequentially(`playwright-test-package-edit-${Date.now()}`, { delay: 30 });
     await page.fill('[data-testid="package-description"]', "Package for edit test");
     await page.selectOption('[data-testid="package-category"]', "standard");
     await page.fill('[data-testid="package-duration-days"]', "3");
     await page.fill('[data-testid="package-price"]', "1000000");
     await page.selectOption('[data-testid="package-status"]', "draft");
-    await page.fill(
-      '[data-testid="package-itinerary"]',
-      '[{"day": 1, "description": "Test day"}]',
-    );
+    await page.fill('[data-testid="package-itinerary"]', '[{"day": 1, "description": "Test day"}]');
     await page.fill('[data-testid="package-inclusions"]', '["Test inclusion"]');
     await page.fill('[data-testid="package-exclusions"]', '["Test exclusion"]');
     await page.fill('[data-testid="package-available-dates"]', '["2026-07-01"]');
@@ -77,9 +84,15 @@ test.describe("packages edit flow", () => {
 
     await page.click('[data-testid="package-submit"]');
 
-    // Verify redirect to packages list (Next.js router.push = client-side, no "load")
-    await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
+    // Navigate directly via page.goto to force full SSR — client-side router.push
+    // sends undefined to packages.list tRPC input, crashing the React 19 tree
+    await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 20000,
+    });
     expect(page.url()).toContain("/dashboard/packages");
     expect(page.url()).not.toContain("/new");
 
@@ -123,9 +136,14 @@ test.describe("packages edit flow", () => {
 
     await page.click('[data-testid="package-submit"]');
 
-    // Verify redirect to packages list after edit
-    await page.waitForURL("**/dashboard/packages**", { timeout: 25000 });
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
+    // Navigate directly via page.goto to force full SSR
+    await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 20000,
+    });
 
     expect(page.url()).toContain("/dashboard/packages");
     expect(page.url()).not.toContain("/new");

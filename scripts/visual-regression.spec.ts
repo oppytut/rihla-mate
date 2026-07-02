@@ -33,7 +33,7 @@ test.describe("visual regression", () => {
         timeout: 15000,
       });
 
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(500);
 
       await expect(page).toHaveScreenshot(`${name}.png`, {

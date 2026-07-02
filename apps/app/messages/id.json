@@ -128,7 +128,35 @@
       "pending": "Tertunda",
       "confirmed": "Dikonfirmasi",
       "cancelled": "Dibatalkan",
-      "completed": "Selesai"
+      "completed": "Selesai",
+      "paid": "Lunas"
+    },
+    "payNow": "Bayar Sekarang",
+    "paying": "Memproses Pembayaran...",
+    "paymentStatus": {
+      "title": "Status Pembayaran",
+      "pending": "Pembayaran Tertunda",
+      "paid": "Pembayaran Berhasil",
+      "cancelled": "Pembayaran Dibatalkan",
+      "failed": "Pembayaran Gagal",
+      "expired": "Pembayaran Kedaluwarsa",
+      "unknown": "Status Pembayaran Tidak Diketahui"
+    },
+    "snap": {
+      "success": "Pembayaran berhasil! Pemesanan Anda telah dikonfirmasi.",
+      "pending": "Pembayaran sedang diproses. Silakan tunggu konfirmasi.",
+      "error": "Pembayaran gagal. Silakan coba lagi.",
+      "close": "Anda menutup jendela pembayaran. Anda dapat membayar lagi nanti."
+    },
+    "payment": {
+      "title": "Informasi Pembayaran",
+      "orderId": "ID Pesanan",
+      "transactionId": "ID Transaksi",
+      "method": "Metode Pembayaran",
+      "grossAmount": "Jumlah",
+      "paidAt": "Dibayar Pada",
+      "notConfigured": "Gateway pembayaran tidak dikonfigurasi.",
+      "viewDetails": "Lihat Detail Pembayaran"
     },
     "fields": {
       "package": "Paket",

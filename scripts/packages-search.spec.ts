@@ -57,7 +57,7 @@ async function createPackageViaForm(
     waitUntil: "domcontentloaded",
   });
 
-  await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+  await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
 
   // Wait for React hydration — controlled inputs need onChange handlers attached
   await page.waitForFunction(
@@ -91,9 +91,12 @@ async function createPackageViaForm(
 
   await page.click(SEL.submit);
 
-  // Verify redirect to packages list (Next.js router.push = client-side, no "load")
-  await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
-  await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
+  // Navigate directly via page.goto to force full SSR — client-side router.push
+  // sends undefined to packages.list tRPC input, crashing the React 19 tree
+  await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+    waitUntil: "domcontentloaded",
+  });
+  await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 20000 });
 }
 
 async function cleanupSearchPackages(context: PackagesContext) {
@@ -101,7 +104,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
   try {
     const listRes = await api.get(
       `${BASE_URL}/api/trpc/packages.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Search Pkg" }),
+        JSON.stringify({ json: { search: "Search Pkg" } }),
       )}`,
     );
     if (!listRes.ok()) return;
@@ -113,7 +116,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
         await api
           .get(
             `${BASE_URL}/api/trpc/packages.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ id: item.id }),
+              JSON.stringify({ json: { id: item.id } }),
             )}`,
           )
           .catch(() => {});

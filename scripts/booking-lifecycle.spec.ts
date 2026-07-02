@@ -30,7 +30,7 @@ async function cleanupPlaywrightLifecycleBookings(context: {
   try {
     const listRes = await api.get(
       `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Playwright Test Lifecycle" }),
+        JSON.stringify({ json: { search: "Playwright Test Lifecycle" } }),
       )}`,
     );
     if (!listRes.ok()) return;
@@ -49,7 +49,7 @@ async function cleanupPlaywrightLifecycleBookings(context: {
       if (item.id) {
         await api.get(
           `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
-            JSON.stringify({ id: item.id }),
+            JSON.stringify({ json: { id: item.id } }),
           )}`,
         );
       }

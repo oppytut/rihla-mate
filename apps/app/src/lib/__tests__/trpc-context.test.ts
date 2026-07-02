@@ -154,6 +154,7 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.session).toEqual(sessionWithUndefinedRole);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(ctx.session!.user.role).toBeUndefined();
   });
@@ -186,6 +187,7 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.session).toEqual(sessionWithNullRole);
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(ctx.session!.user.role).toBeNull();
   });
