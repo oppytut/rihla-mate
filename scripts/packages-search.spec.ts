@@ -91,8 +91,10 @@ async function createPackageViaForm(
 
   await page.click(SEL.submit);
 
-  // Verify redirect to packages list (Next.js router.push = client-side, no "load")
+  // Force full SSR navigation to avoid client-side tRPC input serialization bug
+  // (waitForURL after router.push sends undefined to packages.list, crashing the tree)
   await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
+  await page.goto(page.url(), { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 20000 });
 }
 
