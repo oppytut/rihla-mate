@@ -93,8 +93,6 @@ async function createPackageViaForm(
 
   // Verify redirect to packages list (Next.js router.push = client-side, no "load")
   await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
-  // Force a full page load to ensure tRPC context is properly hydrated after client-side navigation
-  await page.reload({ waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 20000 });
 }
 
