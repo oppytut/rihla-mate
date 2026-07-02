@@ -106,6 +106,10 @@ jobs:
 
       - name: Build Next.js app
         run: pnpm build
+        env:
+          DATABASE_URL: postgres://rihlamate:rihlamate@localhost:5432/rihlamate_dev
+          BETTER_AUTH_SECRET: ci-test-secret-key-for-build-only
+          BETTER_AUTH_URL: http://localhost:3000
 
       - name: Lint
         run: pnpm lint

@@ -5,6 +5,8 @@ import { bookings } from "@/lib/db/schema/bookings";
 import { verifyWebhookSignature } from "@/lib/payment/midtrans";
 import { logger } from "@/lib/utils/logger";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Midtrans notification webhook handler.
  *
