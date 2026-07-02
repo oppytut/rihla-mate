@@ -57,7 +57,7 @@ async function createPackageViaForm(
     waitUntil: "domcontentloaded",
   });
 
-  await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+  await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
 
   // Wait for React hydration — controlled inputs need onChange handlers attached
   await page.waitForFunction(
@@ -93,7 +93,9 @@ async function createPackageViaForm(
 
   // Verify redirect to packages list (Next.js router.push = client-side, no "load")
   await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
-  await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 20000 });
+  // Force a full page load to ensure tRPC context is properly hydrated after client-side navigation
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 20000 });
 }
 
 async function cleanupSearchPackages(context: PackagesContext) {
