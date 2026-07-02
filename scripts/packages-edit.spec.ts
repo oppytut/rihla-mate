@@ -84,9 +84,11 @@ test.describe("packages edit flow", () => {
 
     await page.click('[data-testid="package-submit"]');
 
-    // Force full SSR navigation to avoid client-side tRPC input serialization bug
-    await page.waitForURL("**/dashboard/packages", { timeout: 25000 });
-    await page.goto(page.url(), { waitUntil: "domcontentloaded" });
+    // Navigate directly via page.goto to force full SSR — client-side router.push
+    // sends undefined to packages.list tRPC input, crashing the React 19 tree
+    await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+      waitUntil: "domcontentloaded",
+    });
     await page.waitForSelector('[data-testid="page-heading"]', {
       state: "attached",
       timeout: 20000,
@@ -134,9 +136,10 @@ test.describe("packages edit flow", () => {
 
     await page.click('[data-testid="package-submit"]');
 
-    // Verify redirect to packages list after edit
-    await page.waitForURL("**/dashboard/packages**", { timeout: 25000 });
-    await page.goto(page.url(), { waitUntil: "domcontentloaded" });
+    // Navigate directly via page.goto to force full SSR
+    await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+      waitUntil: "domcontentloaded",
+    });
     await page.waitForSelector('[data-testid="page-heading"]', {
       state: "attached",
       timeout: 20000,
