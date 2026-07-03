@@ -36,7 +36,7 @@ test.describe("booking delete flow", () => {
       "#packageId",
       { timeout: 10000 },
     );
-    await page.locator(SEL.packageSelect).selectOption({ index: 1 });
+    await page.locator(SEL.packageSelect).selectOption({ label: "Komodo Island Expedition" });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();
@@ -77,7 +77,7 @@ test.describe("booking delete flow", () => {
       .catch(async () => {
         // Submission may show a validation error (e.g. duplicate booking).
         // If no redirect happened, try a different package.
-        await page.selectOption("#packageId", { index: 2 });
+        await page.selectOption("#packageId", { label: "Bali Sacred Temples" });
         await page.locator(SEL.submitButton).click();
         await page.waitForURL(
           (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),

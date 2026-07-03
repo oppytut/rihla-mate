@@ -102,7 +102,7 @@ test.describe("booking creation flow", () => {
       .waitFor({ state: "attached", timeout: 15000 });
     // Give the select one more beat to fully stabilize after TRPC data lands
     await page.waitForTimeout(500);
-    await page.locator(SEL.packageId).selectOption({ index: 2 });
+    await page.locator(SEL.packageId).selectOption({ label: "Bali Sacred Temples" });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {

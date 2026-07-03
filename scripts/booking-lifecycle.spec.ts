@@ -93,7 +93,7 @@ test.describe("booking lifecycle", () => {
       .first()
       .waitFor({ state: "attached", timeout: 15000 });
     await page.waitForTimeout(500);
-    await page.locator(SEL.packageId).selectOption({ index: 1 });
+    await page.locator(SEL.packageId).selectOption({ label: "Komodo Island Expedition" });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();
@@ -134,7 +134,7 @@ test.describe("booking lifecycle", () => {
       .catch(async () => {
         // Submission may show a validation error (e.g. duplicate booking).
         // If no redirect happened, try a different package.
-        await page.locator(SEL.packageId).selectOption({ index: 2 });
+        await page.locator(SEL.packageId).selectOption({ label: "Bali Sacred Temples" });
         await page.locator(SEL.submitButton).click();
         await page
           .waitForURL(
@@ -143,7 +143,7 @@ test.describe("booking lifecycle", () => {
           )
           .catch(async () => {
             // Try one more package index
-            await page.locator(SEL.packageId).selectOption({ index: 3 });
+            await page.locator(SEL.packageId).selectOption({ label: "Yogyakarta Heritage Tour" });
             await page.locator(SEL.submitButton).click();
             await page.waitForURL(
               (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
