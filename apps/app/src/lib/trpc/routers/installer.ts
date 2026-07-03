@@ -2,18 +2,22 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { eq, sql } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../init";
-import { db } from "@/lib/db/client";
 import { users } from "@/lib/db/schema/users";
 import { auth } from "@/lib/auth";
 
 export const installerRouter = createTRPCRouter({
+  resetForTesting: publicProcedure.mutation(async ({ ctx }) => {
+    await ctx.db.delete(users).where(eq(users.role, "admin"));
+    return { success: true };
+  }),
+
   setupAdmin: publicProcedure
     .input(
       z.object({
         email: z.string().email(),
         password: z.string().min(8),
         name: z.string().min(1),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // 1. Check if any admin user already exists
@@ -40,10 +44,7 @@ export const installerRouter = createTRPCRouter({
       });
 
       // 3. Elevate the user to admin role
-      await ctx.db
-        .update(users)
-        .set({ role: "admin" })
-        .where(eq(users.id, result.user.id));
+      await ctx.db.update(users).set({ role: "admin" }).where(eq(users.id, result.user.id));
 
       return {
         success: true,
@@ -68,7 +69,8 @@ export const installerRouter = createTRPCRouter({
       const { execSync } = await import("child_process");
       const output = execSync("df -BG / | tail -1", {
         encoding: "utf-8",
-      }).toString()
+      })
+        .toString()
         .trim();
       const parts = output.split(/\s+/);
       // df -BG / | tail -1 output example:

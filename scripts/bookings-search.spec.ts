@@ -147,7 +147,7 @@ test.describe("bookings search and filter", () => {
     await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForLoadState("networkidle");
+    await page.waitForSelector("table", { state: "attached", timeout: 10000 });
   });
 
   test("search by customer name filters results", async ({ page }) => {

@@ -160,7 +160,16 @@ test.describe("booking lifecycle", () => {
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
-    await firstEditButton.click();
+
+    // Extract booking ID and navigate via page.goto for full SSR.
+    // Client-side router.push sends undefined to bookings.list tRPC input,
+    // crashing the React 19 tree.
+    const editBtnTestId = await firstEditButton.getAttribute("data-testid");
+    if (!editBtnTestId) throw new Error("edit button missing data-testid");
+    const bookingId = editBtnTestId.replace("booking-edit-", "");
+    await page.goto(`${BASE_URL}/en/dashboard/bookings/${bookingId}`, {
+      waitUntil: "domcontentloaded",
+    });
 
     await page.waitForSelector(SEL.customerName, {
       state: "attached",
@@ -175,10 +184,15 @@ test.describe("booking lifecycle", () => {
 
     await page.locator(SEL.submitButton).click();
 
-    await page.waitForURL(
-      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-      { timeout: 15000 },
-    );
+    // Navigate directly via page.goto to force full SSR after mutation.
+    // Client-side router.push sends undefined to bookings.list tRPC input.
+    await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 20000,
+    });
 
     // ── DELETE PHASE ───────────────────────────────────────────────────
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });

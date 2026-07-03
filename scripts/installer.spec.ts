@@ -17,6 +17,13 @@ const SELECTORS = {
 } as const;
 
 test.describe("Installer Wizard", () => {
+  test.beforeEach(async ({ request }) => {
+    // Reset admin users so the installer setupAdmin mutation doesn't fail
+    // with "Admin account already exists" (playwright-seed creates an admin).
+    await request.post(`${BASE_URL}/api/trpc/installer.resetForTesting`, {
+      data: { json: {} },
+    });
+  });
   test("navigates through all 5 installer steps", async ({ page }) => {
     await page.goto(`${BASE_URL}/en/installer`, {
       waitUntil: "domcontentloaded",
