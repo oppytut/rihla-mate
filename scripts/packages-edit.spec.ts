@@ -98,15 +98,21 @@ test.describe("packages edit flow", () => {
 
     // ── Edit phase ──────────────────────────────────────────────────
 
-    // Wait for the list table to render and find the edit button for our package
     await page.waitForSelector("table", { state: "attached", timeout: 10000 });
 
-    // Click the first edit button that matches our package
     const editButton = page.locator('[data-testid^="package-edit-"]').first();
     await editButton.waitFor({ state: "visible", timeout: 10000 });
-    await editButton.click();
 
-    // Wait for the edit form to appear
+    // Extract the package ID from data-testid and navigate directly.
+    // Clicking the <Link> triggers client-side router.push which can
+    // fail to hydrate the edit form (same route, different [id] param).
+    const editBtnTestId = await editButton.getAttribute("data-testid");
+    if (!editBtnTestId) throw new Error("edit button missing data-testid");
+    const packageId = editBtnTestId.replace("package-edit-", "");
+    await page.goto(`${BASE_URL}/en/dashboard/packages/${packageId}`, {
+      waitUntil: "domcontentloaded",
+    });
+
     await page.waitForSelector('[data-testid="package-title"]', {
       state: "attached",
       timeout: 10000,

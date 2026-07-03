@@ -90,12 +90,12 @@ test.describe("package delete flow", () => {
     await page.fill('[data-testid="package-exclusions"]', '["Transport"]');
     await page.fill('[data-testid="package-available-dates"]', '["2026-09-01"]');
 
-    // Register alert handler BEFORE clicking submit
-    page.once("dialog", (dialog) => dialog.accept());
-
     // Confirm React hydration before submitting the form
     await page.waitForTimeout(5000);
 
+    // Submit — skip dialog handler for create success because page.goto
+    // dismisses any alert and a pending once("dialog") would collide with
+    // the delete-confirmation handler registered later
     await page.click('[data-testid="package-submit"]');
 
     // Navigate directly via page.goto to force full SSR — client-side router.push
