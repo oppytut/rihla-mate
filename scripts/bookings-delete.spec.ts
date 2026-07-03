@@ -10,8 +10,7 @@ const SEL = {
   submitButton: '[data-testid="booking-submit"]',
   popoverContent: '[data-slot="popover-content"]',
   calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
-  calendarDay: (date: string) =>
-    `[data-slot="calendar"] button[data-day*="${date}"]`,
+  calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
 } as const;
 
 test.describe("booking delete flow", () => {
@@ -21,7 +20,10 @@ test.describe("booking delete flow", () => {
       waitUntil: "load",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
 
     await page.fill(SEL.customerName, "Playwright Test Customer Delete");
 
@@ -43,14 +45,12 @@ test.describe("booking delete flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead =
-      (2026 - new Date().getFullYear()) * 12 +
-      (7 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
+    await page.locator(SEL.calendarDay("8/1/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
@@ -70,23 +70,20 @@ test.describe("booking delete flow", () => {
     await page.locator(SEL.submitButton).click();
 
     // Wait for redirect to the list page
-    await page.waitForURL(
-      (url) =>
-        url.href.includes("/dashboard/bookings") &&
-        !url.href.includes("/new"),
-      { timeout: 15000 },
-    ).catch(async () => {
-      // Submission may show a validation error (e.g. duplicate booking).
-      // If no redirect happened, try a different package.
-      await page.selectOption("#packageId", { index: 3 });
-      await page.locator(SEL.submitButton).click();
-      await page.waitForURL(
-        (url) =>
-          url.href.includes("/dashboard/bookings") &&
-          !url.href.includes("/new"),
-        { timeout: 15000 },
-      );
-    });
+    await page
+      .waitForURL((url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"), {
+        timeout: 15000,
+      })
+      .catch(async () => {
+        // Submission may show a validation error (e.g. duplicate booking).
+        // If no redirect happened, try a different package.
+        await page.selectOption("#packageId", { index: 3 });
+        await page.locator(SEL.submitButton).click();
+        await page.waitForURL(
+          (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+          { timeout: 15000 },
+        );
+      });
 
     // ── Delete phase ────────────────────────────────────────────────
     // Wait for the table to render
@@ -102,8 +99,8 @@ test.describe("booking delete flow", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Verify the booking is no longer visible
-    await expect(
-      page.getByText("Playwright Test Customer Delete"),
-    ).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Playwright Test Customer Delete")).not.toBeVisible({
+      timeout: 10000,
+    });
   });
 });

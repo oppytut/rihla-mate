@@ -113,7 +113,7 @@ export default function BookingsPage() {
   const getStatusBadgeClass = (bookingStatus: string) => {
     switch (bookingStatus) {
       case "confirmed":
-        return "bg-green-500/10 text-green-600 dark:text-green-400";
+        return "bg-green-500/10 text-green-700 dark:text-green-300";
       case "pending":
         return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
       case "cancelled":

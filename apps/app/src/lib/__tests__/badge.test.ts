@@ -5,8 +5,8 @@ describe("getStatusBadgeClass", () => {
   it("returns green classes for published status", () => {
     const result = getStatusBadgeClass("published");
     expect(result).toContain("bg-green-500/10");
-    expect(result).toContain("text-green-600");
-    expect(result).toContain("dark:text-green-400");
+    expect(result).toContain("text-green-700");
+    expect(result).toContain("dark:text-green-300");
   });
 
   it("returns yellow classes for draft status", () => {

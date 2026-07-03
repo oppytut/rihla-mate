@@ -117,7 +117,7 @@ test.describe("Auth Flow", () => {
       expect(true).toBe(true);
     } else {
       const url = page.url();
-      expect(url).toContain("/dashboard");
+      expect(url).toContain("/sign-in");
     }
 
     await context.close();

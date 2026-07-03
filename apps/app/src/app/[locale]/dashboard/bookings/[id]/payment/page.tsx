@@ -19,7 +19,7 @@ function getTransactionStatusBadge(status: string | null | undefined): {
     case "settlement":
     case "capture":
       return {
-        className: "bg-green-500/10 text-green-600 dark:text-green-400",
+        className: "bg-green-500/10 text-green-700 dark:text-green-300",
         labelKey: "bookings.paymentStatus.paid",
       };
     case "pending":
