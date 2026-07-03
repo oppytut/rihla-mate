@@ -10,8 +10,7 @@ const SEL = {
   submitButton: '[data-testid="booking-submit"]',
   popoverContent: '[data-slot="popover-content"]',
   calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
-  calendarDay: (date: string) =>
-    `[data-slot="calendar"] button[data-day*="${date}"]`,
+  calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
   validationError: '[data-testid^="validation-error-"]',
 } as const;
 
@@ -23,35 +22,45 @@ const SEL = {
  */
 async function cleanupPlaywrightBookings(context: {
   request: {
-    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
   };
 }) {
   const api = context.request;
   try {
-    const listRes = await api.get(
-      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ json: { search: "Playwright Test Customer" } }),
-      )}`,
-    );
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Customer" } },
+    });
     if (!listRes.ok()) return;
 
-    const body: any = await listRes.json();
+    const body = (await listRes.json()) as {
+      result?: {
+        data?: { items?: Array<{ id: string }> };
+        json?: { items?: Array<{ id: string }> };
+      };
+    };
+    const result = body?.[0] as
+      | {
+          result?: {
+            data?: { items?: Array<{ id: string }>; json?: { items?: Array<{ id: string }> } };
+          };
+        }
+      | undefined;
     const items: Array<{ id: string }> =
-      body?.[0]?.result?.data?.items ??
-      body?.[0]?.result?.data?.json?.items ??
-      [];
+      result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api
-          .get(
-            `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ json: { id: item.id } }),
-            )}`,
-          )
-          .catch(() => {});
+          .post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } })
+          .catch(() => {
+            // cleanup may fail if booking doesn't exist — ignore
+          });
       }
     }
   } catch {
+    // list may fail if no bookings exist — ignore
   }
 }
 
@@ -67,7 +76,10 @@ test.describe("booking creation flow", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
 
     // Ensure the React-controlled input is hydrated before filling
     const customerNameInput = page.locator(SEL.customerName);
@@ -84,7 +96,10 @@ test.describe("booking creation flow", () => {
 
     // Wait for the specific package option to be available in the DOM before selecting.
     // waitForFunction(options.length > 1) can race against React re-renders.
-    await page.locator('#packageId option[value]:not([value=""])').first().waitFor({ state: "attached", timeout: 15000 });
+    await page
+      .locator('#packageId option[value]:not([value=""])')
+      .first()
+      .waitFor({ state: "attached", timeout: 15000 });
     // Give the select one more beat to fully stabilize after TRPC data lands
     await page.waitForTimeout(500);
     await page.locator(SEL.packageId).selectOption({ index: 1 });
@@ -95,9 +110,7 @@ test.describe("booking creation flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead =
-      (2026 - new Date().getFullYear()) * 12 +
-      (7 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (7 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
@@ -127,7 +140,10 @@ test.describe("form validation", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.departureDateButton, {
       state: "visible",
       timeout: 10000,

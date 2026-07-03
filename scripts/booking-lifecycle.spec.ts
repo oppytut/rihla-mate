@@ -23,16 +23,17 @@ const SEL = {
  */
 async function cleanupPlaywrightLifecycleBookings(context: {
   request: {
-    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
   };
 }) {
   const api = context.request;
   try {
-    const listRes = await api.get(
-      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ json: { search: "Playwright Test Lifecycle" } }),
-      )}`,
-    );
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Lifecycle" } },
+    });
     if (!listRes.ok()) return;
 
     const body = (await listRes.json()) as Record<string, unknown>;
@@ -47,11 +48,7 @@ async function cleanupPlaywrightLifecycleBookings(context: {
       result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
-        await api.get(
-          `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
-            JSON.stringify({ json: { id: item.id } }),
-          )}`,
-        );
+        await api.post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } });
       }
     }
   } catch {
@@ -157,6 +154,13 @@ test.describe("booking lifecycle", () => {
 
     // ── EDIT PHASE ─────────────────────────────────────────────────────
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+    // Wait for at least one table row to appear and stabilize before clicking.
+    // The table re-renders as React hydrates with tRPC data, causing "element is not stable".
+    const firstRow = page.locator("table tbody tr").first();
+    await firstRow.waitFor({ state: "visible", timeout: 10000 });
+    await firstRow.waitFor({ state: "attached", timeout: 5000 });
+    // Extra settle time for any CSS transitions / layout shifts
+    await page.waitForTimeout(500);
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });

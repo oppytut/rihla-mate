@@ -19,16 +19,17 @@ const SEL = {
 
 async function cleanupPlaywrightBookings(context: {
   request: {
-    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
   };
 }) {
   const api = context.request;
   try {
-    const listRes = await api.get(
-      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ json: { search: "Playwright Test Customer Edit" } }),
-      )}`,
-    );
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Customer Edit" } },
+    });
     if (!listRes.ok()) return;
 
     const body = (await listRes.json()) as {
@@ -38,11 +39,7 @@ async function cleanupPlaywrightBookings(context: {
     for (const item of items) {
       if (item.id) {
         await api
-          .get(
-            `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ json: { id: item.id } }),
-            )}`,
-          )
+          .post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } })
           .catch(() => {
             // cleanup may fail if booking doesn't exist — ignore
           });
@@ -123,6 +120,11 @@ test.describe("booking edit flow", () => {
     });
 
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+    // Wait for at least one table row to appear and stabilize before clicking.
+    const firstRow = page.locator("table tbody tr").first();
+    await firstRow.waitFor({ state: "visible", timeout: 10000 });
+    await firstRow.waitFor({ state: "attached", timeout: 5000 });
+    await page.waitForTimeout(500);
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
