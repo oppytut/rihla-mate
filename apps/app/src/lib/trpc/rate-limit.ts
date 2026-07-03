@@ -70,6 +70,11 @@ export function createRateLimitMiddleware(windowMs: number, maxRequests: number)
   const store = getStore(windowMs, maxRequests);
 
   return async ({ ctx, next }: { ctx: TRPCContext; next: (opts: { ctx: TRPCContext }) => Promise<unknown> }) => {
+    // Skip rate limiting in CI to prevent shared IP from exhausting budget across parallel tests
+    if (process.env.CI) {
+      return next({ ctx });
+    }
+
     cleanupStore(store, windowMs);
     cleanupAllStores();
     const ip = extractIP(ctx);
