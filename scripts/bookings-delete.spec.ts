@@ -78,31 +78,10 @@ test.describe("booking delete flow", () => {
     await page.locator(SEL.submitButton).click();
 
     // Wait for redirect to the list page
-    await page
-      .waitForURL((url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"), {
-        timeout: 15000,
-      })
-      .catch(async () => {
-        // Submission may show a validation error (e.g. duplicate booking).
-        // If no redirect happened, try Bali with its own valid date (8/1/2026).
-        const baliOptionValue = await page
-          .locator("#packageId option")
-          .filter({ hasText: "Bali Sacred Temples" })
-          .getAttribute("value");
-        if (baliOptionValue) {
-          await page.selectOption("#packageId", baliOptionValue);
-          await expect(page.locator("#packageId")).toHaveValue(baliOptionValue, { timeout: 5000 });
-          // Re-select date for Bali: 8/1/2026
-          await page.locator(SEL.departureDateButton).click();
-          await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
-          await page.locator(SEL.calendarDay("8/1/2026")).first().click();
-        }
-        await page.locator(SEL.submitButton).click();
-        await page.waitForURL(
-          (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-          { timeout: 15000 },
-        );
-      });
+    await page.waitForURL(
+      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+      { timeout: 15000 },
+    );
 
     // ── Delete phase ────────────────────────────────────────────────
     // Wait for the table to render

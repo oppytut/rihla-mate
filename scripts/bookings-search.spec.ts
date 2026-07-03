@@ -98,9 +98,9 @@ async function ensureSeedBookings(context: PlaywrightContext, _page: PlaywrightP
   // Create only missing seed bookings via API with different packages/dates to avoid 409 CONFLICT.
   // If a 409 is returned, retry with the next available package.
   const seedData: Array<{ name: string; packageIdx: number; dateIdx: number }> = [
-    { name: "Alice Search Test", packageIdx: 0, dateIdx: 0 },
-    { name: "Bob Search Test", packageIdx: 1, dateIdx: 0 },
-    { name: "Charlie Filter Test", packageIdx: 2, dateIdx: 1 },
+    { name: "Alice Search Test", packageIdx: 0, dateIdx: 3 },
+    { name: "Bob Search Test", packageIdx: 1, dateIdx: 3 },
+    { name: "Charlie Filter Test", packageIdx: 2, dateIdx: 4 },
   ];
 
   for (const item of seedData) {

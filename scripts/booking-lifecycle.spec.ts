@@ -115,12 +115,12 @@ test.describe("booking lifecycle", () => {
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (7 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("8/20/2026")).first().click();
+    await page.locator(SEL.calendarDay("7/20/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
@@ -140,53 +140,10 @@ test.describe("booking lifecycle", () => {
     await page.locator(SEL.submitButton).click();
 
     // Wait for redirect to the list page after successful create
-    await page
-      .waitForURL((url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"), {
-        timeout: 15000,
-      })
-      .catch(async () => {
-        // Submission may show a validation error (e.g. duplicate booking).
-        // If no redirect happened, try a different package with its own valid date.
-        const baliOptionValue = await page
-          .locator("#packageId option")
-          .filter({ hasText: "Bali Sacred Temples" })
-          .getAttribute("value");
-        if (baliOptionValue) {
-          await page.locator(SEL.packageId).selectOption(baliOptionValue);
-          await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
-          // Bali's available dates include 8/1/2026
-          await page.locator(SEL.departureDateButton).click();
-          await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
-          await page.locator(SEL.calendarDay("8/1/2026")).first().click();
-        }
-        await page.locator(SEL.submitButton).click();
-        await page
-          .waitForURL(
-            (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-            { timeout: 15000 },
-          )
-          .catch(async () => {
-            const jogjaOptionValue = await page
-              .locator("#packageId option")
-              .filter({ hasText: "Yogyakarta Heritage Tour" })
-              .getAttribute("value");
-            if (jogjaOptionValue) {
-              await page.locator(SEL.packageId).selectOption(jogjaOptionValue);
-              await expect(page.locator(SEL.packageId)).toHaveValue(jogjaOptionValue, {
-                timeout: 5000,
-              });
-              // Yogyakarta's available dates include 8/10/2026
-              await page.locator(SEL.departureDateButton).click();
-              await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
-              await page.locator(SEL.calendarDay("8/10/2026")).first().click();
-            }
-            await page.locator(SEL.submitButton).click();
-            await page.waitForURL(
-              (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-              { timeout: 15000 },
-            );
-          });
-      });
+    await page.waitForURL(
+      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+      { timeout: 15000 },
+    );
 
     // ── EDIT PHASE ─────────────────────────────────────────────────────
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });
