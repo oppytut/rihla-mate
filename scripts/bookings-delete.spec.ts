@@ -50,7 +50,7 @@ test.describe("booking delete flow", () => {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("8/1/2026")).first().click();
+    await page.locator(SEL.calendarDay("8/5/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
