@@ -102,7 +102,14 @@ test.describe("booking creation flow", () => {
       .waitFor({ state: "attached", timeout: 15000 });
     // Give the select one more beat to fully stabilize after TRPC data lands
     await page.waitForTimeout(500);
-    await page.locator(SEL.packageId).selectOption({ label: "Bali Sacred Temples" });
+
+    const baliOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Bali Sacred Temples" })
+      .getAttribute("value");
+    if (!baliOptionValue) throw new Error("Bali Sacred Temples option not found");
+    await page.locator(SEL.packageId).selectOption(baliOptionValue);
+    await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {

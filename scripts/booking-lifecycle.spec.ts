@@ -93,7 +93,20 @@ test.describe("booking lifecycle", () => {
       .first()
       .waitFor({ state: "attached", timeout: 15000 });
     await page.waitForTimeout(500);
-    await page.locator(SEL.packageId).selectOption({ label: "Komodo Island Expedition" });
+
+    // Resolve the option value for "Komodo Island Expedition" by its text content.
+    // Using selectOption({ label }) can race with React re-renders (controlled component
+    // resets value="") and Playwright's label matching is fragile. Instead, find the
+    // option by text, extract its value, and selectOption by value.
+    const komodoOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Komodo Island Expedition" })
+      .getAttribute("value");
+    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
+    await page.locator(SEL.packageId).selectOption(komodoOptionValue);
+
+    // Wait for React to commit the state update — the controlled <select> value should match.
+    await expect(page.locator(SEL.packageId)).toHaveValue(komodoOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();
@@ -133,8 +146,19 @@ test.describe("booking lifecycle", () => {
       })
       .catch(async () => {
         // Submission may show a validation error (e.g. duplicate booking).
-        // If no redirect happened, try a different package.
-        await page.locator(SEL.packageId).selectOption({ label: "Bali Sacred Temples" });
+        // If no redirect happened, try a different package with its own valid date.
+        const baliOptionValue = await page
+          .locator("#packageId option")
+          .filter({ hasText: "Bali Sacred Temples" })
+          .getAttribute("value");
+        if (baliOptionValue) {
+          await page.locator(SEL.packageId).selectOption(baliOptionValue);
+          await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
+          // Bali's available dates include 8/1/2026
+          await page.locator(SEL.departureDateButton).click();
+          await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
+          await page.locator(SEL.calendarDay("8/1/2026")).first().click();
+        }
         await page.locator(SEL.submitButton).click();
         await page
           .waitForURL(
@@ -142,8 +166,20 @@ test.describe("booking lifecycle", () => {
             { timeout: 15000 },
           )
           .catch(async () => {
-            // Try one more package index
-            await page.locator(SEL.packageId).selectOption({ label: "Yogyakarta Heritage Tour" });
+            const jogjaOptionValue = await page
+              .locator("#packageId option")
+              .filter({ hasText: "Yogyakarta Heritage Tour" })
+              .getAttribute("value");
+            if (jogjaOptionValue) {
+              await page.locator(SEL.packageId).selectOption(jogjaOptionValue);
+              await expect(page.locator(SEL.packageId)).toHaveValue(jogjaOptionValue, {
+                timeout: 5000,
+              });
+              // Yogyakarta's available dates include 8/10/2026
+              await page.locator(SEL.departureDateButton).click();
+              await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
+              await page.locator(SEL.calendarDay("8/10/2026")).first().click();
+            }
             await page.locator(SEL.submitButton).click();
             await page.waitForURL(
               (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),

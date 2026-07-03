@@ -36,7 +36,15 @@ test.describe("booking delete flow", () => {
       "#packageId",
       { timeout: 10000 },
     );
-    await page.locator(SEL.packageSelect).selectOption({ label: "Komodo Island Expedition" });
+
+    // Resolve the option value for "Komodo Island Expedition" by its text content
+    const komodoOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Komodo Island Expedition" })
+      .getAttribute("value");
+    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
+    await page.locator(SEL.packageSelect).selectOption(komodoOptionValue);
+    await expect(page.locator(SEL.packageSelect)).toHaveValue(komodoOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();
@@ -76,8 +84,19 @@ test.describe("booking delete flow", () => {
       })
       .catch(async () => {
         // Submission may show a validation error (e.g. duplicate booking).
-        // If no redirect happened, try a different package.
-        await page.selectOption("#packageId", { label: "Bali Sacred Temples" });
+        // If no redirect happened, try Bali with its own valid date (8/1/2026).
+        const baliOptionValue = await page
+          .locator("#packageId option")
+          .filter({ hasText: "Bali Sacred Temples" })
+          .getAttribute("value");
+        if (baliOptionValue) {
+          await page.selectOption("#packageId", baliOptionValue);
+          await expect(page.locator("#packageId")).toHaveValue(baliOptionValue, { timeout: 5000 });
+          // Re-select date for Bali: 8/1/2026
+          await page.locator(SEL.departureDateButton).click();
+          await page.waitForSelector(SEL.popoverContent, { state: "visible", timeout: 5000 });
+          await page.locator(SEL.calendarDay("8/1/2026")).first().click();
+        }
         await page.locator(SEL.submitButton).click();
         await page.waitForURL(
           (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),

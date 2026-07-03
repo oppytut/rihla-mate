@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
 
 const SEL = {
@@ -76,7 +76,14 @@ test.describe("booking edit flow", () => {
       SEL.packageId,
       { timeout: 10000 },
     );
-    await packageSelect.selectOption({ label: "Bali Sacred Temples" });
+
+    const baliOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Bali Sacred Temples" })
+      .getAttribute("value");
+    if (!baliOptionValue) throw new Error("Bali Sacred Temples option not found");
+    await packageSelect.selectOption(baliOptionValue);
+    await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
