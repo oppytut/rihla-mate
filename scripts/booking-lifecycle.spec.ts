@@ -104,19 +104,19 @@ test.describe("booking lifecycle", () => {
     // Wait for React to commit the state update — the controlled <select> value should match.
     await expect(page.locator(SEL.packageId)).toHaveValue(komodoOptionValue, { timeout: 5000 });
 
-    // Open date picker and navigate to July 1, 2026
+    // Open date picker and navigate to August 20, 2026
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
       state: "visible",
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (7 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("7/20/2026")).first().click();
+    await page.locator(SEL.calendarDay("8/20/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
