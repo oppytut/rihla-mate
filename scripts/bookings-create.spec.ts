@@ -37,19 +37,10 @@ async function cleanupPlaywrightBookings(context: {
 
     const body = (await listRes.json()) as {
       result?: {
-        data?: { items?: Array<{ id: string }> };
-        json?: { items?: Array<{ id: string }> };
+        data?: { json?: { items?: Array<{ id: string }> } };
       };
     };
-    const result = body?.[0] as
-      | {
-          result?: {
-            data?: { items?: Array<{ id: string }>; json?: { items?: Array<{ id: string }> } };
-          };
-        }
-      | undefined;
-    const items: Array<{ id: string }> =
-      result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api

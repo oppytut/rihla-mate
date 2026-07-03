@@ -33,9 +33,9 @@ async function cleanupPlaywrightBookings(context: {
     if (!listRes.ok()) return;
 
     const body = (await listRes.json()) as {
-      result?: { data?: { items?: Array<{ id: string }> } };
+      result?: { data?: { json?: { items?: Array<{ id: string }> } } };
     };
-    const items: Array<{ id: string }> = body?.result?.data?.items ?? [];
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api

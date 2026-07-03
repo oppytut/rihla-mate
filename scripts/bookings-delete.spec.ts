@@ -13,7 +13,51 @@ const SEL = {
   calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
 } as const;
 
+/**
+ * Delete all bookings whose customerName matches "Playwright Test Customer Delete".
+ *
+ * Uses `context.request` so the API calls share the browser context's
+ * auth cookies from storageState (the global request fixture does NOT).
+ */
+async function cleanupDeleteBookings(context: {
+  request: {
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}) {
+  const api = context.request;
+  try {
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Customer Delete" } },
+    });
+    if (!listRes.ok()) return;
+
+    const body = (await listRes.json()) as {
+      result?: {
+        data?: { json?: { items?: Array<{ id: string }> } };
+      };
+    };
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
+    for (const item of items) {
+      if (item.id) {
+        await api
+          .post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } })
+          .catch(() => {
+            // cleanup may fail if booking doesn't exist — ignore
+          });
+      }
+    }
+  } catch {
+    // list may fail if no bookings exist — ignore
+  }
+}
+
 test.describe("booking delete flow", () => {
+  test.beforeEach(async ({ context }) => {
+    await cleanupDeleteBookings(context);
+  });
   test("creates a booking then deletes it from the list", async ({ page }) => {
     // ── Create phase ────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {

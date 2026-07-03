@@ -36,16 +36,12 @@ async function cleanupPlaywrightLifecycleBookings(context: {
     });
     if (!listRes.ok()) return;
 
-    const body = (await listRes.json()) as Record<string, unknown>;
-    const result = body?.[0] as
-      | {
-          result?: {
-            data?: { items?: Array<{ id: string }>; json?: { items?: Array<{ id: string }> } };
-          };
-        }
-      | undefined;
-    const items: Array<{ id: string }> =
-      result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
+    const body = (await listRes.json()) as {
+      result?: {
+        data?: { json?: { items?: Array<{ id: string }> } };
+      };
+    };
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api.post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } });
