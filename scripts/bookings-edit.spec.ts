@@ -76,7 +76,7 @@ test.describe("booking edit flow", () => {
       SEL.packageId,
       { timeout: 10000 },
     );
-    await packageSelect.selectOption({ index: 2 });
+    await packageSelect.selectOption({ index: 1 });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
