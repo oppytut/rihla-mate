@@ -79,8 +79,12 @@ async function checkLicense(): Promise<boolean> {
 }
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
   // 1. Let next-intl handle locale resolution first
   const intlResponse = intlMiddleware(request);
+
+  console.log("[proxy]", request.method, pathname, "intlStatus:", intlResponse.status);
 
   // If next-intl decided to redirect or rewrite, return that immediately
   if (
@@ -88,14 +92,15 @@ export async function proxy(request: NextRequest) {
     intlResponse.headers.get("x-nextjs-rewrite") ||
     intlResponse.headers.get("x-middleware-rewrite")
   ) {
+    console.log("[proxy] intl redirect/rewrite, returning early");
     return intlResponse;
   }
 
   // 2. Run auth/license logic on the (now locale-resolved) request
-  const { pathname } = request.nextUrl;
   const locale = extractLocale(pathname);
 
   if (isPublicRoute(pathname) || isStaticAsset(pathname)) {
+    console.log("[proxy] public route, returning intlResponse");
     return intlResponse;
   }
 
