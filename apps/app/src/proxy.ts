@@ -1,4 +1,4 @@
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 
@@ -84,15 +84,16 @@ export async function proxy(request: NextRequest) {
   // 1. Let next-intl handle locale resolution first
   const intlResponse = intlMiddleware(request);
 
-  console.log("[proxy]", request.method, pathname, "intlStatus:", intlResponse.status);
-
   // If next-intl decided to redirect or rewrite, return that immediately
+  // EXCEPT for API routes: intlMiddleware rewrites e.g. /api/auth/sign-in/email
+  // → /id/api/auth/sign-in/email which 404s in production because no route
+  // handler exists at the rewritten path.
   if (
     intlResponse.status === 307 ||
-    intlResponse.headers.get("x-nextjs-rewrite") ||
-    intlResponse.headers.get("x-middleware-rewrite")
+    (!pathname.startsWith("/api/") &&
+      (intlResponse.headers.get("x-nextjs-rewrite") ||
+        intlResponse.headers.get("x-middleware-rewrite")))
   ) {
-    console.log("[proxy] intl redirect/rewrite, returning early");
     return intlResponse;
   }
 
@@ -100,8 +101,13 @@ export async function proxy(request: NextRequest) {
   const locale = extractLocale(pathname);
 
   if (isPublicRoute(pathname) || isStaticAsset(pathname)) {
-    console.log("[proxy] public route, returning intlResponse");
-    return intlResponse;
+    // For API routes, intlResponse is a rewrite (NextResponse.rewrite) that
+    // would change /api/auth/... → /id/api/auth/... causing 404 in production.
+    // Pass through with NextResponse.next() instead, carrying the locale header.
+    const requestHeaders = new Headers(request.headers);
+    const localeHeader = intlResponse.headers.get("x-next-intl-locale");
+    if (localeHeader) requestHeaders.set("x-next-intl-locale", localeHeader);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (isHomepage(pathname)) {
