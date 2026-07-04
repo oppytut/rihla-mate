@@ -88,8 +88,11 @@ export async function proxy(request: NextRequest) {
   // EXCEPT for API routes: intlMiddleware rewrites e.g. /api/auth/sign-in/email
   // → /id/api/auth/sign-in/email which 404s in production because no route
   // handler exists at the rewritten path.
+  // Also skip 307 redirects for API routes: intlMiddleware redirects e.g.
+  // /api/trpc/user.me → /en/api/trpc/user.me to add locale prefix, but API
+  // routes should never be locale-prefixed.
   if (
-    intlResponse.status === 307 ||
+    (intlResponse.status === 307 && !pathname.startsWith("/api/")) ||
     (!pathname.startsWith("/api/") &&
       (intlResponse.headers.get("x-nextjs-rewrite") ||
         intlResponse.headers.get("x-middleware-rewrite")))
