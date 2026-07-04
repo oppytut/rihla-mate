@@ -127,6 +127,43 @@ test.describe("booking delete flow", () => {
       { timeout: 15000 },
     );
 
+    // ── DIAGNOSTIC: capture what renders on the bookings list page ────
+    const consoleErrors: string[] = [];
+    const trpcResponses: Array<{ url: string; status: number; body: string }> = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+    page.on("response", async (response) => {
+      if (response.url().includes("/api/trpc/")) {
+        try {
+          const body = await response.text();
+          trpcResponses.push({ url: response.url(), status: response.status(), body });
+        } catch {
+          // ignore
+        }
+      }
+    });
+
+    await page.waitForTimeout(3000);
+
+    await page.screenshot({
+      path: "test-results/bookings-delete-after-redirect.png",
+      fullPage: true,
+    });
+    const pageContent = await page.content();
+    console.log("[DIAGNOSTIC] Page title:", await page.title());
+    console.log("[DIAGNOSTIC] URL:", page.url());
+    console.log("[DIAGNOSTIC] Table exists:", pageContent.includes("<table"));
+    console.log(
+      "[DIAGNOSTIC] Empty state testid:",
+      pageContent.includes('data-testid="bookings-add-new-empty"'),
+    );
+    console.log("[DIAGNOSTIC] Error state:", pageContent.includes("Failed to load bookings"));
+    console.log("[DIAGNOSTIC] Loading skeleton:", pageContent.includes("animate-pulse"));
+    console.log("[DIAGNOSTIC] Console errors:", JSON.stringify(consoleErrors));
+    console.log("[DIAGNOSTIC] tRPC responses:", JSON.stringify(trpcResponses.slice(-5)));
+    console.log("[DIAGNOSTIC] Page HTML (first 3000 chars):", pageContent.substring(0, 3000));
+
     // ── Delete phase ────────────────────────────────────────────────
     // Wait for the table to render
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });

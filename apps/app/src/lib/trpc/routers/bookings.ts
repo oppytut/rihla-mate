@@ -100,10 +100,27 @@ export const bookingsRouter = createTRPCRouter({
       ]);
 
       if (itemsResult.status === "rejected") {
+        const err = itemsResult.reason;
+        const dbError = err instanceof Error ? err.message : String(err);
+        logger.error("[bookings.list] items query rejected", {
+          component: "bookings",
+          error: dbError,
+          stack: err instanceof Error ? (err.stack ?? undefined) : undefined,
+        });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch bookings",
+          message: `Failed to fetch bookings: ${dbError}`,
           cause: itemsResult.reason,
+        });
+      }
+
+      if (countResult.status === "rejected") {
+        const err = countResult.reason;
+        const dbError = err instanceof Error ? err.message : String(err);
+        logger.error("[bookings.list] count query rejected", {
+          component: "bookings",
+          error: dbError,
+          stack: err instanceof Error ? (err.stack ?? undefined) : undefined,
         });
       }
 
