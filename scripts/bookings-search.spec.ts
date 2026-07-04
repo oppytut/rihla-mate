@@ -67,6 +67,25 @@ async function ensureSeedBookings(context: PlaywrightContext, _page: PlaywrightP
   const missing = seedNames.filter((n) => !existingNames.has(n));
   if (missing.length === 0) return;
 
+  // Fallback static packages matching playwright-seed.ts UUIDs.
+  // The tRPC packages.list call may fail in CI (auth cookie not yet synced
+  // to context.request, or seed.ts ran after playwright-seed wiped packages).
+  // These static UUIDs guarantee bookings can always be created.
+  const STATIC_PACKAGES: Array<{ id: string; availableDates: string[] }> = [
+    {
+      id: "00000000-0000-0000-0000-000000000001",
+      availableDates: ["2026-07-01", "2026-07-15", "2026-08-01", "2026-08-15", "2026-09-01"],
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000002",
+      availableDates: ["2026-07-01", "2026-07-20", "2026-08-05", "2026-08-20", "2026-09-05"],
+    },
+    {
+      id: "00000000-0000-0000-0000-000000000003",
+      availableDates: ["2026-07-01", "2026-07-10", "2026-07-25", "2026-08-10", "2026-08-25"],
+    },
+  ];
+
   // List packages via API to get real UUIDs and available dates
   const pkgsRes = await trpc(context, "packages.list", {
     search: "",
@@ -77,8 +96,6 @@ async function ensureSeedBookings(context: PlaywrightContext, _page: PlaywrightP
   const pkgsBody = await pkgsRes.json();
   console.log("[ensureSeedBookings] packages.list status:", pkgsRes.status());
 
-  // Non-batched TRPC response: { result: { type: "data", data: ... } }
-  // The data may be wrapped in superjson (has .json property) or raw
   let rawItems: unknown[] = [];
   const resultData = pkgsBody?.result?.data;
   if (resultData) {
@@ -91,8 +108,14 @@ async function ensureSeedBookings(context: PlaywrightContext, _page: PlaywrightP
   console.log("[ensureSeedBookings] package count:", packages.length);
 
   if (packages.length < 3) {
-    console.log("[ensureSeedBookings] Not enough packages found, skipping seed");
-    return;
+    console.log("[ensureSeedBookings] API returned <3 packages, using static fallback");
+    STATIC_PACKAGES.forEach((p, i) => {
+      packages[i] = {
+        id: p.id,
+        title: `Static Package ${i + 1}`,
+        availableDates: p.availableDates,
+      };
+    });
   }
 
   // Create only missing seed bookings via API with different packages/dates to avoid 409 CONFLICT.
