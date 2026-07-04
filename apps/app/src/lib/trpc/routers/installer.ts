@@ -1,13 +1,16 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq, sql } from "drizzle-orm";
+import { eq, and, ne, sql } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../init";
 import { users } from "@/lib/db/schema/users";
 import { auth } from "@/lib/auth";
 
 export const installerRouter = createTRPCRouter({
   resetForTesting: publicProcedure.mutation(async ({ ctx }) => {
-    await ctx.db.delete(users).where(eq(users.role, "admin"));
+    // Preserve the playwright seed user so shared storageState stays valid
+    await ctx.db
+      .delete(users)
+      .where(and(eq(users.role, "admin"), ne(users.email, "playwright@rihlamate.test")));
     return { success: true };
   }),
 
@@ -20,11 +23,13 @@ export const installerRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // 1. Check if any admin user already exists
+      // 1. Check if any admin user already exists (excluding the
+      //    seeded playwright test user, which is preserved by
+      //    resetForTesting for use by other test suites)
       const existingAdmin = await ctx.db
         .select({ id: users.id })
         .from(users)
-        .where(eq(users.role, "admin"))
+        .where(and(eq(users.role, "admin"), ne(users.email, "playwright@rihlamate.test")))
         .limit(1);
 
       if (existingAdmin.length > 0) {
