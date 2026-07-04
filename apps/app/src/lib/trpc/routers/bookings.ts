@@ -79,15 +79,13 @@ export const bookingsRouter = createTRPCRouter({
             paymentRef: bookings.paymentRef,
             notes: bookings.notes,
             createdAt: bookings.createdAt,
-            midtransOrderId: bookings.midtransOrderId,
             paymentToken: bookings.midtransOrderId,
             transactionId: bookings.midtransTransactionId,
             paymentMethod: bookings.paymentMethod,
             grossAmount: bookings.grossAmount,
-            transactionStatus: bookings.transactionStatus,
             paymentStatus: bookings.transactionStatus,
-            redirectUrl: sql`NULL`.mapWith(String),
-            paidAt: sql`NULL`.mapWith(String),
+            redirectUrl: sql<string | null>`NULL`,
+            paidAt: sql<string | null>`NULL`,
             packageTitle: packages.title,
           })
           .from(bookings)
@@ -124,7 +122,12 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
 
-      const items = itemsResult.value;
+      const rawItems = itemsResult.value;
+      const items = rawItems.map((i) => ({
+        ...i,
+        midtransOrderId: i.paymentToken,
+        transactionStatus: i.paymentStatus,
+      }));
       const total = countResult.status === "fulfilled" ? (countResult.value[0]?.count ?? 0) : 0;
 
       return { items, total, page, limit };
@@ -148,15 +151,13 @@ export const bookingsRouter = createTRPCRouter({
           notes: bookings.notes,
           createdAt: bookings.createdAt,
           updatedAt: bookings.updatedAt,
-          midtransOrderId: bookings.midtransOrderId,
           paymentToken: bookings.midtransOrderId,
           transactionId: bookings.midtransTransactionId,
           paymentMethod: bookings.paymentMethod,
           grossAmount: bookings.grossAmount,
-          transactionStatus: bookings.transactionStatus,
           paymentStatus: bookings.transactionStatus,
-          redirectUrl: sql`NULL`.mapWith(String),
-          paidAt: sql`NULL`.mapWith(String),
+          redirectUrl: sql<string | null>`NULL`,
+          paidAt: sql<string | null>`NULL`,
           packageTitle: packages.title,
         })
         .from(bookings)
@@ -171,7 +172,12 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
 
-      return result[0];
+      const raw = result[0];
+      return {
+        ...raw,
+        midtransOrderId: raw.paymentToken,
+        transactionStatus: raw.paymentStatus,
+      };
     }),
 
   create: adminProcedure
