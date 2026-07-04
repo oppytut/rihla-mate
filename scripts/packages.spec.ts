@@ -28,7 +28,13 @@ test.describe("Packages List Page Smoke Test", () => {
 });
 
 test.describe("unauthorized access", () => {
-  test("packages page renders even without auth (no guard implemented)", async ({ page }) => {
+  test("packages page renders even without auth (no guard implemented)", async ({ browser }) => {
+    // IMPORTANT: Use an isolated browser context (no storageState cookies)
+    // so that clearing auth does NOT pollute the shared page fixture.
+    // With workers: 1, using the shared page would poison ALL subsequent tests.
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
     await page.goto(`${BASE_URL}/en/dashboard/packages`, {
       waitUntil: "domcontentloaded",
     });
@@ -38,5 +44,7 @@ test.describe("unauthorized access", () => {
     });
     await expect(page.getByRole("heading", { name: "Packages" })).toBeVisible();
     expect(page.url()).toContain("/dashboard/packages");
+
+    await context.close();
   });
 });

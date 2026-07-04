@@ -3,7 +3,7 @@ import { chromium } from "@playwright/test";
 import { readFileSync, unlinkSync } from "fs";
 import { main as runSeed } from "./playwright-seed";
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(_config: FullConfig) {
   console.log("[global-setup] Running seed script...");
   await runSeed();
 
@@ -23,10 +23,9 @@ async function globalSetup(config: FullConfig) {
   // POST /api/auth/sign-in/email returns a Set-Cookie header with the
   // properly signed cookie that the server will accept.
   const request = context.request;
-  const signInResponse = await request.post(
-    "http://localhost:3000/api/auth/sign-in/email",
-    { data: { email, password } },
-  );
+  const signInResponse = await request.post("http://localhost:3000/api/auth/sign-in/email", {
+    data: { email, password },
+  });
 
   if (signInResponse.status() !== 200) {
     const body = await signInResponse.text();
@@ -37,16 +36,12 @@ async function globalSetup(config: FullConfig) {
 
   const setCookieHeader = signInResponse.headers()["set-cookie"];
   if (!setCookieHeader) {
-    throw new Error(
-      "[global-setup] No set-cookie header in sign-in response",
-    );
+    throw new Error("[global-setup] No set-cookie header in sign-in response");
   }
 
   const match = setCookieHeader.match(/better-auth\.session_token=([^;]+)/);
   if (!match?.[1]) {
-    throw new Error(
-      "[global-setup] Could not extract better-auth.session_token from set-cookie",
-    );
+    throw new Error("[global-setup] Could not extract better-auth.session_token from set-cookie");
   }
 
   const signedToken = match[1];
@@ -61,6 +56,11 @@ async function globalSetup(config: FullConfig) {
       httpOnly: true,
       secure: false,
       sameSite: "Lax" as const,
+      // Playwright serializes session cookies as expires: -1 in storageState.
+      // When loaded into a new context, some browser versions treat -1 as
+      // already expired (epoch -1 = 1969-12-31), so the cookie is never sent.
+      // Setting a future expiry ensures the cookie persists across contexts.
+      expires: Math.floor(Date.now() / 1000) + 86400,
     },
   ]);
 
@@ -73,7 +73,7 @@ async function globalSetup(config: FullConfig) {
   const currentUrl = page.url();
   if (currentUrl.includes("/sign-in")) {
     throw new Error(
-      `[global-setup] Redirected to sign-in — auth cookie rejected. URL: ${currentUrl}`
+      `[global-setup] Redirected to sign-in — auth cookie rejected. URL: ${currentUrl}`,
     );
   }
   console.log("[global-setup] Authenticated page load confirmed");

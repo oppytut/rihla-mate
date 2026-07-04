@@ -73,6 +73,23 @@ export async function main() {
     const pkgJogjaId = "00000000-0000-0000-0000-000000000003";
 
     await client.query("BEGIN");
+    // Delete by slug first to avoid UNIQUE violation from seed.ts packages
+    await client.query(
+      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
+      ["bali-sacred-temples"],
+    );
+    await client.query(
+      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
+      ["komodo-island-expedition"],
+    );
+    await client.query(
+      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
+      ["yogyakarta-heritage-tour"],
+    );
+    await client.query("DELETE FROM packages WHERE slug = $1", ["bali-sacred-temples"]);
+    await client.query("DELETE FROM packages WHERE slug = $1", ["komodo-island-expedition"]);
+    await client.query("DELETE FROM packages WHERE slug = $1", ["yogyakarta-heritage-tour"]);
+    // Also delete by static UUID (in case they exist from a previous run)
     await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgBaliId]);
     await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgKomodoId]);
     await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgJogjaId]);
