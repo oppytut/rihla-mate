@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
@@ -7,15 +8,20 @@ import { env } from "@/env";
 import { isLicenseValid, getActiveLicenseCount } from "@/lib/license/store";
 
 /**
- * next-intl is configured as:
- *   locales: ["id", "en"], defaultLocale: "id", localePrefix: "as-needed"
+ * next-intl locale handling.
+ *
+ * locales: ["id", "en"], defaultLocale: "id", localePrefix: "as-needed"
  *
  * "as-needed" means the default locale ("id") omits the prefix, while
- * secondary locales like "en" include it.  This helper strips an "/en" prefix
- * so we can match route patterns regardless of locale.
+ * secondary locales like "en" include it.
+ */
+const intlMiddleware = createIntlMiddleware(routing);
+
+/**
+ * Strips an "/en" locale prefix so we can match route patterns
+ * regardless of locale.
  *
  *   /en/dashboard/settings  ->  /dashboard/settings
- *   /id/dashboard/settings  ->  /dashboard/settings   (default, no prefix)
  *   /dashboard              ->  /dashboard
  */
 function stripLocalePrefix(pathname: string): string {
@@ -72,23 +78,35 @@ async function checkLicense(): Promise<boolean> {
   return count > 0;
 }
 
-export default async function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
+  // 1. Let next-intl handle locale resolution first
+  const intlResponse = intlMiddleware(request);
+
+  // If next-intl decided to redirect or rewrite, return that immediately
+  if (
+    intlResponse.status === 307 ||
+    intlResponse.headers.get("x-nextjs-rewrite") ||
+    intlResponse.headers.get("x-middleware-rewrite")
+  ) {
+    return intlResponse;
+  }
+
+  // 2. Run auth/license logic on the (now locale-resolved) request
   const { pathname } = request.nextUrl;
   const locale = extractLocale(pathname);
 
-  if (isPublicRoute(pathname)) {
-    return NextResponse.next();
-  }
-
-  if (isStaticAsset(pathname)) {
-    return NextResponse.next();
+  if (isPublicRoute(pathname) || isStaticAsset(pathname)) {
+    return intlResponse;
   }
 
   if (isHomepage(pathname)) {
     const hasLicense = await checkLicense();
     const url = request.nextUrl.clone();
     url.pathname = locale + (hasLicense ? "/dashboard" : "/activate");
-    return NextResponse.redirect(url);
+    return new Response(null, {
+      status: 307,
+      headers: { Location: url.toString() },
+    });
   }
 
   if (isDashboardRoute(pathname)) {
@@ -99,7 +117,10 @@ export default async function proxy(request: NextRequest) {
     if (!session?.session) {
       const url = request.nextUrl.clone();
       url.pathname = locale + "/sign-in";
-      return NextResponse.redirect(url);
+      return new Response(null, {
+        status: 307,
+        headers: { Location: url.toString() },
+      });
     }
   }
 
@@ -108,10 +129,13 @@ export default async function proxy(request: NextRequest) {
   if (!hasLicense) {
     const url = request.nextUrl.clone();
     url.pathname = locale + "/activate";
-    return NextResponse.redirect(url);
+    return new Response(null, {
+      status: 307,
+      headers: { Location: url.toString() },
+    });
   }
 
-  return NextResponse.next();
+  return intlResponse;
 }
 
 export const config = {
