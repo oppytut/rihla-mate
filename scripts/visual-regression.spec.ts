@@ -42,8 +42,14 @@ test.describe("visual regression", () => {
         { state: "visible", timeout: 15000 },
       );
 
-      await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(500);
+      // Ensure any skeleton loaders or animations have resolved before screenshot
+      await page.waitForFunction(
+        () => {
+          const skeletons = document.querySelectorAll(".animate-pulse");
+          return skeletons.length === 0;
+        },
+        { timeout: 10000 },
+      );
 
       await expect(page).toHaveScreenshot(`${name}.png`, {
         fullPage: false,

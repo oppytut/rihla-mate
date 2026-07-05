@@ -100,7 +100,6 @@ test.describe("booking delete flow", () => {
     const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
-      await page.waitForTimeout(100);
     }
     await page.locator(SEL.calendarDay("8/5/2026")).first().click();
 
@@ -144,29 +143,9 @@ test.describe("booking delete flow", () => {
       }
     });
 
-    await page.waitForTimeout(3000);
+    await page.waitForSelector("table", { state: "visible", timeout: 15000 });
 
-    await page.screenshot({
-      path: "test-results/bookings-delete-after-redirect.png",
-      fullPage: true,
-    });
-    const pageContent = await page.content();
-    console.log("[DIAGNOSTIC] Page title:", await page.title());
-    console.log("[DIAGNOSTIC] URL:", page.url());
-    console.log("[DIAGNOSTIC] Table exists:", pageContent.includes("<table"));
-    console.log(
-      "[DIAGNOSTIC] Empty state testid:",
-      pageContent.includes('data-testid="bookings-add-new-empty"'),
-    );
-    console.log("[DIAGNOSTIC] Error state:", pageContent.includes("Failed to load bookings"));
-    console.log("[DIAGNOSTIC] Loading skeleton:", pageContent.includes("animate-pulse"));
-    console.log("[DIAGNOSTIC] Console errors:", JSON.stringify(consoleErrors));
-    console.log("[DIAGNOSTIC] tRPC responses:", JSON.stringify(trpcResponses.slice(-5)));
-    console.log("[DIAGNOSTIC] Page HTML (first 3000 chars):", pageContent.substring(0, 3000));
-
-    // ── Delete phase ────────────────────────────────────────────────
-    // Wait for the table to render
-    await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+    // ── DIAGNOSTIC: capture what renders on the bookings list page ────
 
     // Handle window.confirm dialog
     page.once("dialog", (dialog) => dialog.accept());
