@@ -6,8 +6,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import { SnapPayment } from "@/components/payment/snap-payment";
 
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 10;
@@ -15,12 +17,15 @@ const PAGE_SIZE = 10;
 export default function BookingsPage() {
   const t = useTranslations();
   const trpc = useTRPC();
+  const router = useRouter();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState<string>("");
   const [page, setPage] = useState(1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [snapToken, setSnapToken] = useState<string | null>(null);
+  const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = `${t("bookings.title")} - Rihla Mate`;
@@ -63,6 +68,24 @@ export default function BookingsPage() {
     }),
   );
 
+  const payMutation = useMutation(
+    trpc.midtrans.createTransaction.mutationOptions({
+      onSuccess: (result) => {
+        if (result.token) {
+          setSnapToken(result.token);
+        } else {
+          // Token is null when midtransOrderId already exists
+          router.push(`/dashboard/bookings/${payingBookingId}/payment?status=success`);
+          setPayingBookingId(null);
+        }
+      },
+      onError: (error) => {
+        toast.error(`${t("common.error")}: ${error.message}`);
+        setPayingBookingId(null);
+      },
+    }),
+  );
+
   const bookings = bookingsQuery.data?.items ?? [];
   const total = bookingsQuery.data?.total ?? 0;
   const totalPages = Math.ceil(total / PAGE_SIZE);
@@ -90,7 +113,7 @@ export default function BookingsPage() {
   const getStatusBadgeClass = (bookingStatus: string) => {
     switch (bookingStatus) {
       case "confirmed":
-        return "bg-green-500/10 text-green-600 dark:text-green-400";
+        return "bg-green-500/10 text-green-700 dark:text-green-300";
       case "pending":
         return "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400";
       case "cancelled":
@@ -280,9 +303,7 @@ export default function BookingsPage() {
                   {bookings.map((booking) => (
                     <tr key={booking.id} className="hover:bg-muted/30 transition-colors">
                       <td className="px-4 py-3 font-medium text-foreground">
-                        <span className="block max-w-[200px] truncate">
-                          {booking.customerName}
-                        </span>
+                        <span className="block max-w-[200px] truncate">{booking.customerName}</span>
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         <span className="block max-w-[150px] truncate">
@@ -308,6 +329,23 @@ export default function BookingsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
+                          {booking.status === "pending" && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => {
+                                setPayingBookingId(booking.id);
+                                payMutation.mutate({ bookingId: booking.id });
+                              }}
+                              disabled={payMutation.isPending && payingBookingId === booking.id}
+                              data-testid={`booking-pay-${booking.id}`}
+                              aria-label={t("bookings.payNow")}
+                            >
+                              {payMutation.isPending && payingBookingId === booking.id
+                                ? t("bookings.paying")
+                                : t("bookings.payNow")}
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"
@@ -369,6 +407,26 @@ export default function BookingsPage() {
           </div>
         )}
       </div>
+
+      <SnapPayment
+        token={snapToken}
+        onSuccess={() => {
+          toast.success(t("bookings.snap.success"));
+          router.push(`/dashboard/bookings/${payingBookingId}/payment?status=success`);
+          setSnapToken(null);
+          setPayingBookingId(null);
+        }}
+        onError={() => {
+          toast.error(t("bookings.snap.error"));
+          setSnapToken(null);
+          setPayingBookingId(null);
+        }}
+        onClose={() => {
+          toast.info(t("bookings.snap.close"));
+          setSnapToken(null);
+          setPayingBookingId(null);
+        }}
+      />
     </>
   );
 }

@@ -17,6 +17,22 @@ const SELECTORS = {
 } as const;
 
 test.describe("Installer Wizard", () => {
+  test.describe.configure({ mode: "serial" });
+
+  // Isolate from the shared storageState — installer.resetForTesting
+  // deletes ALL admin users, which invalidates the seeded auth cookie
+  // that other tests depend on. Running in a separate browser context
+  // with storageState: undefined prevents polluting the shared state.
+  test.use({ storageState: undefined });
+
+  test.beforeEach(async ({ request }) => {
+    // resetForTesting preserves playwright@rihlamate.test so shared
+    // storageState stays valid for subsequent tests.
+    await request.post(`${BASE_URL}/api/trpc/installer.resetForTesting`, {
+      data: { json: {} },
+    });
+  });
+
   test("navigates through all 5 installer steps", async ({ page }) => {
     await page.goto(`${BASE_URL}/en/installer`, {
       waitUntil: "domcontentloaded",

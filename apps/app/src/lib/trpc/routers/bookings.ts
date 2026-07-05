@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq, ilike, and, count, desc } from "drizzle-orm";
+import { eq, ilike, and, count, desc, sql } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
@@ -79,6 +79,13 @@ export const bookingsRouter = createTRPCRouter({
             paymentRef: bookings.paymentRef,
             notes: bookings.notes,
             createdAt: bookings.createdAt,
+            paymentToken: bookings.midtransOrderId,
+            transactionId: bookings.midtransTransactionId,
+            paymentMethod: bookings.paymentMethod,
+            grossAmount: bookings.grossAmount,
+            paymentStatus: bookings.transactionStatus,
+            redirectUrl: sql<string | null>`NULL`,
+            paidAt: sql<string | null>`NULL`,
             packageTitle: packages.title,
           })
           .from(bookings)
@@ -91,14 +98,36 @@ export const bookingsRouter = createTRPCRouter({
       ]);
 
       if (itemsResult.status === "rejected") {
+        const err = itemsResult.reason;
+        const dbError = err instanceof Error ? err.message : String(err);
+        logger.error("[bookings.list] items query rejected", {
+          component: "bookings",
+          error: dbError,
+          stack: err instanceof Error ? (err.stack ?? undefined) : undefined,
+        });
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to fetch bookings",
+          message: `Failed to fetch bookings: ${dbError}`,
           cause: itemsResult.reason,
         });
       }
 
-      const items = itemsResult.value;
+      if (countResult.status === "rejected") {
+        const err = countResult.reason;
+        const dbError = err instanceof Error ? err.message : String(err);
+        logger.error("[bookings.list] count query rejected", {
+          component: "bookings",
+          error: dbError,
+          stack: err instanceof Error ? (err.stack ?? undefined) : undefined,
+        });
+      }
+
+      const rawItems = itemsResult.value;
+      const items = rawItems.map((i) => ({
+        ...i,
+        midtransOrderId: i.paymentToken,
+        transactionStatus: i.paymentStatus,
+      }));
       const total = countResult.status === "fulfilled" ? (countResult.value[0]?.count ?? 0) : 0;
 
       return { items, total, page, limit };
@@ -122,6 +151,13 @@ export const bookingsRouter = createTRPCRouter({
           notes: bookings.notes,
           createdAt: bookings.createdAt,
           updatedAt: bookings.updatedAt,
+          paymentToken: bookings.midtransOrderId,
+          transactionId: bookings.midtransTransactionId,
+          paymentMethod: bookings.paymentMethod,
+          grossAmount: bookings.grossAmount,
+          paymentStatus: bookings.transactionStatus,
+          redirectUrl: sql<string | null>`NULL`,
+          paidAt: sql<string | null>`NULL`,
           packageTitle: packages.title,
         })
         .from(bookings)
@@ -136,7 +172,12 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
 
-      return result[0];
+      const raw = result[0];
+      return {
+        ...raw,
+        midtransOrderId: raw.paymentToken,
+        transactionStatus: raw.paymentStatus,
+      };
     }),
 
   create: adminProcedure

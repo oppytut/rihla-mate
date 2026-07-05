@@ -28,7 +28,7 @@ export function extractIP(ctx: TRPCContext): string {
   const headers = ctx.headers;
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) {
-    const ip = forwarded.split(",")[0]!.trim();
+    const ip = forwarded.split(",")[0]?.trim() ?? "";
     if (net.isIP(ip)) {
       return ip;
     }
@@ -54,7 +54,7 @@ export function cleanupStore(store: Map<string, RateLimitEntry>, windowMs: numbe
 export function cleanupAllStores(): void {
   const now = Date.now();
   for (const [key, store] of stores) {
-    const windowMs = Number.parseInt(key.split(":")[0]!, 10);
+    const windowMs = Number.parseInt(key.split(":")[0] ?? "", 10);
     if (Number.isNaN(windowMs)) continue;
     const cutoff = now - windowMs * 2;
     for (const [ip, entry] of store) {
@@ -69,7 +69,18 @@ export function cleanupAllStores(): void {
 export function createRateLimitMiddleware(windowMs: number, maxRequests: number) {
   const store = getStore(windowMs, maxRequests);
 
-  return async ({ ctx, next }: { ctx: TRPCContext; next: (opts: { ctx: TRPCContext }) => Promise<unknown> }) => {
+  return async ({
+    ctx,
+    next,
+  }: {
+    ctx: TRPCContext;
+    next: (opts: { ctx: TRPCContext }) => Promise<unknown>;
+  }) => {
+    // Skip rate limiting in E2E tests where all requests share one IP
+    if (process.env.SKIP_RATE_LIMIT === "true") {
+      return next({ ctx });
+    }
+
     cleanupStore(store, windowMs);
     cleanupAllStores();
     const ip = extractIP(ctx);

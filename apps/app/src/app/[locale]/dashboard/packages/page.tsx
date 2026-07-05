@@ -131,25 +131,46 @@ export default function PackagesPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.title")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.slug")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.category")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.duration")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.price")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.status")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.actions")}
                     </th>
                   </tr>
@@ -220,25 +241,46 @@ export default function PackagesPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.title")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.slug")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.category")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.duration")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.price")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.status")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("packages.columns.actions")}
                     </th>
                   </tr>

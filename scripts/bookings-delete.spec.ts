@@ -10,18 +10,64 @@ const SEL = {
   submitButton: '[data-testid="booking-submit"]',
   popoverContent: '[data-slot="popover-content"]',
   calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
-  calendarDay: (date: string) =>
-    `[data-slot="calendar"] button[data-day*="${date}"]`,
+  calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
 } as const;
 
+/**
+ * Delete all bookings whose customerName matches "Playwright Test Customer Delete".
+ *
+ * Uses `context.request` so the API calls share the browser context's
+ * auth cookies from storageState (the global request fixture does NOT).
+ */
+async function cleanupDeleteBookings(context: {
+  request: {
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+  };
+}) {
+  const api = context.request;
+  try {
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Customer Delete" } },
+    });
+    if (!listRes.ok()) return;
+
+    const body = (await listRes.json()) as {
+      result?: {
+        data?: { json?: { items?: Array<{ id: string }> } };
+      };
+    };
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
+    for (const item of items) {
+      if (item.id) {
+        await api
+          .post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } })
+          .catch(() => {
+            // cleanup may fail if booking doesn't exist — ignore
+          });
+      }
+    }
+  } catch {
+    // list may fail if no bookings exist — ignore
+  }
+}
+
 test.describe("booking delete flow", () => {
+  test.beforeEach(async ({ context }) => {
+    await cleanupDeleteBookings(context);
+  });
   test("creates a booking then deletes it from the list", async ({ page }) => {
     // ── Create phase ────────────────────────────────────────────────
     await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
       waitUntil: "load",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
 
     await page.fill(SEL.customerName, "Playwright Test Customer Delete");
 
@@ -34,7 +80,15 @@ test.describe("booking delete flow", () => {
       "#packageId",
       { timeout: 10000 },
     );
-    await page.locator(SEL.packageSelect).selectOption({ index: 2 });
+
+    // Resolve the option value for "Komodo Island Expedition" by its text content
+    const komodoOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Komodo Island Expedition" })
+      .getAttribute("value");
+    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
+    await page.locator(SEL.packageSelect).selectOption(komodoOptionValue);
+    await expect(page.locator(SEL.packageSelect)).toHaveValue(komodoOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();
@@ -43,14 +97,12 @@ test.describe("booking delete flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead =
-      (2026 - new Date().getFullYear()) * 12 +
-      (7 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
+    await page.locator(SEL.calendarDay("8/5/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
@@ -71,22 +123,46 @@ test.describe("booking delete flow", () => {
 
     // Wait for redirect to the list page
     await page.waitForURL(
-      (url) =>
-        url.href.includes("/dashboard/bookings") &&
-        !url.href.includes("/new"),
+      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
       { timeout: 15000 },
-    ).catch(async () => {
-      // Submission may show a validation error (e.g. duplicate booking).
-      // If no redirect happened, try a different package.
-      await page.selectOption("#packageId", { index: 3 });
-      await page.locator(SEL.submitButton).click();
-      await page.waitForURL(
-        (url) =>
-          url.href.includes("/dashboard/bookings") &&
-          !url.href.includes("/new"),
-        { timeout: 15000 },
-      );
+    );
+
+    // ── DIAGNOSTIC: capture what renders on the bookings list page ────
+    const consoleErrors: string[] = [];
+    const trpcResponses: Array<{ url: string; status: number; body: string }> = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
     });
+    page.on("response", async (response) => {
+      if (response.url().includes("/api/trpc/")) {
+        try {
+          const body = await response.text();
+          trpcResponses.push({ url: response.url(), status: response.status(), body });
+        } catch {
+          // ignore
+        }
+      }
+    });
+
+    await page.waitForTimeout(3000);
+
+    await page.screenshot({
+      path: "test-results/bookings-delete-after-redirect.png",
+      fullPage: true,
+    });
+    const pageContent = await page.content();
+    console.log("[DIAGNOSTIC] Page title:", await page.title());
+    console.log("[DIAGNOSTIC] URL:", page.url());
+    console.log("[DIAGNOSTIC] Table exists:", pageContent.includes("<table"));
+    console.log(
+      "[DIAGNOSTIC] Empty state testid:",
+      pageContent.includes('data-testid="bookings-add-new-empty"'),
+    );
+    console.log("[DIAGNOSTIC] Error state:", pageContent.includes("Failed to load bookings"));
+    console.log("[DIAGNOSTIC] Loading skeleton:", pageContent.includes("animate-pulse"));
+    console.log("[DIAGNOSTIC] Console errors:", JSON.stringify(consoleErrors));
+    console.log("[DIAGNOSTIC] tRPC responses:", JSON.stringify(trpcResponses.slice(-5)));
+    console.log("[DIAGNOSTIC] Page HTML (first 3000 chars):", pageContent.substring(0, 3000));
 
     // ── Delete phase ────────────────────────────────────────────────
     // Wait for the table to render
@@ -102,8 +178,8 @@ test.describe("booking delete flow", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Verify the booking is no longer visible
-    await expect(
-      page.getByText("Playwright Test Customer Delete"),
-    ).not.toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("Playwright Test Customer Delete")).not.toBeVisible({
+      timeout: 10000,
+    });
   });
 });

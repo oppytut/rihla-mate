@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { routing } from "@/i18n/routing";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
@@ -7,15 +8,20 @@ import { env } from "@/env";
 import { isLicenseValid, getActiveLicenseCount } from "@/lib/license/store";
 
 /**
- * next-intl is configured as:
- *   locales: ["id", "en"], defaultLocale: "id", localePrefix: "as-needed"
+ * next-intl locale handling.
+ *
+ * locales: ["id", "en"], defaultLocale: "id", localePrefix: "as-needed"
  *
  * "as-needed" means the default locale ("id") omits the prefix, while
- * secondary locales like "en" include it.  This helper strips an "/en" prefix
- * so we can match route patterns regardless of locale.
+ * secondary locales like "en" include it.
+ */
+const intlMiddleware = createIntlMiddleware(routing);
+
+/**
+ * Strips an "/en" locale prefix so we can match route patterns
+ * regardless of locale.
  *
  *   /en/dashboard/settings  ->  /dashboard/settings
- *   /id/dashboard/settings  ->  /dashboard/settings   (default, no prefix)
  *   /dashboard              ->  /dashboard
  */
 function stripLocalePrefix(pathname: string): string {
@@ -72,23 +78,49 @@ async function checkLicense(): Promise<boolean> {
   return count > 0;
 }
 
-export default async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const locale = extractLocale(pathname);
 
-  if (isPublicRoute(pathname)) {
-    return NextResponse.next();
+  // 1. Let next-intl handle locale resolution first
+  const intlResponse = intlMiddleware(request);
+
+  // If next-intl decided to redirect or rewrite, return that immediately
+  // EXCEPT for API routes: intlMiddleware rewrites e.g. /api/auth/sign-in/email
+  // → /id/api/auth/sign-in/email which 404s in production because no route
+  // handler exists at the rewritten path.
+  // Also skip 307 redirects for API routes: intlMiddleware redirects e.g.
+  // /api/trpc/user.me → /en/api/trpc/user.me to add locale prefix, but API
+  // routes should never be locale-prefixed.
+  if (
+    (intlResponse.status === 307 && !pathname.startsWith("/api/")) ||
+    (!pathname.startsWith("/api/") &&
+      (intlResponse.headers.get("x-nextjs-rewrite") ||
+        intlResponse.headers.get("x-middleware-rewrite")))
+  ) {
+    return intlResponse;
   }
 
-  if (isStaticAsset(pathname)) {
-    return NextResponse.next();
+  // 2. Run auth/license logic on the (now locale-resolved) request
+  const locale = extractLocale(pathname);
+
+  if (isPublicRoute(pathname) || isStaticAsset(pathname)) {
+    // For API routes, intlResponse is a rewrite (NextResponse.rewrite) that
+    // would change /api/auth/... → /id/api/auth/... causing 404 in production.
+    // Pass through with NextResponse.next() instead, carrying the locale header.
+    const requestHeaders = new Headers(request.headers);
+    const localeHeader = intlResponse.headers.get("x-next-intl-locale");
+    if (localeHeader) requestHeaders.set("x-next-intl-locale", localeHeader);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (isHomepage(pathname)) {
     const hasLicense = await checkLicense();
     const url = request.nextUrl.clone();
     url.pathname = locale + (hasLicense ? "/dashboard" : "/activate");
-    return NextResponse.redirect(url);
+    return new Response(null, {
+      status: 307,
+      headers: { Location: url.toString() },
+    });
   }
 
   if (isDashboardRoute(pathname)) {
@@ -99,7 +131,10 @@ export default async function middleware(request: NextRequest) {
     if (!session?.session) {
       const url = request.nextUrl.clone();
       url.pathname = locale + "/sign-in";
-      return NextResponse.redirect(url);
+      return new Response(null, {
+        status: 307,
+        headers: { Location: url.toString() },
+      });
     }
   }
 
@@ -108,10 +143,13 @@ export default async function middleware(request: NextRequest) {
   if (!hasLicense) {
     const url = request.nextUrl.clone();
     url.pathname = locale + "/activate";
-    return NextResponse.redirect(url);
+    return new Response(null, {
+      status: 307,
+      headers: { Location: url.toString() },
+    });
   }
 
-  return NextResponse.next();
+  return intlResponse;
 }
 
 export const config = {

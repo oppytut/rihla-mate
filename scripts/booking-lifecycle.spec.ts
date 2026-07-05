@@ -23,35 +23,28 @@ const SEL = {
  */
 async function cleanupPlaywrightLifecycleBookings(context: {
   request: {
-    get: (url: string) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+    post: (
+      url: string,
+      options?: { data: Record<string, unknown> },
+    ) => Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
   };
 }) {
   const api = context.request;
   try {
-    const listRes = await api.get(
-      `${BASE_URL}/api/trpc/bookings.list?batch=1&input=${encodeURIComponent(
-        JSON.stringify({ search: "Playwright Test Lifecycle" }),
-      )}`,
-    );
+    const listRes = await api.post(`${BASE_URL}/api/trpc/bookings.list`, {
+      data: { json: { search: "Playwright Test Lifecycle" } },
+    });
     if (!listRes.ok()) return;
 
-    const body = (await listRes.json()) as Record<string, unknown>;
-    const result = body?.[0] as
-      | {
-          result?: {
-            data?: { items?: Array<{ id: string }>; json?: { items?: Array<{ id: string }> } };
-          };
-        }
-      | undefined;
-    const items: Array<{ id: string }> =
-      result?.result?.data?.items ?? result?.result?.data?.json?.items ?? [];
+    const body = (await listRes.json()) as {
+      result?: {
+        data?: { json?: { items?: Array<{ id: string }> } };
+      };
+    };
+    const items: Array<{ id: string }> = body?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
-        await api.get(
-          `${BASE_URL}/api/trpc/bookings.delete?batch=1&input=${encodeURIComponent(
-            JSON.stringify({ id: item.id }),
-          )}`,
-        );
+        await api.post(`${BASE_URL}/api/trpc/bookings.delete`, { data: { json: { id: item.id } } });
       }
     }
   } catch {
@@ -96,21 +89,34 @@ test.describe("booking lifecycle", () => {
       .first()
       .waitFor({ state: "attached", timeout: 15000 });
     await page.waitForTimeout(500);
-    await page.locator(SEL.packageId).selectOption({ index: 1 });
 
-    // Open date picker and navigate to July 1, 2026
+    // Resolve the option value for "Komodo Island Expedition" by its text content.
+    // Using selectOption({ label }) can race with React re-renders (controlled component
+    // resets value="") and Playwright's label matching is fragile. Instead, find the
+    // option by text, extract its value, and selectOption by value.
+    const komodoOptionValue = await page
+      .locator("#packageId option")
+      .filter({ hasText: "Komodo Island Expedition" })
+      .getAttribute("value");
+    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
+    await page.locator(SEL.packageId).selectOption(komodoOptionValue);
+
+    // Wait for React to commit the state update — the controlled <select> value should match.
+    await expect(page.locator(SEL.packageId)).toHaveValue(komodoOptionValue, { timeout: 5000 });
+
+    // Open date picker and navigate to August 20, 2026
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
       state: "visible",
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (7 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("7/1/2026")).first().click();
+    await page.locator(SEL.calendarDay("8/20/2026")).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1500000");
@@ -130,37 +136,77 @@ test.describe("booking lifecycle", () => {
     await page.locator(SEL.submitButton).click();
 
     // Wait for redirect to the list page after successful create
-    await page
-      .waitForURL((url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"), {
-        timeout: 15000,
-      })
-      .catch(async () => {
-        // Submission may show a validation error (e.g. duplicate booking).
-        // If no redirect happened, try a different package.
-        await page.locator(SEL.packageId).selectOption({ index: 2 });
-        await page.locator(SEL.submitButton).click();
-        await page
-          .waitForURL(
-            (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-            { timeout: 15000 },
-          )
-          .catch(async () => {
-            // Try one more package index
-            await page.locator(SEL.packageId).selectOption({ index: 3 });
-            await page.locator(SEL.submitButton).click();
-            await page.waitForURL(
-              (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-              { timeout: 15000 },
-            );
-          });
-      });
+    await page.waitForURL(
+      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
+      { timeout: 15000 },
+    );
+
+    // ── DIAGNOSTIC: capture what renders on the bookings list page ────
+    // Collect console errors and network responses for debugging
+    const consoleErrors: string[] = [];
+    const trpcResponses: Array<{ url: string; status: number; body: string }> = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+    page.on("response", async (response) => {
+      if (response.url().includes("/api/trpc/")) {
+        try {
+          const body = await response.text();
+          trpcResponses.push({ url: response.url(), status: response.status(), body });
+        } catch {
+          // ignore
+        }
+      }
+    });
+
+    // Give time for client-side hydration + tRPC query to resolve
+    await page.waitForTimeout(3000);
+
+    // Screenshot + page content for diagnostics
+    await page.screenshot({
+      path: "test-results/booking-lifecycle-after-redirect.png",
+      fullPage: true,
+    });
+    const pageContent = await page.content();
+    console.log("[DIAGNOSTIC] Page title:", await page.title());
+    console.log("[DIAGNOSTIC] URL:", page.url());
+    console.log("[DIAGNOSTIC] Table exists:", pageContent.includes("<table"));
+    console.log(
+      "[DIAGNOSTIC] Empty state testid:",
+      pageContent.includes('data-testid="bookings-add-new-empty"'),
+    );
+    console.log(
+      "[DIAGNOSTIC] Error state:",
+      pageContent.includes("bookingsQuery.isError") ||
+        pageContent.includes("Failed to load bookings"),
+    );
+    console.log("[DIAGNOSTIC] Loading skeleton:", pageContent.includes("animate-pulse"));
+    console.log("[DIAGNOSTIC] Console errors:", JSON.stringify(consoleErrors));
+    console.log("[DIAGNOSTIC] tRPC responses:", JSON.stringify(trpcResponses.slice(-5)));
+    console.log("[DIAGNOSTIC] Page HTML (first 3000 chars):", pageContent.substring(0, 3000));
 
     // ── EDIT PHASE ─────────────────────────────────────────────────────
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });
+    // Wait for at least one table row to appear and stabilize before clicking.
+    // The table re-renders as React hydrates with tRPC data, causing "element is not stable".
+    const firstRow = page.locator("table tbody tr").first();
+    await firstRow.waitFor({ state: "visible", timeout: 10000 });
+    await firstRow.waitFor({ state: "attached", timeout: 5000 });
+    // Extra settle time for any CSS transitions / layout shifts
+    await page.waitForTimeout(500);
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
-    await firstEditButton.click();
+
+    // Extract booking ID and navigate via page.goto for full SSR.
+    // Client-side router.push sends undefined to bookings.list tRPC input,
+    // crashing the React 19 tree.
+    const editBtnTestId = await firstEditButton.getAttribute("data-testid");
+    if (!editBtnTestId) throw new Error("edit button missing data-testid");
+    const bookingId = editBtnTestId.replace("booking-edit-", "");
+    await page.goto(`${BASE_URL}/en/dashboard/bookings/${bookingId}`, {
+      waitUntil: "domcontentloaded",
+    });
 
     await page.waitForSelector(SEL.customerName, {
       state: "attached",
@@ -175,10 +221,15 @@ test.describe("booking lifecycle", () => {
 
     await page.locator(SEL.submitButton).click();
 
-    await page.waitForURL(
-      (url) => url.href.includes("/dashboard/bookings") && !url.href.includes("/new"),
-      { timeout: 15000 },
-    );
+    // Navigate directly via page.goto to force full SSR after mutation.
+    // Client-side router.push sends undefined to bookings.list tRPC input.
+    await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
+      waitUntil: "domcontentloaded",
+    });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "attached",
+      timeout: 20000,
+    });
 
     // ── DELETE PHASE ───────────────────────────────────────────────────
     await page.waitForSelector("table", { state: "visible", timeout: 10000 });

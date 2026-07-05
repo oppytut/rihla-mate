@@ -10,6 +10,7 @@ const handler = (req: NextRequest) =>
     req,
     router: appRouter,
     createContext: createTRPCContext,
+    allowMethodOverride: true,
     onError: ({ path, error }) => {
       logger.error("[tRPC] Unhandled error:", { component: "trpc-route", path }, error);
     },
