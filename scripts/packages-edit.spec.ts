@@ -79,10 +79,13 @@ test.describe("packages edit flow", () => {
     // Register alert handler BEFORE clicking submit
     page.once("dialog", (dialog) => dialog.accept());
 
-    // Confirm React hydration before submitting the form
-    await page.waitForTimeout(5000);
+    // Confirm React hydration before submitting the form — the submit button
+    // should be visible and not disabled
+    const submitBtn = page.locator('[data-testid="package-submit"]');
+    await expect(submitBtn).toBeVisible({ timeout: 15000 });
+    await expect(submitBtn).toBeEnabled({ timeout: 5000 });
 
-    await page.click('[data-testid="package-submit"]');
+    await submitBtn.click();
 
     // Navigate directly via page.goto to force full SSR — client-side router.push
     // sends undefined to packages.list tRPC input, crashing the React 19 tree
@@ -118,9 +121,12 @@ test.describe("packages edit flow", () => {
       timeout: 10000,
     });
 
-    // Verify the existing title is loaded
+    // Wait for the input to be visible and hydrated before checking value
     const titleInput = page.locator('[data-testid="package-title"]');
-    await expect(titleInput).toHaveValue("Playwright Test Package Edit");
+    await expect(titleInput).toBeVisible({ timeout: 10000 });
+
+    // Verify the existing title is loaded
+    await expect(titleInput).toHaveValue("Playwright Test Package Edit", { timeout: 15000 });
 
     // Modify fields
     await titleInput.clear();
@@ -138,9 +144,11 @@ test.describe("packages edit flow", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Confirm React hydration before submitting the edit form
-    await page.waitForTimeout(5000);
+    const editSubmitBtn = page.locator('[data-testid="package-submit"]');
+    await expect(editSubmitBtn).toBeVisible({ timeout: 15000 });
+    await expect(editSubmitBtn).toBeEnabled({ timeout: 5000 });
 
-    await page.click('[data-testid="package-submit"]');
+    await editSubmitBtn.click();
 
     // Navigate directly via page.goto to force full SSR
     await page.goto(`${BASE_URL}/en/dashboard/packages`, {
