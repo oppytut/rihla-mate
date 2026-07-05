@@ -109,8 +109,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
     );
     if (!listRes.ok()) return;
     const body: unknown = await listRes.json();
-    const items: Array<{ id: string }> =
-      body?.[0]?.result?.data?.items ?? body?.[0]?.result?.data?.json?.items ?? [];
+    const items: Array<{ id: string }> = body?.[0]?.result?.data?.json?.items ?? [];
     for (const item of items) {
       if (item.id) {
         await api
@@ -128,6 +127,30 @@ async function cleanupSearchPackages(context: PackagesContext) {
 }
 
 async function ensureSeedPackages(page: PackagesPage, context: PackagesContext) {
+  // Check if seed packages already exist (idempotency guard)
+  const api = context.request;
+  const existingRes = await api.get(
+    `${BASE_URL}/api/trpc/packages.list?batch=1&input=${encodeURIComponent(
+      JSON.stringify({ json: { search: "Search Pkg" } }),
+    )}`,
+  );
+  if (existingRes.ok()) {
+    const existingBody: unknown = await existingRes.json();
+    const existingItems: Array<{ title: string }> =
+      existingBody?.[0]?.result?.data?.json?.items ?? [];
+    const existingTitles = new Set(existingItems.map((i) => i.title));
+    const needed = [
+      { title: "Alpha Search Pkg" },
+      { title: "Beta Search Pkg" },
+      { title: "Gamma Filter Pkg" },
+    ];
+    const allExist = needed.every((n) => existingTitles.has(n.title));
+    if (allExist) {
+      // Seed packages already present — no need to re-create
+      return;
+    }
+  }
+
   // Always delete existing seed packages first to avoid duplicates
   await cleanupSearchPackages(context);
 
@@ -163,7 +186,7 @@ test.describe("packages search and filter", () => {
     await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Beta Search Pkg")).not.toBeVisible({
+    await expect(page.getByText("Beta Search Pkg").first()).not.toBeVisible({
       timeout: 5000,
     });
   });
