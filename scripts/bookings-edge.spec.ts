@@ -19,14 +19,22 @@ test.describe("booking edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.departureDateButton, {
       state: "visible",
       timeout: 10000,
     });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(3000);
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="booking-submit"]') as HTMLButtonElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     // Click submit button to trigger React form validation
     await page.locator(SEL.submitButton).click();
@@ -40,14 +48,15 @@ test.describe("booking edge cases", () => {
     expect(errorCount).toBeGreaterThan(0);
   });
 
-  test("shows native browser validation for invalid email format", async ({
-    page,
-  }) => {
+  test("shows native browser validation for invalid email format", async ({ page }) => {
     await page.goto(`${BASE_URL}/en/dashboard/bookings/new`, {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
 
     await page.fill(SEL.customerName, "Email Test Customer");
 
@@ -68,22 +77,15 @@ test.describe("booking edge cases", () => {
       state: "visible",
       timeout: 5000,
     });
-    const nextButton = page.locator(
-      '[data-slot="calendar"] button[class*="button_next"]',
-    );
+    const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
     await nextButton.click();
-    await page.waitForTimeout(100);
 
     const now = new Date();
     const nextMonth = now.getMonth() + 2;
-    const nextYear =
-      nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
+    const nextYear = nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
     const displayMonth = nextMonth > 12 ? nextMonth - 12 : nextMonth;
     const dateStr = `${displayMonth}/15/${nextYear}`;
-    await page
-      .locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`)
-      .first()
-      .click();
+    await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
 
     await page.fill(SEL.travelers, "2");
     await page.fill(SEL.totalPrice, "1000000");
@@ -94,7 +96,7 @@ test.describe("booking edge cases", () => {
     await page.locator(SEL.submitButton).click();
 
     // Native validation should keep us on the same page
-    await page.waitForTimeout(500);
+    await expect(page.locator(SEL.submitButton)).toBeAttached({ timeout: 5000 });
 
     const currentUrl = page.url();
     expect(currentUrl).toContain("/dashboard/bookings/new");
@@ -105,7 +107,10 @@ test.describe("booking edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.travelers, {
       state: "visible",
       timeout: 10000,
@@ -131,22 +136,15 @@ test.describe("booking edge cases", () => {
       state: "visible",
       timeout: 5000,
     });
-    const nextButton = page.locator(
-      '[data-slot="calendar"] button[class*="button_next"]',
-    );
+    const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
     await nextButton.click();
-    await page.waitForTimeout(100);
 
     const now = new Date();
     const nextMonth = now.getMonth() + 2;
-    const nextYear =
-      nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
+    const nextYear = nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
     const displayMonth = nextMonth > 12 ? nextMonth - 12 : nextMonth;
     const dateStr = `${displayMonth}/15/${nextYear}`;
-    await page
-      .locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`)
-      .first()
-      .click();
+    await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
 
     await page.fill(SEL.totalPrice, "1000000");
 
@@ -169,7 +167,10 @@ test.describe("booking edge cases", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "visible", timeout: 10000 });
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: 10000,
+    });
     await page.waitForSelector(SEL.departureDateButton, {
       state: "visible",
       timeout: 10000,
@@ -231,11 +232,8 @@ test.describe("booking edge cases", () => {
     // Navigate to next month if needed
     const todayMonth = new Date().getMonth();
     if (tMonth !== todayMonth + 1) {
-      const nextButton = page.locator(
-        '[data-slot="calendar"] button[class*="button_next"]',
-      );
+      const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
       await nextButton.click();
-      await page.waitForTimeout(100);
     }
 
     const tomorrowButton = page

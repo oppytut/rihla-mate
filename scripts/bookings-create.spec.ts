@@ -91,8 +91,6 @@ test.describe("booking creation flow", () => {
       .locator('#packageId option[value]:not([value=""])')
       .first()
       .waitFor({ state: "attached", timeout: 15000 });
-    // Give the select one more beat to fully stabilize after TRPC data lands
-    await page.waitForTimeout(500);
 
     const baliOptionValue = await page
       .locator("#packageId option")
@@ -111,7 +109,6 @@ test.describe("booking creation flow", () => {
     const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
-      await page.waitForTimeout(100);
     }
     await page.locator(SEL.calendarDay("8/1/2026")).first().click();
 
@@ -147,8 +144,14 @@ test.describe("form validation", () => {
       timeout: 10000,
     });
 
-    // Confirm React hydration before interacting with the form
-    await page.waitForTimeout(3000);
+    // Wait for React-controlled inputs to be fully hydrated and interactive
+    await page.waitForFunction(
+      () => {
+        const el = document.querySelector('[data-testid="booking-submit"]') as HTMLButtonElement;
+        return el && !el.disabled;
+      },
+      { timeout: 10000 },
+    );
 
     // Click submit button to trigger React form validation
     await page.locator(SEL.submitButton).click();

@@ -179,8 +179,6 @@ test.describe("bookings search and filter", () => {
     await searchInput.pressSequentially("Alice", { delay: 50 });
 
     // Wait for debounce (300ms) + TRPC query + React render
-    await page.waitForTimeout(2000);
-
     await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
       timeout: 5000,
     });
@@ -190,7 +188,6 @@ test.describe("bookings search and filter", () => {
   test("filter by status shows only matching bookings", async ({ page }) => {
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("confirmed");
-    await page.waitForTimeout(500);
 
     const table = page.locator("table");
     const noResults = page.locator(SEL.clearFilters);
@@ -202,16 +199,10 @@ test.describe("bookings search and filter", () => {
     await searchInput.click();
     await searchInput.pressSequentially("ZZZ_NONEXISTENT_NAME_ZZZ", { delay: 30 });
 
-    // Wait for debounce (300ms) + TRPC query + React render
-    await page.waitForTimeout(2000);
-
     const clearBtn = page.locator(SEL.clearFilters);
     await expect(clearBtn).toBeVisible({ timeout: 5000 });
 
     await clearBtn.click();
-
-    // Wait for TRPC query + React re-render after clearing
-    await page.waitForTimeout(2000);
 
     await expect(page.getByText("Alice Search Test")).toBeVisible({ timeout: 5000 });
     await expect(page.getByText("Bob Search Test")).toBeVisible({ timeout: 5000 });
@@ -232,11 +223,12 @@ test.describe("bookings search and filter", () => {
     await searchInput.pressSequentially("Alice", { delay: 50 });
 
     // Wait for debounce (300ms) + TRPC query + React render
-    await page.waitForTimeout(2000);
+    await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
+      timeout: 5000,
+    });
 
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("pending");
-    await page.waitForTimeout(2000);
 
     // Bookings are created with default status "pending", so Alice should appear
     await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
