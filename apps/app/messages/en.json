@@ -194,6 +194,7 @@
     "noResults": "No bookings match your search criteria.",
     "clearFilters": "Clear Filters",
     "empty": "No bookings yet. Click the button above to add one.",
+    "notFound": "Booking not found",
     "deleteConfirm": "Are you sure you want to delete this booking?",
     "pageInfo": "Page {page} of {total}",
     "pickDate": "Pick a date",

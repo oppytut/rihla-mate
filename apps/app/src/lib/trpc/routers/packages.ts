@@ -24,6 +24,33 @@ const parseJsonField = (field: string, name: string) => {
   }
 };
 
+const packagesUpdateSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1).max(255).optional(),
+  slug: z
+    .string()
+    .min(1)
+    .max(255)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens")
+    .optional(),
+  description: z.string().optional(),
+  durationDays: z.number().int().min(1).optional(),
+  price: z
+    .string()
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid price format")
+    .optional(),
+  currency: z.string().length(3).optional(),
+  itinerary: z.string().optional(),
+  inclusions: z.string().optional(),
+  exclusions: z.string().optional(),
+  departureCity: z.string().max(100).optional(),
+  availableDates: z.string().optional(),
+  featuredImage: z.string().optional(),
+  gallery: z.string().optional(),
+  category: z.string().max(50).optional(),
+  status: z.string().max(50).optional(),
+});
+
 export const packagesRouter = createTRPCRouter({
   list: adminProcedure
     .input(
@@ -150,81 +177,52 @@ export const packagesRouter = createTRPCRouter({
       return result[0];
     }),
 
-  update: adminProcedure
-    .input(
-      z.object({
-        id: z.string().uuid(),
-        title: z.string().min(1).max(255).optional(),
-        slug: z
-          .string()
-          .min(1)
-          .max(255)
-          .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens")
-          .optional(),
-        description: z.string().optional(),
-        durationDays: z.number().int().min(1).optional(),
-        price: z
-          .string()
-          .regex(/^\d+(\.\d{1,2})?$/, "Invalid price format")
-          .optional(),
-        currency: z.string().length(3).optional(),
-        itinerary: z.string().optional(),
-        inclusions: z.string().optional(),
-        exclusions: z.string().optional(),
-        departureCity: z.string().max(100).optional(),
-        availableDates: z.string().optional(),
-        featuredImage: z.string().optional(),
-        gallery: z.string().optional(),
-        category: z.string().max(50).optional(),
-        status: z.string().max(50).optional(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
+  update: adminProcedure.input(packagesUpdateSchema).mutation(async ({ ctx, input }) => {
+    const { id, ...data } = input;
 
-      const existing = await ctx.db
+    const existing = await ctx.db
+      .select({ id: packages.id })
+      .from(packages)
+      .where(eq(packages.id, id))
+      .limit(1);
+
+    if (existing.length === 0) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Package not found",
+      });
+    }
+
+    if (data.slug !== undefined) {
+      const slugConflict = await ctx.db
         .select({ id: packages.id })
         .from(packages)
-        .where(eq(packages.id, id))
+        .where(eq(packages.slug, data.slug))
         .limit(1);
 
-      if (existing.length === 0) {
+      if (slugConflict.length > 0 && slugConflict[0].id !== id) {
         throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Package not found",
+          code: "CONFLICT",
+          message: "A package with this slug already exists",
         });
       }
+    }
 
-      if (data.slug !== undefined) {
-        const slugConflict = await ctx.db
-          .select({ id: packages.id })
-          .from(packages)
-          .where(eq(packages.slug, data.slug))
-          .limit(1);
-
-        if (slugConflict.length > 0 && slugConflict[0].id !== id) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "A package with this slug already exists",
-          });
-        }
+    const parsedData: Record<string, unknown> = { ...data };
+    for (const field of JSONB_FIELDS) {
+      if (data[field] !== undefined) {
+        parsedData[field] = parseJsonField(data[field], field);
       }
+    }
 
-      const parsedData: Record<string, unknown> = { ...data };
-      for (const field of JSONB_FIELDS) {
-        if (data[field] !== undefined) {
-          parsedData[field] = parseJsonField(data[field], field);
-        }
-      }
+    const result = await ctx.db
+      .update(packages)
+      .set(parsedData)
+      .where(eq(packages.id, id))
+      .returning();
 
-      const result = await ctx.db
-        .update(packages)
-        .set(parsedData)
-        .where(eq(packages.id, id))
-        .returning();
-
-      return result[0];
-    }),
+    return result[0];
+  }),
 
   delete: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
