@@ -130,13 +130,14 @@ async function cleanupSearchPackages(context: PackagesContext) {
 async function ensureSeedPackages(page: PackagesPage, context: PackagesContext) {
   // Always delete existing seed packages first to avoid duplicates
   await cleanupSearchPackages(context);
-  await page.waitForTimeout(500);
 
   await page.goto(`${BASE_URL}/en/dashboard/packages`, {
     waitUntil: "domcontentloaded",
   });
   await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
-  await page.waitForTimeout(1000);
+
+  // Wait for the initial packages.list query to render (skeleton → table)
+  await page.waitForFunction(() => !document.querySelector(".animate-pulse"), { timeout: 15000 });
 
   const seedData = [
     { title: "Alpha Search Pkg", slug: `alpha-search-pkg-${Date.now()}`, status: "draft" },
@@ -158,10 +159,9 @@ test.describe("packages search and filter", () => {
   test("search by title filters results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Alpha");
-    await page.waitForTimeout(600);
 
     await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
-      timeout: 5000,
+      timeout: 15000,
     });
     await expect(page.getByText("Beta Search Pkg")).not.toBeVisible({
       timeout: 5000,
@@ -171,12 +171,11 @@ test.describe("packages search and filter", () => {
   test("filter by status shows only matching packages", async ({ page }) => {
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
-    await page.waitForTimeout(500);
 
     await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
-      timeout: 5000,
+      timeout: 15000,
     });
-    await expect(page.getByText("Alpha Search Pkg")).not.toBeVisible({
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
       timeout: 5000,
     });
   });
@@ -184,16 +183,14 @@ test.describe("packages search and filter", () => {
   test("clear filters restores full list after search", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("ZZZ_NONEXISTENT_PACKAGE_ZZZ");
-    await page.waitForTimeout(600);
 
     const clearBtn = page.locator(SEL.clearFilters);
-    await expect(clearBtn).toBeVisible({ timeout: 5000 });
+    await expect(clearBtn).toBeVisible({ timeout: 15000 });
 
     await clearBtn.click();
-    await page.waitForTimeout(500);
 
     await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
-      timeout: 5000,
+      timeout: 15000,
     });
     await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
@@ -204,7 +201,7 @@ test.describe("packages search and filter", () => {
     const prevBtn = page.locator(SEL.prevPage);
     const nextBtn = page.locator(SEL.nextPage);
 
-    await expect(prevBtn).toBeVisible({ timeout: 5000 });
+    await expect(prevBtn).toBeVisible({ timeout: 15000 });
     await expect(nextBtn).toBeVisible({ timeout: 5000 });
     await expect(prevBtn).toBeDisabled({ timeout: 5000 });
   });
@@ -212,16 +209,21 @@ test.describe("packages search and filter", () => {
   test("combined search and status filter narrows results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Beta");
-    await page.waitForTimeout(600);
+
+    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
+      timeout: 5000,
+    });
 
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
-    await page.waitForTimeout(500);
 
     await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
-      timeout: 5000,
+      timeout: 15000,
     });
-    await expect(page.getByText("Alpha Search Pkg")).not.toBeVisible({
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
       timeout: 5000,
     });
   });
