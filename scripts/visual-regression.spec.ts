@@ -33,6 +33,15 @@ test.describe("visual regression", () => {
         timeout: 15000,
       });
 
+      // Wait for page data to actually load, not just the heading skeleton.
+      // The heading is always visible, but data loads asynchronously via tRPC.
+      // Waiting for a data-specific element ensures we capture the real page,
+      // not the loading skeleton — critical for CI where queries are slower.
+      await page.waitForSelector(
+        '[data-testid$="-page-info"], [data-testid$="-add-new-empty"], [data-testid$="-clear-filters"], [data-testid$="-submit"], [data-testid^="stat-card-"]',
+        { state: "visible", timeout: 15000 },
+      );
+
       await page.waitForLoadState("domcontentloaded");
       await page.waitForTimeout(500);
 
