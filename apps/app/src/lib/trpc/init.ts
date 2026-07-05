@@ -56,7 +56,11 @@ export const relaxedRateLimit = createRateLimitMiddleware(60_000, 60);
 
 type AppMiddleware = Parameters<typeof t.procedure.use>[0];
 
-export const publicProcedure = t.procedure.use(relaxedRateLimit as AppMiddleware);
+const inputGuard: AppMiddleware = async ({ ctx, next, input }) => {
+  return next({ ctx, input: input === undefined ? {} : input });
+};
+
+export const publicProcedure = t.procedure.use(inputGuard).use(relaxedRateLimit as AppMiddleware);
 
 export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   if (!ctx.session) {
