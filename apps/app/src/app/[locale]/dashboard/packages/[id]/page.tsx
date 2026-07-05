@@ -254,10 +254,7 @@ function PackageFormContent({
               </div>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-foreground"
-                >
+                <label htmlFor="description" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.description")}
                 </label>
                 <textarea
@@ -594,9 +591,7 @@ function PackageFormContent({
                   placeholder='["2026-07-01", "2026-08-15"]'
                   data-testid="package-available-dates"
                   aria-label={t("packages.fields.availableDates")}
-                  aria-describedby={
-                    fieldErrors.availableDates ? "availableDates-error" : undefined
-                  }
+                  aria-describedby={fieldErrors.availableDates ? "availableDates-error" : undefined}
                   className={cn(
                     "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
                     fieldErrors.availableDates ? "border-destructive" : "border-border",
@@ -673,6 +668,23 @@ function EditPackagePage({ packageId }: { packageId: string }) {
     }
   }, [packageQuery.data]);
 
+  if (packageQuery.isError) {
+    return (
+      <>
+        <div className="px-4 lg:px-8 py-6">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+            <h1 className="text-2xl font-semibold text-foreground mb-2" data-testid="page-heading">
+              Error
+            </h1>
+            <p className="text-sm text-destructive" data-testid="error-message">
+              Failed to load package: {packageQuery.error?.message}
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (packageQuery.isLoading || !initialData) {
     return (
       <>
@@ -683,20 +695,6 @@ function EditPackagePage({ packageId }: { packageId: string }) {
               <div className="h-10 w-full bg-muted rounded" />
               <div className="h-10 w-full bg-muted rounded" />
             </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (packageQuery.isError) {
-    return (
-      <>
-        <div className="px-4 lg:px-8 py-6">
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
-            <p className="text-sm text-destructive">
-              Failed to load package: {packageQuery.error?.message}
-            </p>
           </div>
         </div>
       </>
