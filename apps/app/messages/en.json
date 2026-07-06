@@ -259,5 +259,210 @@
     "footer": {
       "copyright": "\u00a9 {year} Rihla Mate. All rights reserved."
     }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "signIn": "Sign In",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "badge": "For Travel Agents",
+      "headline": "Your Own Branded Umrah Travel Platform",
+      "headlineHighlight": "In Minutes.",
+      "subtitle": "White-label, self-hosted, and ready to deploy. Give your travel agency a modern digital presence with one command — no coding required.",
+      "ctaTrial": "Start Free Trial",
+      "ctaLearn": "Learn More",
+      "trialNote": "14-day trial. No credit card required."
+    },
+    "features": {
+      "sectionTitle": "Everything You Need to Go Digital",
+      "sectionDescription": "A complete platform designed for Indonesian travel agents who want full control over their business.",
+      "whiteLabel": {
+        "title": "White-Label Branding",
+        "description": "Your logo, your colors, your domain. The platform looks and feels entirely yours — no 'powered by' watermarks."
+      },
+      "selfHosted": {
+        "title": "Self-Hosted Control",
+        "description": "Deploy on your own server with Docker. Your data stays with you. No vendor lock-in, no shared infrastructure."
+      },
+      "bookingEngine": {
+        "title": "Smart Booking Engine",
+        "description": "Fully automated booking flow from package selection to confirmation. Support for multiple departure dates and traveler counts."
+      },
+      "payments": {
+        "title": "Midtrans Payment Gateway",
+        "description": "Accept payments via GoPay, OVO, Dana, QRIS, bank transfer, and credit cards — everything Indonesian customers use."
+      },
+      "license": {
+        "title": "License Management",
+        "description": "Transparent licensing with Ed25519 signatures. Activate once, auto-check-in. No phone-home tracking, just license validation."
+      },
+      "analytics": {
+        "title": "Analytics Dashboard",
+        "description": "Track bookings, revenue, customer growth, and popular packages. Data-driven decisions for your travel business."
+      }
+    },
+    "howItWorks": {
+      "sectionTitle": "From Zero to Live in 4 Steps",
+      "sectionDescription": "No complex setup. No technical team needed. You're up and running before your next coffee.",
+      "steps": {
+        "deploy": {
+          "step": "1",
+          "title": "Deploy",
+          "description": "Run one Docker command on your server. The installer wizard handles everything — database, config, and initial setup."
+        },
+        "brand": {
+          "step": "2",
+          "title": "Brand",
+          "description": "Upload your logo, set your colors, configure your domain. The platform transforms into your branded travel site instantly."
+        },
+        "sell": {
+          "step": "3",
+          "title": "Sell",
+          "description": "Add your Umrah packages, set prices, and start accepting bookings. Your customers can browse and pay online 24/7."
+        },
+        "grow": {
+          "step": "4",
+          "title": "Grow",
+          "description": "Track performance with analytics, manage customer relationships, and scale your business with a professional digital presence."
+        }
+      }
+    },
+    "pricing": {
+      "sectionTitle": "Simple, Transparent Pricing",
+      "sectionDescription": "One-time setup, affordable monthly license. No hidden fees. No surprise charges.",
+      "currency": "IDR",
+      "month": "/mo",
+      "popular": "Most Popular",
+      "starter": {
+        "name": "Starter",
+        "price": "Free",
+        "period": "14 days",
+        "description": "Full-featured trial. No limits.",
+        "cta": "Start Free Trial",
+        "features": [
+          "All Pro features",
+          "Unlimited packages",
+          "Unlimited bookings",
+          "Midtrans payments",
+          "Email notifications",
+          "14-day full access"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "499K",
+        "period": "/month",
+        "description": "For growing travel agencies.",
+        "cta": "Get Started",
+        "features": [
+          "White-label branding",
+          "Custom domain support",
+          "Unlimited packages",
+          "Unlimited bookings",
+          "Midtrans payments",
+          "Analytics dashboard",
+          "Priority email support",
+          "Auto-updates via Watchtower"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "1.5M",
+        "period": "/month",
+        "description": "For agencies with multiple branches.",
+        "cta": "Contact Sales",
+        "features": [
+          "Everything in Pro",
+          "Multi-tenant support",
+          "API access",
+          "Custom integrations",
+          "Dedicated support",
+          "SLA guarantee",
+          "Onboarding assistance",
+          "Custom feature requests"
+        ]
+      }
+    },
+    "testimonials": {
+      "sectionTitle": "What Travel Agents Say",
+      "sectionDescription": "Built for the real challenges Indonesian Umrah travel agents face every day.",
+      "items": [
+        {
+          "quote": "Before Rihla Mate, I managed everything through WhatsApp and Excel. Now my customers browse packages, book, and pay online — I wake up to confirmed bookings instead of missed calls.",
+          "author": "Ahmad R.",
+          "role": "Owner, Al-Haram Travel",
+          "city": "Jakarta"
+        },
+        {
+          "quote": "We tried other travel platforms but they all wanted a cut of every booking. With self-hosted, we own everything. The one-time setup cost paid for itself in the first week.",
+          "author": "Siti N.",
+          "role": "Director, Nur Cahaya Wisata",
+          "city": "Surabaya"
+        },
+        {
+          "quote": "The Midtrans integration is what sold us. Our customers use GoPay and QRIS every day — having that built-in means zero payment friction. Conversion rate doubled.",
+          "author": "Hendra W.",
+          "role": "Co-Founder, Barokah Umrah",
+          "city": "Bandung"
+        }
+      ]
+    },
+    "faq": {
+      "sectionTitle": "Frequently Asked Questions",
+      "sectionDescription": "Everything you need to know before getting started.",
+      "items": [
+        {
+          "question": "What does 'self-hosted' mean?",
+          "answer": "Self-hosted means you install and run the platform on your own server (or VPS). You have full control over your data, your domain, and your branding. We provide the Docker image — you provide the server."
+        },
+        {
+          "question": "Do I need technical skills to set this up?",
+          "answer": "Basic familiarity with servers helps, but our one-command installer and setup wizard handle everything. If you can copy and paste a command into a terminal, you can deploy Rihla Mate. We also offer assisted setup for Enterprise customers."
+        },
+        {
+          "question": "How does licensing work?",
+          "answer": "Each instance requires a license key tied to your domain. Licenses are validated using Ed25519 cryptographic signatures — no constant phone-home, just periodic check-ins. Licenses are monthly and can be canceled anytime."
+        },
+        {
+          "question": "Can I use my own domain name?",
+          "answer": "Yes. You can use any domain you own. The platform supports custom domains with automatic SSL via a reverse proxy like Nginx or Caddy."
+        },
+        {
+          "question": "What payment methods are supported?",
+          "answer": "We integrate with Midtrans, Indonesia's leading payment gateway. This includes GoPay, OVO, Dana, QRIS, bank transfer (BCA, Mandiri, BNI, BRI), credit/debit cards, and convenience store payments."
+        },
+        {
+          "question": "Can I customize the design?",
+          "answer": "Yes. The platform supports full white-label branding: your logo, brand colors, and custom CSS. You can also modify the landing page templates to match your agency's identity."
+        },
+        {
+          "question": "What happens if I stop paying the license?",
+          "answer": "If your license expires, the platform enters a 7-day grace period with full functionality. After that, it degrades to a limited mode. Your data is never locked — you can always export your data even without an active license."
+        },
+        {
+          "question": "Is my data secure?",
+          "answer": "Absolutely. Since the platform runs on your server, all customer data, booking records, and payment information stay on your infrastructure. We never have access to your data."
+        }
+      ]
+    },
+    "cta": {
+      "headline": "Ready to Take Your Travel Agency Online?",
+      "subtitle": "Join travel agents across Indonesia who've modernized their business with Rihla Mate. Start your 14-day free trial today.",
+      "button": "Start Free Trial",
+      "contact": "Questions? Contact us at"
+    },
+    "footer": {
+      "about": "About",
+      "features": "Features",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved.",
+      "tagline": "White-label Umrah travel platform for Indonesian travel agents."
+    }
   }
 }
