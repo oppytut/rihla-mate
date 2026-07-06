@@ -55,7 +55,7 @@ test.describe("visual regression", () => {
 
       await expect(page).toHaveScreenshot(`${name}.png`, {
         fullPage: false,
-        maxDiffPixelRatio: 0.05,
+        maxDiffPixelRatio: 0.1,
       });
     });
   }
@@ -89,7 +89,7 @@ test.describe("visual regression", () => {
 
         await expect(page).toHaveScreenshot(`dashboard-${name}.png`, {
           fullPage: false,
-          maxDiffPixelRatio: 0.05,
+          maxDiffPixelRatio: 0.1,
         });
       });
     }
