@@ -283,6 +283,37 @@ describe("createSnapTransaction", () => {
   });
 });
 
+describe("getTransactionStatus", () => {
+  let getTransactionStatus: typeof import("../payment/midtrans").getTransactionStatus;
+
+  beforeAll(async () => {
+    const mod = await import("../payment/midtrans");
+    getTransactionStatus = mod.getTransactionStatus;
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns transaction status on success", async () => {
+    vi.mocked(mockCoreApiTransactionStatus).mockResolvedValueOnce({
+      transaction_status: "settlement",
+      fraud_status: "accept",
+    });
+
+    const result = await getTransactionStatus("order-123");
+
+    expect(result).toHaveProperty("transaction_status", "settlement");
+    expect(mockCoreApiTransactionStatus).toHaveBeenCalledWith("order-123");
+  });
+
+  it("propagates API error", async () => {
+    vi.mocked(mockCoreApiTransactionStatus).mockRejectedValueOnce(new Error("Network error"));
+
+    await expect(getTransactionStatus("order-123")).rejects.toThrow("Network error");
+  });
+});
+
 describe("verifyWebhookSignature", () => {
   let verifyWebhookSignature: typeof import("../payment/midtrans").verifyWebhookSignature;
 

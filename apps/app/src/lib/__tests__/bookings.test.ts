@@ -548,6 +548,161 @@ describe("bookingsRouter.update", () => {
 
     expect(result).toEqual(updated);
   });
+
+  it("allows valid departureDate update", async () => {
+    const caller = createCaller(db);
+
+    // (a) existing booking check
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    // (b) resolve packageId from booking
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ packageId: "pkg-1" }] as never);
+
+    // (c) package lookup with availableDates
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      { id: "pkg-1", availableDates: ["2026-07-15", "2026-08-01"] },
+    ] as never);
+
+    // (d) date conflict check → no conflict
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([] as never);
+
+    // (e) update
+    const updated = { id: bookingId, departureDate: "2026-07-15" };
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([updated] as never);
+
+    const result = await caller.update({ id: bookingId, departureDate: "2026-07-15" });
+
+    expect(result).toEqual(updated);
+  });
+
+  it("rejects departureDate not in availableDates", async () => {
+    const caller = createCaller(db);
+
+    // (a) existing booking check
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    // (b) resolve packageId from booking
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ packageId: "pkg-1" }] as never);
+
+    // (c) package lookup with availableDates
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      { id: "pkg-1", availableDates: ["2026-07-15", "2026-08-01"] },
+    ] as never);
+
+    await expect(
+      caller.update({ id: bookingId, departureDate: "2026-12-25" }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+
+  it("rejects departureDate with conflicting booking", async () => {
+    const caller = createCaller(db);
+
+    // (a) existing booking check
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    // (b) resolve packageId from booking
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ packageId: "pkg-1" }] as never);
+
+    // (c) package lookup with availableDates
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      { id: "pkg-1", availableDates: ["2026-07-15", "2026-08-01"] },
+    ] as never);
+
+    // (d) date conflict check → conflict found
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: "other-booking" }] as never);
+
+    await expect(
+      caller.update({ id: bookingId, departureDate: "2026-07-15" }),
+    ).rejects.toMatchObject({ code: "CONFLICT" });
+  });
+
+  it("throws NOT_FOUND when packageId not found", async () => {
+    const caller = createCaller(db);
+
+    // (a) existing booking check
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    // (b) package lookup → empty (not found)
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([] as never);
+
+    await expect(
+      caller.update({ id: bookingId, packageId: "00000000-0000-0000-0000-000000000099" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+
+  it("allows valid packageId update", async () => {
+    const caller = createCaller(db);
+
+    // (a) existing booking check
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    // (b) package lookup
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      { id: "pkg-2", availableDates: ["2026-08-01"] },
+    ] as never);
+
+    // (c) update
+    const updated = { id: bookingId, packageId: "00000000-0000-0000-0000-000000000002" };
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([updated] as never);
+
+    const result = await caller.update({
+      id: bookingId,
+      packageId: "00000000-0000-0000-0000-000000000002",
+    });
+
+    expect(result).toEqual(updated);
+  });
 });
 
 describe("bookingsRouter.delete", () => {

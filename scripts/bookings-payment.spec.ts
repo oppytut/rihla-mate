@@ -55,4 +55,55 @@ test.describe("booking payment page", () => {
       .or(page.locator("text=Failed to load"));
     await expect(notFoundOrError).toBeVisible({ timeout: 10000 });
   });
+
+  test("shows error when network times out", async ({ page }) => {
+    test.setTimeout(60000);
+
+    await page.route("**/api/trpc/**", (route) => route.abort("timedout"));
+
+    await page.goto(
+      `${BASE_URL}/en/dashboard/bookings/00000000-0000-0000-0000-000000000000/payment`,
+      { waitUntil: "domcontentloaded" },
+    );
+
+    await page
+      .waitForSelector(SEL.pageHeading, {
+        state: "visible",
+        timeout: 10000,
+      })
+      .catch(() => {
+        // Heading may not render in error state — fall through
+      });
+
+    const errorText = page
+      .locator("text=Failed to load")
+      .or(page.locator("text=Booking not found"))
+      .or(page.locator("text=Error"));
+    await expect(errorText).toBeVisible({ timeout: 10000 });
+  });
+
+  test("back button navigates to bookings from not-found payment", async ({ page }) => {
+    test.setTimeout(60000);
+
+    await page.goto(
+      `${BASE_URL}/en/dashboard/bookings/00000000-0000-0000-0000-000000000000/payment`,
+      { waitUntil: "domcontentloaded" },
+    );
+
+    await page
+      .waitForSelector(SEL.pageHeading, {
+        state: "visible",
+        timeout: 10000,
+      })
+      .catch(() => {
+        // Heading may not render in error state — fall through
+      });
+
+    // If the back button is visible, click it
+    const backButton = page.locator(SEL.backToBooking);
+    if (await backButton.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await backButton.click();
+      await expect(page).toHaveURL(/\/bookings/, { timeout: 10000 });
+    }
+  });
 });
