@@ -93,6 +93,85 @@ rihla-mate/
 | `pnpm db:migrate`  | Apply Drizzle migrations             |
 | `pnpm keygen`      | Generate Ed25519 license key pair    |
 
+## Infrastructure & CI
+
+### CI/CD (GitHub Actions)
+
+Dua workflow, keduanya trigger `push` dan `pull_request` ke `main`.
+
+| Workflow               | Shard | Pipeline                                                                    |
+| ---------------------- | ----- | --------------------------------------------------------------------------- |
+| `playwright.yml`       | 4     | lint → check → DB migrate → seed → **E2E (4-shard)** + unit test coverage   |
+| `playwright-smoke.yml` | 2     | lint → check → DB migrate → seed → **Smoke (2-shard)** + unit test coverage |
+
+**Setup CI**: `ubuntu-latest`, Node 20, pnpm 9 (corepack), PostgreSQL 16 service container. Coverage dan Playwright report di-upload sebagai artifact (7 hari retensi).
+
+### Docker
+
+**Production** (`docker-compose.yml`):
+
+- `app` — image `ghcr.io/rihlamate/rihla-mate:latest`, port 3000, health check `/api/health`
+- `db` — PostgreSQL 16 Alpine, health check `pg_isready`
+- `watchtower` — auto-update container setiap 1 jam
+- Volume: `pgdata`, `uploads`, `license_state`
+
+**Development** (`docker-compose.dev.yml`):
+
+- `db` — PostgreSQL 16 Alpine, user `rihlamate`
+- `license-server` — build dari `./license-server`, port 3001, Upstash Redis
+
+**Dockerfile**: 3-stage build (`node:22-alpine`):
+
+1. **deps** — install dependencies (`pnpm install --frozen-lockfile`)
+2. **builder** — build shared package + Next.js standalone output
+3. **runner** — non-root `nextjs` user, `node apps/app/server.js`
+
+### Testing
+
+| Layer          | Tool       | Konfigurasi                                                          |
+| -------------- | ---------- | -------------------------------------------------------------------- |
+| E2E            | Playwright | Chromium only, 1 worker, 60s timeout, CI retries=1, tracing on retry |
+| Unit (app)     | Vitest     | v8 coverage: lines 10%, branches 75%, functions 40%, statements 10%  |
+| Unit (license) | Vitest     | Minimal, no coverage                                                 |
+
+### Linting & Formatting
+
+| Tool       | Konfigurasi                                                                                   |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| ESLint     | Flat config, `typescript-eslint` strict, `no-unused-vars` error, `no-non-null-assertion` warn |
+| Prettier   | semi, double quotes, trailingComma all, printWidth 100                                        |
+| TypeScript | Root: ES2022/strict/bundler. App: ES2017/DOM/react-jsx. License: ES2022/verbatimModuleSyntax  |
+
+Pre-commit hook via **Husky** + **lint-staged**: prettier → eslint → vitest related → tsc (noEmit).
+
+### Monorepo Tooling
+
+| Tool            | Peran                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **pnpm**        | Workspace manager (`apps/*`, `packages/*`), `pnpm@9.0.0` enforced                                                |
+| **Turborepo**   | Pipeline: `build` (depends `^build`), `dev` (persistent, no cache), `lint`, `check`, `db:generate`, `db:migrate` |
+| **Renovate**    | Weekend schedule, group non-major, automerge devDeps patch                                                       |
+| **Drizzle Kit** | PostgreSQL dialect, schema → migration generation                                                                |
+
+### Environment Variables
+
+Lihat `.env.example` untuk template lengkap. Kategori:
+
+- **Database**: `DATABASE_URL`
+- **Auth**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, Google OAuth credentials
+- **License**: `LICENSE_KEY`, `LICENSE_SERVER_URL`, `LICENSE_PUBLIC_KEY`
+- **Email**: Resend API key
+- **Payments**: Midtrans server key, client key, merchant ID
+- **Storage**: `STORAGE_DRIVER` (`local` atau `s3`), S3 credentials
+
+### Deployment Satu Perintah
+
+```bash
+curl -fsSL https://releases.rihla-mate.com/install.sh | bash
+```
+
+Script `install.sh` akan: cek Docker + Docker Compose → buat `.env` dari template → pull image → `docker compose up -d` → verifikasi health endpoint.
+
 ## License Flow
 
 1. Travel agent download `docker-compose.yml` + `.env` template
