@@ -95,6 +95,90 @@ rihla-mate/
 
 ## Infrastructure & CI
 
+### Arsitektur Infrastruktur
+
+```mermaid
+graph TB
+    subgraph "Production (docker-compose.yml)"
+        APP["app<br/>ghcr.io/rihlamate/rihla-mate<br/>Next.js :3000"]
+        DB["db<br/>PostgreSQL 16 Alpine<br/>:5432"]
+        WT["watchtower<br/>auto-update setiap 1 jam"]
+        VOL1["pgdata"]
+        VOL2["uploads"]
+        VOL3["license_state"]
+    end
+
+    subgraph "Development (docker-compose.dev.yml)"
+        DB_DEV["db<br/>PostgreSQL 16 Alpine<br/>rihlamate:5432"]
+        LS_DEV["license-server<br/>Hono REST API<br/>:3001"]
+        VOL_DEV["pgdata_dev"]
+    end
+
+    subgraph "Docker Build (Multi-stage)"
+        direction LR
+        DEPS["Stage 1: deps<br/>node:22-alpine<br/>pnpm install --frozen-lockfile"]
+        BUILD["Stage 2: builder<br/>node:22-alpine<br/>build shared + Next.js"]
+        RUN["Stage 3: runner<br/>node:22-alpine<br/>non-root nextjs<br/>node server.js"]
+        DEPS --> BUILD --> RUN
+    end
+
+    subgraph "External Services"
+        LS_EXT["License Server<br/>(terpusat)"]
+        RESEND["Resend<br/>(email)"]
+        MIDTRANS["Midtrans<br/>(pembayaran)"]
+        S3["S3 / Local<br/>(storage)"]
+    end
+
+    APP --> DB
+    APP --- VOL1 & VOL2 & VOL3
+    WT -- "docker.sock" --> APP
+    DB_DEV --> LS_DEV
+    DB_DEV --- VOL_DEV
+    APP --- LS_EXT
+    APP --- RESEND
+    APP --- MIDTRANS
+    APP --- S3
+```
+
+### CI/CD Pipeline
+
+```mermaid
+graph LR
+    subgraph "Trigger"
+        PUSH["push / PR ke main"]
+    end
+
+    subgraph "Unit Tests Job"
+        LINT["lint<br/>ESLint + Prettier"]
+        CHECK["check<br/>TypeScript"]
+        VITEST["vitest<br/>coverage"]
+    end
+
+    subgraph "E2E Job (4-shard)"
+        BUILD["pnpm build<br/>Next.js standalone"]
+        MIGRATE["db:generate<br/>db:migrate"]
+        SEED["seed<br/>test user + data"]
+        E2E_1["shard 1/4"]
+        E2E_2["shard 2/4"]
+        E2E_3["shard 3/4"]
+        E2E_4["shard 4/4"]
+    end
+
+    subgraph "Smoke Job (2-shard)"
+        SMOKE_1["shard 1/2"]
+        SMOKE_2["shard 2/2"]
+    end
+
+    PUSH --> LINT
+    LINT --> CHECK
+    CHECK --> VITEST
+    VITEST --> BUILD
+    BUILD --> MIGRATE
+    MIGRATE --> SEED
+    SEED --> E2E_1 & E2E_2 & E2E_3 & E2E_4
+    SEED --> SMOKE_1 & SMOKE_2
+```
+
 ### CI/CD (GitHub Actions)
 
 Dua workflow, keduanya trigger `push` dan `pull_request` ke `main`.
