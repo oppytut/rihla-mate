@@ -5,7 +5,7 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 import { toast } from "sonner";
 
 type SettingsMap = Record<string, unknown>;
@@ -26,8 +26,6 @@ function isTruthy(val: unknown): boolean {
 export default function SettingsPage() {
   const t = useTranslations();
   const trpc = useTRPC();
-  const [form, setForm] = useState<SettingsMap>({});
-  const [initialized, setInitialized] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionKey>("general");
 
   useEffect(() => {
@@ -36,12 +34,17 @@ export default function SettingsPage() {
 
   const settingsQuery = useQuery(trpc.settings.list.queryOptions());
 
+  // Use a ref-based lazy initializer pattern: form starts empty,
+  // then we set it via startTransition when query data arrives.
+  const [form, setForm] = useState<SettingsMap>({});
+
   useEffect(() => {
-    if (settingsQuery.data && !initialized) {
-      setForm(settingsQuery.data);
-      setInitialized(true);
+    if (settingsQuery.data) {
+      startTransition(() => {
+        setForm(settingsQuery.data);
+      });
     }
-  }, [settingsQuery.data, initialized]);
+  }, [settingsQuery.data]);
 
   const saveMutation = useMutation(
     trpc.settings.set.mutationOptions({
