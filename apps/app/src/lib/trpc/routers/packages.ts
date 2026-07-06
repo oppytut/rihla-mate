@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { eq, ilike, and, count, desc } from "drizzle-orm";
-import { createTRPCRouter, adminProcedure } from "../init";
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../init";
 import { packages } from "@/lib/db/schema/packages";
 import { bookings } from "@/lib/db/schema/bookings";
 
@@ -126,6 +126,23 @@ export const packagesRouter = createTRPCRouter({
 
       return result[0];
     }),
+
+  getBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ ctx, input }) => {
+    const result = await ctx.db
+      .select()
+      .from(packages)
+      .where(eq(packages.slug, input.slug))
+      .limit(1);
+
+    if (result.length === 0) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Package not found",
+      });
+    }
+
+    return result[0];
+  }),
 
   create: adminProcedure
     .input(

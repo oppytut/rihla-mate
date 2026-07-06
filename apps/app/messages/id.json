@@ -39,7 +39,7 @@
     "title": "Paket",
     "createTitle": "Tambah Paket Baru",
     "editTitle": "Edit Paket",
-    "backToList": "\u2190 Kembali ke Daftar",
+    "backToList": "← Kembali ke Daftar",
     "addPackage": "Tambah Paket",
     "search": "Cari paket...",
     "allStatus": "Semua Status",
@@ -120,7 +120,7 @@
     "title": "Pemesanan",
     "createTitle": "Pemesanan Baru",
     "editTitle": "Edit Pemesanan",
-    "backToList": "\u2190 Kembali ke Daftar",
+    "backToList": "← Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
     "search": "Cari pemesanan...",
     "allStatus": "Semua Status",
@@ -205,8 +205,13 @@
       "dateRequired": "Tanggal keberangkatan wajib diisi",
       "priceRequired": "Total harga wajib diisi",
       "priceInvalid": "Format harga tidak valid",
-      "travelersMin": "Minimal 1 peserta"
-    }
+      "travelersMin": "Minimal 1 peserta",
+      "emailInvalid": "Format email tidak valid",
+      "phoneInvalid": "Format nomor telepon tidak valid",
+      "statusInvalid": "Status tidak valid"
+    },
+    "noAvailableDates": "Tidak ada tanggal tersedia untuk paket ini. Silakan periksa kembali atau hubungi kami.",
+    "publicCreateTitle": "Pesan Perjalanan Anda"
   },
   "customers": {
     "title": "Pelanggan",
@@ -234,7 +239,7 @@
   "landing": {
     "title": "Rihla Mate",
     "subtitle": "Manajemen Biro Perjalanan yang Sederhana",
-    "description": "Kelola pemesanan, paket, pelanggan, dan lainnya \u2014 semua dalam satu tempat. Dibangun untuk biro perjalanan yang mengutamakan efisiensi.",
+    "description": "Kelola pemesanan, paket, pelanggan, dan lainnya — semua dalam satu tempat. Dibangun untuk biro perjalanan yang mengutamakan efisiensi.",
     "cta": "Mulai Sekarang",
     "signIn": "Masuk",
     "features": {
@@ -256,7 +261,7 @@
       }
     },
     "footer": {
-      "copyright": "\u00a9 {year} Rihla Mate. Hak cipta dilindungi."
+      "copyright": "© {year} Rihla Mate. Hak cipta dilindungi."
     }
   },
   "marketing": {
@@ -460,7 +465,7 @@
       "pricing": "Harga",
       "faq": "FAQ",
       "contact": "Kontak",
-      "copyright": "\u00a9 {year} Rihla Mate. Seluruh hak cipta dilindungi.",
+      "copyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
       "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
     }
   }
