@@ -39,7 +39,7 @@
     "title": "Packages",
     "createTitle": "Add New Package",
     "editTitle": "Edit Package",
-    "backToList": "\u2190 Back to List",
+    "backToList": "← Back to List",
     "addPackage": "Add Package",
     "search": "Search packages...",
     "allStatus": "All Status",
@@ -120,7 +120,7 @@
     "title": "Bookings",
     "createTitle": "New Booking",
     "editTitle": "Edit Booking",
-    "backToList": "\u2190 Back to List",
+    "backToList": "← Back to List",
     "addBooking": "Add Booking",
     "search": "Search bookings...",
     "allStatus": "All Status",
@@ -206,8 +206,13 @@
       "dateRequired": "Departure date is required",
       "priceRequired": "Total price is required",
       "priceInvalid": "Invalid price format",
-      "travelersMin": "Must have at least 1 traveler"
-    }
+      "travelersMin": "Must have at least 1 traveler",
+      "emailInvalid": "Invalid email format",
+      "phoneInvalid": "Invalid phone number format",
+      "statusInvalid": "Invalid status value"
+    },
+    "noAvailableDates": "No available dates for this package. Please check back later or contact us.",
+    "publicCreateTitle": "Book Your Trip"
   },
   "customers": {
     "title": "Customers",
@@ -235,7 +240,7 @@
   "landing": {
     "title": "Rihla Mate",
     "subtitle": "Travel Agency Management Made Simple",
-    "description": "Manage bookings, packages, customers, and more \u2014 all in one place. Built for travel agencies that value efficiency.",
+    "description": "Manage bookings, packages, customers, and more — all in one place. Built for travel agencies that value efficiency.",
     "cta": "Get Started",
     "signIn": "Sign In",
     "features": {
@@ -257,7 +262,7 @@
       }
     },
     "footer": {
-      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved."
+      "copyright": "© {year} Rihla Mate. All rights reserved."
     }
   },
   "marketing": {
@@ -461,7 +466,7 @@
       "pricing": "Pricing",
       "faq": "FAQ",
       "contact": "Contact",
-      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved.",
+      "copyright": "© {year} Rihla Mate. All rights reserved.",
       "tagline": "White-label Umrah travel platform for Indonesian travel agents."
     }
   }

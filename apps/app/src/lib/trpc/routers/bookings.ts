@@ -1,12 +1,13 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { eq, ilike, and, count, desc, sql } from "drizzle-orm";
-import { createTRPCRouter, adminProcedure } from "../init";
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
 import { logger } from "@/lib/utils/logger";
 
 import { BOOKING_STATUSES } from "@/lib/utils/constants";
+import { sendBookingConfirmation } from "@/lib/email/booking";
 
 export { BOOKING_STATUSES };
 
@@ -276,6 +277,109 @@ export const bookingsRouter = createTRPCRouter({
           notes: input.notes || null,
         })
         .returning();
+
+      return result[0];
+    }),
+
+  createPublic: publicProcedure
+    .input(
+      z.object({
+        packageId: z.string().uuid(),
+        departureDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+        customerName: z.string().min(1).max(255),
+        customerEmail: z.string().email().optional().or(z.literal("")),
+        customerPhone: z.string().max(50).optional().or(z.literal("")),
+        travelers: z.number().int().min(1).default(1),
+        notes: z.string().optional().or(z.literal("")),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const pkg = await ctx.db
+        .select({
+          id: packages.id,
+          availableDates: packages.availableDates,
+          title: packages.title,
+          price: packages.price,
+        })
+        .from(packages)
+        .where(eq(packages.id, input.packageId))
+        .limit(1);
+
+      if (pkg.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Package not found",
+        });
+      }
+
+      const availableDates = normalizeAvailableDates(pkg[0].availableDates);
+      if (!availableDates.includes(input.departureDate)) {
+        logger.error("[bookings.createPublic] date validation failed", {
+          component: "bookings",
+          packageId: input.packageId,
+          departureDate: input.departureDate,
+          availableDates,
+        });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Selected departure date is not available for this package",
+        });
+      }
+
+      const conflict = await ctx.db
+        .select({ id: bookings.id })
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.packageId, input.packageId),
+            eq(bookings.departureDate, input.departureDate),
+          ),
+        )
+        .limit(1);
+
+      if (conflict.length > 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "A booking already exists for this package on the selected date",
+        });
+      }
+
+      const computedPrice = (parseFloat(pkg[0].price) * input.travelers).toFixed(2);
+
+      const result = await ctx.db
+        .insert(bookings)
+        .values({
+          packageId: input.packageId,
+          departureDate: input.departureDate,
+          customerName: input.customerName,
+          customerEmail: input.customerEmail || null,
+          customerPhone: input.customerPhone || null,
+          travelers: input.travelers,
+          totalPrice: computedPrice,
+          status: "pending",
+          notes: input.notes || null,
+        })
+        .returning();
+
+      if (input.customerEmail) {
+        try {
+          await sendBookingConfirmation({
+            customerName: input.customerName,
+            customerEmail: input.customerEmail,
+            packageTitle: pkg[0].title,
+            departureDate: input.departureDate,
+            travelers: input.travelers,
+            totalPrice: computedPrice,
+            bookingId: result[0].id,
+          });
+        } catch (emailErr) {
+          logger.error("[bookings.createPublic] Failed to send confirmation email", {
+            component: "bookings",
+            bookingId: result[0].id,
+            error: emailErr instanceof Error ? emailErr.message : String(emailErr),
+          });
+        }
+      }
 
       return result[0];
     }),
