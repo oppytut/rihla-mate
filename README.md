@@ -210,6 +210,24 @@ Dua workflow, keduanya trigger `push` dan `pull_request` ke `main`.
 2. **builder** — build shared package + Next.js standalone output
 3. **runner** — non-root `nextjs` user, `node apps/app/server.js`
 
+### Spesifikasi Server
+
+| Komponen    | Minimum                  | Rekomendasi                  |
+| ----------- | ------------------------ | ---------------------------- |
+| **CPU**     | 2 vCPU                   | 4 vCPU                       |
+| **RAM**     | 2 GB                     | 4 GB                         |
+| **Storage** | 20 GB SSD                | 50 GB SSD                    |
+| **OS**      | Ubuntu 22.04 / Debian 12 | Ubuntu 24.04                 |
+| **Docker**  | Docker 24+ + Compose v2  | Docker 27+                   |
+| **Network** | Static IP atau domain    | Domain + SSL (reverse proxy) |
+
+**Catatan**:
+
+- Storage dihitung untuk OS, image Docker, database, dan upload file. Gunakan SSD untuk performa database PostgreSQL.
+- RAM 2 GB cukup untuk 1-2 travel agent dengan traffic rendah. Tambah RAM jika concurrent user meningkat.
+- Reverse proxy (Nginx/Caddy) direkomendasikan di depan container untuk SSL termination.
+- PostgreSQL 16 Alpine dan Node.js 22 sudah termasuk dalam Docker image — tidak perlu install manual.
+
 ### Testing
 
 | Layer          | Tool       | Konfigurasi                                                          |
