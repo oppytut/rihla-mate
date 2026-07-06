@@ -258,5 +258,210 @@
     "footer": {
       "copyright": "\u00a9 {year} Rihla Mate. Hak cipta dilindungi."
     }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Fitur",
+      "pricing": "Harga",
+      "faq": "FAQ",
+      "signIn": "Masuk",
+      "getStarted": "Mulai Sekarang"
+    },
+    "hero": {
+      "badge": "Untuk Travel Agent",
+      "headline": "Platform Travel Umrah Branded Milikmu Sendiri",
+      "headlineHighlight": "Dalam Hitungan Menit.",
+      "subtitle": "White-label, self-hosted, dan siap deploy. Berikan biro perjalananmu kehadiran digital modern dengan satu perintah — tanpa perlu coding.",
+      "ctaTrial": "Coba Gratis 14 Hari",
+      "ctaLearn": "Pelajari Lebih Lanjut",
+      "trialNote": "Uji coba 14 hari. Tanpa kartu kredit."
+    },
+    "features": {
+      "sectionTitle": "Semua yang Kamu Butuhkan untuk Go Digital",
+      "sectionDescription": "Platform lengkap yang dirancang untuk travel agent Indonesia yang ingin kendali penuh atas bisnisnya.",
+      "whiteLabel": {
+        "title": "Branding White-Label",
+        "description": "Logo kamu, warna kamu, domain kamu. Platform terlihat dan terasa sepenuhnya milikmu — tanpa watermark 'powered by'."
+      },
+      "selfHosted": {
+        "title": "Kendali Self-Hosted",
+        "description": "Deploy di server sendiri dengan Docker. Data tetap di kamu. Tanpa vendor lock-in, tanpa infrastruktur bersama."
+      },
+      "bookingEngine": {
+        "title": "Booking Engine Pintar",
+        "description": "Alur pemesanan otomatis dari pemilihan paket hingga konfirmasi. Dukungan multi tanggal keberangkatan dan jumlah jamaah."
+      },
+      "payments": {
+        "title": "Pembayaran Midtrans",
+        "description": "Terima pembayaran via GoPay, OVO, Dana, QRIS, transfer bank, dan kartu kredit — semua yang dipakai pelanggan Indonesia."
+      },
+      "license": {
+        "title": "Manajemen Lisensi",
+        "description": "Lisensi transparan dengan tanda tangan Ed25519. Aktivasi sekali, auto-check-in. Tanpa pelacakan, hanya validasi lisensi."
+      },
+      "analytics": {
+        "title": "Dashboard Analitik",
+        "description": "Pantau pemesanan, pendapatan, pertumbuhan pelanggan, dan paket terpopuler. Keputusan berbasis data untuk bisnis travelmu."
+      }
+    },
+    "howItWorks": {
+      "sectionTitle": "Dari Nol ke Live dalam 4 Langkah",
+      "sectionDescription": "Tanpa setup rumit. Tanpa tim teknis. Kamu sudah online sebelum kopi berikutnya habis.",
+      "steps": {
+        "deploy": {
+          "step": "1",
+          "title": "Deploy",
+          "description": "Jalankan satu perintah Docker di server kamu. Installer wizard menangani semuanya — database, konfigurasi, dan setup awal."
+        },
+        "brand": {
+          "step": "2",
+          "title": "Branding",
+          "description": "Upload logo, atur warna, konfigurasi domain. Platform langsung berubah jadi situs travel branded milikmu."
+        },
+        "sell": {
+          "step": "3",
+          "title": "Jual",
+          "description": "Tambah paket Umrah, atur harga, dan mulai terima pemesanan. Pelanggan bisa browsing dan bayar online 24/7."
+        },
+        "grow": {
+          "step": "4",
+          "title": "Berkembang",
+          "description": "Pantau performa dengan analitik, kelola hubungan pelanggan, dan skalakan bisnis dengan kehadiran digital profesional."
+        }
+      }
+    },
+    "pricing": {
+      "sectionTitle": "Harga Sederhana dan Transparan",
+      "sectionDescription": "Setup satu kali, lisensi bulanan terjangkau. Tanpa biaya tersembunyi. Tanpa biaya kejutan.",
+      "currency": "Rp",
+      "month": "/bulan",
+      "popular": "Paling Populer",
+      "starter": {
+        "name": "Starter",
+        "price": "Gratis",
+        "period": "14 hari",
+        "description": "Uji coba fitur lengkap. Tanpa batasan.",
+        "cta": "Coba Gratis",
+        "features": [
+          "Semua fitur Pro",
+          "Paket tanpa batas",
+          "Pemesanan tanpa batas",
+          "Pembayaran Midtrans",
+          "Notifikasi email",
+          "Akses penuh 14 hari"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "499Rb",
+        "period": "/bulan",
+        "description": "Untuk travel agent yang berkembang.",
+        "cta": "Mulai Sekarang",
+        "features": [
+          "Branding white-label",
+          "Dukungan domain kustom",
+          "Paket tanpa batas",
+          "Pemesanan tanpa batas",
+          "Pembayaran Midtrans",
+          "Dashboard analitik",
+          "Dukungan email prioritas",
+          "Auto-update via Watchtower"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "1,5Jt",
+        "period": "/bulan",
+        "description": "Untuk agen dengan banyak cabang.",
+        "cta": "Hubungi Sales",
+        "features": [
+          "Semua fitur Pro",
+          "Dukungan multi-tenant",
+          "Akses API",
+          "Integrasi kustom",
+          "Dukungan dedicated",
+          "Garansi SLA",
+          "Bantuan onboarding",
+          "Permintaan fitur kustom"
+        ]
+      }
+    },
+    "testimonials": {
+      "sectionTitle": "Kata Travel Agent",
+      "sectionDescription": "Dibangun untuk tantangan nyata yang dihadapi travel agent Umrah Indonesia setiap hari.",
+      "items": [
+        {
+          "quote": "Sebelum Rihla Mate, saya kelola semuanya lewat WhatsApp dan Excel. Sekarang pelanggan browsing paket, booking, dan bayar online — saya bangun tidur lihat pemesanan terkonfirmasi, bukan missed calls.",
+          "author": "Ahmad R.",
+          "role": "Pemilik, Al-Haram Travel",
+          "city": "Jakarta"
+        },
+        {
+          "quote": "Kami sudah coba platform travel lain tapi semua minta potongan per booking. Dengan self-hosted, kami punya semuanya. Biaya setup sekali langsung balik modal di minggu pertama.",
+          "author": "Siti N.",
+          "role": "Direktur, Nur Cahaya Wisata",
+          "city": "Surabaya"
+        },
+        {
+          "quote": "Integrasi Midtrans yang bikin kami yakin. Pelanggan kami pakai GoPay dan QRIS setiap hari — begitu built-in, zero friksi pembayaran. Conversion rate naik dua kali lipat.",
+          "author": "Hendra W.",
+          "role": "Co-Founder, Barokah Umrah",
+          "city": "Bandung"
+        }
+      ]
+    },
+    "faq": {
+      "sectionTitle": "Pertanyaan yang Sering Diajukan",
+      "sectionDescription": "Semua yang perlu kamu tahu sebelum memulai.",
+      "items": [
+        {
+          "question": "Apa maksudnya 'self-hosted'?",
+          "answer": "Self-hosted artinya kamu menginstal dan menjalankan platform di server sendiri (atau VPS). Kamu punya kendali penuh atas data, domain, dan branding. Kami sediakan Docker image — kamu sediakan servernya."
+        },
+        {
+          "question": "Apakah saya perlu keahlian teknis untuk setup?",
+          "answer": "Pengetahuan dasar server membantu, tapi installer satu perintah dan setup wizard kami menangani semuanya. Kalau kamu bisa copy-paste perintah ke terminal, kamu bisa deploy Rihla Mate. Kami juga sediakan bantuan setup untuk pelanggan Enterprise."
+        },
+        {
+          "question": "Bagaimana cara kerja lisensi?",
+          "answer": "Setiap instance butuh kunci lisensi yang terikat ke domain kamu. Lisensi divalidasi menggunakan tanda tangan kriptografi Ed25519 — tanpa phone-home konstan, hanya check-in berkala. Lisensi bulanan dan bisa dibatalkan kapan saja."
+        },
+        {
+          "question": "Bisa pakai domain sendiri?",
+          "answer": "Tentu. Kamu bisa pakai domain apa pun yang kamu miliki. Platform mendukung domain kustom dengan SSL otomatis via reverse proxy seperti Nginx atau Caddy."
+        },
+        {
+          "question": "Metode pembayaran apa yang didukung?",
+          "answer": "Kami integrasi dengan Midtrans, payment gateway terkemuka di Indonesia. Ini mencakup GoPay, OVO, Dana, QRIS, transfer bank (BCA, Mandiri, BNI, BRI), kartu kredit/debit, dan pembayaran via minimarket."
+        },
+        {
+          "question": "Bisa kustomisasi desain?",
+          "answer": "Ya. Platform mendukung branding white-label penuh: logo, warna brand, dan CSS kustom. Kamu juga bisa memodifikasi template landing page agar sesuai dengan identitas agensimu."
+        },
+        {
+          "question": "Apa yang terjadi jika saya berhenti bayar lisensi?",
+          "answer": "Jika lisensi kedaluwarsa, platform masuk masa tenggang 7 hari dengan fungsionalitas penuh. Setelah itu, mode terbatas. Data kamu tidak pernah dikunci — kamu selalu bisa ekspor data bahkan tanpa lisensi aktif."
+        },
+        {
+          "question": "Apakah data saya aman?",
+          "answer": "Sangat aman. Karena platform berjalan di server kamu, semua data pelanggan, catatan pemesanan, dan informasi pembayaran tetap di infrastruktur kamu. Kami tidak pernah punya akses ke data kamu."
+        }
+      ]
+    },
+    "cta": {
+      "headline": "Siap Bawa Biro Travelmu ke Online?",
+      "subtitle": "Bergabunglah dengan travel agent di seluruh Indonesia yang telah memodernisasi bisnisnya dengan Rihla Mate. Mulai uji coba gratis 14 hari sekarang.",
+      "button": "Mulai Uji Coba Gratis",
+      "contact": "Pertanyaan? Hubungi kami di"
+    },
+    "footer": {
+      "about": "Tentang",
+      "features": "Fitur",
+      "pricing": "Harga",
+      "faq": "FAQ",
+      "contact": "Kontak",
+      "copyright": "\u00a9 {year} Rihla Mate. Seluruh hak cipta dilindungi.",
+      "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
+    }
   }
 }
