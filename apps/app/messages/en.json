@@ -21,6 +21,9 @@
       "bookings": "Bookings",
       "customers": "Customers",
       "packages": "Packages",
+      "media": "Media",
+      "pages": "Landing Pages",
+      "analytics": "Analytics",
       "settings": "Settings",
       "users": "Users"
     },
@@ -216,7 +219,81 @@
   },
   "customers": {
     "title": "Customers",
-    "empty": "No customers yet."
+    "empty": "No customers yet.",
+    "search": "Search customers...",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "bookings": "Bookings",
+      "totalSpent": "Total Spent",
+      "lastBooking": "Last Booking",
+      "actions": "Actions"
+    },
+    "pageInfo": "Page {page} of {total}",
+    "detail": {
+      "title": "Customer Detail",
+      "back": "← Back to Customers",
+      "bookingHistory": "Booking History",
+      "noBookings": "No bookings found.",
+      "pageInfo": "Page {page} of {total}"
+    },
+    "bookings": {
+      "columns": {
+        "id": "Booking ID",
+        "package": "Package",
+        "date": "Date",
+        "travelers": "Travelers",
+        "total": "Total",
+        "status": "Status"
+      }
+    }
+  },
+  "media": {
+    "title": "Media Library",
+    "empty": "No media items yet.",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this media item?",
+    "deleteSuccess": "Media item deleted successfully",
+    "pageInfo": "Page {page} of {total}"
+  },
+  "landingPages": {
+    "title": "Landing Pages",
+    "addPage": "Add Page",
+    "empty": "No landing pages yet.",
+    "columns": {
+      "title": "Title",
+      "slug": "Slug",
+      "template": "Template",
+      "status": "Status",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
+    },
+    "homepage": "Homepage",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this landing page?",
+    "deleteSuccess": "Landing page deleted successfully",
+    "pageInfo": "Page {page} of {total}"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "overview": "Overview",
+    "totalViews": "Total Page Views",
+    "totalBookings": "Total Bookings",
+    "conversionRate": "Conversion Rate",
+    "revenue": "Revenue",
+    "recentBookings": "Recent Bookings",
+    "noData": "No analytics data available yet.",
+    "period": {
+      "7d": "Last 7 Days",
+      "30d": "Last 30 Days",
+      "90d": "Last 90 Days"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -228,7 +305,9 @@
       "general": "General Settings",
       "payment": "Payment",
       "email": "Email",
-      "booking": "Booking"
+      "booking": "Booking",
+      "seo": "SEO Settings",
+      "license": "License Management"
     },
     "fields": {
       "appName": "Application Name",
@@ -247,11 +326,64 @@
       "autoConfirm": "Auto Confirm",
       "requirePayment": "Require Payment"
     },
+    "seo": {
+      "defaultTitle": "Default Page Title",
+      "defaultDescription": "Default Meta Description",
+      "defaultOgImage": "Default OG Image URL",
+      "twitterHandle": "Twitter Handle",
+      "enableSitemap": "Enable Sitemap",
+      "enableStructuredData": "Enable Structured Data"
+    },
+    "license": {
+      "status": "License Status",
+      "active": "Active",
+      "expired": "Expired",
+      "trial": "Trial",
+      "gracePeriod": "Grace Period",
+      "revoked": "Revoked",
+      "plan": "Plan",
+      "expiresAt": "Expires At",
+      "activatedAt": "Activated At",
+      "lastCheckin": "Last Check-in",
+      "domain": "Domain",
+      "noLicense": "No active license found.",
+      "activateNow": "Activate License",
+      "loading": "Loading license information..."
+    },
     "empty": "Settings page coming soon."
   },
   "users": {
     "title": "Users",
-    "empty": "No users yet."
+    "addUser": "Add User",
+    "empty": "No users yet.",
+    "search": "Search users...",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "staff": "Staff"
+    },
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this user?",
+    "deleteSuccess": "User deleted successfully",
+    "noResults": "No users match your search criteria.",
+    "pageInfo": "Page {page} of {total}",
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "invite": "Invite User",
+    "inviteSuccess": "Invitation sent successfully"
+  },
+  "notifications": {
+    "updateAvailable": "A new version of Rihla Mate is available: {version}",
+    "updateLink": "View Release Notes",
+    "dismiss": "Dismiss"
   },
   "auth": {
     "signIn": "Sign In",
