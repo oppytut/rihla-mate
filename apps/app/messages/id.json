@@ -219,6 +219,33 @@
   },
   "settings": {
     "title": "Pengaturan",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "saved": "Pengaturan berhasil disimpan",
+    "error": "Gagal menyimpan pengaturan",
+    "sections": {
+      "general": "Pengaturan Umum",
+      "payment": "Pembayaran",
+      "email": "Email",
+      "booking": "Pemesanan"
+    },
+    "fields": {
+      "appName": "Nama Aplikasi",
+      "appDescription": "Deskripsi Aplikasi",
+      "contactEmail": "Email Kontak",
+      "contactPhone": "Telepon Kontak",
+      "address": "Alamat",
+      "currency": "Mata Uang",
+      "midtransServerKey": "Midtrans Server Key",
+      "midtransClientKey": "Midtrans Client Key",
+      "midtransMerchantId": "Midtrans Merchant ID",
+      "midtransProduction": "Midtrans Production Mode",
+      "resendApiKey": "Resend API Key",
+      "resendFromEmail": "Email Pengirim (Resend)",
+      "bookingPrefix": "Prefiks Nomor Pemesanan",
+      "autoConfirm": "Konfirmasi Otomatis",
+      "requirePayment": "Wajib Pembayaran"
+    },
     "empty": "Halaman pengaturan akan segera hadir."
   },
   "users": {

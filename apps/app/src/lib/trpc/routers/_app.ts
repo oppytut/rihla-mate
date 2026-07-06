@@ -7,6 +7,7 @@ import { bookingsRouter } from "./bookings";
 import { userRouter } from "./user";
 import { midtransRouter } from "./midtrans";
 import { dashboardRouter } from "./dashboard";
+import { settingsRouter } from "./settings";
 
 export const appRouter = createTRPCRouter({
   health: publicProcedure.query(() => ({ status: "ok" })),
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   midtrans: midtransRouter,
   dashboard: dashboardRouter,
+  settings: settingsRouter,
 });
 
 export type AppRouter = typeof appRouter;

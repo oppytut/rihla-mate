@@ -220,6 +220,33 @@
   },
   "settings": {
     "title": "Settings",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Settings saved successfully",
+    "error": "Failed to save settings",
+    "sections": {
+      "general": "General Settings",
+      "payment": "Payment",
+      "email": "Email",
+      "booking": "Booking"
+    },
+    "fields": {
+      "appName": "Application Name",
+      "appDescription": "Application Description",
+      "contactEmail": "Contact Email",
+      "contactPhone": "Contact Phone",
+      "address": "Address",
+      "currency": "Currency",
+      "midtransServerKey": "Midtrans Server Key",
+      "midtransClientKey": "Midtrans Client Key",
+      "midtransMerchantId": "Midtrans Merchant ID",
+      "midtransProduction": "Midtrans Production Mode",
+      "resendApiKey": "Resend API Key",
+      "resendFromEmail": "Sender Email (Resend)",
+      "bookingPrefix": "Booking Number Prefix",
+      "autoConfirm": "Auto Confirm",
+      "requirePayment": "Require Payment"
+    },
     "empty": "Settings page coming soon."
   },
   "users": {
