@@ -132,4 +132,89 @@ test.describe("performance", () => {
     const loadTime = Date.now() - startTime;
     expect(loadTime).toBeLessThan(MAX_LOAD_TIME_MS * 1.5);
   });
+
+  test("client-side navigation between dashboard pages is fast", async ({ page }) => {
+    await page.goto(`${BASE_URL}/en/dashboard`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: MAX_LOAD_TIME_MS,
+    });
+
+    const navStart = Date.now();
+
+    await page.click('[data-testid="sidebar-nav"] a[href*="bookings"]');
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: MAX_LOAD_TIME_MS,
+    });
+
+    const navTime = Date.now() - navStart;
+    expect(navTime).toBeLessThan(MAX_FCP_MS * 2);
+  });
+
+  test("API response time is within threshold", async ({ page }) => {
+    let maxApiTime = 0;
+
+    page.on("response", (response) => {
+      if (response.url().includes("/api/trpc/") && response.status() === 200) {
+        const timing = response.request().timing();
+        if (timing.responseEnd > 0) {
+          maxApiTime = Math.max(maxApiTime, timing.responseEnd);
+        }
+      }
+    });
+
+    await page.goto(`${BASE_URL}/en/dashboard`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: MAX_LOAD_TIME_MS,
+    });
+
+    await page.waitForSelector('[data-testid^="stat-card-"]', {
+      state: "visible",
+      timeout: MAX_LCP_MS,
+    });
+
+    expect(maxApiTime).toBeLessThan(MAX_LOAD_TIME_MS);
+  });
+
+  test("Web Vitals are within acceptable range", async ({ page }) => {
+    await page.goto(`${BASE_URL}/en/dashboard`, {
+      waitUntil: "domcontentloaded",
+    });
+
+    await page.waitForSelector('[data-testid="page-heading"]', {
+      state: "visible",
+      timeout: MAX_LOAD_TIME_MS,
+    });
+
+    await page.waitForSelector('[data-testid^="stat-card-"]', {
+      state: "visible",
+      timeout: MAX_LCP_MS,
+    });
+
+    const metrics = await page.evaluate(() => {
+      const navEntries = performance.getEntriesByType(
+        "navigation",
+      ) as PerformanceNavigationTiming[];
+      const nav = navEntries[0];
+      const paintEntries = performance.getEntriesByType("paint");
+      const fcp = paintEntries.find((e) => e.name === "first-contentful-paint")?.startTime;
+      return {
+        domContentLoaded: nav?.domContentLoadedEventEnd ?? 0,
+        domInteractive: nav?.domInteractive ?? 0,
+        fcp: fcp ?? 0,
+      };
+    });
+
+    expect(metrics.domContentLoaded).toBeLessThan(MAX_LOAD_TIME_MS);
+    expect(metrics.domInteractive).toBeLessThan(MAX_LOAD_TIME_MS);
+    expect(metrics.fcp).toBeLessThan(MAX_FCP_MS);
+  });
 });

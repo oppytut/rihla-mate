@@ -19,6 +19,15 @@ const PAGES = [
   { name: "packages-create", path: "/en/dashboard/packages/new" },
 ] as const;
 
+const DETAIL_PAGES = [
+  { name: "bookings-detail", path: "/en/dashboard/bookings/1" },
+  { name: "bookings-edit", path: "/en/dashboard/bookings/1/edit" },
+  { name: "packages-detail", path: "/en/dashboard/packages/1" },
+  { name: "packages-edit", path: "/en/dashboard/packages/1/edit" },
+] as const;
+
+const VIEWPORTS = [{ name: "mobile", width: 375, height: 812 }] as const;
+
 test.describe("visual regression", () => {
   test.describe.configure({ mode: "serial" });
 
@@ -57,4 +66,72 @@ test.describe("visual regression", () => {
       });
     });
   }
+
+  test.describe("detail and edit pages", () => {
+    for (const { name, path } of DETAIL_PAGES) {
+      test(`${name} page screenshot matches reference`, async ({ page }) => {
+        await page.goto(`${BASE_URL}${path}`, {
+          waitUntil: "domcontentloaded",
+        });
+
+        await page.waitForSelector('[data-testid="page-heading"]', {
+          state: "visible",
+          timeout: 15000,
+        });
+
+        await page.waitForSelector(
+          '[data-testid$="-page-info"], [data-testid$="-empty-state"], [data-testid$="-submit"], [data-testid^="detail-"], [data-testid^="form-"]',
+          { state: "visible", timeout: 15000 },
+        );
+
+        await page.waitForFunction(
+          () => {
+            const skeletons = document.querySelectorAll(".animate-pulse");
+            return skeletons.length === 0;
+          },
+          { timeout: 10000 },
+        );
+
+        await expect(page).toHaveScreenshot(`${name}.png`, {
+          fullPage: false,
+          maxDiffPixelRatio: 0.05,
+        });
+      });
+    }
+  });
+
+  test.describe("responsive viewports", () => {
+    for (const { name, width, height } of VIEWPORTS) {
+      test(`dashboard at ${name} viewport`, async ({ page }) => {
+        await page.setViewportSize({ width, height });
+
+        await page.goto(`${BASE_URL}/en/dashboard`, {
+          waitUntil: "domcontentloaded",
+        });
+
+        await page.waitForSelector('[data-testid="page-heading"]', {
+          state: "visible",
+          timeout: 15000,
+        });
+
+        await page.waitForSelector('[data-testid^="stat-card-"]', {
+          state: "visible",
+          timeout: 15000,
+        });
+
+        await page.waitForFunction(
+          () => {
+            const skeletons = document.querySelectorAll(".animate-pulse");
+            return skeletons.length === 0;
+          },
+          { timeout: 10000 },
+        );
+
+        await expect(page).toHaveScreenshot(`dashboard-${name}.png`, {
+          fullPage: false,
+          maxDiffPixelRatio: 0.05,
+        });
+      });
+    }
+  });
 });
