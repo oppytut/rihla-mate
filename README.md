@@ -228,6 +228,28 @@ Dua workflow, keduanya trigger `push` dan `pull_request` ke `main`.
 - Reverse proxy (Nginx/Caddy) direkomendasikan di depan container untuk SSL termination.
 - PostgreSQL 16 Alpine dan Node.js 22 sudah termasuk dalam Docker image — tidak perlu install manual.
 
+#### Spesifikasi License Server (Terpusat)
+
+License server adalah service terpisah yang dikelola oleh Rihla Mate, tidak di-deploy oleh travel agent.
+
+| Komponen               | Spesifikasi                                          | Keterangan                                                                              |
+| ---------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Runtime**            | Hono (Node.js)                                       | REST API ringan, port 3001                                                              |
+| **CPU**                | 1-2 vCPU                                             | Beban rendah — hanya activation + check-in berkala                                      |
+| **RAM**                | 1-2 GB                                               | Memory footprint kecil (Hono ~50 MB idle)                                               |
+| **Database**           | PostgreSQL 16                                        | Skema: `customers`, `licenses`, `activations`, `checkins`, `domain_changes`, `api_keys` |
+| **Cache / Rate Limit** | Upstash Redis                                        | Rate limiting per license (check-in: 60 req/mnt, endpoint lain: 10 req/mnt)             |
+| **Email**              | Resend                                               | Kirim license key ke customer                                                           |
+| **Keamanan**           | Ed25519 + API Key                                    | Sign/verify license key, API key auth untuk endpoint admin                              |
+| **Endpoint**           | `/api/v1/health`, `/activate`, `/checkin`, `/revoke` | 4 endpoint REST                                                                         |
+
+**Estimasi beban**:
+
+- Setiap travel agent check-in sekali per 24 jam → 1 request/hari/instance
+- Activation hanya sekali saat install pertama
+- Revoke hanya saat manual (admin) atau expired
+- Untuk 10.000 instance: ~10.000 check-in/hari ≈ **0.12 req/detik** — sangat ringan
+
 ### Testing
 
 | Layer          | Tool       | Konfigurasi                                                          |
