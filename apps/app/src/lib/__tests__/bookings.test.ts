@@ -319,6 +319,43 @@ describe("bookingsRouter.list", () => {
     expect(result.items).toHaveLength(0);
     expect(result.total).toBe(0);
   });
+
+  it("throws INTERNAL_SERVER_ERROR when items query rejects", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.orderBy).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockReturnValueOnce(db as never);
+    vi.mocked(db.offset).mockRejectedValueOnce(new Error("DB connection lost"));
+
+    await expect(caller.list({ page: 1, limit: 20 })).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+    });
+  });
+
+  it("returns total=0 when count query rejects but items succeed", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.orderBy).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockReturnValueOnce(db as never);
+    vi.mocked(db.offset).mockResolvedValueOnce([sampleBooking] as never);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockRejectedValueOnce(new Error("Count failed"));
+
+    const result = await caller.list({ page: 1, limit: 20 });
+
+    expect(result.items).toEqual([sampleBooking]);
+    expect(result.total).toBe(0);
+  });
 });
 
 describe("bookingsRouter.getById", () => {
@@ -374,6 +411,20 @@ describe("bookingsRouter.getById", () => {
     await expect(
       caller.getById({ id: "00000000-0000-0000-0000-000000000099" }),
     ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+
+  it("throws INTERNAL_SERVER_ERROR when getById query rejects", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockRejectedValueOnce(new Error("DB connection lost"));
+
+    await expect(
+      caller.getById({ id: "00000000-0000-0000-0000-000000000001" }),
+    ).rejects.toMatchObject({ code: "INTERNAL_SERVER_ERROR" });
   });
 });
 
