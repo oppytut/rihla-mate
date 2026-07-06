@@ -39,7 +39,7 @@
     "title": "Packages",
     "createTitle": "Add New Package",
     "editTitle": "Edit Package",
-    "backToList": "\u2190 Back to List",
+    "backToList": "← Back to List",
     "addPackage": "Add Package",
     "search": "Search packages...",
     "allStatus": "All Status",
@@ -120,7 +120,7 @@
     "title": "Bookings",
     "createTitle": "New Booking",
     "editTitle": "Edit Booking",
-    "backToList": "\u2190 Back to List",
+    "backToList": "← Back to List",
     "addBooking": "Add Booking",
     "search": "Search bookings...",
     "allStatus": "All Status",
@@ -215,6 +215,33 @@
   },
   "settings": {
     "title": "Settings",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Settings saved successfully",
+    "error": "Failed to save settings",
+    "sections": {
+      "general": "General Settings",
+      "payment": "Payment",
+      "email": "Email",
+      "booking": "Booking"
+    },
+    "fields": {
+      "appName": "Application Name",
+      "appDescription": "Application Description",
+      "contactEmail": "Contact Email",
+      "contactPhone": "Contact Phone",
+      "address": "Address",
+      "currency": "Currency",
+      "midtransServerKey": "Midtrans Server Key",
+      "midtransClientKey": "Midtrans Client Key",
+      "midtransMerchantId": "Midtrans Merchant ID",
+      "midtransProduction": "Midtrans Production Mode",
+      "resendApiKey": "Resend API Key",
+      "resendFromEmail": "Sender Email (Resend)",
+      "bookingPrefix": "Booking Number Prefix",
+      "autoConfirm": "Auto Confirm",
+      "requirePayment": "Require Payment"
+    },
     "empty": "Settings page coming soon."
   },
   "users": {
@@ -235,7 +262,7 @@
   "landing": {
     "title": "Rihla Mate",
     "subtitle": "Travel Agency Management Made Simple",
-    "description": "Manage bookings, packages, customers, and more \u2014 all in one place. Built for travel agencies that value efficiency.",
+    "description": "Manage bookings, packages, customers, and more — all in one place. Built for travel agencies that value efficiency.",
     "cta": "Get Started",
     "signIn": "Sign In",
     "features": {
@@ -257,7 +284,7 @@
       }
     },
     "footer": {
-      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved."
+      "copyright": "© {year} Rihla Mate. All rights reserved."
     }
   },
   "marketing": {
@@ -461,7 +488,7 @@
       "pricing": "Pricing",
       "faq": "FAQ",
       "contact": "Contact",
-      "copyright": "\u00a9 {year} Rihla Mate. All rights reserved.",
+      "copyright": "© {year} Rihla Mate. All rights reserved.",
       "tagline": "White-label Umrah travel platform for Indonesian travel agents."
     }
   }

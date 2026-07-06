@@ -39,7 +39,7 @@
     "title": "Paket",
     "createTitle": "Tambah Paket Baru",
     "editTitle": "Edit Paket",
-    "backToList": "\u2190 Kembali ke Daftar",
+    "backToList": "← Kembali ke Daftar",
     "addPackage": "Tambah Paket",
     "search": "Cari paket...",
     "allStatus": "Semua Status",
@@ -120,7 +120,7 @@
     "title": "Pemesanan",
     "createTitle": "Pemesanan Baru",
     "editTitle": "Edit Pemesanan",
-    "backToList": "\u2190 Kembali ke Daftar",
+    "backToList": "← Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
     "search": "Cari pemesanan...",
     "allStatus": "Semua Status",
@@ -214,6 +214,33 @@
   },
   "settings": {
     "title": "Pengaturan",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "saved": "Pengaturan berhasil disimpan",
+    "error": "Gagal menyimpan pengaturan",
+    "sections": {
+      "general": "Pengaturan Umum",
+      "payment": "Pembayaran",
+      "email": "Email",
+      "booking": "Pemesanan"
+    },
+    "fields": {
+      "appName": "Nama Aplikasi",
+      "appDescription": "Deskripsi Aplikasi",
+      "contactEmail": "Email Kontak",
+      "contactPhone": "Telepon Kontak",
+      "address": "Alamat",
+      "currency": "Mata Uang",
+      "midtransServerKey": "Midtrans Server Key",
+      "midtransClientKey": "Midtrans Client Key",
+      "midtransMerchantId": "Midtrans Merchant ID",
+      "midtransProduction": "Midtrans Production Mode",
+      "resendApiKey": "Resend API Key",
+      "resendFromEmail": "Email Pengirim (Resend)",
+      "bookingPrefix": "Prefiks Nomor Pemesanan",
+      "autoConfirm": "Konfirmasi Otomatis",
+      "requirePayment": "Wajib Pembayaran"
+    },
     "empty": "Halaman pengaturan akan segera hadir."
   },
   "users": {
@@ -234,7 +261,7 @@
   "landing": {
     "title": "Rihla Mate",
     "subtitle": "Manajemen Biro Perjalanan yang Sederhana",
-    "description": "Kelola pemesanan, paket, pelanggan, dan lainnya \u2014 semua dalam satu tempat. Dibangun untuk biro perjalanan yang mengutamakan efisiensi.",
+    "description": "Kelola pemesanan, paket, pelanggan, dan lainnya — semua dalam satu tempat. Dibangun untuk biro perjalanan yang mengutamakan efisiensi.",
     "cta": "Mulai Sekarang",
     "signIn": "Masuk",
     "features": {
@@ -256,7 +283,7 @@
       }
     },
     "footer": {
-      "copyright": "\u00a9 {year} Rihla Mate. Hak cipta dilindungi."
+      "copyright": "© {year} Rihla Mate. Hak cipta dilindungi."
     }
   },
   "marketing": {
@@ -460,7 +487,7 @@
       "pricing": "Harga",
       "faq": "FAQ",
       "contact": "Kontak",
-      "copyright": "\u00a9 {year} Rihla Mate. Seluruh hak cipta dilindungi.",
+      "copyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
       "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
     }
   }
