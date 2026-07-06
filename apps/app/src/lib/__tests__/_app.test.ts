@@ -50,6 +50,7 @@ describe("appRouter", () => {
       "user",
       "midtrans",
       "dashboard",
+      "settings",
     ];
     // _def is the internal tRPC definition that holds router procedures
     const routerDef = appRouter._def as {
