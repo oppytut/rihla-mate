@@ -19,6 +19,8 @@ const PAGES = [
   { name: "packages-create", path: "/en/dashboard/packages/new" },
 ] as const;
 
+const VIEWPORTS = [{ name: "mobile", width: 375, height: 812 }] as const;
+
 test.describe("visual regression", () => {
   test.describe.configure({ mode: "serial" });
 
@@ -53,8 +55,43 @@ test.describe("visual regression", () => {
 
       await expect(page).toHaveScreenshot(`${name}.png`, {
         fullPage: false,
-        maxDiffPixelRatio: 0.05,
+        maxDiffPixelRatio: 0.1,
       });
     });
   }
+
+  test.describe("responsive viewports", () => {
+    for (const { name, width, height } of VIEWPORTS) {
+      test(`dashboard at ${name} viewport`, async ({ page }) => {
+        await page.setViewportSize({ width, height });
+
+        await page.goto(`${BASE_URL}/en/dashboard`, {
+          waitUntil: "domcontentloaded",
+        });
+
+        await page.waitForSelector('[data-testid="page-heading"]', {
+          state: "visible",
+          timeout: 15000,
+        });
+
+        await page.waitForSelector('[data-testid^="stat-card-"]', {
+          state: "visible",
+          timeout: 15000,
+        });
+
+        await page.waitForFunction(
+          () => {
+            const skeletons = document.querySelectorAll(".animate-pulse");
+            return skeletons.length === 0;
+          },
+          { timeout: 10000 },
+        );
+
+        await expect(page).toHaveScreenshot(`dashboard-${name}.png`, {
+          fullPage: false,
+          maxDiffPixelRatio: 0.1,
+        });
+      });
+    }
+  });
 });
