@@ -38,6 +38,26 @@ function normalizeAvailableDates(raw: unknown): string[] {
   return [];
 }
 
+const bookingsUpdateSchema = z.object({
+  id: z.string().uuid(),
+  packageId: z.string().uuid().optional(),
+  departureDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
+    .optional(),
+  customerName: z.string().min(1).max(255).optional(),
+  customerEmail: z.string().email().optional().or(z.literal("")),
+  customerPhone: z.string().max(50).optional().or(z.literal("")),
+  travelers: z.number().int().min(1).optional(),
+  totalPrice: z
+    .string()
+    .regex(/^\d+(\.\d{1,2})?$/, "Invalid price format")
+    .optional(),
+  status: z.enum(BOOKING_STATUSES).optional(),
+  paymentRef: z.string().max(255).optional().or(z.literal("")),
+  notes: z.string().optional().or(z.literal("")),
+});
+
 export const bookingsRouter = createTRPCRouter({
   list: adminProcedure
     .input(
@@ -339,118 +359,96 @@ export const bookingsRouter = createTRPCRouter({
       return result[0];
     }),
 
-  update: adminProcedure
-    .input(
-      z.object({
-        id: z.string().uuid(),
-        packageId: z.string().uuid().optional(),
-        departureDate: z
-          .string()
-          .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
-          .optional(),
-        customerName: z.string().min(1).max(255).optional(),
-        customerEmail: z.string().email().optional().or(z.literal("")),
-        customerPhone: z.string().max(50).optional().or(z.literal("")),
-        travelers: z.number().int().min(1).optional(),
-        totalPrice: z
-          .string()
-          .regex(/^\d+(\.\d{1,2})?$/, "Invalid price format")
-          .optional(),
-        status: z.enum(BOOKING_STATUSES).optional(),
-        paymentRef: z.string().max(255).optional().or(z.literal("")),
-        notes: z.string().optional().or(z.literal("")),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { id, ...data } = input;
+  update: adminProcedure.input(bookingsUpdateSchema).mutation(async ({ ctx, input }) => {
+    const { id, ...data } = input;
 
-      const existing = await ctx.db
-        .select({ id: bookings.id })
-        .from(bookings)
-        .where(eq(bookings.id, id))
+    const existing = await ctx.db
+      .select({ id: bookings.id })
+      .from(bookings)
+      .where(eq(bookings.id, id))
+      .limit(1);
+
+    if (existing.length === 0) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Booking not found",
+      });
+    }
+
+    if (data.packageId !== undefined || data.departureDate !== undefined) {
+      const targetPackageId =
+        data.packageId ??
+        (
+          await ctx.db
+            .select({ packageId: bookings.packageId })
+            .from(bookings)
+            .where(eq(bookings.id, id))
+            .limit(1)
+        )[0].packageId;
+
+      const pkg = await ctx.db
+        .select({ id: packages.id, availableDates: packages.availableDates })
+        .from(packages)
+        .where(eq(packages.id, targetPackageId))
         .limit(1);
 
-      if (existing.length === 0) {
+      if (pkg.length === 0) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Booking not found",
+          message: "Package not found",
         });
       }
 
-      if (data.packageId !== undefined || data.departureDate !== undefined) {
-        const targetPackageId =
-          data.packageId ??
-          (
-            await ctx.db
-              .select({ packageId: bookings.packageId })
-              .from(bookings)
-              .where(eq(bookings.id, id))
-              .limit(1)
-          )[0].packageId;
-
-        const pkg = await ctx.db
-          .select({ id: packages.id, availableDates: packages.availableDates })
-          .from(packages)
-          .where(eq(packages.id, targetPackageId))
-          .limit(1);
-
-        if (pkg.length === 0) {
+      if (data.departureDate !== undefined) {
+        const availableDates = normalizeAvailableDates(pkg[0].availableDates);
+        if (!availableDates.includes(data.departureDate)) {
+          logger.error("[bookings.update] date validation failed", {
+            component: "bookings",
+            packageId: targetPackageId,
+            departureDate: data.departureDate,
+            availableDates,
+          });
           throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Package not found",
+            code: "BAD_REQUEST",
+            message: "Selected departure date is not available for this package",
           });
         }
 
-        if (data.departureDate !== undefined) {
-          const availableDates = normalizeAvailableDates(pkg[0].availableDates);
-          if (!availableDates.includes(data.departureDate)) {
-            logger.error("[bookings.update] date validation failed", {
-              component: "bookings",
-              packageId: targetPackageId,
-              departureDate: data.departureDate,
-              availableDates,
-            });
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "Selected departure date is not available for this package",
-            });
-          }
+        const conflict = await ctx.db
+          .select({ id: bookings.id })
+          .from(bookings)
+          .where(
+            and(
+              eq(bookings.packageId, targetPackageId),
+              eq(bookings.departureDate, data.departureDate),
+            ),
+          )
+          .limit(1);
 
-          const conflict = await ctx.db
-            .select({ id: bookings.id })
-            .from(bookings)
-            .where(
-              and(
-                eq(bookings.packageId, targetPackageId),
-                eq(bookings.departureDate, data.departureDate),
-              ),
-            )
-            .limit(1);
-
-          if (conflict.length > 0 && conflict[0].id !== id) {
-            throw new TRPCError({
-              code: "CONFLICT",
-              message: "A booking already exists for this package on the selected date",
-            });
-          }
+        if (conflict.length > 0 && conflict[0].id !== id) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "A booking already exists for this package on the selected date",
+          });
         }
       }
+    }
 
-      const updateData: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(data)) {
-        if (value !== undefined) {
-          updateData[key] = value === "" ? null : value;
-        }
+    const updateData: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        updateData[key] = value === "" ? null : value;
       }
+    }
 
-      const result = await ctx.db
-        .update(bookings)
-        .set(updateData)
-        .where(eq(bookings.id, id))
-        .returning();
+    const result = await ctx.db
+      .update(bookings)
+      .set(updateData)
+      .where(eq(bookings.id, id))
+      .returning();
 
-      return result[0];
-    }),
+    return result[0];
+  }),
 
   delete: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
