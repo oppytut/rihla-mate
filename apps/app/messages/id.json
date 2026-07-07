@@ -21,6 +21,10 @@
       "bookings": "Pemesanan",
       "customers": "Pelanggan",
       "packages": "Paket",
+      "media": "Media",
+      "pages": "Halaman",
+      "analytics": "Analitik",
+      "license": "Lisensi",
       "settings": "Pengaturan",
       "users": "Pengguna"
     },
@@ -216,6 +220,93 @@
   "customers": {
     "title": "Pelanggan",
     "empty": "Belum ada pelanggan."
+  },
+  "license": {
+    "title": "Lisensi",
+    "search": "Cari lisensi...",
+    "columns": {
+      "key": "Kunci Lisensi",
+      "type": "Tipe",
+      "seats": "Seat",
+      "issued": "Diterbitkan",
+      "expires": "Kedaluwarsa",
+      "status": "Status",
+      "actions": "Aksi"
+    },
+    "status": {
+      "active": "Aktif",
+      "expired": "Kedaluwarsa",
+      "revoked": "Dicabut"
+    },
+    "type": {
+      "trial": "Uji Coba",
+      "pro": "Pro",
+      "enterprise": "Enterprise",
+      "starter": "Starter"
+    },
+    "revoke": "Cabut",
+    "revokeConfirm": "Apakah Anda yakin ingin mencabut lisensi ini?",
+    "revokeSuccess": "Lisensi berhasil dicabut",
+    "statusSummary": "{active} dari {total} aktif",
+    "empty": "Tidak ada lisensi ditemukan.",
+    "noResults": "Tidak ada lisensi yang sesuai dengan kriteria pencarian.",
+    "clearFilters": "Hapus Filter",
+    "pageInfo": "Halaman {page} dari {total}"
+  },
+  "pages": {
+    "createTitle": "Buat Landing Page",
+    "editTitle": "Edit Landing Page",
+    "backToList": "← Kembali ke Halaman",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "createSuccess": "Halaman berhasil dibuat",
+    "updateSuccess": "Halaman berhasil diperbarui",
+    "fields": {
+      "templateId": "Template",
+      "slug": "Slug URL",
+      "title": "Judul Halaman",
+      "content": "Konten (JSON)",
+      "isPublished": "Terpublikasi",
+      "isHomepage": "Jadikan Halaman Utama",
+      "section": {
+        "basic": "Informasi Dasar",
+        "seo": "Pengaturan SEO"
+      },
+      "seo": {
+        "title": "Judul SEO",
+        "description": "Deskripsi SEO",
+        "ogImage": "URL Gambar OG"
+      }
+    },
+    "templates": {
+      "default": "Default",
+      "hero": "Hero",
+      "split": "Split"
+    },
+    "validation": {
+      "templateIdRequired": "Template wajib dipilih",
+      "slugRequired": "Slug wajib diisi",
+      "slugInvalid": "Slug harus huruf kecil alfanumerik dengan tanda hubung",
+      "titleRequired": "Judul wajib diisi",
+      "contentInvalid": "Format JSON tidak valid"
+    }
+  },
+  "analytics": {
+    "title": "Analitik",
+    "overview": "Ringkasan",
+    "totalBookings": "Total Pemesanan",
+    "revenue": "Total Pendapatan",
+    "paidRevenue": "Pendapatan Lunas",
+    "pendingRevenue": "Pendapatan Tertunda",
+    "publishedPackages": "Paket Terpublikasi",
+    "packagesByCategory": "Paket per Kategori",
+    "recentBookings": "Pemesanan Terbaru",
+    "noData": "Belum ada data analitik.",
+    "period": {
+      "7d": "7 Hari Terakhir",
+      "30d": "30 Hari Terakhir",
+      "90d": "90 Hari Terakhir"
+    }
   },
   "settings": {
     "title": "Pengaturan",
@@ -495,5 +586,10 @@
       "copyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
       "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
     }
+  },
+  "notifications": {
+    "updateAvailable": "Versi baru Rihla Mate tersedia: {version}",
+    "updateLink": "Lihat Catatan Rilis",
+    "dismiss": "Tutup"
   }
 }

@@ -7,6 +7,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
+import { NotificationBanner } from "@/components/notification-banner";
+
+const APP_VERSION = "0.1.0";
 
 const NAV_ITEMS = [
   { key: "dashboard", href: "/dashboard" },
@@ -16,6 +19,7 @@ const NAV_ITEMS = [
   { key: "media", href: "/dashboard/media" },
   { key: "pages", href: "/dashboard/pages" },
   { key: "analytics", href: "/dashboard/analytics" },
+  { key: "license", href: "/dashboard/license" },
   { key: "settings", href: "/dashboard/settings" },
   { key: "users", href: "/dashboard/users" },
 ] as const;
@@ -46,6 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-background antialiased">
+      <NotificationBanner currentVersion={APP_VERSION} />
       <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-card">
         <div>
           <h1 className="text-lg font-semibold text-foreground">Rihla Mate</h1>
