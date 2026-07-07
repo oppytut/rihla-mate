@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,32 +18,42 @@ export function NotificationBanner({ currentVersion }: NotificationBannerProps) 
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkVersion = useCallback(async () => {
-    try {
-      const dismissedVersion = localStorage.getItem(STORAGE_KEY);
-
-      const response = await fetch(
-        "https://api.github.com/repos/rihlamate/rihla-mate/releases/latest",
-      );
-      if (!response.ok) return;
-
-      const release = (await response.json()) as { tag_name: string };
-      const latest = release.tag_name.replace(/^v/, "");
-
-      if (latest && latest !== currentVersion && latest !== dismissedVersion) {
-        setLatestVersion(latest);
-        setVisible(true);
-      }
-    } catch {
-      // Network error or rate limited — silently ignore
-    } finally {
-      setLoading(false);
-    }
-  }, [currentVersion]);
-
   useEffect(() => {
-    checkVersion();
-  }, [checkVersion]);
+    let cancelled = false;
+
+    async function checkVersion() {
+      try {
+        const dismissedVersion = localStorage.getItem(STORAGE_KEY);
+
+        const response = await fetch(
+          "https://api.github.com/repos/rihlamate/rihla-mate/releases/latest",
+        );
+        if (!response.ok) return;
+
+        const release = (await response.json()) as { tag_name: string };
+        const latest = release.tag_name.replace(/^v/, "");
+
+        if (cancelled) return;
+
+        if (latest && latest !== currentVersion && latest !== dismissedVersion) {
+          setLatestVersion(latest);
+          setVisible(true);
+        }
+      } catch {
+        // Network error or rate limited — silently ignore
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void checkVersion();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentVersion]);
 
   const handleDismiss = () => {
     if (latestVersion) {
