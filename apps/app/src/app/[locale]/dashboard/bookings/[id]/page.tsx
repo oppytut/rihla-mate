@@ -531,26 +531,6 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
     }
   }, [bookingQuery.data]);
 
-  if (bookingQuery.isError) {
-    return (
-      <>
-        <div className="px-4 lg:px-8 py-6">
-          <header className="mb-6">
-            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-              {t("bookings.editTitle")}
-            </h1>
-          </header>
-          <div
-            className="bg-destructive/10 border border-destructive/20 rounded-lg p-6"
-            data-testid="error-message"
-          >
-            <p className="text-sm text-destructive">{t("bookings.notFound")}</p>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   if (bookingQuery.isLoading || !initialData) {
     return (
       <>
@@ -561,6 +541,20 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
               <div className="h-10 w-full bg-muted rounded" />
               <div className="h-10 w-full bg-muted rounded" />
             </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (bookingQuery.isError) {
+    return (
+      <>
+        <div className="px-4 lg:px-8 py-6">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+            <p className="text-sm text-destructive">
+              Failed to load booking: {bookingQuery.error?.message}
+            </p>
           </div>
         </div>
       </>

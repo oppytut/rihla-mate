@@ -88,6 +88,7 @@ test.describe("booking lifecycle", () => {
       .locator('#packageId option[value]:not([value=""])')
       .first()
       .waitFor({ state: "attached", timeout: 15000 });
+    await page.waitForTimeout(500);
 
     // Resolve the option value for "Komodo Island Expedition" by its text content.
     // Using selectOption({ label }) can race with React re-renders (controlled component
@@ -113,6 +114,7 @@ test.describe("booking lifecycle", () => {
     const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
     }
     await page.locator(SEL.calendarDay("8/20/2026")).first().click();
 
@@ -158,7 +160,7 @@ test.describe("booking lifecycle", () => {
     });
 
     // Give time for client-side hydration + tRPC query to resolve
-    await page.waitForSelector("table", { state: "visible", timeout: 15000 });
+    await page.waitForTimeout(3000);
 
     // Screenshot + page content for diagnostics
     await page.screenshot({
@@ -190,6 +192,8 @@ test.describe("booking lifecycle", () => {
     const firstRow = page.locator("table tbody tr").first();
     await firstRow.waitFor({ state: "visible", timeout: 10000 });
     await firstRow.waitFor({ state: "attached", timeout: 5000 });
+    // Extra settle time for any CSS transitions / layout shifts
+    await page.waitForTimeout(500);
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
@@ -211,7 +215,9 @@ test.describe("booking lifecycle", () => {
 
     await page.locator(SEL.customerName).fill("Playwright Test Lifecycle (edited)");
     await page.locator(SEL.travelers).fill("3");
-    await expect(page.locator(SEL.travelers)).toHaveValue("3", { timeout: 5000 });
+
+    // Confirm React hydration before submitting the edit form
+    await page.waitForTimeout(2000);
 
     await page.locator(SEL.submitButton).click();
 

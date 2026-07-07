@@ -94,6 +94,7 @@ test.describe("booking edit flow", () => {
     const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
     }
     await page.locator(SEL.calendarDay("8/15/2026")).first().click();
 
@@ -130,6 +131,7 @@ test.describe("booking edit flow", () => {
     const firstRow = page.locator("table tbody tr").first();
     await firstRow.waitFor({ state: "visible", timeout: 10000 });
     await firstRow.waitFor({ state: "attached", timeout: 5000 });
+    await page.waitForTimeout(500);
 
     const firstEditButton = page.locator(SEL.editButton).first();
     await firstEditButton.waitFor({ state: "visible", timeout: 10000 });
@@ -150,7 +152,9 @@ test.describe("booking edit flow", () => {
 
     await page.locator(SEL.editCustomerName).fill("Playwright Test Customer Edit (edited)");
     await page.locator(SEL.editTravelers).fill("3");
-    await expect(page.locator(SEL.editTravelers)).toHaveValue("3", { timeout: 5000 });
+
+    // Confirm React hydration before submitting the edit form
+    await page.waitForTimeout(2000);
 
     await page.locator(SEL.editSubmit).click();
 

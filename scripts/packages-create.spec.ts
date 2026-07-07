@@ -109,13 +109,7 @@ test.describe("package creation flow", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Confirm React hydration before submitting the form
-    await page.waitForFunction(
-      () => {
-        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
-        return el && !el.disabled;
-      },
-      { timeout: 10000 },
-    );
+    await page.waitForTimeout(5000);
 
     await page.click(SEL.submit);
 

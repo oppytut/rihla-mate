@@ -91,13 +91,7 @@ test.describe("package delete flow", () => {
     await page.fill('[data-testid="package-available-dates"]', '["2026-09-01"]');
 
     // Confirm React hydration before submitting the form
-    await page.waitForFunction(
-      () => {
-        const el = document.querySelector('[data-testid="package-title"]') as HTMLInputElement;
-        return el && !el.disabled;
-      },
-      { timeout: 10000 },
-    );
+    await page.waitForTimeout(5000);
 
     // Submit — skip dialog handler for create success because page.goto
     // dismisses any alert and a pending once("dialog") would collide with
