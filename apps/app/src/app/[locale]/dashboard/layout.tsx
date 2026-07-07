@@ -13,15 +13,14 @@ const NAV_ITEMS = [
   { key: "bookings", href: "/dashboard/bookings" },
   { key: "customers", href: "/dashboard/customers" },
   { key: "packages", href: "/dashboard/packages" },
+  { key: "media", href: "/dashboard/media" },
+  { key: "pages", href: "/dashboard/pages" },
+  { key: "analytics", href: "/dashboard/analytics" },
   { key: "settings", href: "/dashboard/settings" },
   { key: "users", href: "/dashboard/users" },
 ] as const;
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations();
   const trpc = useTRPC();
   const pathname = usePathname();
@@ -71,7 +70,7 @@ export default function DashboardLayout({
                   "flex items-center px-3 py-2 text-sm rounded-md transition-colors",
                   isActive(item.href)
                     ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-primary/20 hover:text-foreground",
                 )}
               >
                 {t(`dashboard.sidebar.${item.key}`)}
@@ -99,12 +98,8 @@ export default function DashboardLayout({
                     {user.name?.charAt(0).toUpperCase() || "U"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {user.email}
-                    </p>
+                    <p className="text-sm font-medium text-foreground truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
                 </div>
                 <div className="px-3 flex items-center justify-between">
@@ -131,9 +126,7 @@ export default function DashboardLayout({
           </div>
         </aside>
 
-        <main className="flex-1 lg:ml-64">
-          {children}
-        </main>
+        <main className="flex-1 lg:ml-64">{children}</main>
       </div>
     </div>
   );
