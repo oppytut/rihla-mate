@@ -41,6 +41,7 @@ describe("appRouter", () => {
 
   it("has all sub-router keys", () => {
     const expectedKeys = [
+      "analytics",
       "health",
       "license",
       "featureTest",

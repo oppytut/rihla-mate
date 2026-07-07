@@ -24,6 +24,7 @@
       "media": "Media",
       "pages": "Landing Pages",
       "analytics": "Analytics",
+      "license": "Licenses",
       "settings": "Settings",
       "users": "Users"
     },
@@ -280,13 +281,55 @@
     "deleteSuccess": "Landing page deleted successfully",
     "pageInfo": "Page {page} of {total}"
   },
+  "pages": {
+    "createTitle": "Create Landing Page",
+    "editTitle": "Edit Landing Page",
+    "backToList": "← Back to Pages",
+    "save": "Save",
+    "saving": "Saving...",
+    "createSuccess": "Page created successfully",
+    "updateSuccess": "Page updated successfully",
+    "fields": {
+      "templateId": "Template",
+      "slug": "URL Slug",
+      "title": "Page Title",
+      "content": "Content (JSON)",
+      "isPublished": "Published",
+      "isHomepage": "Set as Homepage",
+      "section": {
+        "basic": "Basic Information",
+        "seo": "SEO Settings"
+      },
+      "seo": {
+        "title": "SEO Title",
+        "description": "SEO Description",
+        "ogImage": "OG Image URL"
+      }
+    },
+    "templates": {
+      "default": "Default",
+      "hero": "Hero",
+      "split": "Split"
+    },
+    "validation": {
+      "templateIdRequired": "Template is required",
+      "slugRequired": "Slug is required",
+      "slugInvalid": "Slug must be lowercase alphanumeric with hyphens",
+      "titleRequired": "Title is required",
+      "contentInvalid": "Invalid JSON format"
+    }
+  },
   "analytics": {
     "title": "Analytics",
     "overview": "Overview",
     "totalViews": "Total Page Views",
     "totalBookings": "Total Bookings",
     "conversionRate": "Conversion Rate",
-    "revenue": "Revenue",
+    "revenue": "Total Revenue",
+    "paidRevenue": "Paid Revenue",
+    "pendingRevenue": "Pending Revenue",
+    "publishedPackages": "Published Packages",
+    "packagesByCategory": "Packages by Category",
     "recentBookings": "Recent Bookings",
     "noData": "No analytics data available yet.",
     "period": {
@@ -294,6 +337,38 @@
       "30d": "Last 30 Days",
       "90d": "Last 90 Days"
     }
+  },
+  "license": {
+    "title": "Licenses",
+    "search": "Search licenses...",
+    "columns": {
+      "key": "License Key",
+      "type": "Type",
+      "seats": "Seats",
+      "issued": "Issued",
+      "expires": "Expires",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "type": {
+      "trial": "Trial",
+      "pro": "Pro",
+      "enterprise": "Enterprise",
+      "starter": "Starter"
+    },
+    "revoke": "Revoke",
+    "revokeConfirm": "Are you sure you want to revoke this license?",
+    "revokeSuccess": "License revoked successfully",
+    "statusSummary": "{active} of {total} active",
+    "empty": "No licenses found.",
+    "noResults": "No licenses match your search criteria.",
+    "clearFilters": "Clear Filters",
+    "pageInfo": "Page {page} of {total}"
   },
   "settings": {
     "title": "Settings",

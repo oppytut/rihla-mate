@@ -12,6 +12,7 @@ import { settingsRouter } from "./settings";
 import { customersRouter } from "./customers";
 import { mediaRouter } from "./media";
 import { pagesRouter } from "./pages";
+import { analyticsRouter } from "./analytics";
 
 export const appRouter = createTRPCRouter({
   health: publicProcedure.query(() => ({ status: "ok" })),
@@ -28,6 +29,7 @@ export const appRouter = createTRPCRouter({
   customers: customersRouter,
   media: mediaRouter,
   pages: pagesRouter,
+  analytics: analyticsRouter,
 });
 
 export type AppRouter = typeof appRouter;
