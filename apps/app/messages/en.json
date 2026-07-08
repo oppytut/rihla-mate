@@ -187,13 +187,13 @@
       "heading": "Booking Confirmed",
       "subheading": "Your booking has been successfully confirmed.",
       "greeting": "Dear {name},",
-      "bodyIntro": "Terima kasih telah melakukan pemesanan. Berikut detail booking Anda:",
+      "bodyIntro": "Thank you for your booking. Here are your booking details:",
       "package": "Package",
       "departureDate": "Departure Date",
       "travelers": "Travelers",
       "totalPrice": "Total Price",
       "bookingId": "Booking ID",
-      "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",
+      "footerHelp": "If you have any questions, please contact us through our website or reply to this email.",
       "footerCopyright": "\u00a9 {year} Rihla Mate. All rights reserved."
     }
   },
@@ -781,5 +781,22 @@
       "copyright": "© {year} Rihla Mate. All rights reserved.",
       "tagline": "White-label Umrah travel platform for Indonesian travel agents."
     }
+  },
+  "validation": {
+    "customerNameRequired": "Customer name is required",
+    "packageRequired": "Package is required",
+    "departureDateRequired": "Departure date is required",
+    "totalPriceRequired": "Total price is required",
+    "invalidPriceFormat": "Invalid price format",
+    "minTravelerRequired": "Minimum 1 traveler required",
+    "invalidEmailFormat": "Invalid email format",
+    "invalidPhoneFormat": "Invalid phone number format",
+    "invalidStatus": "Invalid status value",
+    "titleRequired": "Title is required",
+    "slugRequired": "Slug is required",
+    "invalidSlugFormat": "Invalid slug format",
+    "priceRequired": "Price is required",
+    "durationMinOneDay": "Duration must be at least 1 day",
+    "invalidJsonFormat": "Invalid JSON format"
   }
 }

@@ -17,29 +17,33 @@ export interface BookingValidationResult {
   errors: Record<string, string>;
 }
 
-export function validateBooking(input: BookingValidationInput): BookingValidationResult {
+export function validateBooking(
+  input: BookingValidationInput,
+  t?: (key: string) => string,
+): BookingValidationResult {
   const errors: Record<string, string> = {};
+  const _ = (key: string, fallback: string) => (t ? t(key) : fallback);
 
   if (!input.customerName.trim()) {
-    errors.customerName = "Customer name is required";
+    errors.customerName = _("validation.customerNameRequired", "Customer name is required");
   }
 
   if (!input.packageId.trim()) {
-    errors.packageId = "Package is required";
+    errors.packageId = _("validation.packageRequired", "Package is required");
   }
 
   if (!input.departureDate.trim()) {
-    errors.departureDate = "Departure date is required";
+    errors.departureDate = _("validation.departureDateRequired", "Departure date is required");
   }
 
   if (!input.totalPrice.trim()) {
-    errors.totalPrice = "Total price is required";
+    errors.totalPrice = _("validation.totalPriceRequired", "Total price is required");
   } else if (!/^\d+(\.\d{1,2})?$/.test(input.totalPrice)) {
-    errors.totalPrice = "Invalid price format";
+    errors.totalPrice = _("validation.invalidPriceFormat", "Invalid price format");
   }
 
   if (input.travelers < 1) {
-    errors.travelers = "Minimum 1 traveler required";
+    errors.travelers = _("validation.minTravelerRequired", "Minimum 1 traveler required");
   }
 
   if (
@@ -47,7 +51,7 @@ export function validateBooking(input: BookingValidationInput): BookingValidatio
     input.customerEmail.trim() !== "" &&
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.customerEmail.trim())
   ) {
-    errors.customerEmail = "Invalid email format";
+    errors.customerEmail = _("validation.invalidEmailFormat", "Invalid email format");
   }
 
   if (
@@ -55,11 +59,11 @@ export function validateBooking(input: BookingValidationInput): BookingValidatio
     input.customerPhone.trim() !== "" &&
     !/^[\d\s()+\-.]{6,20}$/.test(input.customerPhone.trim())
   ) {
-    errors.customerPhone = "Invalid phone number format";
+    errors.customerPhone = _("validation.invalidPhoneFormat", "Invalid phone number format");
   }
 
   if (input.status && !(BOOKING_STATUSES as readonly string[]).includes(input.status)) {
-    errors.status = "Invalid status value";
+    errors.status = _("validation.invalidStatus", "Invalid status value");
   }
 
   return {
@@ -85,27 +89,31 @@ export interface PackageValidationResult {
   errors: Record<string, string>;
 }
 
-export function validatePackage(input: PackageValidationInput): PackageValidationResult {
+export function validatePackage(
+  input: PackageValidationInput,
+  t?: (key: string) => string,
+): PackageValidationResult {
   const errors: Record<string, string> = {};
+  const _ = (key: string, fallback: string) => (t ? t(key) : fallback);
 
   if (!input.title.trim()) {
-    errors.title = "Title is required";
+    errors.title = _("validation.titleRequired", "Title is required");
   }
 
   if (!input.slug.trim()) {
-    errors.slug = "Slug is required";
+    errors.slug = _("validation.slugRequired", "Slug is required");
   } else if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(input.slug)) {
-    errors.slug = "Invalid slug format";
+    errors.slug = _("validation.invalidSlugFormat", "Invalid slug format");
   }
 
   if (!input.price.trim()) {
-    errors.price = "Price is required";
+    errors.price = _("validation.priceRequired", "Price is required");
   } else if (!/^\d+(\.\d{1,2})?$/.test(input.price)) {
-    errors.price = "Invalid price format";
+    errors.price = _("validation.invalidPriceFormat", "Invalid price format");
   }
 
   if (input.durationDays < 1) {
-    errors.durationDays = "Duration must be at least 1 day";
+    errors.durationDays = _("validation.durationMinOneDay", "Duration must be at least 1 day");
   }
 
   const jsonFields: Array<{ key: string; value?: string }> = [
@@ -126,7 +134,7 @@ export function validatePackage(input: PackageValidationInput): PackageValidatio
           { component: "validation", field: field.key },
           err,
         );
-        errors[field.key] = "Invalid JSON format";
+        errors[field.key] = _("validation.invalidJsonFormat", "Invalid JSON format");
       }
     }
   }
