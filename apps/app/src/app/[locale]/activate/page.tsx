@@ -2,12 +2,14 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { logger } from "@/lib/utils/logger";
 
 export default function ActivatePage() {
+  const t = useTranslations();
   const trpc = useTRPC();
   const router = useRouter();
   const [licenseKey, setLicenseKey] = useState("");
@@ -29,7 +31,7 @@ export default function ActivatePage() {
       },
       onError: (err) => {
         logger.error("startTrial failed", { component: "activate" }, err);
-        setError(err.message || "Failed to start trial");
+        setError(err.message || t("activate.trialFailed"));
       },
     }),
   );
@@ -47,7 +49,7 @@ export default function ActivatePage() {
       },
       onError: (err) => {
         logger.error("activate failed", { component: "activate" }, err);
-        setError(err.message || "Failed to activate license");
+        setError(err.message || t("activate.activateFailed"));
       },
     }),
   );
@@ -66,15 +68,15 @@ export default function ActivatePage() {
     <div className="min-h-screen bg-background antialiased">
       <div className="mx-auto max-w-md mt-20 px-4">
         <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-card-foreground mb-2">Activate License</h1>
-          <p className="text-muted-foreground text-sm mb-6">
-            Enter your license key to activate Rihla Mate, or start a free 14-day trial.
-          </p>
+          <h1 className="text-2xl font-semibold text-card-foreground mb-2">
+            {t("activate.title")}
+          </h1>
+          <p className="text-muted-foreground text-sm mb-6">{t("activate.subtitle")}</p>
 
           <div className="space-y-6">
             <div className="space-y-3">
               <label htmlFor="license-key" className="text-sm font-medium text-foreground">
-                Enter License Key
+                {t("activate.licenseKeyLabel")}
               </label>
               <div className="flex gap-2">
                 <input
@@ -83,7 +85,7 @@ export default function ActivatePage() {
                   value={licenseKey}
                   onChange={(e) => setLicenseKey(e.target.value)}
                   data-testid="activate-license-key"
-                  placeholder="RM-XXXX-XXXX-XXXX-XXXX"
+                  placeholder={t("activate.licenseKeyPlaceholder")}
                   className="flex-1 h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                 />
                 <Button
@@ -92,7 +94,7 @@ export default function ActivatePage() {
                   variant="default"
                   data-testid="activate-submit"
                 >
-                  {activateMutation.isPending ? "Activating..." : "Activate"}
+                  {activateMutation.isPending ? t("activate.activating") : t("activate.activate")}
                 </Button>
               </div>
             </div>
@@ -102,7 +104,9 @@ export default function ActivatePage() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">or</span>
+                <span className="bg-card px-2 text-muted-foreground">
+                  {t("activate.orDivider")}
+                </span>
               </div>
             </div>
 
@@ -114,22 +118,20 @@ export default function ActivatePage() {
                 className="w-full"
                 data-testid="activate-start-trial"
               >
-                {startTrialMutation.isPending ? "Starting Trial..." : "Start Free Trial"}
+                {startTrialMutation.isPending
+                  ? t("activate.startingTrial")
+                  : t("activate.startTrial")}
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                Get full access for 14 days, no credit card required
-              </p>
+              <p className="text-xs text-muted-foreground text-center">{t("activate.trialNote")}</p>
             </div>
 
             {activateResult && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">
-                  License Activated Successfully!
-                </p>
+                <p className="text-sm font-medium text-foreground">{t("activate.activated")}</p>
                 <div className="bg-muted rounded-md p-3 space-y-1">
                   {activateResult.plan && (
                     <p className="text-xs text-muted-foreground">
-                      Plan:{" "}
+                      {t("activate.plan")}:{" "}
                       <span className="text-foreground font-medium capitalize">
                         {activateResult.plan}
                       </span>
@@ -137,7 +139,7 @@ export default function ActivatePage() {
                   )}
                   {activateResult.expiresAt && (
                     <p className="text-xs text-muted-foreground">
-                      Expires:{" "}
+                      {t("activate.expires")}:{" "}
                       <span className="text-foreground font-medium">
                         {activateResult.expiresAt.toLocaleDateString()}
                       </span>
@@ -145,7 +147,7 @@ export default function ActivatePage() {
                   )}
                   {activateResult.seats !== undefined && (
                     <p className="text-xs text-muted-foreground">
-                      Seats:{" "}
+                      {t("activate.seats")}:{" "}
                       <span className="text-foreground font-medium">{activateResult.seats}</span>
                     </p>
                   )}
@@ -155,9 +157,11 @@ export default function ActivatePage() {
 
             {trialKey && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">Trial Started Successfully!</p>
+                <p className="text-sm font-medium text-foreground">{t("activate.trialStarted")}</p>
                 <div className="bg-muted rounded-md p-3">
-                  <p className="text-xs text-muted-foreground mb-1">Your trial key:</p>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t("activate.trialKeyLabel")}
+                  </p>
                   <code className="text-sm font-mono text-foreground break-all">{trialKey}</code>
                 </div>
               </div>

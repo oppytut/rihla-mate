@@ -11,7 +11,43 @@
     "complete": "Selesai",
     "startTrial": "Mulai Uji Coba Gratis",
     "activateLicense": "Aktivasi Lisensi",
-    "licenseKey": "Kunci Lisensi"
+    "licenseKey": "Kunci Lisensi",
+    "database": "Database",
+    "connected": "Terhubung",
+    "notConnected": "Tidak Terhubung",
+    "diskSpace": "Ruang Disk",
+    "diskAvailable": "{available}GB / {total}GB tersedia",
+    "unknown": "Tidak Diketahui",
+    "nodeVersion": "Versi Node",
+    "databaseReady": "Koneksi database dikonfigurasi melalui environment variable. Database Anda siap digunakan.",
+    "databaseConnected": "Database Berhasil Terhubung",
+    "databaseConnectedDesc": "DATABASE_URL Anda telah dikonfigurasi dan koneksi aktif.",
+    "databaseNotConnected": "Database Tidak Terhubung",
+    "databaseNotConnectedDesc": "Silakan konfigurasi environment variable DATABASE_URL Anda.",
+    "createAdminAccount": "Buat akun administrator untuk mengelola sistem.",
+    "name": "Nama",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "namePlaceholder": "Pengguna Admin",
+    "emailPlaceholder": "admin@example.com",
+    "passwordPlaceholder": "Min. 8 karakter",
+    "activateOrStartTrial": "Aktifkan lisensi Anda atau mulai uji coba gratis untuk melanjutkan.",
+    "activating": "Mengaktifkan...",
+    "activate": "Aktifkan",
+    "startingTrial": "Memulai Uji Coba...",
+    "trialNote": "Dapatkan akses penuh selama 14 hari, tanpa kartu kredit",
+    "licenseActivated": "Lisensi Berhasil Diaktifkan!",
+    "trialStarted": "Uji Coba Berhasil Dimulai!",
+    "yourTrialKey": "Kunci uji coba Anda:",
+    "plan": "Paket",
+    "expires": "Kadaluarsa",
+    "seats": "Kuota",
+    "setupComplete": "Setup Selesai!",
+    "setupCompleteDesc": "Instalasi Rihla Mate Anda telah siap. Anda sekarang dapat login dengan akun admin Anda.",
+    "brandingDescription": "Sesuaikan branding biro travel Anda.",
+    "brandingComingSoon": "Konfigurasi branding segera hadir...",
+    "creating": "Membuat...",
+    "createAccount": "Buat Akun"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -27,6 +63,11 @@
       "license": "Lisensi",
       "settings": "Pengaturan",
       "users": "Pengguna"
+    },
+    "layout": {
+      "brandName": "Rihla Mate",
+      "brandSubtitle": "Travel Agency Platform",
+      "notSignedIn": "Belum login"
     },
     "user": {
       "signedInAs": "Login sebagai",
@@ -114,11 +155,46 @@
     }
   },
   "common": {
+    "appName": "Rihla Mate",
     "loading": "Memuat...",
     "error": "Terjadi kesalahan",
     "success": "Berhasil",
     "previous": "Sebelumnya",
     "next": "Berikutnya"
+  },
+  "activate": {
+    "title": "Aktivasi Lisensi",
+    "subtitle": "Masukkan kunci lisensi untuk mengaktifkan Rihla Mate, atau mulai uji coba gratis 14 hari.",
+    "licenseKeyLabel": "Masukkan Kunci Lisensi",
+    "licenseKeyPlaceholder": "RM-XXXX-XXXX-XXXX-XXXX",
+    "activate": "Aktifkan",
+    "activating": "Mengaktifkan...",
+    "orDivider": "atau",
+    "startTrial": "Mulai Uji Coba Gratis",
+    "startingTrial": "Memulai Uji Coba...",
+    "trialNote": "Dapatkan akses penuh selama 14 hari, tanpa kartu kredit",
+    "trialStarted": "Uji Coba Berhasil Dimulai!",
+    "trialKeyLabel": "Kunci uji coba Anda:",
+    "activated": "Lisensi Berhasil Diaktifkan!",
+    "plan": "Paket",
+    "expires": "Kadaluarsa",
+    "seats": "Kuota"
+  },
+  "email": {
+    "booking": {
+      "subject": "Pemesanan Dikonfirmasi: {package}",
+      "heading": "Pemesanan Dikonfirmasi",
+      "subheading": "Pemesanan Anda telah berhasil dikonfirmasi.",
+      "greeting": "Halo {name},",
+      "bodyIntro": "Terima kasih telah melakukan pemesanan. Berikut detail booking Anda:",
+      "package": "Paket",
+      "departureDate": "Tanggal Keberangkatan",
+      "travelers": "Jamaah",
+      "totalPrice": "Total Harga",
+      "bookingId": "ID Pemesanan",
+      "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",
+      "footerCopyright": "\u00a9 {year} Rihla Mate. Seluruh hak cipta dilindungi."
+    }
   },
   "bookings": {
     "title": "Pemesanan",
@@ -150,7 +226,8 @@
       "success": "Pembayaran berhasil! Pemesanan Anda telah dikonfirmasi.",
       "pending": "Pembayaran sedang diproses. Silakan tunggu konfirmasi.",
       "error": "Pembayaran gagal. Silakan coba lagi.",
-      "close": "Anda menutup jendela pembayaran. Anda dapat membayar lagi nanti."
+      "close": "Anda menutup jendela pembayaran. Anda dapat membayar lagi nanti.",
+      "loadError": "Gagal memuat Midtrans Snap.js"
     },
     "payment": {
       "title": "Informasi Pembayaran",
@@ -198,6 +275,7 @@
     "noResults": "Tidak ada pemesanan yang sesuai dengan kriteria pencarian.",
     "clearFilters": "Hapus Filter",
     "empty": "Belum ada pemesanan. Klik tombol di atas untuk menambahkan.",
+    "notFound": "Pemesanan tidak ditemukan.",
     "deleteConfirm": "Apakah Anda yakin ingin menghapus pemesanan ini?",
     "pageInfo": "Halaman {page} dari {total}",
     "pickDate": "Pilih tanggal",
@@ -219,7 +297,43 @@
   },
   "customers": {
     "title": "Pelanggan",
-    "empty": "Belum ada pelanggan."
+    "empty": "Belum ada pelanggan.",
+    "search": "Cari pelanggan...",
+    "columns": {
+      "name": "Nama",
+      "email": "Email",
+      "phone": "Telepon",
+      "bookings": "Pemesanan",
+      "totalSpent": "Total Pengeluaran",
+      "lastBooking": "Pemesanan Terakhir",
+      "actions": "Aksi"
+    },
+    "pageInfo": "Halaman {page} dari {total}",
+    "detail": {
+      "title": "Detail Pelanggan",
+      "back": "← Kembali ke Pelanggan",
+      "bookingHistory": "Riwayat Pemesanan",
+      "noBookings": "Tidak ada pemesanan.",
+      "pageInfo": "Halaman {page} dari {total}"
+    },
+    "bookings": {
+      "columns": {
+        "id": "ID Pemesanan",
+        "package": "Paket",
+        "date": "Tanggal",
+        "travelers": "Peserta",
+        "total": "Total",
+        "status": "Status"
+      }
+    }
+  },
+  "media": {
+    "title": "Perpustakaan Media",
+    "empty": "Belum ada item media.",
+    "delete": "Hapus",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus item media ini?",
+    "deleteSuccess": "Item media berhasil dihapus",
+    "pageInfo": "Halaman {page} dari {total}"
   },
   "license": {
     "title": "Lisensi",
@@ -251,6 +365,29 @@
     "empty": "Tidak ada lisensi ditemukan.",
     "noResults": "Tidak ada lisensi yang sesuai dengan kriteria pencarian.",
     "clearFilters": "Hapus Filter",
+    "pageInfo": "Halaman {page} dari {total}"
+  },
+  "landingPages": {
+    "title": "Landing Pages",
+    "addPage": "Tambah Halaman",
+    "empty": "Belum ada landing page.",
+    "columns": {
+      "title": "Judul",
+      "slug": "Slug",
+      "template": "Template",
+      "status": "Status",
+      "updated": "Diperbarui",
+      "actions": "Aksi"
+    },
+    "status": {
+      "published": "Terpublikasi",
+      "draft": "Draft"
+    },
+    "homepage": "Halaman Utama",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus landing page ini?",
+    "deleteSuccess": "Landing page berhasil dihapus",
     "pageInfo": "Halaman {page} dari {total}"
   },
   "pages": {
@@ -294,7 +431,9 @@
   "analytics": {
     "title": "Analitik",
     "overview": "Ringkasan",
+    "totalViews": "Total Kunjungan Halaman",
     "totalBookings": "Total Pemesanan",
+    "conversionRate": "Tingkat Konversi",
     "revenue": "Total Pendapatan",
     "paidRevenue": "Pendapatan Lunas",
     "pendingRevenue": "Pendapatan Tertunda",
@@ -318,7 +457,9 @@
       "general": "Pengaturan Umum",
       "payment": "Pembayaran",
       "email": "Email",
-      "booking": "Pemesanan"
+      "booking": "Pemesanan",
+      "seo": "Pengaturan SEO",
+      "license": "Manajemen Lisensi"
     },
     "fields": {
       "appName": "Nama Aplikasi",
@@ -337,11 +478,59 @@
       "autoConfirm": "Konfirmasi Otomatis",
       "requirePayment": "Wajib Pembayaran"
     },
+    "seo": {
+      "defaultTitle": "Judul Halaman Default",
+      "defaultDescription": "Deskripsi Meta Default",
+      "defaultOgImage": "URL Gambar OG Default",
+      "twitterHandle": "Handle Twitter",
+      "enableSitemap": "Aktifkan Sitemap",
+      "enableStructuredData": "Aktifkan Structured Data"
+    },
+    "license": {
+      "status": "Status Lisensi",
+      "active": "Aktif",
+      "expired": "Kedaluwarsa",
+      "trial": "Uji Coba",
+      "gracePeriod": "Masa Tenggang",
+      "revoked": "Dicabut",
+      "plan": "Paket",
+      "expiresAt": "Kedaluwarsa Pada",
+      "activatedAt": "Diaktifkan Pada",
+      "lastCheckin": "Check-in Terakhir",
+      "domain": "Domain",
+      "noLicense": "Tidak ada lisensi aktif ditemukan.",
+      "activateNow": "Aktivasi Lisensi",
+      "loading": "Memuat informasi lisensi..."
+    },
     "empty": "Halaman pengaturan akan segera hadir."
   },
   "users": {
     "title": "Pengguna",
-    "empty": "Belum ada pengguna."
+    "addUser": "Tambah Pengguna",
+    "empty": "Belum ada pengguna.",
+    "search": "Cari pengguna...",
+    "columns": {
+      "name": "Nama",
+      "email": "Email",
+      "role": "Peran",
+      "created": "Dibuat",
+      "actions": "Aksi"
+    },
+    "roles": {
+      "owner": "Pemilik",
+      "admin": "Admin",
+      "staff": "Staf"
+    },
+    "edit": "Edit",
+    "delete": "Hapus",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus pengguna ini?",
+    "deleteSuccess": "Pengguna berhasil dihapus",
+    "noResults": "Tidak ada pengguna yang sesuai dengan kriteria pencarian.",
+    "pageInfo": "Halaman {page} dari {total}",
+    "createSuccess": "Pengguna berhasil dibuat",
+    "updateSuccess": "Pengguna berhasil diperbarui",
+    "invite": "Undang Pengguna",
+    "inviteSuccess": "Undangan berhasil dikirim"
   },
   "auth": {
     "signIn": "Masuk",
