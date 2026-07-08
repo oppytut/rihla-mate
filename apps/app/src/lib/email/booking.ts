@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getTranslations } from "next-intl/server";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
 
@@ -29,6 +30,7 @@ function formatDate(dateStr: string): string {
 
 export async function sendBookingConfirmation(
   params: SendBookingConfirmationParams,
+  locale: string = "en",
 ): Promise<void> {
   try {
     if (!env.RESEND_API_KEY) {
@@ -41,11 +43,12 @@ export async function sendBookingConfirmation(
 
     const resend = new Resend(env.RESEND_API_KEY);
     const formattedDate = formatDate(params.departureDate);
+    const t = await getTranslations({ locale, namespace: "email.booking" });
 
     const { error } = await resend.emails.send({
       from: "Rihla Mate <noreply@rihla-mate.com>",
       to: [params.customerEmail],
-      subject: `Booking Confirmed: ${params.packageTitle}`,
+      subject: t("subject", { package: params.packageTitle }),
       html: `
 <!DOCTYPE html>
 <html lang="id">
@@ -60,49 +63,49 @@ export async function sendBookingConfirmation(
         <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
           <tr>
             <td style="background-color:#0f766e;padding:32px 40px;">
-              <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0;">Booking Confirmed</h1>
-              <p style="color:#ccfbf1;font-size:14px;margin:8px 0 0;">Your booking has been successfully confirmed.</p>
+              <h1 style="color:#ffffff;font-size:24px;font-weight:700;margin:0;">${t("heading")}</h1>
+              <p style="color:#ccfbf1;font-size:14px;margin:8px 0 0;">${t("subheading")}</p>
             </td>
           </tr>
           <tr>
             <td style="padding:32px 40px;">
               <p style="color:#374151;font-size:16px;margin:0 0 8px;">Dear <strong>${params.customerName}</strong>,</p>
               <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px;">
-                Terima kasih telah melakukan pemesanan. Berikut detail booking Anda:
+                ${t("bodyIntro")}
               </p>
 
               <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
                 <tr style="background-color:#f9fafb;">
-                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;width:140px;">Package</td>
+                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;width:140px;">${t("package")}</td>
                   <td style="padding:12px 16px;color:#111827;font-size:14px;font-weight:600;">${params.packageTitle}</td>
                 </tr>
                 <tr>
-                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">Departure Date</td>
+                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("departureDate")}</td>
                   <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">${formattedDate}</td>
                 </tr>
                 <tr style="background-color:#f9fafb;">
-                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">Travelers</td>
+                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("travelers")}</td>
                   <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">${params.travelers} orang</td>
                 </tr>
                 <tr>
-                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">Total Price</td>
+                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("totalPrice")}</td>
                   <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">Rp ${Number(params.totalPrice).toLocaleString("id-ID")}</td>
                 </tr>
                 <tr style="background-color:#f9fafb;">
-                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">Booking ID</td>
+                  <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("bookingId")}</td>
                   <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;font-family:monospace;">${params.bookingId}</td>
                 </tr>
               </table>
 
               <p style="color:#6b7280;font-size:13px;line-height:1.6;margin:24px 0 0;">
-                Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.
+                ${t("footerHelp")}
               </p>
             </td>
           </tr>
           <tr>
             <td style="background-color:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
               <p style="color:#9ca3af;font-size:12px;margin:0;">
-                &copy; ${new Date().getFullYear()} Rihla Mate. All rights reserved.
+                ${t("footerCopyright", { year: new Date().getFullYear() })}
               </p>
             </td>
           </tr>

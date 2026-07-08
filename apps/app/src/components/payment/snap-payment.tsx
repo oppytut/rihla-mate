@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -52,6 +53,7 @@ interface SnapPaymentProps {
 }
 
 function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaymentProps) {
+  const t = useTranslations();
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
@@ -71,7 +73,7 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
     };
 
     script.onerror = () => {
-      onError?.({ error: "Failed to load Midtrans Snap.js" });
+      onError?.({ error: t("bookings.snap.loadError") });
     };
 
     document.head.appendChild(script);
@@ -112,6 +114,7 @@ interface UseSnapPaymentReturn {
 }
 
 function useSnapPayment(): UseSnapPaymentReturn {
+  const t = useTranslations();
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
@@ -132,7 +135,7 @@ function useSnapPayment(): UseSnapPaymentReturn {
 
     script.onerror = () => {
       // Snap failed to load — isReady stays false, pay() will be a no-op
-      console.error("Failed to load Midtrans Snap.js");
+      console.error(t("bookings.snap.loadError"));
     };
 
     document.head.appendChild(script);

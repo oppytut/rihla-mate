@@ -11,7 +11,43 @@
     "complete": "Complete",
     "startTrial": "Start Free Trial",
     "activateLicense": "Activate License",
-    "licenseKey": "License Key"
+    "licenseKey": "License Key",
+    "database": "Database",
+    "connected": "Connected",
+    "notConnected": "Not Connected",
+    "diskSpace": "Disk Space",
+    "diskAvailable": "{available}GB / {total}GB available",
+    "unknown": "Unknown",
+    "nodeVersion": "Node Version",
+    "databaseReady": "The database connection is configured via environment variables. Your database is ready to use.",
+    "databaseConnected": "Database Connected Successfully",
+    "databaseConnectedDesc": "Your DATABASE_URL is configured and the connection is active.",
+    "databaseNotConnected": "Database Not Connected",
+    "databaseNotConnectedDesc": "Please configure your DATABASE_URL environment variable.",
+    "createAdminAccount": "Create your administrator account to manage the system.",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "namePlaceholder": "Admin User",
+    "emailPlaceholder": "admin@example.com",
+    "passwordPlaceholder": "Min. 8 characters",
+    "activateOrStartTrial": "Activate your license or start a free trial to continue.",
+    "activating": "Activating...",
+    "activate": "Activate",
+    "startingTrial": "Starting Trial...",
+    "trialNote": "Get full access for 14 days, no credit card required",
+    "licenseActivated": "License Activated Successfully!",
+    "trialStarted": "Trial Started Successfully!",
+    "yourTrialKey": "Your trial key:",
+    "plan": "Plan",
+    "expires": "Expires",
+    "seats": "Seats",
+    "setupComplete": "Setup Complete!",
+    "setupCompleteDesc": "Your Rihla Mate installation is ready. You can now log in with your admin account.",
+    "brandingDescription": "Customize your travel agency branding.",
+    "brandingComingSoon": "Branding configuration coming soon...",
+    "creating": "Creating...",
+    "createAccount": "Create Account"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -28,6 +64,11 @@
 
       "settings": "Settings",
       "users": "Users"
+    },
+    "layout": {
+      "brandName": "Rihla Mate",
+      "brandSubtitle": "Travel Agency Platform",
+      "notSignedIn": "Not signed in"
     },
     "user": {
       "signedInAs": "Signed in as",
@@ -115,11 +156,46 @@
     }
   },
   "common": {
+    "appName": "Rihla Mate",
     "loading": "Loading...",
     "error": "An error occurred",
     "success": "Success",
     "previous": "Previous",
     "next": "Next"
+  },
+  "activate": {
+    "title": "Activate License",
+    "subtitle": "Enter your license key to activate Rihla Mate, or start a free 14-day trial.",
+    "licenseKeyLabel": "Enter License Key",
+    "licenseKeyPlaceholder": "RM-XXXX-XXXX-XXXX-XXXX",
+    "activate": "Activate",
+    "activating": "Activating...",
+    "orDivider": "or",
+    "startTrial": "Start Free Trial",
+    "startingTrial": "Starting Trial...",
+    "trialNote": "Get full access for 14 days, no credit card required",
+    "trialStarted": "Trial Started Successfully!",
+    "trialKeyLabel": "Your trial key:",
+    "activated": "License Activated Successfully!",
+    "plan": "Plan",
+    "expires": "Expires",
+    "seats": "Seats"
+  },
+  "email": {
+    "booking": {
+      "subject": "Booking Confirmed: {package}",
+      "heading": "Booking Confirmed",
+      "subheading": "Your booking has been successfully confirmed.",
+      "greeting": "Dear {name},",
+      "bodyIntro": "Terima kasih telah melakukan pemesanan. Berikut detail booking Anda:",
+      "package": "Package",
+      "departureDate": "Departure Date",
+      "travelers": "Travelers",
+      "totalPrice": "Total Price",
+      "bookingId": "Booking ID",
+      "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",
+      "footerCopyright": "\u00a9 {year} Rihla Mate. All rights reserved."
+    }
   },
   "bookings": {
     "title": "Bookings",
@@ -151,7 +227,8 @@
       "success": "Payment successful! Your booking has been confirmed.",
       "pending": "Payment is being processed. Please wait for confirmation.",
       "error": "Payment failed. Please try again.",
-      "close": "You closed the payment window. You can pay again later."
+      "close": "You closed the payment window. You can pay again later.",
+      "loadError": "Failed to load Midtrans Snap.js"
     },
     "payment": {
       "title": "Payment Information",

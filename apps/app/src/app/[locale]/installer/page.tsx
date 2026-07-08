@@ -168,16 +168,22 @@ export default function InstallerPage() {
                 <div className="space-y-3">
                   {/* Database status */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">Database</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t("installer.database")}
+                    </span>
                     <div className="flex items-center gap-2">
                       {systemCheckQuery.data.database ? (
                         <>
-                          <span className="text-xs text-muted-foreground">Connected</span>
+                          <span className="text-xs text-muted-foreground">
+                            {t("installer.connected")}
+                          </span>
                           <span className="text-green-600 text-lg">✓</span>
                         </>
                       ) : (
                         <>
-                          <span className="text-xs text-muted-foreground">Not Connected</span>
+                          <span className="text-xs text-muted-foreground">
+                            {t("installer.notConnected")}
+                          </span>
                           <span className="text-destructive text-lg">✗</span>
                         </>
                       )}
@@ -186,15 +192,21 @@ export default function InstallerPage() {
 
                   {/* Disk space */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">Disk Space</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t("installer.diskSpace")}
+                    </span>
                     <div className="flex items-center gap-2">
                       {systemCheckQuery.data.diskSpace ? (
                         <span className="text-xs text-muted-foreground">
-                          {systemCheckQuery.data.diskSpace.available}GB /{" "}
-                          {systemCheckQuery.data.diskSpace.total}GB available
+                          {t("installer.diskAvailable", {
+                            available: systemCheckQuery.data.diskSpace.available,
+                            total: systemCheckQuery.data.diskSpace.total,
+                          })}
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground">Unknown</span>
+                        <span className="text-xs text-muted-foreground">
+                          {t("installer.unknown")}
+                        </span>
                       )}
                       {systemCheckQuery.data.diskSpace && (
                         <span className="text-green-600 text-lg">✓</span>
@@ -204,7 +216,9 @@ export default function InstallerPage() {
 
                   {/* Node version */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
-                    <span className="text-sm font-medium text-foreground">Node Version</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t("installer.nodeVersion")}
+                    </span>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">
                         {systemCheckQuery.data.nodeVersion}
@@ -220,24 +234,23 @@ export default function InstallerPage() {
           {/* Step 1: Database Setup */}
           {step === 1 && (
             <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                The database connection is configured via environment variables. Your database is
-                ready to use.
-              </p>
+              <p className="text-sm text-muted-foreground">{t("installer.databaseReady")}</p>
               {systemCheckQuery.data?.database ? (
                 <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
                   <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                    Database Connected Successfully
+                    {t("installer.databaseConnected")}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Your DATABASE_URL is configured and the connection is active.
+                    {t("installer.databaseConnectedDesc")}
                   </p>
                 </div>
               ) : (
                 <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4">
-                  <p className="text-sm text-destructive font-medium">Database Not Connected</p>
+                  <p className="text-sm text-destructive font-medium">
+                    {t("installer.databaseNotConnected")}
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Please configure your DATABASE_URL environment variable.
+                    {t("installer.databaseNotConnectedDesc")}
                   </p>
                 </div>
               )}
@@ -248,13 +261,13 @@ export default function InstallerPage() {
           {step === 2 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Create your administrator account to manage the system.
+                {t("installer.createAdminAccount")}
               </p>
 
               <div className="space-y-3">
                 <div className="space-y-1.5">
                   <label htmlFor="admin-name" className="text-sm font-medium text-foreground">
-                    Name
+                    {t("installer.name")}
                   </label>
                   <input
                     id="admin-name"
@@ -262,14 +275,14 @@ export default function InstallerPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     data-testid="installer-admin-name"
-                    placeholder="Admin User"
+                    placeholder={t("installer.namePlaceholder")}
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label htmlFor="admin-email" className="text-sm font-medium text-foreground">
-                    Email
+                    {t("installer.email")}
                   </label>
                   <input
                     id="admin-email"
@@ -284,7 +297,7 @@ export default function InstallerPage() {
 
                 <div className="space-y-1.5">
                   <label htmlFor="admin-password" className="text-sm font-medium text-foreground">
-                    Password
+                    {t("installer.password")}
                   </label>
                   <input
                     id="admin-password"
@@ -292,7 +305,7 @@ export default function InstallerPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     data-testid="installer-admin-password"
-                    placeholder="Min. 8 characters"
+                    placeholder={t("installer.passwordPlaceholder")}
                     className="w-full h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
                   />
                 </div>
@@ -310,7 +323,7 @@ export default function InstallerPage() {
           {step === 3 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground mb-4">
-                Activate your license or start a free trial to continue.
+                {t("installer.activateOrStartTrial")}
               </p>
 
               <div className="space-y-3">
@@ -333,7 +346,9 @@ export default function InstallerPage() {
                     variant="default"
                     data-testid="installer-activate"
                   >
-                    {activateMutation.isPending ? "Activating..." : "Activate"}
+                    {activateMutation.isPending
+                      ? t("installer.activating")
+                      : t("installer.activate")}
                   </Button>
                 </div>
               </div>
@@ -355,22 +370,24 @@ export default function InstallerPage() {
                   className="w-full"
                   data-testid="installer-start-trial"
                 >
-                  {startTrialMutation.isPending ? "Starting Trial..." : t("installer.startTrial")}
+                  {startTrialMutation.isPending
+                    ? t("installer.startingTrial")
+                    : t("installer.startTrial")}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">
-                  Get full access for 14 days, no credit card required
+                  {t("installer.trialNote")}
                 </p>
               </div>
 
               {activateResult && (
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-foreground">
-                    License Activated Successfully!
+                    {t("installer.licenseActivated")}
                   </p>
                   <div className="bg-muted rounded-md p-3 space-y-1">
                     {activateResult.plan && (
                       <p className="text-xs text-muted-foreground">
-                        Plan:{" "}
+                        {t("installer.plan")}:{" "}
                         <span className="text-foreground font-medium capitalize">
                           {activateResult.plan}
                         </span>
@@ -378,7 +395,7 @@ export default function InstallerPage() {
                     )}
                     {activateResult.expiresAt && (
                       <p className="text-xs text-muted-foreground">
-                        Expires:{" "}
+                        {t("installer.expires")}:{" "}
                         <span className="text-foreground font-medium">
                           {activateResult.expiresAt.toLocaleDateString()}
                         </span>
@@ -386,7 +403,7 @@ export default function InstallerPage() {
                     )}
                     {activateResult.seats !== undefined && (
                       <p className="text-xs text-muted-foreground">
-                        Seats:{" "}
+                        {t("installer.seats")}:{" "}
                         <span className="text-foreground font-medium">{activateResult.seats}</span>
                       </p>
                     )}
@@ -396,9 +413,13 @@ export default function InstallerPage() {
 
               {trialKey && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">Trial Started Successfully!</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {t("installer.trialStarted")}
+                  </p>
                   <div className="bg-muted rounded-md p-3">
-                    <p className="text-xs text-muted-foreground mb-1">Your trial key:</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      {t("installer.yourTrialKey")}
+                    </p>
                     <code className="text-sm font-mono text-foreground break-all">{trialKey}</code>
                   </div>
                 </div>
@@ -420,20 +441,21 @@ export default function InstallerPage() {
                   <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                     <span className="text-green-600 text-2xl">✓</span>
                   </div>
-                  <h2 className="text-lg font-semibold text-foreground mb-2">Setup Complete!</h2>
+                  <h2 className="text-lg font-semibold text-foreground mb-2">
+                    {t("installer.setupComplete")}
+                  </h2>
                   <p className="text-sm text-muted-foreground">
-                    Your Rihla Mate installation is ready. You can now log in with your admin
-                    account.
+                    {t("installer.setupCompleteDesc")}
                   </p>
                 </div>
               ) : (
                 <>
                   <p className="text-sm text-muted-foreground">
-                    Customize your travel agency branding.
+                    {t("installer.brandingDescription")}
                   </p>
                   <div className="bg-muted/50 border border-border rounded-md p-4">
                     <p className="text-sm text-muted-foreground">
-                      Branding configuration coming soon...
+                      {t("installer.brandingComingSoon")}
                     </p>
                   </div>
                 </>
@@ -492,7 +514,9 @@ export default function InstallerPage() {
                   }
                   data-testid="installer-create-account"
                 >
-                  {setupAdminMutation.isPending ? "Creating..." : "Create Account"}
+                  {setupAdminMutation.isPending
+                    ? t("installer.creating")
+                    : t("installer.createAccount")}
                 </Button>
               )}
 
