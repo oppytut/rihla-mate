@@ -780,5 +780,22 @@
     "updateAvailable": "Versi baru Rihla Mate tersedia: {version}",
     "updateLink": "Lihat Catatan Rilis",
     "dismiss": "Tutup"
+  },
+  "validation": {
+    "customerNameRequired": "Nama pelanggan wajib diisi",
+    "packageRequired": "Paket wajib dipilih",
+    "departureDateRequired": "Tanggal keberangkatan wajib diisi",
+    "totalPriceRequired": "Total harga wajib diisi",
+    "invalidPriceFormat": "Format harga tidak valid",
+    "minTravelerRequired": "Minimal 1 peserta",
+    "invalidEmailFormat": "Format email tidak valid",
+    "invalidPhoneFormat": "Format nomor telepon tidak valid",
+    "invalidStatus": "Status tidak valid",
+    "titleRequired": "Judul wajib diisi",
+    "slugRequired": "Slug wajib diisi",
+    "invalidSlugFormat": "Format slug tidak valid",
+    "priceRequired": "Harga wajib diisi",
+    "durationMinOneDay": "Durasi minimal 1 hari",
+    "invalidJsonFormat": "Format JSON tidak valid"
   }
 }
