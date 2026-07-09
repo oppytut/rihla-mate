@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import Script from "next/script";
+import { routing } from "@/i18n/routing";
 import { TRPCReactProvider } from "@/lib/trpc/react";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -15,6 +17,23 @@ function MidtransSnapScript() {
     : "https://app.midtrans.com/snap/snap.js";
 
   return <Script src={snapUrl} data-client-key={clientKey} strategy="afterInteractive" />;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "landing" });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      languages: Object.fromEntries(routing.locales.map((loc) => [loc, `/${loc}`])),
+    },
+  };
 }
 
 export default async function LocaleLayout({
