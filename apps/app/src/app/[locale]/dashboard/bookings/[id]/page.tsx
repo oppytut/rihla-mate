@@ -88,16 +88,19 @@ function BookingFormContent({
   };
 
   const validateForm = (): boolean => {
-    const result = validateBooking({
-      packageId: form.packageId,
-      departureDate: form.departureDate,
-      customerName: form.customerName,
-      totalPrice: form.totalPrice,
-      travelers: form.travelers,
-      customerEmail: form.customerEmail || undefined,
-      customerPhone: form.customerPhone || undefined,
-      status: form.status,
-    });
+    const result = validateBooking(
+      {
+        packageId: form.packageId,
+        departureDate: form.departureDate,
+        customerName: form.customerName,
+        totalPrice: form.totalPrice,
+        travelers: form.travelers,
+        customerEmail: form.customerEmail || undefined,
+        customerPhone: form.customerPhone || undefined,
+        status: form.status,
+      },
+      t,
+    );
     const errorMap: Record<string, string> = {
       customerName: t("bookings.validation.customerNameRequired"),
       packageId: t("bookings.validation.packageRequired"),

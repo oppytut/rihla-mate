@@ -80,15 +80,18 @@ export default function PublicBookingPage() {
 
     const totalPrice = (parseFloat(pkg.price) * form.travelers).toFixed(2);
 
-    const result = validateBooking({
-      packageId: pkg.id,
-      departureDate: form.departureDate,
-      customerName: form.customerName,
-      totalPrice,
-      travelers: form.travelers,
-      customerEmail: form.customerEmail || undefined,
-      customerPhone: form.customerPhone || undefined,
-    });
+    const result = validateBooking(
+      {
+        packageId: pkg.id,
+        departureDate: form.departureDate,
+        customerName: form.customerName,
+        totalPrice,
+        travelers: form.travelers,
+        customerEmail: form.customerEmail || undefined,
+        customerPhone: form.customerPhone || undefined,
+      },
+      t,
+    );
 
     const errorMap: Record<string, string> = {
       customerName: t("bookings.validation.customerNameRequired"),

@@ -75,16 +75,19 @@ export default function BookingCreatePage() {
   };
 
   const validateForm = (): boolean => {
-    const result = validateBooking({
-      packageId: form.packageId,
-      departureDate: form.departureDate,
-      customerName: form.customerName,
-      totalPrice: form.totalPrice,
-      travelers: form.travelers,
-      customerEmail: form.customerEmail || undefined,
-      customerPhone: form.customerPhone || undefined,
-      status: form.status,
-    });
+    const result = validateBooking(
+      {
+        packageId: form.packageId,
+        departureDate: form.departureDate,
+        customerName: form.customerName,
+        totalPrice: form.totalPrice,
+        travelers: form.travelers,
+        customerEmail: form.customerEmail || undefined,
+        customerPhone: form.customerPhone || undefined,
+        status: form.status,
+      },
+      t,
+    );
     const errorMap: Record<string, string> = {
       customerName: t("bookings.validation.customerNameRequired"),
       packageId: t("bookings.validation.packageRequired"),
@@ -219,9 +222,7 @@ export default function BookingCreatePage() {
                     <Calendar
                       mode="single"
                       selected={
-                        form.departureDate
-                          ? new Date(form.departureDate + "T00:00:00")
-                          : undefined
+                        form.departureDate ? new Date(form.departureDate + "T00:00:00") : undefined
                       }
                       onSelect={(date) => {
                         if (date) {
@@ -269,10 +270,7 @@ export default function BookingCreatePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label
-                    htmlFor="travelers"
-                    className="block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="travelers" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.travelers")} *
                   </label>
                   <input
@@ -344,10 +342,7 @@ export default function BookingCreatePage() {
               </h2>
 
               <div className="space-y-2">
-                <label
-                  htmlFor="customerName"
-                  className="block text-sm font-medium text-foreground"
-                >
+                <label htmlFor="customerName" className="block text-sm font-medium text-foreground">
                   {t("bookings.fields.customerName")} *
                 </label>
                 <input
