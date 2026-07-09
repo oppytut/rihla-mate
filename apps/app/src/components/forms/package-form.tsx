@@ -107,17 +107,20 @@ export function PackageFormContent({
   };
 
   const validateForm = (): boolean => {
-    const result = validatePackage({
-      title: form.title,
-      slug: form.slug,
-      price: form.price,
-      durationDays: form.durationDays,
-      itinerary: form.itinerary,
-      inclusions: form.inclusions,
-      exclusions: form.exclusions,
-      availableDates: form.availableDates,
-      gallery: form.gallery,
-    });
+    const result = validatePackage(
+      {
+        title: form.title,
+        slug: form.slug,
+        price: form.price,
+        durationDays: form.durationDays,
+        itinerary: form.itinerary,
+        inclusions: form.inclusions,
+        exclusions: form.exclusions,
+        availableDates: form.availableDates,
+        gallery: form.gallery,
+      },
+      t,
+    );
     const errorMap: Record<string, string> = {
       title: t("packages.validation.titleRequired"),
       slug: t("packages.validation.slugRequired"),
