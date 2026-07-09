@@ -59,7 +59,10 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
   const onErrorRef = useRef(onError);
-  onErrorRef.current = onError;
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   // Inject the Snap.js script once
   useEffect(() => {
