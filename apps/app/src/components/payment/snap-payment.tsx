@@ -58,6 +58,8 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
 
   // Inject the Snap.js script once
   useEffect(() => {
@@ -74,7 +76,7 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
     };
 
     script.onerror = () => {
-      onError?.({ error: t("bookings.snap.loadError") });
+      onErrorRef.current?.({ error: t("bookings.snap.loadError") });
     };
 
     document.head.appendChild(script);
@@ -87,7 +89,7 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
         hasInjectedRef.current = false;
       }
     };
-  }, []);
+  }, [t]);
 
   // Trigger payment when token becomes available and Snap is ready
   useEffect(() => {
