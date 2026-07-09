@@ -66,7 +66,7 @@ export function PageFormContent({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `${isEditMode ? t("pages.editTitle") : t("pages.createTitle")} - Rihla Mate`;
+    document.title = `${isEditMode ? t("pages.editTitle") : t("pages.createTitle")} - ${t("common.appName")}`;
   }, [isEditMode, t]);
 
   const createMutation = useMutation(

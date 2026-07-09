@@ -6,7 +6,14 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export default function SignInPage() {
@@ -64,23 +71,20 @@ export default function SignInPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Rihla Mate</CardTitle>
+          <CardTitle className="text-2xl">{t("common.appName")}</CardTitle>
           <CardDescription>{t("auth.signInToAccount")}</CardDescription>
         </CardHeader>
 
         <CardContent>
           <form onSubmit={handleEmailSignIn} className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-foreground"
-              >
+              <label htmlFor="email" className="text-sm font-medium text-foreground">
                 {t("auth.email")}
               </label>
               <Input
                 id="email"
                 type="email"
-                placeholder="email@example.com"
+                placeholder={t("auth.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -89,16 +93,13 @@ export default function SignInPage() {
             </div>
 
             <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-foreground"
-              >
+              <label htmlFor="password" className="text-sm font-medium text-foreground">
                 {t("auth.password")}
               </label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t("auth.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -127,9 +128,7 @@ export default function SignInPage() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">
-                {t("auth.orContinueWith")}
-              </span>
+              <span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span>
             </div>
           </div>
 
@@ -146,9 +145,7 @@ export default function SignInPage() {
         </CardContent>
 
         <CardFooter className="justify-center">
-          <p className="text-xs text-muted-foreground">
-            {t("auth.signInHelp")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("auth.signInHelp")}</p>
         </CardFooter>
       </Card>
     </div>

@@ -281,9 +281,7 @@ export default function PublicBookingPage() {
         </header>
         <div className="container mx-auto px-4 lg:px-8 py-8">
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center">
-            <p className="text-muted-foreground">
-              No available dates for this package. Please check back later or contact us.
-            </p>
+            <p className="text-muted-foreground">{t("bookings.noAvailableDates")}</p>
             <Link
               href={`/${locale}`}
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"

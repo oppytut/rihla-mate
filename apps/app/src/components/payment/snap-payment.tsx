@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { logger } from "@/lib/utils/logger";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -114,7 +115,6 @@ interface UseSnapPaymentReturn {
 }
 
 function useSnapPayment(): UseSnapPaymentReturn {
-  const t = useTranslations();
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
@@ -135,7 +135,7 @@ function useSnapPayment(): UseSnapPaymentReturn {
 
     script.onerror = () => {
       // Snap failed to load — isReady stays false, pay() will be a no-op
-      console.error(t("bookings.snap.loadError"));
+      logger.error("Failed to load Midtrans Snap.js");
     };
 
     document.head.appendChild(script);
