@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { logger } from "@/lib/utils/logger";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -57,6 +58,11 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   // Inject the Snap.js script once
   useEffect(() => {
@@ -73,7 +79,7 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
     };
 
     script.onerror = () => {
-      onError?.({ error: t("bookings.snap.loadError") });
+      onErrorRef.current?.({ error: t("bookings.snap.loadError") });
     };
 
     document.head.appendChild(script);
@@ -86,7 +92,7 @@ function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaym
         hasInjectedRef.current = false;
       }
     };
-  }, []);
+  }, [t]);
 
   // Trigger payment when token becomes available and Snap is ready
   useEffect(() => {
@@ -114,7 +120,6 @@ interface UseSnapPaymentReturn {
 }
 
 function useSnapPayment(): UseSnapPaymentReturn {
-  const t = useTranslations();
   const [isReady, setIsReady] = useState(false);
   const scriptRef = useRef<HTMLScriptElement | null>(null);
   const hasInjectedRef = useRef(false);
@@ -135,7 +140,7 @@ function useSnapPayment(): UseSnapPaymentReturn {
 
     script.onerror = () => {
       // Snap failed to load — isReady stays false, pay() will be a no-op
-      console.error(t("bookings.snap.loadError"));
+      logger.error("Failed to load Midtrans Snap.js");
     };
 
     document.head.appendChild(script);

@@ -44,6 +44,7 @@ interface PackagesPage {
 interface PackagesContext {
   request: {
     get(url: string): Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
+    post(url: string, options?: { data?: Record<string, unknown> }): Promise<void>;
   };
 }
 
@@ -119,11 +120,9 @@ async function cleanupSearchPackages(context: PackagesContext) {
     for (const item of items) {
       if (item.id) {
         await api
-          .get(
-            `${BASE_URL}/api/trpc/packages.delete?batch=1&input=${encodeURIComponent(
-              JSON.stringify({ json: { id: item.id } }),
-            )}`,
-          )
+          .post(`${BASE_URL}/api/trpc/packages.delete`, {
+            data: { json: { id: item.id } },
+          })
           .catch(() => {});
       }
     }

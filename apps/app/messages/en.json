@@ -157,11 +157,15 @@
   },
   "common": {
     "appName": "Rihla Mate",
+    "appNameAbbr": "RM",
     "loading": "Loading...",
     "error": "An error occurred",
     "success": "Success",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "tryAgain": "Try again",
+    "somethingWentWrong": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred. Please try again."
   },
   "activate": {
     "title": "Activate License",
@@ -547,7 +551,9 @@
     "email": "Email",
     "password": "Password",
     "orContinueWith": "or continue with",
-    "signInHelp": "Contact your administrator for access"
+    "signInHelp": "Contact your administrator for access",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••"
   },
   "landing": {
     "title": "Rihla Mate",

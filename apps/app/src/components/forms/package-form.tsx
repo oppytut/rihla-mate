@@ -66,7 +66,7 @@ export function PackageFormContent({
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `${isEditMode ? t("packages.editTitle") : t("packages.createTitle")} - Rihla Mate`;
+    document.title = `${isEditMode ? t("packages.editTitle") : t("packages.createTitle")} - ${t("common.appName")}`;
   }, [isEditMode, t]);
 
   const createMutation = useMutation(

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 export function CtaFooterSection() {
-  const t = useTranslations("marketing");
+  const t = useTranslations("common");
   const year = new Date().getFullYear();
 
   return (
@@ -43,9 +43,11 @@ export function CtaFooterSection() {
             <div className="flex flex-col items-center gap-2 sm:items-start">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                  <span className="text-xs font-bold text-primary-foreground">RM</span>
+                  <span className="text-xs font-bold text-primary-foreground">
+                    {t("common.appNameAbbr")}
+                  </span>
                 </div>
-                <span className="font-semibold text-foreground">Rihla Mate</span>
+                <span className="font-semibold text-foreground">{t("common.appName")}</span>
               </div>
               <p className="text-xs text-muted-foreground">{t("footer.tagline")}</p>
             </div>

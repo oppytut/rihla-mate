@@ -9,7 +9,7 @@ import { FaqSection } from "./_sections/faq";
 import { CtaFooterSection } from "./_sections/cta-footer";
 
 export default async function MarketingPage() {
-  const t = await getTranslations("marketing");
+  const t = await getTranslations("common");
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -17,9 +17,11 @@ export default async function MarketingPage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">RM</span>
+              <span className="text-primary-foreground font-bold text-sm">
+                {t("common.appNameAbbr")}
+              </span>
             </div>
-            <span className="font-semibold text-lg text-foreground">Rihla Mate</span>
+            <span className="font-semibold text-lg text-foreground">{t("common.appName")}</span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link

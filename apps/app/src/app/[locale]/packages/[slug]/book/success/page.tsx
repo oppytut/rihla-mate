@@ -51,7 +51,7 @@ export default function BookingSuccessPage() {
 
               {bookingId && (
                 <p className="text-xs text-muted-foreground">
-                  Booking ID:{" "}
+                  {t("email.booking.bookingId")}{" "}
                   <span className="font-mono font-medium text-foreground">{bookingId}</span>
                 </p>
               )}
