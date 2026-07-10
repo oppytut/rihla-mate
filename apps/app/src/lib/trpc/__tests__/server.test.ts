@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi } from "vitest";
 
 // server-only is compiled inside Next.js — not available to vitest
