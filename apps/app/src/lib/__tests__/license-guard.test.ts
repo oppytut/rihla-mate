@@ -44,7 +44,7 @@ import type { LicenseInfo } from "../license/guard";
 // ---------------------------------------------------------------------------
 
 /** Build a minimal mock "next" callback that tRPC middlewares call. */
-function mockNext(_ctxOverride?: Record<string, unknown>) {
+function mockNext() {
   return vi.fn(async (opts: { ctx: Record<string, unknown> }) => {
     return opts.ctx;
   });
@@ -291,8 +291,8 @@ describe("licenseMiddleware", () => {
 
     expect(nextFn).toHaveBeenCalledTimes(1);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const calledCtx = nextFn.mock.calls[0]![0].ctx;
+    const calledCtx = nextFn.mock.calls[0]?.[0].ctx;
+    if (!calledCtx) throw new Error("Expected nextFn to be called");
     expect(calledCtx.license).toEqual({
       key: "RM-VALID-KEY",
       valid: true,

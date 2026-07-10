@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -89,11 +90,12 @@ export default function MediaPage() {
                 >
                   <div className="aspect-square bg-muted flex items-center justify-center">
                     {item.mimeType.startsWith("image/") ? (
-                      <img
+                      <Image
                         src={item.filename}
                         alt={item.altText || item.originalName}
                         className="w-full h-full object-cover"
-                        loading="lazy"
+                        width={256}
+                        height={256}
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center text-muted-foreground p-4 text-center">

@@ -155,8 +155,8 @@ describe("createTRPCContext", () => {
 
     expect(ctx.session).toEqual(sessionWithUndefinedRole);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(ctx.session!.user.role).toBeUndefined();
+    if (!ctx.session) throw new Error("Expected session to exist");
+    expect(ctx.session.user.role).toBeUndefined();
   });
 
   it("handles session with user that has null role", async () => {
@@ -188,7 +188,7 @@ describe("createTRPCContext", () => {
 
     expect(ctx.session).toEqual(sessionWithNullRole);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(ctx.session!.user.role).toBeNull();
+    if (!ctx.session) throw new Error("Expected session to exist");
+    expect(ctx.session.user.role).toBeNull();
   });
 });

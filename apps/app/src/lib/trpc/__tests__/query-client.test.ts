@@ -1,6 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 
 const { makeQueryClient } = await import("../query-client");
+
+function getShouldDehydrateQuery() {
+  const client = makeQueryClient();
+  const dehydrate = client.getDefaultOptions().dehydrate;
+  if (!dehydrate?.shouldDehydrateQuery) {
+    throw new Error("Expected shouldDehydrateQuery to be defined");
+  }
+  return dehydrate.shouldDehydrateQuery;
+}
 
 describe("makeQueryClient", () => {
   it("returns a QueryClient instance", () => {
@@ -22,15 +31,13 @@ describe("makeQueryClient", () => {
   });
 
   it("shouldDehydrateQuery returns true when query status is pending", () => {
-    const client = makeQueryClient();
-    const fn = client.getDefaultOptions().dehydrate!.shouldDehydrateQuery!;
+    const fn = getShouldDehydrateQuery();
     const result = fn({ state: { status: "pending" } } as never);
     expect(result).toBe(true);
   });
 
   it("shouldDehydrateQuery returns false when query status is error", () => {
-    const client = makeQueryClient();
-    const fn = client.getDefaultOptions().dehydrate!.shouldDehydrateQuery!;
+    const fn = getShouldDehydrateQuery();
     // defaultShouldDehydrateQuery returns status === 'success'
     // combined: (status === 'success') || (status === 'pending')
     // error → false || false = false
@@ -39,8 +46,7 @@ describe("makeQueryClient", () => {
   });
 
   it("shouldDehydrateQuery returns true when query status is success (defaultShouldDehydrateQuery passes)", () => {
-    const client = makeQueryClient();
-    const fn = client.getDefaultOptions().dehydrate!.shouldDehydrateQuery!;
+    const fn = getShouldDehydrateQuery();
     // defaultShouldDehydrateQuery returns true for success
     // combined: true || false = true
     const result = fn({
@@ -63,8 +69,7 @@ describe("makeQueryClient", () => {
   });
 
   it("shouldDehydrateQuery returns true for pending queries (no data yet)", () => {
-    const client = makeQueryClient();
-    const fn = client.getDefaultOptions().dehydrate!.shouldDehydrateQuery!;
+    const fn = getShouldDehydrateQuery();
     const result = fn({
       state: {
         status: "pending",

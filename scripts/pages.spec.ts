@@ -12,6 +12,12 @@ test.describe("Pages Management Smoke Test", () => {
       timeout: 10000,
     });
 
+    // Verify data actually loaded (not false-positive from unconditional header)
+    await expect(page.locator('[data-testid="pages-page-info"]')).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.locator('[data-testid="pages-add-new-empty"]')).not.toBeVisible();
+
     const headingCount = await page.getByRole("heading").count();
     expect(headingCount).toBeGreaterThan(0);
 

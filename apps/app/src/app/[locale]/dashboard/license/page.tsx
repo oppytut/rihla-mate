@@ -11,7 +11,7 @@ import { toast } from "sonner";
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 20;
 
-function isExpired(expiresAt: Date | string | null, _revokedAt: Date | string | null): boolean {
+function isExpired(expiresAt: Date | string | null): boolean {
   if (!expiresAt) return false;
   return new Date(expiresAt) < new Date();
 }
@@ -21,7 +21,7 @@ function getStatus(
   expiresAt: Date | string | null,
 ): "revoked" | "expired" | "active" {
   if (revokedAt) return "revoked";
-  if (isExpired(expiresAt, revokedAt)) return "expired";
+  if (isExpired(expiresAt)) return "expired";
   return "active";
 }
 
