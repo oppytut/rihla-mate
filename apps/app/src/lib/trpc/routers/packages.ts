@@ -54,12 +54,15 @@ const packagesUpdateSchema = z.object({
 export const packagesRouter = createTRPCRouter({
   list: adminProcedure
     .input(
-      z.object({
-        search: z.string().optional(),
-        status: z.string().optional(),
-        page: z.number().int().min(1).default(1),
-        limit: z.number().int().min(1).max(100).default(20),
-      }),
+      z
+        .object({
+          search: z.string().optional(),
+          status: z.string().optional(),
+          page: z.number().int().min(1).default(1),
+          limit: z.number().int().min(1).max(100).default(20),
+        })
+        .optional()
+        .default({}),
     )
     .query(async ({ ctx, input }) => {
       const { search, status, page, limit } = input;
