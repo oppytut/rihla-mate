@@ -8,7 +8,7 @@ export default function CustomersPage() {
   return (
     <>
       <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <h1 data-testid="dashboard-heading" className="text-2xl font-semibold text-foreground">
+        <h1 data-testid="page-heading" className="text-2xl font-semibold text-foreground">
           {t("customers.title")}
         </h1>
       </header>
