@@ -65,7 +65,10 @@ export default function LandingPagesPage() {
 
       <div className="px-4 lg:px-8 py-6">
         {pagesQuery.isError && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+          <div
+            className="bg-destructive/10 border border-destructive/20 rounded-lg p-6"
+            data-testid="pages-page-info"
+          >
             <p className="text-sm text-destructive">
               {t("common.error")}: {pagesQuery.error?.message || "Failed to load pages"}
             </p>
