@@ -283,6 +283,114 @@ export async function main() {
     );
     await client.query("COMMIT");
 
+    // Seed landing pages so pages.spec.ts has data to render.
+    // Without this, pages.length === 0 → empty state → pages-page-info not rendered.
+    const landingPageIds = [
+      "00000000-0000-0000-0000-100000000001",
+      "00000000-0000-0000-0000-100000000002",
+      "00000000-0000-0000-0000-100000000003",
+      "00000000-0000-0000-0000-100000000004",
+    ];
+
+    await client.query("BEGIN");
+    await client.query("DELETE FROM landing_pages WHERE slug = $1", ["home"]);
+    await client.query("DELETE FROM landing_pages WHERE slug = $1", ["about-us"]);
+    await client.query("DELETE FROM landing_pages WHERE slug = $1", ["umrah-packages"]);
+    await client.query("DELETE FROM landing_pages WHERE slug = $1", ["contact"]);
+    for (const id of landingPageIds) {
+      await client.query("DELETE FROM landing_pages WHERE id = $1", [id]);
+    }
+
+    const landingPageInserts = [
+      {
+        id: landingPageIds[0],
+        templateId: "default",
+        slug: "home",
+        title: "Home",
+        content: JSON.stringify({
+          heroTitle: "Welcome to Rihla Mate",
+          heroSubtitle: "Your journey begins here",
+        }),
+        seo: JSON.stringify({ title: "Home - Rihla Mate", description: "Landing page home" }),
+        isPublished: true,
+        isHomepage: true,
+        publishedAt: now,
+      },
+      {
+        id: landingPageIds[1],
+        templateId: "default",
+        slug: "about-us",
+        title: "About Us",
+        content: JSON.stringify({
+          heroTitle: "About Rihla Mate",
+          heroSubtitle: "Learn more about us",
+        }),
+        seo: JSON.stringify({
+          title: "About Us - Rihla Mate",
+          description: "About Rihla Mate travel platform",
+        }),
+        isPublished: true,
+        isHomepage: false,
+        publishedAt: now,
+      },
+      {
+        id: landingPageIds[2],
+        templateId: "default",
+        slug: "umrah-packages",
+        title: "Umrah Packages",
+        content: JSON.stringify({
+          heroTitle: "Umrah Packages",
+          heroSubtitle: "Find your perfect Umrah journey",
+        }),
+        seo: JSON.stringify({
+          title: "Umrah Packages - Rihla Mate",
+          description: "Browse our Umrah packages",
+        }),
+        isPublished: true,
+        isHomepage: false,
+        publishedAt: now,
+      },
+      {
+        id: landingPageIds[3],
+        templateId: "default",
+        slug: "contact",
+        title: "Contact",
+        content: JSON.stringify({
+          heroTitle: "Contact Us",
+          heroSubtitle: "Get in touch with us",
+        }),
+        seo: JSON.stringify({
+          title: "Contact - Rihla Mate",
+          description: "Contact Rihla Mate",
+        }),
+        isPublished: false,
+        isHomepage: false,
+        publishedAt: null,
+      },
+    ];
+
+    for (const lp of landingPageInserts) {
+      await client.query(
+        `INSERT INTO landing_pages (id, template_id, slug, title, content, seo,
+          is_published, is_homepage, published_at, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+        [
+          lp.id,
+          lp.templateId,
+          lp.slug,
+          lp.title,
+          lp.content,
+          lp.seo,
+          lp.isPublished,
+          lp.isHomepage,
+          lp.publishedAt,
+          now,
+          now,
+        ],
+      );
+    }
+    await client.query("COMMIT");
+
     // Write token to a JSON file consumed by globalSetup for storageState.
     const { writeFileSync } = await import("fs");
     writeFileSync(
