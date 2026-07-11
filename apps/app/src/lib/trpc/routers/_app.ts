@@ -7,6 +7,7 @@ import { packagesRouter } from "./packages";
 import { bookingsRouter } from "./bookings";
 import { userRouter } from "./user";
 import { midtransRouter } from "./midtrans";
+import { publicMidtransRouter } from "./public-midtrans";
 import { dashboardRouter } from "./dashboard";
 import { settingsRouter } from "./settings";
 import { customersRouter } from "./customers";
@@ -24,6 +25,7 @@ export const appRouter = createTRPCRouter({
   bookings: bookingsRouter,
   user: userRouter,
   midtrans: midtransRouter,
+  publicMidtrans: publicMidtransRouter,
   dashboard: dashboardRouter,
   settings: settingsRouter,
   customers: customersRouter,
