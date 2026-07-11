@@ -218,6 +218,10 @@
     },
     "payNow": "Pay Now",
     "paying": "Processing Payment...",
+    "processingPayment": "Processing Payment...",
+    "processingPaymentMessage": "Please complete your payment in the popup window.",
+    "processingPaymentHint": "Do not close this page until the payment is complete.",
+    "paymentError": "Payment failed. Please try again.",
     "paymentStatus": {
       "title": "Payment Status",
       "pending": "Payment Pending",

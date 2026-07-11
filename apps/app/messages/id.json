@@ -213,6 +213,10 @@
     },
     "payNow": "Bayar Sekarang",
     "paying": "Memproses Pembayaran...",
+    "processingPayment": "Memproses Pembayaran...",
+    "processingPaymentMessage": "Silakan selesaikan pembayaran di jendela popup.",
+    "processingPaymentHint": "Jangan tutup halaman ini sampai pembayaran selesai.",
+    "paymentError": "Pembayaran gagal. Silakan coba lagi.",
     "paymentStatus": {
       "title": "Status Pembayaran",
       "pending": "Pembayaran Tertunda",
