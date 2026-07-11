@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -35,9 +35,19 @@ const {
 function mockDb() {
   const db: Record<string, ReturnType<typeof vi.fn>> = {};
   const methods = [
-    "select", "from", "where", "orderBy", "limit", "offset",
-    "leftJoin", "insert", "values", "returning",
-    "update", "set", "delete",
+    "select",
+    "from",
+    "where",
+    "orderBy",
+    "limit",
+    "offset",
+    "leftJoin",
+    "insert",
+    "values",
+    "returning",
+    "update",
+    "set",
+    "delete",
   ];
   for (const method of methods) {
     db[method] = vi.fn(() => db);
