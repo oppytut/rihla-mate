@@ -213,6 +213,10 @@
     },
     "payNow": "ادفع الآن",
     "paying": "جارٍ معالجة الدفع...",
+    "processingPayment": "جارٍ معالجة الدفع...",
+    "processingPaymentMessage": "يرجى إكمال الدفع في النافذة المنبثقة.",
+    "processingPaymentHint": "لا تغلق هذه الصفحة حتى يكتمل الدفع.",
+    "paymentError": "فشل الدفع. يرجى المحاولة مرة أخرى.",
     "paymentStatus": {
       "title": "حالة الدفع",
       "pending": "الدفع معلق",

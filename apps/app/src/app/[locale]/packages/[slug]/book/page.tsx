@@ -12,7 +12,8 @@ import { cn } from "@/lib/utils";
 import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
 import { validateBooking } from "@/lib/utils/validation";
 import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { useSnapPayment } from "@/components/payment/snap-payment";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -45,6 +46,9 @@ export default function PublicBookingPage() {
   const [form, setForm] = useState<BookingForm>(initialForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [snapToken, setSnapToken] = useState<string | null>(null);
+  const [isPaying, setIsPaying] = useState(false);
+  const bookingIdRef = useRef<string | null>(null);
 
   const packageQuery = useQuery(trpc.packages.getBySlug.queryOptions({ slug }));
 
@@ -52,7 +56,8 @@ export default function PublicBookingPage() {
     trpc.bookings.createPublic.mutationOptions({
       onSuccess: (data) => {
         toast.success(t("bookings.createSuccess"));
-        router.push(`/${locale}/packages/${slug}/book/success?bookingId=${data.id}`);
+        bookingIdRef.current = data.id;
+        snapMutation.mutate({ bookingId: data.id });
       },
       onError: (error) => {
         setSubmitError(error.message || t("common.error"));
@@ -60,7 +65,59 @@ export default function PublicBookingPage() {
     }),
   );
 
-  const isSubmitting = createMutation.isPending;
+  const snapMutation = useMutation(
+    trpc.publicMidtrans.createTransaction.mutationOptions({
+      onSuccess: (data) => {
+        if (data.token) {
+          setSnapToken(data.token);
+          setIsPaying(true);
+        } else {
+          // Already has a Midtrans order — redirect directly
+          router.push(`/${locale}/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+        }
+      },
+      onError: (error) => {
+        toast.error(error.message || t("common.error"));
+      },
+    }),
+  );
+
+  const isSubmitting = createMutation.isPending || snapMutation.isPending;
+
+  const { pay } = useSnapPayment();
+
+  const handleSnapSuccess = useCallback(
+    (result: Record<string, unknown>) => {
+      void result;
+      router.push(`/${locale}/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+    },
+    [locale, router, slug],
+  );
+
+  const handleSnapError = useCallback(
+    (result: Record<string, unknown>) => {
+      void result;
+      setIsPaying(false);
+      setSnapToken(null);
+      toast.error(t("bookings.paymentError"));
+    },
+    [t],
+  );
+
+  const handleSnapClose = useCallback(() => {
+    setIsPaying(false);
+    setSnapToken(null);
+  }, []);
+
+  useEffect(() => {
+    if (!snapToken || !isPaying) return;
+    pay(snapToken, {
+      onSuccess: handleSnapSuccess,
+      onPending: handleSnapSuccess,
+      onError: handleSnapError,
+      onClose: handleSnapClose,
+    });
+  }, [snapToken, isPaying, pay, handleSnapSuccess, handleSnapError, handleSnapClose]);
 
   const updateField = <K extends keyof BookingForm>(field: K, value: BookingForm[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -356,7 +413,7 @@ export default function PublicBookingPage() {
                       <Button
                         type="button"
                         variant="outline"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || isPaying}
                         className={cn(
                           "w-full justify-start text-left font-normal",
                           !form.departureDate && "text-muted-foreground",
@@ -410,7 +467,7 @@ export default function PublicBookingPage() {
                       const val = parseInt(e.target.value, 10);
                       updateField("travelers", isNaN(val) ? 1 : Math.max(1, val));
                     }}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isPaying}
                     className={inputClass("travelers")}
                   />
                   {fieldErrors.travelers && (
@@ -436,7 +493,7 @@ export default function PublicBookingPage() {
                     value={form.notes}
                     onChange={(e) => updateField("notes", e.target.value)}
                     rows={3}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isPaying}
                     className="resize-none"
                   />
                 </div>
@@ -460,7 +517,7 @@ export default function PublicBookingPage() {
                     value={form.customerName}
                     onChange={(e) => updateField("customerName", e.target.value)}
                     required
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isPaying}
                     className={inputClass("customerName")}
                   />
                   {fieldErrors.customerName && (
@@ -481,7 +538,7 @@ export default function PublicBookingPage() {
                       type="email"
                       value={form.customerEmail}
                       onChange={(e) => updateField("customerEmail", e.target.value)}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isPaying}
                       className={inputClass("customerEmail")}
                     />
                     {fieldErrors.customerEmail && (
@@ -501,7 +558,7 @@ export default function PublicBookingPage() {
                       type="tel"
                       value={form.customerPhone}
                       onChange={(e) => updateField("customerPhone", e.target.value)}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isPaying}
                       className={inputClass("customerPhone")}
                     />
                     {fieldErrors.customerPhone && (
@@ -518,15 +575,31 @@ export default function PublicBookingPage() {
               )}
 
               <div className="flex items-center gap-4 pt-4 border-t border-border">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? t("bookings.saving") : t("bookings.save")}
+                <Button type="submit" disabled={isSubmitting || isPaying}>
+                  {isPaying
+                    ? t("bookings.processingPayment")
+                    : isSubmitting
+                      ? t("bookings.saving")
+                      : t("bookings.save")}
                 </Button>
                 <Link href={`/${locale}`}>
-                  <Button type="button" variant="outline" disabled={isSubmitting}>
+                  <Button type="button" variant="outline" disabled={isSubmitting || isPaying}>
                     {t("bookings.backToList")}
                   </Button>
                 </Link>
               </div>
+
+              {isPaying && (
+                <div className="rounded-lg border border-primary/30 bg-primary/5 p-6 text-center">
+                  <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <p className="text-sm font-medium text-foreground">
+                    {t("bookings.processingPaymentMessage")}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("bookings.processingPaymentHint")}
+                  </p>
+                </div>
+              )}
             </div>
           </form>
         </div>

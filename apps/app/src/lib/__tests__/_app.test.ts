@@ -51,6 +51,7 @@ describe("appRouter", () => {
       "bookings",
       "user",
       "midtrans",
+      "publicMidtrans",
       "dashboard",
       "settings",
       "customers",

@@ -5,6 +5,7 @@ import { createTRPCRouter, adminProcedure, publicProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
 import { logger } from "@/lib/utils/logger";
+import { sendBookingConfirmation } from "@/lib/email/booking";
 
 import { BOOKING_STATUSES } from "@/lib/utils/constants";
 
@@ -294,7 +295,12 @@ export const bookingsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const pkg = await ctx.db
-        .select({ id: packages.id, price: packages.price, availableDates: packages.availableDates })
+        .select({
+          id: packages.id,
+          price: packages.price,
+          availableDates: packages.availableDates,
+          title: packages.title,
+        })
         .from(packages)
         .where(eq(packages.id, input.packageId))
         .limit(1);
@@ -355,6 +361,19 @@ export const bookingsRouter = createTRPCRouter({
           notes: input.notes || null,
         })
         .returning();
+
+      void sendBookingConfirmation(
+        {
+          customerName: input.customerName,
+          customerEmail: input.customerEmail || "",
+          packageTitle: pkg[0].title,
+          departureDate: input.departureDate,
+          travelers: input.travelers,
+          totalPrice,
+          bookingId: result[0].id,
+        },
+        "id",
+      );
 
       return result[0];
     }),
