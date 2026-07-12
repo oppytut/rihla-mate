@@ -25,13 +25,17 @@
   },
   "vars": {
     "NODE_ENV": "production",
-    "DEPLOYMENT_TARGET": "cloudflare"
+    "DEPLOYMENT_TARGET": "cloudflare",
+    "BETTER_AUTH_SECRET": "dev-secret-change-in-production",
+    "BETTER_AUTH_URL": "http://localhost:8787"
   },
   "env": {
     "production": {
       "vars": {
         "STORAGE_DRIVER": "s3",
         "DEPLOYMENT_TARGET": "cloudflare",
+        "BETTER_AUTH_SECRET": "",
+        "BETTER_AUTH_URL": "https://your-domain.com",
         "MIDTRANS_CLIENT_KEY": "",
         "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY": "",
         "LICENSE_KEY": "",
@@ -64,6 +68,8 @@
       "vars": {
         "STORAGE_DRIVER": "s3",
         "DEPLOYMENT_TARGET": "cloudflare",
+        "BETTER_AUTH_SECRET": "dev-secret-change-in-production",
+        "BETTER_AUTH_URL": "http://localhost:8788",
         "MIDTRANS_CLIENT_KEY": "",
         "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY": "",
         "LICENSE_KEY": "",

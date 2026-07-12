@@ -6,6 +6,8 @@ import { env } from "@/env";
 import { and, isNull, or, gt, sql } from "drizzle-orm";
 
 export function register() {
+  // On Cloudflare Workers, Cron Triggers handle background jobs.
+  // The VPS runtime uses in-process setTimeout via the abstract scheduler.
   if (process.env.NEXT_RUNTIME === "nodejs") {
     (async () => {
       let licenseKey: string | undefined = env.LICENSE_KEY;
@@ -31,6 +33,7 @@ export function register() {
         const scheduler = scheduleCheckIn(db, licenseKey);
         logger.info("License check-in scheduled every 24h", { component: "instrumentation" });
 
+        // Graceful shutdown only applies on VPS (process.on is not available on Workers)
         const shutdown = () => {
           scheduler.stop();
           logger.info("License check-in stopped", { component: "instrumentation" });

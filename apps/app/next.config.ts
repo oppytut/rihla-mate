@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Packages that use workerd-specific build conditions (e.g. pg-cloudflare uses
+  // cloudflare:sockets) must be marked as external so @opennextjs/cloudflare's
+  // esbuild bundler can resolve them using the "workerd" condition.
+  serverExternalPackages: ["pg-cloudflare"],
 };
 
 export default withNextIntl(nextConfig);

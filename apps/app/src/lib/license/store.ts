@@ -1,5 +1,5 @@
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { pgTable, uuid, varchar, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
+import type { DrizzleClient } from "@/lib/db/client";
 import { eq, and, isNull, or, gt, sql } from "drizzle-orm";
 import type { LicensePlan } from "@rihla-mate/shared";
 
@@ -58,8 +58,6 @@ export type LicenseKey = typeof licenseKeys.$inferSelect;
 /** The fields required to create a new license key. */
 export type CreateLicenseInput = typeof licenseKeys.$inferInsert;
 
-type Db = NodePgDatabase<Record<string, unknown>>;
-
 // ---------------------------------------------------------------------------
 // CRUD helpers
 // ---------------------------------------------------------------------------
@@ -69,7 +67,10 @@ type Db = NodePgDatabase<Record<string, unknown>>;
  *
  * @returns The newly created license-key row.
  */
-export async function createLicense(db: Db, data: CreateLicenseInput): Promise<LicenseKey> {
+export async function createLicense(
+  db: DrizzleClient,
+  data: CreateLicenseInput,
+): Promise<LicenseKey> {
   const [row] = await db.insert(licenseKeys).values(data).returning();
   return row;
 }
@@ -79,7 +80,10 @@ export async function createLicense(db: Db, data: CreateLicenseInput): Promise<L
  *
  * @returns The matching row, or `undefined` when no row is found.
  */
-export async function getLicenseByKey(db: Db, key: string): Promise<LicenseKey | undefined> {
+export async function getLicenseByKey(
+  db: DrizzleClient,
+  key: string,
+): Promise<LicenseKey | undefined> {
   const rows = await db.select().from(licenseKeys).where(eq(licenseKeys.key, key)).limit(1);
   return rows[0];
 }
@@ -89,7 +93,10 @@ export async function getLicenseByKey(db: Db, key: string): Promise<LicenseKey |
  *
  * @returns The updated row, or `undefined` when the key does not exist.
  */
-export async function revokeLicense(db: Db, key: string): Promise<LicenseKey | undefined> {
+export async function revokeLicense(
+  db: DrizzleClient,
+  key: string,
+): Promise<LicenseKey | undefined> {
   const [row] = await db
     .update(licenseKeys)
     .set({ revokedAt: sql`now()` })
@@ -108,7 +115,7 @@ export async function revokeLicense(db: Db, key: string): Promise<LicenseKey | u
  *
  * @returns `true` when the license is valid, `false` otherwise.
  */
-export async function isLicenseValid(db: Db, key: string): Promise<boolean> {
+export async function isLicenseValid(db: DrizzleClient, key: string): Promise<boolean> {
   const cached = licenseValidCache.get(key);
   if (cached && Date.now() < cached.expiresAt) {
     return cached.value;
@@ -137,7 +144,7 @@ export async function isLicenseValid(db: Db, key: string): Promise<boolean> {
  *
  * @returns The count of active licenses.
  */
-export async function getActiveLicenseCount(db: Db): Promise<number> {
+export async function getActiveLicenseCount(db: DrizzleClient): Promise<number> {
   if (licenseCountCache && Date.now() < licenseCountCache.expiresAt) {
     return licenseCountCache.value;
   }
