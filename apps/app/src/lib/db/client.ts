@@ -1,9 +1,24 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import type { PgDatabase } from "drizzle-orm/pg-core";
+import type { NeonQueryResultHKT } from "drizzle-orm/neon-serverless";
+import { env } from "@/env";
 import * as schema from "./schema";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+type DrizzleClient = PgDatabase<NeonQueryResultHKT, typeof schema>;
 
-export const db = drizzle(pool, { schema });
+let db: DrizzleClient;
+
+if (env.DEPLOYMENT_TARGET === "cloudflare") {
+  const { drizzle } = await import("drizzle-orm/neon-serverless");
+  const { Pool } = await import("@neondatabase/serverless");
+  const pool = new Pool({ connectionString: env.DATABASE_URL });
+  db = drizzle({ client: pool, schema });
+} else {
+  const { drizzle } = await import("drizzle-orm/node-postgres");
+  const { Pool } = await import("pg");
+  const pool = new Pool({
+    connectionString: env.DATABASE_URL,
+  });
+  db = drizzle(pool, { schema });
+}
+
+export { db };
