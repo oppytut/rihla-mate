@@ -77,19 +77,8 @@ vi.mock("@/env", () => ({
   },
 }));
 
-const mockSnapCreateTransaction = vi.fn();
-const mockCoreApiTransactionStatus = vi.fn();
-
-vi.mock("midtrans-client", () => ({
-  default: {
-    Snap: vi.fn().mockImplementation(() => ({
-      createTransaction: mockSnapCreateTransaction,
-    })),
-    CoreApi: vi.fn().mockImplementation(() => ({
-      transaction: { status: mockCoreApiTransactionStatus },
-    })),
-  },
-}));
+const mockFetch = vi.fn();
+globalThis.fetch = mockFetch;
 
 type DrizzleMock = TRPCContext["db"] & {
   from: ReturnType<typeof vi.fn>;
@@ -140,11 +129,17 @@ describe("publicMidtransRouter.createTransaction", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    db = mockDb();
-    mockSnapCreateTransaction.mockResolvedValue({
-      token: "snap-token-txn",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
+    mockFetch.mockReset();
+    // Default success response for Snap transactions
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-txn",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
+        }),
     });
+    db = mockDb();
   });
 
   const bookingId = "00000000-0000-0000-0000-000000000001";
@@ -289,13 +284,17 @@ describe("publicMidtransRouter.createTransaction", () => {
     expect(result.redirectUrl).toBe(
       "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
     );
-    expect(mockSnapCreateTransaction).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    const snapCall = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(snapCall.transaction_details.order_id).toMatch(/^RIHLA-/);
-    expect(snapCall.transaction_details.gross_amount).toBe(1500000);
-    expect(snapCall.item_details[0].id).toBe(pkgId);
-    expect(snapCall.item_details[0].name).toBe("Bali Adventure");
+    const fetchCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/snap/v1/transactions"),
+    );
+    if (!fetchCall) throw new Error("Expected fetch call not found");
+    const body = JSON.parse(fetchCall[1].body as string);
+    expect(body.transaction_details.order_id).toMatch(/^RIHLA-/);
+    expect(body.transaction_details.gross_amount).toBe(1500000);
+    expect(body.item_details[0].id).toBe(pkgId);
+    expect(body.item_details[0].name).toBe("Bali Adventure");
   });
 
   it("handles booking with null customerEmail and customerPhone", async () => {
@@ -320,9 +319,13 @@ describe("publicMidtransRouter.createTransaction", () => {
     const result = await caller.createTransaction({ bookingId });
 
     expect(result.token).toBe("snap-token-txn");
-    const snapCall = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(snapCall.customer_details.email).toBe("");
-    expect(snapCall.customer_details.phone).toBeUndefined();
+    const fetchCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/snap/v1/transactions"),
+    );
+    if (!fetchCall) throw new Error("Expected fetch call not found");
+    const body = JSON.parse(fetchCall[1].body as string);
+    expect(body.customer_details.email).toBe("");
+    expect(body.customer_details.phone).toBeUndefined();
   });
 
   it("handles booking with missing package (packageTitle is null)", async () => {
@@ -347,13 +350,23 @@ describe("publicMidtransRouter.createTransaction", () => {
     const result = await caller.createTransaction({ bookingId });
 
     expect(result.token).toBe("snap-token-txn");
-    const snapCall = mockSnapCreateTransaction.mock.calls[0][0];
+    const fetchCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/snap/v1/transactions"),
+    );
+    if (!fetchCall) throw new Error("Expected fetch call not found");
+    const body = JSON.parse(fetchCall[1].body as string);
     // Falls back to "Booking" when packageTitle is null
-    expect(snapCall.item_details[0].name).toBe("Booking");
+    expect(body.item_details[0].name).toBe("Booking");
   });
 
   it("propagates midtrans API errors", async () => {
-    mockSnapCreateTransaction.mockRejectedValueOnce(new Error("Connection timeout"));
+    mockFetch.mockReset();
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve("Connection timeout"),
+    });
+
     const caller = await createCaller(db);
 
     vi.mocked(db.select).mockReturnValueOnce(db as never);
@@ -362,6 +375,8 @@ describe("publicMidtransRouter.createTransaction", () => {
     vi.mocked(db.where).mockReturnValueOnce(db as never);
     vi.mocked(db.limit).mockResolvedValueOnce([pendingBooking] as never);
 
-    await expect(caller.createTransaction({ bookingId })).rejects.toThrow("Connection timeout");
+    await expect(caller.createTransaction({ bookingId })).rejects.toThrow(
+      "Midtrans Snap API error (500): Connection timeout",
+    );
   });
 });
