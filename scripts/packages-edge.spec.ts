@@ -127,6 +127,11 @@ test.describe("package edge cases", () => {
 
     await page.locator(SEL.submit).click();
 
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/trpc/packages.create") && resp.status() === 200,
+      { timeout: 15000 },
+    );
+
     // Navigate directly via page.goto to force full SSR — client-side router.push
     // sends undefined to packages.list tRPC input, crashing the React 19 tree
     await page.goto(`${BASE_URL}/en/dashboard/packages`, {

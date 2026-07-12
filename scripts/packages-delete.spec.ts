@@ -97,6 +97,14 @@ test.describe("package delete flow", () => {
     // the delete-confirmation handler registered later
     await page.click('[data-testid="package-submit"]');
 
+    // Wait for the tRPC mutation to complete before navigating away.
+    // page.goto() aborts in-flight requests, causing TRPCError: aborted
+    // if the mutation hasn't finished yet.
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/trpc/packages.create") && resp.status() === 200,
+      { timeout: 15000 },
+    );
+
     // Navigate directly via page.goto to force full SSR — client-side router.push
     // sends undefined to packages.list tRPC input, crashing the React 19 tree
     await page.goto(`${BASE_URL}/en/dashboard/packages`, {
