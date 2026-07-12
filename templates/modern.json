@@ -1,0 +1,486 @@
+{
+  "template": {
+    "name": "Modern",
+    "version": "1.0",
+    "description": "Clean modern landing page with gradient hero, feature grid, step-by-step flow, pricing cards, testimonial carousel, FAQ accordion, and CTA banner.",
+    "author": "Rihla Mate",
+    "preview": "/templates/modern-preview.png"
+  },
+  "layout": {
+    "maxWidth": "1280px",
+    "fontFamily": "inter, sans-serif",
+    "colorScheme": {
+      "primary": "#2563eb",
+      "primaryLight": "#3b82f6",
+      "primaryDark": "#1d4ed8",
+      "background": "#ffffff",
+      "foreground": "#0f172a",
+      "muted": "#64748b",
+      "mutedBackground": "#f8fafc",
+      "border": "#e2e8f0",
+      "cardBackground": "#ffffff",
+      "cardBorder": "#e2e8f0"
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "i18nPrefix": "marketing.hero",
+      "order": 1,
+      "config": {
+        "layout": "centered",
+        "background": {
+          "type": "gradient",
+          "from": "#0f172a",
+          "via": "#1e293b",
+          "to": "#0f172a"
+        },
+        "textColor": "#ffffff",
+        "mutedTextColor": "#94a3b8",
+        "badge": {
+          "enabled": true,
+          "i18nKey": "badge"
+        },
+        "headline": {
+          "i18nKey": "headline",
+          "highlightI18nKey": "headlineHighlight",
+          "highlightColor": "#3b82f6"
+        },
+        "subtitle": {
+          "i18nKey": "subtitle"
+        },
+        "ctaButtons": [
+          {
+            "i18nKey": "ctaTrial",
+            "variant": "primary",
+            "link": "/sign-in"
+          },
+          {
+            "i18nKey": "ctaLearn",
+            "variant": "secondary",
+            "link": "#features"
+          }
+        ],
+        "trialNote": {
+          "i18nKey": "trialNote"
+        },
+        "minHeight": "90vh",
+        "paddingY": "py-24 lg:py-32"
+      }
+    },
+    {
+      "id": "features",
+      "type": "features-grid",
+      "i18nPrefix": "marketing.features",
+      "order": 2,
+      "config": {
+        "layout": "grid",
+        "columns": 3,
+        "responsiveColumns": {
+          "mobile": 1,
+          "tablet": 2,
+          "desktop": 3
+        },
+        "background": {
+          "type": "solid",
+          "color": "#f8fafc"
+        },
+        "sectionTitle": {
+          "i18nKey": "sectionTitle",
+          "align": "center"
+        },
+        "sectionDescription": {
+          "i18nKey": "sectionDescription",
+          "align": "center"
+        },
+        "features": [
+          {
+            "i18nKey": "whiteLabel",
+            "icon": "palette",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          },
+          {
+            "i18nKey": "selfHosted",
+            "icon": "server",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          },
+          {
+            "i18nKey": "bookingEngine",
+            "icon": "calendar-check",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          },
+          {
+            "i18nKey": "payments",
+            "icon": "credit-card",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          },
+          {
+            "i18nKey": "license",
+            "icon": "shield-check",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          },
+          {
+            "i18nKey": "analytics",
+            "icon": "chart-bar",
+            "titleKey": "title",
+            "descriptionKey": "description"
+          }
+        ],
+        "cardStyle": {
+          "borderRadius": "0.75rem",
+          "border": true,
+          "borderColor": "#e2e8f0",
+          "hoverShadow": true,
+          "iconBackground": "primary/10",
+          "iconColor": "primary"
+        },
+        "paddingY": "py-20 lg:py-28"
+      }
+    },
+    {
+      "id": "howItWorks",
+      "type": "steps",
+      "i18nPrefix": "marketing.howItWorks",
+      "order": 3,
+      "config": {
+        "layout": "horizontal-steps",
+        "background": {
+          "type": "solid",
+          "color": "#ffffff"
+        },
+        "sectionTitle": {
+          "i18nKey": "sectionTitle",
+          "align": "center"
+        },
+        "sectionDescription": {
+          "i18nKey": "sectionDescription",
+          "align": "center"
+        },
+        "steps": [
+          {
+            "i18nKey": "steps.deploy",
+            "stepNumberKey": "step",
+            "titleKey": "title",
+            "descriptionKey": "description",
+            "icon": "rocket"
+          },
+          {
+            "i18nKey": "steps.brand",
+            "stepNumberKey": "step",
+            "titleKey": "title",
+            "descriptionKey": "description",
+            "icon": "palette"
+          },
+          {
+            "i18nKey": "steps.sell",
+            "stepNumberKey": "step",
+            "titleKey": "title",
+            "descriptionKey": "description",
+            "icon": "shopping-bag"
+          },
+          {
+            "i18nKey": "steps.grow",
+            "stepNumberKey": "step",
+            "titleKey": "title",
+            "descriptionKey": "description",
+            "icon": "trending-up"
+          }
+        ],
+        "stepStyle": {
+          "numberColor": "#2563eb",
+          "numberBackground": "#eff6ff",
+          "connectorLine": true,
+          "connectorColor": "#e2e8f0",
+          "connectorActiveColor": "#2563eb"
+        },
+        "paddingY": "py-20 lg:py-28"
+      }
+    },
+    {
+      "id": "pricing",
+      "type": "pricing-cards",
+      "i18nPrefix": "marketing.pricing",
+      "order": 4,
+      "config": {
+        "layout": "cards",
+        "columns": 3,
+        "background": {
+          "type": "solid",
+          "color": "#f8fafc"
+        },
+        "sectionTitle": {
+          "i18nKey": "sectionTitle",
+          "align": "center"
+        },
+        "sectionDescription": {
+          "i18nKey": "sectionDescription",
+          "align": "center"
+        },
+        "currencyI18nKey": "currency",
+        "perMonthI18nKey": "month",
+        "popularI18nKey": "popular",
+        "plans": [
+          {
+            "i18nKey": "starter",
+            "nameKey": "name",
+            "priceKey": "price",
+            "periodKey": "period",
+            "descriptionKey": "description",
+            "ctaKey": "cta",
+            "featuresKey": "features",
+            "highlight": false,
+            "ctaVariant": "outline"
+          },
+          {
+            "i18nKey": "pro",
+            "nameKey": "name",
+            "priceKey": "price",
+            "periodKey": "period",
+            "descriptionKey": "description",
+            "ctaKey": "cta",
+            "featuresKey": "features",
+            "highlight": true,
+            "ctaVariant": "primary"
+          },
+          {
+            "i18nKey": "enterprise",
+            "nameKey": "name",
+            "priceKey": "price",
+            "periodKey": "period",
+            "descriptionKey": "description",
+            "ctaKey": "cta",
+            "featuresKey": "features",
+            "highlight": false,
+            "ctaVariant": "outline"
+          }
+        ],
+        "cardStyle": {
+          "borderRadius": "1rem",
+          "border": true,
+          "highlightBorderColor": "#2563eb",
+          "highlightShadow": true,
+          "defaultBorderColor": "#e2e8f0",
+          "featureCheckIcon": true,
+          "featureCheckColor": "#2563eb"
+        },
+        "paddingY": "py-20 lg:py-28"
+      }
+    },
+    {
+      "id": "testimonials",
+      "type": "testimonials-carousel",
+      "i18nPrefix": "marketing.testimonials",
+      "order": 5,
+      "config": {
+        "layout": "carousel",
+        "background": {
+          "type": "solid",
+          "color": "#ffffff"
+        },
+        "sectionTitle": {
+          "i18nKey": "sectionTitle",
+          "align": "center"
+        },
+        "sectionDescription": {
+          "i18nKey": "sectionDescription",
+          "align": "center"
+        },
+        "itemsKey": "items",
+        "itemSchema": {
+          "quoteKey": "quote",
+          "authorKey": "author",
+          "roleKey": "role",
+          "cityKey": "city"
+        },
+        "carousel": {
+          "autoplay": true,
+          "interval": 5000,
+          "showDots": true,
+          "showArrows": true,
+          "slidesToShow": 1,
+          "maxWidth": "800px"
+        },
+        "cardStyle": {
+          "borderRadius": "1rem",
+          "border": true,
+          "borderColor": "#e2e8f0",
+          "quoteIcon": true,
+          "quoteIconColor": "#2563eb",
+          "shadow": true
+        },
+        "paddingY": "py-20 lg:py-28"
+      }
+    },
+    {
+      "id": "faq",
+      "type": "faq-accordion",
+      "i18nPrefix": "marketing.faq",
+      "order": 6,
+      "config": {
+        "layout": "accordion",
+        "background": {
+          "type": "solid",
+          "color": "#f8fafc"
+        },
+        "sectionTitle": {
+          "i18nKey": "sectionTitle",
+          "align": "center"
+        },
+        "sectionDescription": {
+          "i18nKey": "sectionDescription",
+          "align": "center"
+        },
+        "itemsKey": "items",
+        "itemSchema": {
+          "questionKey": "question",
+          "answerKey": "answer"
+        },
+        "accordion": {
+          "maxWidth": "768px",
+          "allowMultiple": false,
+          "defaultOpenIndex": -1,
+          "showExpandIcon": true,
+          "expandIconPosition": "right"
+        },
+        "itemStyle": {
+          "borderRadius": "0.5rem",
+          "border": true,
+          "borderColor": "#e2e8f0",
+          "hoverBackground": "#f1f5f9",
+          "dividerBetween": true
+        },
+        "paddingY": "py-20 lg:py-28"
+      }
+    },
+    {
+      "id": "cta",
+      "type": "cta-banner",
+      "i18nPrefix": "marketing.cta",
+      "order": 7,
+      "config": {
+        "layout": "centered",
+        "background": {
+          "type": "gradient",
+          "from": "#2563eb",
+          "via": "#3b82f6",
+          "to": "#1d4ed8"
+        },
+        "textColor": "#ffffff",
+        "mutedTextColor": "#bfdbfe",
+        "headline": {
+          "i18nKey": "headline"
+        },
+        "subtitle": {
+          "i18nKey": "subtitle"
+        },
+        "button": {
+          "i18nKey": "button",
+          "variant": "primary-on-dark",
+          "link": "/sign-in",
+          "backgroundColor": "#ffffff",
+          "textColor": "#2563eb"
+        },
+        "contact": {
+          "i18nKey": "contact",
+          "showEmail": true
+        },
+        "paddingY": "py-16 lg:py-20",
+        "borderRadius": "1rem"
+      }
+    },
+    {
+      "id": "footer",
+      "type": "footer",
+      "i18nPrefix": "marketing.footer",
+      "order": 8,
+      "config": {
+        "layout": "4-column",
+        "background": {
+          "type": "solid",
+          "color": "#0f172a"
+        },
+        "textColor": "#94a3b8",
+        "headingColor": "#ffffff",
+        "columns": [
+          {
+            "heading": "brand",
+            "content": "tagline",
+            "type": "brand",
+            "showLogo": true
+          },
+          {
+            "heading": "product",
+            "links": [
+              { "i18nKey": "features", "link": "#features" },
+              { "i18nKey": "pricing", "link": "#pricing" },
+              { "i18nKey": "faq", "link": "#faq" }
+            ]
+          },
+          {
+            "heading": "company",
+            "links": [
+              { "i18nKey": "about", "link": "#about" },
+              { "i18nKey": "contact", "link": "#contact" }
+            ]
+          },
+          {
+            "heading": "legal",
+            "links": [
+              { "i18nKey": "features", "link": "/sign-in" },
+              { "i18nKey": "pricing", "link": "/sign-in" }
+            ]
+          }
+        ],
+        "copyright": {
+          "i18nKey": "copyright",
+          "showYear": true,
+          "align": "center"
+        },
+        "paddingY": "py-12 lg:py-16",
+        "borderTop": true,
+        "borderTopColor": "#1e293b"
+      }
+    }
+  ],
+  "global": {
+    "navbar": {
+      "enabled": true,
+      "i18nPrefix": "marketing.nav",
+      "logo": {
+        "text": "Rihla Mate",
+        "abbreviation": "RM"
+      },
+      "links": [
+        { "i18nKey": "features", "link": "#features" },
+        { "i18nKey": "pricing", "link": "#pricing" },
+        { "i18nKey": "faq", "link": "#faq" }
+      ],
+      "actions": [
+        {
+          "i18nKey": "signIn",
+          "link": "/sign-in",
+          "variant": "ghost"
+        },
+        {
+          "i18nKey": "getStarted",
+          "link": "/sign-in",
+          "variant": "primary"
+        }
+      ]
+    },
+    "scrollBehavior": "smooth",
+    "sectionSpacing": "gap-0",
+    "animation": {
+      "enabled": true,
+      "type": "fade-up",
+      "duration": 600,
+      "stagger": 100
+    }
+  }
+}

@@ -108,6 +108,7 @@
       "itinerary": "Itinerary (JSON)",
       "inclusions": "Inclusions (JSON)",
       "exclusions": "Exclusions (JSON)",
+      "exclusionsPlaceholder": "[\"Flight tickets\"]",
       "availableDates": "Available Dates (JSON)",
       "gallery": "Image Gallery (JSON)",
       "section": {

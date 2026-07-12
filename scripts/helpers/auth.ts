@@ -8,7 +8,7 @@ export const TEST_CREDENTIALS = {
 };
 
 export async function signInAndGetCookie(
-  request: Parameters<typeof test.beforeAll>[0]
+  request: Parameters<typeof test.beforeAll>[0],
 ): Promise<string> {
   // Retry up to 3 times with 1s delay — the seed script may not have
   // finished committing the user/account before the first test runs.
@@ -23,15 +23,19 @@ export async function signInAndGetCookie(
 
       const match = setCookieHeader.match(/better-auth\.session_token=([^;]+)/);
       expect(match).not.toBeNull();
-      expect(match![1]).toBeTruthy();
+      if (!match) {
+        throw new Error("Failed to extract session token from cookie");
+      }
+      const token = match[1];
+      expect(token).toBeTruthy();
 
-      return match![1];
+      return token;
     }
 
     // Log the error body for debugging, then retry
     const body = await response.text().catch(() => "<no body>");
     console.warn(
-      `[auth] sign-in attempt ${attempt} returned ${response.status()}: ${body.slice(0, 200)}`
+      `[auth] sign-in attempt ${attempt} returned ${response.status()}: ${body.slice(0, 200)}`,
     );
 
     if (attempt < 3) {

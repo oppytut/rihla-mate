@@ -3,16 +3,16 @@ services:
     image: postgres:16-alpine
     container_name: rihla-mate-db-dev
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_USER=rihlamate
       - POSTGRES_PASSWORD=rihlamate_dev
-      - POSTGRES_DB=rihlamate_dev
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=rihlamate
     volumes:
       - pgdata_dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rihlamate -d rihlamate_dev"]
+      test: ["CMD-SHELL", "pg_isready -U rihlamate -d rihlamate"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,29 +21,17 @@ services:
   license-server:
     build:
       context: ./license-server
-      dockerfile: Dockerfile
-    container_name: rihla-mate-license-server-dev
+    container_name: rihla-mate-license-server
     restart: unless-stopped
-    environment:
-      - DATABASE_URL=postgres://rihlamate:rihlamate_dev@db:5432/rihlamate_dev
-      - PORT=3001
-      - LICENSE_PUBLIC_KEY=${LICENSE_PUBLIC_KEY:-}
-      - LICENSE_PRIVATE_KEY=${LICENSE_PRIVATE_KEY:-}
-      - EXPECTED_MODULE_HASH=${EXPECTED_MODULE_HASH:-}
-      - UPSTASH_REDIS_URL=${UPSTASH_REDIS_URL:-}
-      - UPSTASH_REDIS_TOKEN=${UPSTASH_REDIS_TOKEN:-}
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://rihlamate:rihlamate_dev@db:5432/rihlamate
+      - REDIS_URL=${REDIS_URL:-}
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/v1/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
 
 volumes:
   pgdata_dev:
-    driver: local

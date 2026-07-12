@@ -2,6 +2,7 @@
  * Minimal diagnostic runner — bypasses Playwright test runner to capture ALL console output.
  * Uses the same storageState from global setup.
  */
+/* global console, process, document, window */
 import { chromium } from "@playwright/test";
 import { existsSync } from "fs";
 
@@ -35,24 +36,27 @@ async function main() {
     if (form) {
       const origSubmit = form.submit.bind(form);
       form.submit = function () {
-        (window).__nativeSubmitCalled = true;
+        window.__nativeSubmitCalled = true;
         return origSubmit();
       };
       const origReqSubmit = form.requestSubmit.bind(form);
       form.requestSubmit = function () {
-        (window).__requestSubmitCalled = true;
+        window.__requestSubmitCalled = true;
         return origReqSubmit();
       };
       // 2. Track submit event listeners
       form.addEventListener("submit", (e) => {
-        (window).__submitEventFired = true;
+        window.__submitEventFired = true;
         console.log("[DIAG] Native submit event fired on form!", e.defaultPrevented);
       });
       // 3. Track click event on submit button
       form.addEventListener("click", (e) => {
         const target = e.target;
         if (target && target.tagName === "BUTTON" && target.type === "submit") {
-          console.log("[DIAG] Click on submit button detected. Target:", target.outerHTML.substring(0, 200));
+          console.log(
+            "[DIAG] Click on submit button detected. Target:",
+            target.outerHTML.substring(0, 200),
+          );
         }
       });
     }
@@ -68,18 +72,22 @@ async function main() {
   const diag = await page.evaluate(() => ({
     url: window.location.href,
     validationErrorCount: document.querySelectorAll('[data-testid^="validation-error-"]').length,
-    validationErrorTexts: Array.from(document.querySelectorAll('[data-testid^="validation-error-"]')).map(el => ({
+    validationErrorTexts: Array.from(
+      document.querySelectorAll('[data-testid^="validation-error-"]'),
+    ).map((el) => ({
       testid: el.getAttribute("data-testid"),
       text: el.textContent,
     })),
-    nativeSubmitCalled: (window).__nativeSubmitCalled || false,
-    requestSubmitCalled: (window).__requestSubmitCalled || false,
-    submitEventFired: (window).__submitEventFired || false,
-    formHtml: document.querySelector("form")?.innerHTML?.includes("validation-error") ? "HAS_VALIDATION_ERROR_STRINGS" : "NO_VALIDATION_ERROR_STRINGS",
+    nativeSubmitCalled: window.__nativeSubmitCalled || false,
+    requestSubmitCalled: window.__requestSubmitCalled || false,
+    submitEventFired: window.__submitEventFired || false,
+    formHtml: document.querySelector("form")?.innerHTML?.includes("validation-error")
+      ? "HAS_VALIDATION_ERROR_STRINGS"
+      : "NO_VALIDATION_ERROR_STRINGS",
     // Check if the form has an onSubmit handler
     formOnSubmit: document.querySelector("form")?.getAttribute("onsubmit") || "none",
     // Check for aria-describedby refs
-    ariaRefs: Array.from(document.querySelectorAll("[aria-describedby]")).map(el => ({
+    ariaRefs: Array.from(document.querySelectorAll("[aria-describedby]")).map((el) => ({
       tag: el.tagName,
       id: el.id,
       describedBy: el.getAttribute("aria-describedby"),
@@ -88,7 +96,9 @@ async function main() {
     formFields: {
       customerName: document.querySelector('[data-testid="booking-customer-name"]')?.value,
       packageId: document.querySelector('[data-testid="booking-package"]')?.value,
-      departureDate: document.querySelector('[data-testid="booking-departure-date"]')?.textContent?.trim(),
+      departureDate: document
+        .querySelector('[data-testid="booking-departure-date"]')
+        ?.textContent?.trim(),
       totalPrice: document.querySelector('[data-testid="booking-total-price"]')?.value,
       travelers: document.querySelector('[data-testid="booking-travelers"]')?.value,
     },
@@ -97,7 +107,7 @@ async function main() {
   console.log("\n[RUNNER] === DIAGNOSTIC RESULTS ===");
   console.log(JSON.stringify(diag, null, 2));
   console.log("\n[RUNNER] === BROWSER LOGS ===");
-  logs.forEach(l => console.log(l));
+  logs.forEach((l) => console.log(l));
 
   // Take screenshot
   await page.screenshot({ path: "/tmp/validation-debug-v2.png", fullPage: true });

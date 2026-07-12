@@ -107,6 +107,7 @@
       "itinerary": "Itinerary (JSON)",
       "inclusions": "Fasilitas Termasuk (JSON)",
       "exclusions": "Fasilitas Tidak Termasuk (JSON)",
+      "exclusionsPlaceholder": "[\"Tiket pesawat\"]",
       "availableDates": "Tanggal Tersedia (JSON)",
       "gallery": "Galeri Gambar (JSON)",
       "section": {
@@ -156,11 +157,15 @@
   },
   "common": {
     "appName": "Rihla Mate",
+    "appNameAbbr": "RM",
     "loading": "Memuat...",
     "error": "Terjadi kesalahan",
     "success": "Berhasil",
     "previous": "Sebelumnya",
-    "next": "Berikutnya"
+    "next": "Berikutnya",
+    "tryAgain": "Coba lagi",
+    "somethingWentWrong": "Ada yang tidak beres",
+    "unexpectedError": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi."
   },
   "activate": {
     "title": "Aktivasi Lisensi",
@@ -545,7 +550,9 @@
     "email": "Email",
     "password": "Kata Sandi",
     "orContinueWith": "atau lanjutkan dengan",
-    "signInHelp": "Hubungi administrator untuk mendapatkan akses"
+    "signInHelp": "Hubungi administrator untuk mendapatkan akses",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••"
   },
   "landing": {
     "title": "Rihla Mate",

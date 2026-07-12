@@ -558,7 +558,7 @@ export function PackageFormContent({
                   onChange={(e) => updateField("exclusions", e.target.value)}
                   rows={3}
                   disabled={isSubmitting}
-                  placeholder='["Tiket pesawat"]'
+                  placeholder={t("packages.fields.exclusionsPlaceholder")}
                   data-testid="package-exclusions"
                   aria-label={t("packages.fields.exclusions")}
                   aria-describedby={fieldErrors.exclusions ? "exclusions-error" : undefined}

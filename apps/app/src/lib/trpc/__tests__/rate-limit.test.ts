@@ -1,9 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import {
-  extractIP,
-  cleanupStore,
-  createRateLimitMiddleware,
-} from "../rate-limit";
+import { extractIP, cleanupStore, createRateLimitMiddleware } from "../rate-limit";
 import type { TRPCContext } from "../context";
 
 function createMockContext(headers: Record<string, string>): TRPCContext {
@@ -90,22 +86,20 @@ describe("cleanupStore", () => {
   it("keeps valid entries (within 2x windowMs)", () => {
     const now = Date.now();
     const windowMs = 1000;
-    const store = new Map([
-      ["1.2.3.4", { timestamps: [now - 500] }],
-    ]);
+    const store = new Map([["1.2.3.4", { timestamps: [now - 500] }]]);
 
     cleanupStore(store, windowMs);
 
     expect(store.has("1.2.3.4")).toBe(true);
-    expect(store.get("1.2.3.4")!.timestamps).toEqual([now - 500]);
+    const entry = store.get("1.2.3.4");
+    expect(entry).toBeDefined();
+    expect(entry?.timestamps).toEqual([now - 500]);
   });
 
   it("removes the entry when all its timestamps are expired", () => {
     const now = Date.now();
     const windowMs = 1000;
-    const store = new Map([
-      ["1.2.3.4", { timestamps: [now - windowMs * 3, now - windowMs * 4] }],
-    ]);
+    const store = new Map([["1.2.3.4", { timestamps: [now - windowMs * 3, now - windowMs * 4] }]]);
 
     cleanupStore(store, windowMs);
 
@@ -115,14 +109,14 @@ describe("cleanupStore", () => {
   it("keeps a mix of valid and expired timestamps for the same IP", () => {
     const now = Date.now();
     const windowMs = 1000;
-    const store = new Map([
-      ["1.2.3.4", { timestamps: [now - windowMs * 3, now - 200] }],
-    ]);
+    const store = new Map([["1.2.3.4", { timestamps: [now - windowMs * 3, now - 200] }]]);
 
     cleanupStore(store, windowMs);
 
     expect(store.has("1.2.3.4")).toBe(true);
-    expect(store.get("1.2.3.4")!.timestamps).toEqual([now - 200]);
+    const entry2 = store.get("1.2.3.4");
+    expect(entry2).toBeDefined();
+    expect(entry2?.timestamps).toEqual([now - 200]);
   });
 
   it("does nothing on an empty store", () => {
@@ -187,9 +181,7 @@ describe("createRateLimitMiddleware", () => {
     const ctx = createMockContext({});
     const next = vi.fn();
 
-    await expect(middleware({ ctx, next })).rejects.toThrow(
-      "Unable to determine client IP",
-    );
+    await expect(middleware({ ctx, next })).rejects.toThrow("Unable to determine client IP");
   });
 
   it("maintains separate counters for different IPs", async () => {

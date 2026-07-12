@@ -107,6 +107,7 @@
       "itinerary": "خط سير الرحلة (JSON)",
       "inclusions": "ما يشمل (JSON)",
       "exclusions": "ما لا يشمل (JSON)",
+      "exclusionsPlaceholder": "[\"تذاكر الطيران\"]",
       "availableDates": "التواريخ المتاحة (JSON)",
       "gallery": "معرض الصور (JSON)",
       "section": {
@@ -156,11 +157,15 @@
   },
   "common": {
     "appName": "رحلة ميت",
+    "appNameAbbr": "RM",
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ",
     "success": "تم بنجاح",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "tryAgain": "حاول مرة أخرى",
+    "somethingWentWrong": "حدث خطأ ما",
+    "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
   },
   "activate": {
     "title": "تفعيل الترخيص",
@@ -550,7 +555,9 @@
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "orContinueWith": "أو المتابعة باستخدام",
-    "signInHelp": "تواصل مع مدير النظام للحصول على صلاحية الوصول"
+    "signInHelp": "تواصل مع مدير النظام للحصول على صلاحية الوصول",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••"
   },
   "landing": {
     "title": "رحلة ميت",
