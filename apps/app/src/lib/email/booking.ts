@@ -1,4 +1,10 @@
-import { Resend } from "resend";
+/**
+ * Send booking confirmation emails via Resend REST API.
+ *
+ * Uses `fetch` directly instead of the `resend` SDK for Cloudflare Workers
+ * compatibility (the SDK depends on Node.js APIs).
+ */
+
 import { getTranslations } from "next-intl/server";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
@@ -28,6 +34,11 @@ function formatDate(dateStr: string): string {
   }
 }
 
+/**
+ * Send a booking confirmation email via the Resend REST API.
+ *
+ * Uses `fetch` for Workers compatibility — no Node.js SDK required.
+ */
 export async function sendBookingConfirmation(
   params: SendBookingConfirmationParams,
   locale: string = "en",
@@ -41,15 +52,10 @@ export async function sendBookingConfirmation(
       return;
     }
 
-    const resend = new Resend(env.RESEND_API_KEY);
     const formattedDate = formatDate(params.departureDate);
     const t = await getTranslations({ locale, namespace: "email.booking" });
 
-    const { error } = await resend.emails.send({
-      from: "Rihla Mate <noreply@rihla-mate.com>",
-      to: [params.customerEmail],
-      subject: t("subject", { package: params.packageTitle }),
-      html: `
+    const html = `
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -114,18 +120,33 @@ export async function sendBookingConfirmation(
     </tr>
   </table>
 </body>
-</html>`,
+</html>`;
+
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Rihla Mate <noreply@rihla-mate.com>",
+        to: [params.customerEmail],
+        subject: t("subject", { package: params.packageTitle }),
+        html,
+      }),
     });
 
-    if (error) {
+    if (!response.ok) {
+      const errorBody = await response.text();
       logger.error(
         "[email] Failed to send booking confirmation",
         {
           component: "email",
           bookingId: params.bookingId,
           customerEmail: params.customerEmail,
+          status: response.status,
         },
-        error,
+        new Error(errorBody),
       );
       return;
     }

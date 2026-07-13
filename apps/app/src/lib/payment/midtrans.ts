@@ -1,20 +1,32 @@
-import crypto from "node:crypto";
-import midtransClient from "midtrans-client";
 import { env } from "@/env";
 
-const isProduction = env.MIDTRANS_SERVER_KEY?.startsWith("Mid-server-") ?? false;
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
-const snap = new midtransClient.Snap({
-  isProduction,
-  serverKey: env.MIDTRANS_SERVER_KEY || "",
-  clientKey: env.MIDTRANS_CLIENT_KEY || "",
-});
+const SNAP_BASE_URL = "https://app.midtrans.com/snap/v1";
+const CORE_API_BASE_URL = "https://api.midtrans.com/v2";
+const SNAP_SANDBOX_URL = "https://app.sandbox.midtrans.com/snap/v1";
+const CORE_API_SANDBOX_URL = "https://api.sandbox.midtrans.com/v2";
 
-const coreApi = new midtransClient.CoreApi({
-  isProduction,
-  serverKey: env.MIDTRANS_SERVER_KEY || "",
-  clientKey: env.MIDTRANS_CLIENT_KEY || "",
-});
+function getSnapUrl(): string {
+  const isProduction = env.MIDTRANS_SERVER_KEY?.startsWith("Mid-server-") ?? false;
+  return isProduction ? SNAP_BASE_URL : SNAP_SANDBOX_URL;
+}
+
+function getCoreApiUrl(): string {
+  const isProduction = env.MIDTRANS_SERVER_KEY?.startsWith("Mid-server-") ?? false;
+  return isProduction ? CORE_API_BASE_URL : CORE_API_SANDBOX_URL;
+}
+
+function getAuthHeader(): string {
+  const serverKey = env.MIDTRANS_SERVER_KEY || "";
+  return `Basic ${btoa(`${serverKey}:`)}`;
+}
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 export interface CreateSnapTransactionParams {
   orderId: string;
@@ -34,6 +46,7 @@ export interface CreateSnapTransactionParams {
   };
   callbacks?: {
     finish?: string;
+    redirect?: string;
     error?: string;
     pending?: string;
   };
@@ -44,13 +57,55 @@ export interface SnapTransactionResult {
   redirectUrl: string;
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Encode a string to hex using Web Crypto API.
+ * Equivalent to: Buffer.from(str).toString("hex")
+ */
+async function sha512Hex(input: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Constant-time string comparison using bitwise XOR.
+ * Replaces crypto.timingSafeEqual which is not available in Web Crypto API.
+ */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    // Still do a comparison to avoid leaking length info
+    let result = a.length ^ b.length;
+    const minLen = Math.min(a.length, b.length);
+    for (let i = 0; i < minLen; i++) {
+      result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return result === 0;
+  }
+
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
 /**
  * Generate a Midtrans Snap token for client-side payment popup.
  */
 export async function createSnapTransaction(
   params: CreateSnapTransactionParams,
 ): Promise<SnapTransactionResult> {
-  const parameter = {
+  const body = {
     transaction_details: {
       order_id: params.orderId,
       gross_amount: params.grossAmount,
@@ -73,16 +128,30 @@ export async function createSnapTransaction(
     })),
     callbacks: {
       finish: params.callbacks?.finish,
+      redirect: params.callbacks?.redirect,
       error: params.callbacks?.error,
       pending: params.callbacks?.pending,
     },
   };
 
-  const transaction = await snap.createTransaction(parameter);
+  const response = await fetch(`${getSnapUrl()}/transactions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAuthHeader(),
+    },
+    body: JSON.stringify(body),
+  });
 
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Midtrans Snap API error (${response.status}): ${errorBody}`);
+  }
+
+  const data = (await response.json()) as { token: string; redirect_url: string };
   return {
-    token: transaction.token as string,
-    redirectUrl: transaction.redirect_url as string,
+    token: data.token,
+    redirectUrl: data.redirect_url,
   };
 }
 
@@ -90,31 +159,33 @@ export async function createSnapTransaction(
  * Verify Midtrans webhook notification signature.
  * Formula: SHA512(order_id + status_code + gross_amount + ServerKey)
  */
-export function verifyWebhookSignature(
+export async function verifyWebhookSignature(
   orderId: string,
   statusCode: string,
   grossAmount: string,
   signatureKey: string,
-): boolean {
+): Promise<boolean> {
   const serverKey = env.MIDTRANS_SERVER_KEY || "";
-
-  const expected = crypto
-    .createHash("sha512")
-    .update(`${orderId}${statusCode}${grossAmount}${serverKey}`)
-    .digest("hex");
-
-  try {
-    return crypto.timingSafeEqual(Buffer.from(signatureKey), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+  const expected = await sha512Hex(`${orderId}${statusCode}${grossAmount}${serverKey}`);
+  return constantTimeEqual(signatureKey, expected);
 }
 
 /**
  * Get transaction status from Midtrans Core API.
  */
-export async function getTransactionStatus(orderId: string) {
-  return coreApi.transaction.status(orderId);
+export async function getTransactionStatus(orderId: string): Promise<Record<string, unknown>> {
+  const response = await fetch(`${getCoreApiUrl()}/${encodeURIComponent(orderId)}/status`, {
+    headers: {
+      Authorization: getAuthHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Midtrans Core API error (${response.status}): ${errorBody}`);
+  }
+
+  return response.json() as Promise<Record<string, unknown>>;
 }
 
 /**

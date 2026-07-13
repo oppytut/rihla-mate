@@ -11,6 +11,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
+import { getScheduler } from "@/lib/background";
 
 const validateResponseSchema = z.object({
   valid: z.boolean(),
@@ -130,44 +131,24 @@ export async function checkIn(
 }
 
 /**
- * Schedules periodic license check-ins via recursive `setTimeout` with
- * exponential backoff on failures. Returns a `stop` handle for cancellation.
+ * Schedules periodic license check-ins using the deployment-appropriate scheduler.
  *
- * Calls {@link checkIn} every `intervalMs` (default: 24 hours). On failure
- * the delay doubles up to a maximum of `intervalMs`; on success it resets.
+ * VPS: recursive setTimeout with exponential backoff (default: 24h).
+ * Cloudflare: no-op stub — Cron Triggers handle scheduling via wrangler.jsonc.
+ *
+ * Returns a `stop` handle for cancellation.
  */
 export function scheduleCheckIn(
   db: typeof defaultDb,
   licenseKey: string,
   intervalMs: number = 86_400_000,
 ): { stop: () => void } {
-  let timer: ReturnType<typeof setTimeout> | null = null;
-  let stopped = false;
-
-  const run = async (delayMs: number) => {
-    if (stopped) return;
-
-    timer = setTimeout(async () => {
-      try {
-        await checkIn(db, licenseKey);
-        run(intervalMs);
-      } catch (err) {
-        logger.error("Scheduled check-in failed", { component: "checkin" }, err);
-        const nextDelay = Math.min(delayMs * 2, intervalMs);
-        run(nextDelay);
-      }
-    }, delayMs);
-  };
-
-  run(intervalMs);
-
-  return {
-    stop: () => {
-      stopped = true;
-      if (timer !== null) {
-        clearTimeout(timer);
-        timer = null;
-      }
-    },
-  };
+  const scheduler = getScheduler();
+  return scheduler.schedule(async () => {
+    try {
+      await checkIn(db, licenseKey);
+    } catch (err) {
+      logger.error("Scheduled check-in failed", { component: "checkin" }, err);
+    }
+  }, intervalMs);
 }

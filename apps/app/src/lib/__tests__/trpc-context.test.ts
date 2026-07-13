@@ -1,16 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { mockGetSession, mockLoggerError } = vi.hoisted(() => ({
+const { mockGetSession, mockLoggerError, mockGetOrInitAuth } = vi.hoisted(() => ({
   mockGetSession: vi.fn(),
   mockLoggerError: vi.fn(),
+  mockGetOrInitAuth: vi.fn(),
 }));
 
 vi.mock("../auth", () => ({
-  auth: {
-    api: {
-      getSession: mockGetSession,
-    },
-  },
+  getOrInitAuth: mockGetOrInitAuth,
 }));
 
 vi.mock("../utils/logger", () => ({
@@ -31,6 +28,7 @@ import { createTRPCContext } from "../trpc/context";
 describe("createTRPCContext", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetOrInitAuth.mockResolvedValue({ api: { getSession: mockGetSession } });
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

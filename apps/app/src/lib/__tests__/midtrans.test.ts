@@ -78,19 +78,8 @@ vi.mock("@/env", () => ({
   },
 }));
 
-const mockSnapCreateTransaction = vi.fn();
-const mockCoreApiTransactionStatus = vi.fn();
-
-vi.mock("midtrans-client", () => ({
-  default: {
-    Snap: vi.fn().mockImplementation(() => ({
-      createTransaction: mockSnapCreateTransaction,
-    })),
-    CoreApi: vi.fn().mockImplementation(() => ({
-      transaction: { status: mockCoreApiTransactionStatus },
-    })),
-  },
-}));
+const mockFetch = vi.fn();
+globalThis.fetch = mockFetch;
 
 // Top-level imports removed — modules are imported dynamically
 // within each describe block so vi.doMock can override cached modules
@@ -171,12 +160,17 @@ describe("createSnapTransaction", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetch.mockReset();
   });
 
   it("returns token and redirectUrl on successful transaction", async () => {
-    mockSnapCreateTransaction.mockResolvedValueOnce({
-      token: "snap-token-abc-123",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-abc-123",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-abc-123",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-abc-123",
+        }),
     });
 
     const result = await createSnapTransaction(validParams);
@@ -185,27 +179,35 @@ describe("createSnapTransaction", () => {
       token: "snap-token-abc-123",
       redirectUrl: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-abc-123",
     });
-    expect(mockSnapCreateTransaction).toHaveBeenCalledTimes(1);
-    expect(mockSnapCreateTransaction).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://app.sandbox.midtrans.com/snap/v1/transactions",
       expect.objectContaining({
-        transaction_details: {
-          order_id: "RIHLA-test-123",
-          gross_amount: 1500000,
-        },
+        body: expect.stringContaining("RIHLA-test-123"),
       }),
     );
   });
 
   it("propagates error when midtrans API throws", async () => {
-    mockSnapCreateTransaction.mockRejectedValueOnce(new Error("Midtrans API error"));
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve("Midtrans API error"),
+    });
 
-    await expect(createSnapTransaction(validParams)).rejects.toThrow("Midtrans API error");
+    await expect(createSnapTransaction(validParams)).rejects.toThrow(
+      "Midtrans Snap API error (500): Midtrans API error",
+    );
   });
 
   it("works with minimal customer data (email only)", async () => {
-    mockSnapCreateTransaction.mockResolvedValueOnce({
-      token: "snap-token-min",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-min",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-min",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-min",
+        }),
     });
 
     const result = await createSnapTransaction({
@@ -216,19 +218,22 @@ describe("createSnapTransaction", () => {
     });
 
     expect(result.token).toBe("snap-token-min");
-    expect(mockSnapCreateTransaction).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://app.sandbox.midtrans.com/snap/v1/transactions",
       expect.objectContaining({
-        customer_details: expect.objectContaining({
-          email: "min@test.com",
-        }),
+        body: expect.stringContaining("min@test.com"),
       }),
     );
   });
 
   it("works with zero amount (free booking)", async () => {
-    mockSnapCreateTransaction.mockResolvedValueOnce({
-      token: "snap-token-free",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-free",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-free",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-free",
+        }),
     });
 
     const result = await createSnapTransaction({
@@ -239,17 +244,22 @@ describe("createSnapTransaction", () => {
     });
 
     expect(result.token).toBe("snap-token-free");
-    expect(mockSnapCreateTransaction).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://app.sandbox.midtrans.com/snap/v1/transactions",
       expect.objectContaining({
-        transaction_details: expect.objectContaining({ gross_amount: 0 }),
+        body: expect.stringContaining("gross_amount"),
       }),
     );
   });
 
   it("omits optional fields when not provided", async () => {
-    mockSnapCreateTransaction.mockResolvedValueOnce({
-      token: "snap-token-no-opt",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-no-opt",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-no-opt",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-no-opt",
+        }),
     });
 
     const result = await createSnapTransaction({
@@ -261,25 +271,31 @@ describe("createSnapTransaction", () => {
 
     expect(result.token).toBe("snap-token-no-opt");
 
-    const callArg = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(callArg.callbacks.finish).toBeUndefined();
-    expect(callArg.callbacks.error).toBeUndefined();
-    expect(callArg.callbacks.pending).toBeUndefined();
-    expect(callArg.item_details[0].category).toBeUndefined();
+    const callArg = mockFetch.mock.calls[0][1];
+    const body = JSON.parse(callArg.body as string);
+    expect(body.callbacks.finish).toBeUndefined();
+    expect(body.callbacks.error).toBeUndefined();
+    expect(body.callbacks.pending).toBeUndefined();
+    expect(body.item_details[0].category).toBeUndefined();
   });
 
   it("passes through callbacks when provided", async () => {
-    mockSnapCreateTransaction.mockResolvedValueOnce({
-      token: "snap-token-cb",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-cb",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-cb",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-cb",
+        }),
     });
 
     await createSnapTransaction(validParams);
 
-    const callArg = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(callArg.callbacks.finish).toBe("https://example.com/finish");
-    expect(callArg.callbacks.error).toBe("https://example.com/error");
-    expect(callArg.callbacks.pending).toBe("https://example.com/pending");
+    const callArg = mockFetch.mock.calls[0][1];
+    const body = JSON.parse(callArg.body as string);
+    expect(body.callbacks.finish).toBe("https://example.com/finish");
+    expect(body.callbacks.error).toBe("https://example.com/error");
+    expect(body.callbacks.pending).toBe("https://example.com/pending");
   });
 });
 
@@ -293,24 +309,42 @@ describe("getTransactionStatus", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetch.mockReset();
   });
 
   it("returns transaction status on success", async () => {
-    vi.mocked(mockCoreApiTransactionStatus).mockResolvedValueOnce({
-      transaction_status: "settlement",
-      fraud_status: "accept",
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          transaction_status: "settlement",
+          fraud_status: "accept",
+        }),
     });
 
     const result = await getTransactionStatus("order-123");
 
     expect(result).toHaveProperty("transaction_status", "settlement");
-    expect(mockCoreApiTransactionStatus).toHaveBeenCalledWith("order-123");
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://api.sandbox.midtrans.com/v2/order-123/status",
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: expect.any(String),
+        }),
+      }),
+    );
   });
 
   it("propagates API error", async () => {
-    vi.mocked(mockCoreApiTransactionStatus).mockRejectedValueOnce(new Error("Network error"));
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      text: () => Promise.resolve("Network error"),
+    });
 
-    await expect(getTransactionStatus("order-123")).rejects.toThrow("Network error");
+    await expect(getTransactionStatus("order-123")).rejects.toThrow(
+      "Midtrans Core API error (500): Network error",
+    );
   });
 });
 
@@ -324,9 +358,10 @@ describe("verifyWebhookSignature", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetch.mockReset();
   });
 
-  it("returns true for a valid signature", () => {
+  it("returns true for a valid signature", async () => {
     // The env mock provides MIDTRANS_SERVER_KEY = "SB-Mid-server-testkey"
     const orderId = "RIHLA-order-1";
     const statusCode = "200";
@@ -336,52 +371,57 @@ describe("verifyWebhookSignature", () => {
       .update(`${orderId}${statusCode}${grossAmount}${serverKey}`)
       .digest("hex");
 
-    const result = verifyWebhookSignature(orderId, statusCode, grossAmount, expected);
+    const result = await verifyWebhookSignature(orderId, statusCode, grossAmount, expected);
     expect(result).toBe(true);
   });
 
-  it("returns false for an invalid signature (wrong server key)", () => {
-    const result = verifyWebhookSignature("RIHLA-order-1", "200", "1500000", "wrong-signature-key");
+  it("returns false for an invalid signature (wrong server key)", async () => {
+    const result = await verifyWebhookSignature(
+      "RIHLA-order-1",
+      "200",
+      "1500000",
+      "wrong-signature-key",
+    );
     expect(result).toBe(false);
   });
 
-  it("returns false when signature length differs", () => {
-    const result = verifyWebhookSignature("RIHLA-order-1", "200", "1500000", "short");
+  it("returns false when signature length differs", async () => {
+    const result = await verifyWebhookSignature("RIHLA-order-1", "200", "1500000", "short");
     expect(result).toBe(false);
   });
 
-  it("returns false for empty signature key", () => {
-    const result = verifyWebhookSignature("RIHLA-order-1", "200", "1500000", "");
+  it("returns false for empty signature key", async () => {
+    const result = await verifyWebhookSignature("RIHLA-order-1", "200", "1500000", "");
     expect(result).toBe(false);
   });
 
-  it("returns false when orderId differs", () => {
+  it("returns false when orderId differs", async () => {
     const serverKey = "SB-Mid-server-testkey";
     const expected = createHash("sha512")
       .update(`RIHLA-correct-order${"200"}${"1500000"}${serverKey}`)
       .digest("hex");
 
-    const result = verifyWebhookSignature("RIHLA-wrong-order", "200", "1500000", expected);
+    const result = await verifyWebhookSignature("RIHLA-wrong-order", "200", "1500000", expected);
     expect(result).toBe(false);
   });
 
-  it("returns false when statusCode differs", () => {
+  it("returns false when statusCode differs", async () => {
     const serverKey = "SB-Mid-server-testkey";
     const expected = createHash("sha512")
       .update(`RIHLA-order-1${"200"}${"1500000"}${serverKey}`)
       .digest("hex");
 
-    const result = verifyWebhookSignature("RIHLA-order-1", "201", "1500000", expected);
+    const result = await verifyWebhookSignature("RIHLA-order-1", "201", "1500000", expected);
     expect(result).toBe(false);
   });
 
-  it("returns false when grossAmount differs", () => {
+  it("returns false when grossAmount differs", async () => {
     const serverKey = "SB-Mid-server-testkey";
     const expected = createHash("sha512")
       .update(`RIHLA-order-1${"200"}${"1500000"}${serverKey}`)
       .digest("hex");
 
-    const result = verifyWebhookSignature("RIHLA-order-1", "200", "1600000", expected);
+    const result = await verifyWebhookSignature("RIHLA-order-1", "200", "1600000", expected);
     expect(result).toBe(false);
   });
 });
@@ -393,6 +433,7 @@ describe("verifyWebhookSignature", () => {
 describe("isMidtransConfigured", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetch.mockReset();
   });
 
   it("returns true when both keys are set (default mock)", async () => {
@@ -457,10 +498,15 @@ describe("midtransRouter.createTransaction", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetch.mockReset();
     db = mockDb();
-    mockSnapCreateTransaction.mockResolvedValue({
-      token: "snap-token-txn",
-      redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          token: "snap-token-txn",
+          redirect_url: "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
+        }),
     });
   });
 
@@ -626,13 +672,14 @@ describe("midtransRouter.createTransaction", () => {
     expect(result.redirectUrl).toBe(
       "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
     );
-    expect(mockSnapCreateTransaction).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    const snapCall = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(snapCall.transaction_details.order_id).toMatch(/^RIHLA-/);
-    expect(snapCall.transaction_details.gross_amount).toBe(1500000);
-    expect(snapCall.item_details[0].id).toBe(pkgId);
-    expect(snapCall.item_details[0].name).toBe("Bali Adventure");
+    const fetchCall = mockFetch.mock.calls[0][1];
+    const body = JSON.parse(fetchCall.body as string);
+    expect(body.transaction_details.order_id).toMatch(/^RIHLA-/);
+    expect(body.transaction_details.gross_amount).toBe(1500000);
+    expect(body.item_details[0].id).toBe(pkgId);
+    expect(body.item_details[0].name).toBe("Bali Adventure");
   });
 
   it("handles booking with null customerEmail and customerPhone", async () => {
@@ -657,13 +704,16 @@ describe("midtransRouter.createTransaction", () => {
     const result = await caller.createTransaction({ bookingId });
 
     expect(result.token).toBe("snap-token-txn");
-    const snapCall = mockSnapCreateTransaction.mock.calls[0][0];
-    expect(snapCall.customer_details.email).toBe("");
-    expect(snapCall.customer_details.phone).toBeUndefined();
+    const fetchCall = mockFetch.mock.calls[0][1];
+    const body = JSON.parse(fetchCall.body as string);
+    expect(body.customer_details.email).toBe("");
+    expect(body.customer_details.phone).toBeUndefined();
   });
 
   it("propagates midtrans API errors", async () => {
-    mockSnapCreateTransaction.mockRejectedValueOnce(new Error("Connection timeout"));
+    // Override the default mock with a failing fetch
+    mockFetch.mockReset();
+    mockFetch.mockRejectedValueOnce(new Error("Connection timeout"));
     const caller = await createCaller(db);
 
     vi.mocked(db.select).mockReturnValueOnce(db as never);

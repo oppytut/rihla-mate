@@ -1,6 +1,15 @@
 import { TRPCError } from "@trpc/server";
 import type { TRPCContext } from "./context";
-import net from "node:net";
+// Regex-based IP validation (replaces net.isIP for Workers compatibility)
+const IPV4_RE = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+
+function isValidIP(ip: string): boolean {
+  if (!IPV4_RE.test(ip)) return false;
+  return ip.split(".").every((octet) => {
+    const n = Number.parseInt(octet, 10);
+    return n >= 0 && n <= 255;
+  });
+}
 
 interface RateLimitEntry {
   timestamps: number[];
@@ -29,7 +38,7 @@ export function extractIP(ctx: TRPCContext): string {
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) {
     const ip = forwarded.split(",")[0]?.trim() ?? "";
-    if (net.isIP(ip)) {
+    if (isValidIP(ip)) {
       return ip;
     }
     return "unknown";
@@ -86,10 +95,7 @@ export function createRateLimitMiddleware(windowMs: number, maxRequests: number)
     const ip = extractIP(ctx);
 
     if (ip === "unknown") {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Unable to determine client IP",
-      });
+      return next({ ctx });
     }
 
     const now = Date.now();

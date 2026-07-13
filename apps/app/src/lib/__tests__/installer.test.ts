@@ -31,12 +31,9 @@ vi.mock("@/lib/db/client", () => ({
 }));
 
 const mockSignUpEmail = vi.fn();
+const mockGetOrInitAuth = vi.fn();
 vi.mock("@/lib/auth", () => ({
-  auth: {
-    api: {
-      signUpEmail: mockSignUpEmail,
-    },
-  },
+  getOrInitAuth: mockGetOrInitAuth,
 }));
 
 const mockExecSync = vi.fn();
@@ -97,6 +94,7 @@ async function createCaller(ctx: TRPCContext) {
 describe("installerRouter", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetOrInitAuth.mockResolvedValue({ api: { signUpEmail: mockSignUpEmail } });
   });
 
   // -----------------------------------------------------------------------
