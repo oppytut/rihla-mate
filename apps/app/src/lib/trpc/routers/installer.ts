@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { eq, and, ne, sql } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../init";
 import { users } from "@/lib/db/schema/users";
-import { auth } from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 
 export const installerRouter = createTRPCRouter({
   resetForTesting: publicProcedure.mutation(async ({ ctx }) => {
@@ -40,7 +40,7 @@ export const installerRouter = createTRPCRouter({
       }
 
       // 2. Create the admin user via Better Auth's sign-up API
-      const result = await auth.api.signUpEmail({
+      const result = await getAuth().api.signUpEmail({
         body: {
           email: input.email,
           password: input.password,

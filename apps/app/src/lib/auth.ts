@@ -10,7 +10,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { db } from "@/lib/db/client";
+import { getDb, type DrizzleClient } from "@/lib/db/client";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/env";
 
@@ -18,7 +18,7 @@ import { env } from "@/env";
 // Database adapter factory
 // ---------------------------------------------------------------------------
 
-function makeDrizzleAdapter(dbInstance: typeof db) {
+function makeDrizzleAdapter(dbInstance: DrizzleClient) {
   return drizzleAdapter(dbInstance, {
     provider: "pg",
     usePlural: true,
@@ -64,13 +64,37 @@ const baseOptions = {
 } satisfies Parameters<typeof betterAuth>[0];
 
 // ---------------------------------------------------------------------------
-// VPS — synchronous static export
+// VPS — lazy singleton (deferred until db is initialized)
 // ---------------------------------------------------------------------------
 
-export const auth = betterAuth({
-  database: makeDrizzleAdapter(db),
-  ...baseOptions,
-});
+type VpsAuth = Awaited<ReturnType<typeof buildVpsAuth>>;
+
+let _auth: VpsAuth | undefined;
+
+export function getAuth(): VpsAuth {
+  if (!_auth) {
+    throw new Error("auth not initialized. Call initAuth() before accessing auth instance.");
+  }
+  return _auth;
+}
+
+async function buildVpsAuth() {
+  const db = await getDb();
+  return betterAuth({
+    database: makeDrizzleAdapter(db),
+    ...baseOptions,
+  });
+}
+
+/**
+ * Initialize auth for VPS runtime. Must be called AFTER setDb().
+ * Safe to call multiple times — subsequent calls are no-ops.
+ */
+export async function initVpsAuth(): Promise<VpsAuth> {
+  if (_auth) return _auth;
+  _auth = await buildVpsAuth();
+  return _auth;
+}
 
 // ---------------------------------------------------------------------------
 // Cloudflare Workers — async singleton (initAuth)

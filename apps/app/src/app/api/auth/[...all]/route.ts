@@ -5,18 +5,25 @@
  * On Workers, initAuth() uses getCloudflareContext() + withCloudflare()
  * to wire KV, geolocation, and IP detection.
  */
-import { auth, initAuth } from "@/lib/auth";
+import { getAuth, initAuth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
 import { env } from "@/env";
 
-const vpsHandler = toNextJsHandler(auth);
+let _vpsHandler: ReturnType<typeof toNextJsHandler> | undefined;
+
+function getVpsHandler() {
+  if (!_vpsHandler) {
+    _vpsHandler = toNextJsHandler(getAuth());
+  }
+  return _vpsHandler;
+}
 
 export async function GET(request: Request) {
   if (env.DEPLOYMENT_TARGET === "cloudflare") {
     const authInstance = await initAuth();
     return authInstance.handler(request);
   }
-  return vpsHandler.GET(request);
+  return getVpsHandler().GET(request);
 }
 
 export async function POST(request: Request) {
@@ -24,5 +31,5 @@ export async function POST(request: Request) {
     const authInstance = await initAuth();
     return authInstance.handler(request);
   }
-  return vpsHandler.POST(request);
+  return getVpsHandler().POST(request);
 }

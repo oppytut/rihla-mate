@@ -1,6 +1,7 @@
 import { scheduleCheckIn } from "@/lib/license/checkin";
 import { logger } from "@/lib/utils/logger";
-import { db } from "@/lib/db/client";
+import { db, setDb, getDb } from "@/lib/db/client";
+import { initVpsAuth } from "@/lib/auth";
 import { isLicenseValid, licenseKeys } from "@/lib/license/store";
 import { env } from "@/env";
 import { and, isNull, or, gt, sql } from "drizzle-orm";
@@ -10,6 +11,13 @@ export function register() {
   // The VPS runtime uses in-process setTimeout via the abstract scheduler.
   if (process.env.NEXT_RUNTIME === "nodejs") {
     (async () => {
+      // Initialize database before any module accesses db synchronously.
+      // This must happen inside register() because Next.js instrumentation
+      // is the earliest hook available before any request handling.
+      const resolvedDb = await getDb();
+      setDb(resolvedDb);
+      await initVpsAuth();
+
       let licenseKey: string | undefined = env.LICENSE_KEY;
 
       if (!licenseKey) {
