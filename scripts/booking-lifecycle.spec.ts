@@ -81,7 +81,7 @@ test.describe("booking lifecycle", () => {
       SEL.customerName,
       { timeout: 10000 },
     );
-    await customerNameInput.pressSequentially("Playwright Test Lifecycle", { delay: 30 });
+    await customerNameInput.fill("Playwright Test Lifecycle");
 
     // Wait for package options to be available
     await page
@@ -118,8 +118,8 @@ test.describe("booking lifecycle", () => {
     }
     await page.locator(SEL.calendarDay("8/20/2026")).first().click();
 
-    await page.fill(SEL.travelers, "2");
-    await page.fill(SEL.totalPrice, "1500000");
+    await page.locator(SEL.travelers).fill("2");
+    await page.locator(SEL.totalPrice).fill("1500000");
 
     // Confirm React hydration before submitting the form
     await page.locator(SEL.departureDateButton).click();

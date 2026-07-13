@@ -83,7 +83,7 @@ test.describe("booking creation flow", () => {
       SEL.customerName,
       { timeout: 10000 },
     );
-    await customerNameInput.pressSequentially("Playwright Test Customer", { delay: 30 });
+    await customerNameInput.fill("Playwright Test Customer");
 
     // Wait for the specific package option to be available in the DOM before selecting.
     // waitForFunction(options.length > 1) can race against React re-renders.
@@ -115,8 +115,8 @@ test.describe("booking creation flow", () => {
     }
     await page.locator(SEL.calendarDay("8/1/2026")).first().click();
 
-    await page.fill(SEL.travelers, "2");
-    await page.fill(SEL.totalPrice, "1500000");
+    await page.locator(SEL.travelers).fill("2");
+    await page.locator(SEL.totalPrice).fill("1500000");
 
     // Accept any alert dialog (success or error) that appears after submit
     page.on("dialog", (dialog) => dialog.accept());

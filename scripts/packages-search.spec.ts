@@ -35,7 +35,7 @@ interface PackagesPage {
   fill(selector: string, value: string): Promise<void>;
   click(selector: string): Promise<void>;
   locator(selector: string): {
-    pressSequentially: (text: string, options?: Record<string, unknown>) => Promise<void>;
+    fill: (text: string) => Promise<void>;
   };
   selectOption(selector: string, value: string): Promise<void>;
   on(event: string, handler: (dialog: { accept: () => Promise<void> }) => void): void;

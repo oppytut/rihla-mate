@@ -62,32 +62,29 @@ test.describe("package delete flow", () => {
       { timeout: 10000 },
     );
 
+    await page.locator('[data-testid="package-title"]').fill("Playwright Test Delete");
+    await page.locator('[data-testid="package-slug"]').fill(slug);
     await page
-      .locator('[data-testid="package-title"]')
-      .pressSequentially("Playwright Test Delete", { delay: 30 });
-    await page.locator('[data-testid="package-slug"]').pressSequentially(slug, { delay: 30 });
-    await page.fill('[data-testid="package-description"]', "Package created for delete test");
+      .locator('[data-testid="package-description"]')
+      .fill("Package created for delete test");
     await page.selectOption('[data-testid="package-category"]', "premium");
-    await page.fill('[data-testid="package-duration-days"]', "3");
-    await page.fill('[data-testid="package-departure-city"]', "Surabaya");
+    await page.locator('[data-testid="package-duration-days"]').fill("3");
+    await page.locator('[data-testid="package-departure-city"]').fill("Surabaya");
     await page.selectOption('[data-testid="package-status"]', "published");
-    await page.fill('[data-testid="package-price"]', "1000000");
+    await page.locator('[data-testid="package-price"]').fill("1000000");
     await page.selectOption('[data-testid="package-currency"]', "IDR");
-    await page.fill(
-      '[data-testid="package-featured-image"]',
-      "https://example.com/delete-test.jpg",
-    );
-    await page.fill(
-      '[data-testid="package-gallery"]',
-      '["https://example.com/gallery-delete.jpg"]',
-    );
-    await page.fill(
-      '[data-testid="package-itinerary"]',
-      '[{"day": 1, "description": "Delete test day"}]',
-    );
-    await page.fill('[data-testid="package-inclusions"]', '["Meal"]');
-    await page.fill('[data-testid="package-exclusions"]', '["Transport"]');
-    await page.fill('[data-testid="package-available-dates"]', '["2026-09-01"]');
+    await page
+      .locator('[data-testid="package-featured-image"]')
+      .fill("https://example.com/delete-test.jpg");
+    await page
+      .locator('[data-testid="package-gallery"]')
+      .fill('["https://example.com/gallery-delete.jpg"]');
+    await page
+      .locator('[data-testid="package-itinerary"]')
+      .fill('[{"day": 1, "description": "Delete test day"}]');
+    await page.locator('[data-testid="package-inclusions"]').fill('["Meal"]');
+    await page.locator('[data-testid="package-exclusions"]').fill('["Transport"]');
+    await page.locator('[data-testid="package-available-dates"]').fill('["2026-09-01"]');
 
     // Confirm React hydration before submitting the form
     await page.waitForTimeout(5000);
