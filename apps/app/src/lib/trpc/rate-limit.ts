@@ -95,10 +95,7 @@ export function createRateLimitMiddleware(windowMs: number, maxRequests: number)
     const ip = extractIP(ctx);
 
     if (ip === "unknown") {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Unable to determine client IP",
-      });
+      return next({ ctx });
     }
 
     const now = Date.now();

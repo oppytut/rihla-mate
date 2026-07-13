@@ -110,15 +110,7 @@ test.describe("Auth Flow", () => {
       waitUntil: "domcontentloaded",
     });
 
-    const notSignedIn = page.getByText("Not signed in");
-    const isNotSignedIn = await notSignedIn.isVisible().catch(() => false);
-
-    if (isNotSignedIn) {
-      expect(true).toBe(true);
-    } else {
-      const url = page.url();
-      expect(url).toContain("/sign-in");
-    }
+    await page.waitForURL("**/sign-in", { timeout: 15000 });
 
     await context.close();
   });

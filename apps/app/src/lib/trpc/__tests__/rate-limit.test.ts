@@ -176,12 +176,12 @@ describe("createRateLimitMiddleware", () => {
     await expect(middleware({ ctx, next })).resolves.toBe("success");
   }, 5000);
 
-  it("rejects unknown IP with BAD_REQUEST", async () => {
+  it("allows requests when client IP cannot be determined", async () => {
     const middleware = createRateLimitMiddleware(1000, 5);
     const ctx = createMockContext({});
-    const next = vi.fn();
+    const next = vi.fn().mockResolvedValue("success");
 
-    await expect(middleware({ ctx, next })).rejects.toThrow("Unable to determine client IP");
+    await expect(middleware({ ctx, next })).resolves.toBe("success");
   });
 
   it("maintains separate counters for different IPs", async () => {

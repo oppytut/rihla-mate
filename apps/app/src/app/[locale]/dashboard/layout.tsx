@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations();
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -44,9 +46,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const handleSignOut = async () => {
     await authClient.signOut();
+    queryClient.invalidateQueries({ queryKey: trpc.user.me.queryKey() });
     router.push("/sign-in");
     router.refresh();
   };
+
+  useEffect(() => {
+    if (userQuery.isError) {
+      router.push("/sign-in");
+    }
+  }, [userQuery.isError, router]);
 
   return (
     <div className="min-h-screen bg-background antialiased">
