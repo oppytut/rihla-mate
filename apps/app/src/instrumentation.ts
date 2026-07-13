@@ -14,9 +14,17 @@ export function register() {
       // Initialize database before any module accesses db synchronously.
       // This must happen inside register() because Next.js instrumentation
       // is the earliest hook available before any request handling.
-      const resolvedDb = await getDb();
-      setDb(resolvedDb);
-      await initVpsAuth();
+      try {
+        const resolvedDb = await getDb();
+        setDb(resolvedDb);
+        await initVpsAuth();
+      } catch (error) {
+        logger.error("Failed to initialize database or auth during instrumentation", {
+          component: "instrumentation",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return;
+      }
 
       let licenseKey: string | undefined = env.LICENSE_KEY;
 

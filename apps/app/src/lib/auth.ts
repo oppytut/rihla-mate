@@ -78,6 +78,19 @@ export function getAuth(): VpsAuth {
   return _auth;
 }
 
+/**
+ * Get or lazily initialize auth for VPS runtime.
+ * Used by the auth route handler — if instrumentation failed to init,
+ * the first request will trigger lazy initialization.
+ */
+export async function getOrInitAuth(): Promise<VpsAuth> {
+  if (_auth) return _auth;
+  const db = await getDb();
+  const { setDb } = await import("@/lib/db/client");
+  setDb(db);
+  return initVpsAuth();
+}
+
 async function buildVpsAuth() {
   const db = await getDb();
   return betterAuth({
