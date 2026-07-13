@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { NotificationBanner } from "@/components/notification-banner";
+import { TRPCClientError } from "@trpc/client";
 
 const APP_VERSION = "0.1.0";
 
@@ -52,10 +53,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   useEffect(() => {
-    if (userQuery.isError) {
+    if (
+      userQuery.isError &&
+      userQuery.error instanceof TRPCClientError &&
+      userQuery.error.data?.code === "UNAUTHORIZED"
+    ) {
       router.push("/sign-in");
     }
-  }, [userQuery.isError, router]);
+  }, [userQuery.isError, userQuery.error, router]);
 
   return (
     <div className="min-h-screen bg-background antialiased">
