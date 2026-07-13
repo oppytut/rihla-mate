@@ -69,21 +69,21 @@ async function createPackageViaForm(
     { timeout: 10000 },
   );
 
-  await page.locator(SEL.title).pressSequentially(title, { delay: 30 });
-  await page.locator(SEL.slug).pressSequentially(slug, { delay: 30 });
-  await page.fill(SEL.description, "Search test package");
+  await page.locator(SEL.title).fill(title);
+  await page.locator(SEL.slug).fill(slug);
+  await page.locator(SEL.description).fill("Search test package");
   await page.selectOption(SEL.category, "premium");
-  await page.fill(SEL.durationDays, "3");
-  await page.fill(SEL.departureCity, "Jakarta");
+  await page.locator(SEL.durationDays).fill("3");
+  await page.locator(SEL.departureCity).fill("Jakarta");
   await page.selectOption(SEL.status, statusValue);
-  await page.fill(SEL.price, "2000000");
+  await page.locator(SEL.price).fill("2000000");
   await page.selectOption(SEL.currency, "IDR");
-  await page.fill(SEL.featuredImage, "https://example.com/search-test.jpg");
-  await page.fill(SEL.gallery, '["https://example.com/gallery-search.jpg"]');
-  await page.fill(SEL.itinerary, '[{"day": 1, "description": "Search test day"}]');
-  await page.fill(SEL.inclusions, '["Breakfast"]');
-  await page.fill(SEL.exclusions, '["Flights"]');
-  await page.fill(SEL.availableDates, '["2026-07-01"]');
+  await page.locator(SEL.featuredImage).fill("https://example.com/search-test.jpg");
+  await page.locator(SEL.gallery).fill('["https://example.com/gallery-search.jpg"]');
+  await page.locator(SEL.itinerary).fill('[{"day": 1, "description": "Search test day"}]');
+  await page.locator(SEL.inclusions).fill('["Breakfast"]');
+  await page.locator(SEL.exclusions).fill('["Flights"]');
+  await page.locator(SEL.availableDates).fill('["2026-07-01"]');
 
   page.once("dialog", (dialog) => dialog.accept());
 
@@ -151,7 +151,14 @@ async function ensureSeedPackages(page: PackagesPage, context: PackagesContext) 
     ];
     const allExist = needed.every((n) => existingTitles.has(n.title));
     if (allExist) {
-      // Seed packages already present — no need to re-create
+      // Seed packages already present — navigate to list page and return
+      await page.goto(`${BASE_URL}/en/dashboard/packages`, {
+        waitUntil: "domcontentloaded",
+      });
+      await page.waitForSelector('[data-testid="page-heading"]', {
+        state: "attached",
+        timeout: 10000,
+      });
       return;
     }
   }
@@ -188,10 +195,12 @@ test.describe("packages search and filter", () => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Alpha");
 
-    await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
+    // Wait for debounced search: Beta should disappear when searching "Alpha"
+    await expect(page.getByText("Beta Search Pkg").first()).not.toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Beta Search Pkg").first()).not.toBeVisible({
+
+    await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -200,10 +209,12 @@ test.describe("packages search and filter", () => {
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
 
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    // Wait for filtered results: Alpha (draft) should disappear
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
+
+    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -238,20 +249,24 @@ test.describe("packages search and filter", () => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Beta");
 
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    // Wait for debounced search: Alpha should disappear when searching "Beta"
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
+
+    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
 
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
 
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    // Wait for filtered results: Alpha (draft) should disappear
+    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
+
+    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
