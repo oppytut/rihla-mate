@@ -34,14 +34,13 @@ interface PlaywrightPage {
   waitForSelector(selector: string, options?: Record<string, unknown>): Promise<unknown>;
   waitForTimeout(ms: number): Promise<void>;
   waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
-  fill(selector: string, value: string): Promise<void>;
   click(selector: string): Promise<void>;
   locator(selector: string): { fill: (value: string) => Promise<void> };
   selectOption(selector: string, value: string): Promise<void>;
   getByRole(
     role: string,
     options?: Record<string, unknown>,
-  ): { pressSequentially: (text: string) => Promise<void> };
+  ): { fill: (text: string) => Promise<void> };
   on(event: string, handler: (dialog: { accept: () => Promise<void> }) => void): void;
 }
 
@@ -176,7 +175,7 @@ test.describe("bookings search and filter", () => {
   test("search by customer name filters results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.click();
-    await searchInput.pressSequentially("Alice", { delay: 50 });
+    await searchInput.fill("Alice");
 
     // Wait for debounce (300ms) + TRPC query + React render
     await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
@@ -197,7 +196,7 @@ test.describe("bookings search and filter", () => {
   test("clear filters restores full list after search", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.click();
-    await searchInput.pressSequentially("ZZZ_NONEXISTENT_NAME_ZZZ", { delay: 30 });
+    await searchInput.fill("ZZZ_NONEXISTENT_NAME_ZZZ");
 
     const clearBtn = page.locator(SEL.clearFilters);
     await expect(clearBtn).toBeVisible({ timeout: 5000 });
@@ -220,7 +219,7 @@ test.describe("bookings search and filter", () => {
   test("combined search and status filter narrows results", async ({ page }) => {
     const searchInput = page.locator(SEL.search);
     await searchInput.click();
-    await searchInput.pressSequentially("Alice", { delay: 50 });
+    await searchInput.fill("Alice");
 
     // Wait for debounce (300ms) + TRPC query + React render
     await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({

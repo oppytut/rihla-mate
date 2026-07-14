@@ -58,7 +58,7 @@ test.describe("booking edge cases", () => {
       timeout: 10000,
     });
 
-    await page.fill(SEL.customerName, "Email Test Customer");
+    await page.locator(SEL.customerName).fill("Email Test Customer");
 
     const packageSelect = page.locator(SEL.packageId);
     await page.waitForFunction(
@@ -87,10 +87,10 @@ test.describe("booking edge cases", () => {
     const dateStr = `${displayMonth}/15/${nextYear}`;
     await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
 
-    await page.fill(SEL.travelers, "2");
-    await page.fill(SEL.totalPrice, "1000000");
+    await page.locator(SEL.travelers).fill("2");
+    await page.locator(SEL.totalPrice).fill("1000000");
 
-    await page.fill(SEL.customerEmail, "not-an-email");
+    await page.locator(SEL.customerEmail).fill("not-an-email");
 
     // Click submit button directly — native HTML5 email validation should fire
     await page.locator(SEL.submitButton).click();
@@ -117,7 +117,7 @@ test.describe("booking edge cases", () => {
     });
 
     // Fill required fields
-    await page.fill(SEL.customerName, "Travelers Test Customer");
+    await page.locator(SEL.customerName).fill("Travelers Test Customer");
 
     const packageSelect = page.locator(SEL.packageId);
     await page.waitForFunction(
@@ -146,7 +146,7 @@ test.describe("booking edge cases", () => {
     const dateStr = `${displayMonth}/15/${nextYear}`;
     await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
 
-    await page.fill(SEL.totalPrice, "1000000");
+    await page.locator(SEL.totalPrice).fill("1000000");
 
     await page.locator(SEL.travelers).fill("0");
 

@@ -65,7 +65,7 @@ test.describe("booking edit flow", () => {
       timeout: 10000,
     });
 
-    await page.fill(SEL.customerName, "Playwright Test Customer Edit");
+    await page.locator(SEL.customerName).fill("Playwright Test Customer Edit");
 
     const packageSelect = page.locator(SEL.packageId);
     await page.waitForFunction(
@@ -98,8 +98,8 @@ test.describe("booking edit flow", () => {
     }
     await page.locator(SEL.calendarDay("8/15/2026")).first().click();
 
-    await page.fill(SEL.travelers, "2");
-    await page.fill(SEL.totalPrice, "1500000");
+    await page.locator(SEL.travelers).fill("2");
+    await page.locator(SEL.totalPrice).fill("1500000");
 
     // Confirm React hydration before submitting the form
     await page.locator(SEL.departureDateButton).click();

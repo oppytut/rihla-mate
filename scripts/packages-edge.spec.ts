@@ -112,13 +112,11 @@ test.describe("package edge cases", () => {
       { timeout: 10000 },
     );
 
-    await page
-      .locator(SEL.title)
-      .pressSequentially(`Playwright Test Duplicate ${Date.now()}`, { delay: 30 });
-    await page.locator(SEL.slug).pressSequentially(slug, { delay: 30 });
-    await page.fill(SEL.description, "First package with this slug");
-    await page.fill(SEL.durationDays, "3");
-    await page.fill(SEL.price, "1000000");
+    await page.locator(SEL.title).fill(`Playwright Test Duplicate ${Date.now()}`);
+    await page.locator(SEL.slug).fill(slug);
+    await page.locator(SEL.description).fill("First package with this slug");
+    await page.locator(SEL.durationDays).fill("3");
+    await page.locator(SEL.price).fill("1000000");
 
     page.once("dialog", (dialog) => dialog.accept());
 
@@ -160,11 +158,11 @@ test.describe("package edge cases", () => {
       { timeout: 10000 },
     );
 
-    await page.fill(SEL.title, `Playwright Test Duplicate 2 ${Date.now()}`);
-    await page.fill(SEL.slug, slug);
-    await page.fill(SEL.description, "Second package with duplicate slug");
-    await page.fill(SEL.durationDays, "5");
-    await page.fill(SEL.price, "2000000");
+    await page.locator(SEL.title).fill(`Playwright Test Duplicate 2 ${Date.now()}`);
+    await page.locator(SEL.slug).fill(slug);
+    await page.locator(SEL.description).fill("Second package with duplicate slug");
+    await page.locator(SEL.durationDays).fill("5");
+    await page.locator(SEL.price).fill("2000000");
 
     page.once("dialog", (dialog) => dialog.accept());
     await page.locator(SEL.submit).click();
@@ -209,12 +207,12 @@ test.describe("package edge cases", () => {
     );
 
     // Fill required fields
-    await page.fill(SEL.title, "Playwright Test Negative Price");
-    await page.fill(SEL.slug, `playwright-negative-price-${Date.now()}`);
-    await page.fill(SEL.durationDays, "3");
+    await page.locator(SEL.title).fill("Playwright Test Negative Price");
+    await page.locator(SEL.slug).fill(`playwright-negative-price-${Date.now()}`);
+    await page.locator(SEL.durationDays).fill("3");
 
     // Enter negative price
-    await page.fill(SEL.price, "-500");
+    await page.locator(SEL.price).fill("-500");
 
     // Click submit button to trigger React form validation
     await page.locator(SEL.submit).click();
@@ -250,7 +248,7 @@ test.describe("package edge cases", () => {
     );
 
     // Fill only some fields - title auto-generates slug, but price is empty
-    await page.fill(SEL.title, "Playwright Test Partial");
+    await page.locator(SEL.title).fill("Playwright Test Partial");
     // slug auto-generated from title, durationDays defaults to 1
 
     // Click submit button to trigger React form validation
