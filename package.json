@@ -41,5 +41,10 @@
     "*.{json,md,yaml,yml}": [
       "prettier --write"
     ]
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@opennextjs/cloudflare@1.20.1": "patches/@opennextjs__cloudflare@1.20.1.patch"
+    }
   }
 }
