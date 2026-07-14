@@ -5,8 +5,11 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
+  '@opennextjs/aws@4.0.2':
+    hash: l2ur5crjzx6zinn7m4rpmnd4km
+    path: patches/@opennextjs__aws@4.0.2.patch
   '@opennextjs/cloudflare@1.20.1':
-    hash: se2hquzyihb3zynbumc6sjridu
+    hash: 2mvhzqxci7r3wjyf54w6rh73ga
     path: patches/@opennextjs__cloudflare@1.20.1.patch
 
 importers:
@@ -163,7 +166,7 @@ importers:
         version: 5.20260712.1
       '@opennextjs/cloudflare':
         specifier: ^1.20.1
-        version: 1.20.1(patch_hash=se2hquzyihb3zynbumc6sjridu)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.110.0(@cloudflare/workers-types@5.20260712.1))
+        version: 1.20.1(patch_hash=2mvhzqxci7r3wjyf54w6rh73ga)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.110.0(@cloudflare/workers-types@5.20260712.1))
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.1
@@ -8797,7 +8800,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@opennextjs/aws@4.0.2(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
+  '@opennextjs/aws@4.0.2(patch_hash=l2ur5crjzx6zinn7m4rpmnd4km)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@aws-sdk/client-cloudfront': 3.984.0
@@ -8820,11 +8823,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@opennextjs/cloudflare@1.20.1(patch_hash=se2hquzyihb3zynbumc6sjridu)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.110.0(@cloudflare/workers-types@5.20260712.1))':
+  '@opennextjs/cloudflare@1.20.1(patch_hash=2mvhzqxci7r3wjyf54w6rh73ga)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.110.0(@cloudflare/workers-types@5.20260712.1))':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
-      '@opennextjs/aws': 4.0.2(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+      '@opennextjs/aws': 4.0.2(patch_hash=l2ur5crjzx6zinn7m4rpmnd4km)(next@16.2.9(@babel/core@7.29.7)(@playwright/test@1.61.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
       ci-info: 4.4.0
       cloudflare: 4.5.0
       comment-json: 4.6.2

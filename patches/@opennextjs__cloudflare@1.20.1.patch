@@ -1,8 +1,46 @@
+diff --git a/dist/cli/build/build.js b/dist/cli/build/build.js
+index 70a7b2065576b659a3cc15ebf0ea0790176cb7e9..4cbc7ce0811e15705f39e561e50363368f334813 100644
+--- a/dist/cli/build/build.js
++++ b/dist/cli/build/build.js
+@@ -1,3 +1,5 @@
++import fs from "node:fs";
++import path from "node:path";
+ import { buildNextjsApp, setStandaloneBuildMode } from "@opennextjs/aws/build/buildNextApp.js";
+ import { compileCache } from "@opennextjs/aws/build/compileCache.js";
+ import { createCacheAssets, createStaticAssets } from "@opennextjs/aws/build/createAssets.js";
+@@ -75,6 +77,27 @@ export async function build(options, config, projectOpts, wranglerConfig, allowU
+     await compileInit(options, wranglerConfig);
+     await compileImages(options);
+     await compileSkewProtection(options, config);
++    // Remove VPS-only packages (pg, pg-pool, etc.) from node_modules/.pnpm/
++    // before esbuild runs the middleware bundle. These packages are traced by
++    // NFT because they are imported by VPS-only code (e.g., client.node.ts),
++    // but they contain Node.js built-in references that are not available in
++    // Cloudflare Workers. Deleting them prevents esbuild from resolving them
++    // during middleware compilation.
++    const monorepoRoot = path.resolve(options.appPath, "../..");
++    const vpsOnlyPackages = ["pg@", "pg-pool@", "pg-cloudflare@", "split2@",
++        "pg-connection-string@", "pg-int8@", "pg-protocol@", "pg-types@", "pgpass@",
++        "postgres-array@", "postgres-bytea@", "postgres-date@", "postgres-interval@"];
++    const pnpmStoreDir = path.join(monorepoRoot, "node_modules", ".pnpm");
++    if (fs.existsSync(pnpmStoreDir)) {
++        for (const entry of fs.readdirSync(pnpmStoreDir)) {
++            if (vpsOnlyPackages.some((pkg) => entry.startsWith(pkg))) {
++                const pkgDir = path.join(pnpmStoreDir, entry);
++                fs.rmSync(pkgDir, { recursive: true, force: true });
++                console.log(`  Removed VPS-only package before middleware build: ${entry}`);
++            }
++        }
++    }
++
+     // Compile middleware
+     await createMiddleware(options, { forceOnlyBuildOnce: true });
+     createStaticAssets(options, { useBasePath: true });
 diff --git a/dist/cli/build/bundle-server.js b/dist/cli/build/bundle-server.js
-index be3f893561dab6ad635e71a9cbb49603bfa44534..4c62fc24952868c6cc98169f7baa757f8eea841f 100644
+index be3f893561dab6ad635e71a9cbb49603bfa44534..67f2219c2442d199102e62f5bb3a0c760be2e636 100644
 --- a/dist/cli/build/bundle-server.js
 +++ b/dist/cli/build/bundle-server.js
-@@ -59,6 +59,25 @@ export async function bundleServer(buildOpts, projectOpts) {
+@@ -59,6 +59,36 @@ export async function bundleServer(buildOpts, projectOpts) {
      const openNextServer = path.join(outputPath, packagePath, `index.mjs`);
      const openNextServerBundle = path.join(outputPath, packagePath, `handler.mjs`);
      const updater = new ContentUpdater(buildOpts);
@@ -13,22 +51,33 @@ index be3f893561dab6ad635e71a9cbb49603bfa44534..4c62fc24952868c6cc98169f7baa757f
 +    // available in Cloudflare Workers. Simply marking them as "external" in
 +    // esbuild is insufficient because esbuild resolves them from the local
 +    // node_modules copy instead of treating them as missing packages.
-+    const pnpmStoreDir = path.join(outputPath, "node_modules", ".pnpm");
-+    if (fs.existsSync(pnpmStoreDir)) {
-+        const vpsOnlyPackages = ["pg@", "pg-pool@", "pg-cloudflare@", "split2@",
-+            "pg-connection-string@", "pg-int8@", "pg-protocol@", "pg-types@", "pgpass@"];
-+        for (const entry of fs.readdirSync(pnpmStoreDir)) {
-+            if (vpsOnlyPackages.some((pkg) => entry.startsWith(pkg))) {
-+                const pkgDir = path.join(pnpmStoreDir, entry);
-+                fs.rmSync(pkgDir, { recursive: true, force: true });
-+                console.log(`  Removed VPS-only package from bundle: ${entry}`);
++    //
++    // We delete from BOTH the bundle's .pnpm directory AND the root .pnpm
++    // directory because esbuild can resolve pg through symlinks to the root
++    // node_modules/.pnpm/ even after the bundle's copy is removed.
++    const vpsOnlyPackages = ["pg@", "pg-pool@", "pg-cloudflare@", "split2@",
++        "pg-connection-string@", "pg-int8@", "pg-protocol@", "pg-types@", "pgpass@",
++        "postgres-array@", "postgres-bytea@", "postgres-date@", "postgres-interval@"];
++    const pnpmStoreDirs = [
++        path.join(outputPath, "node_modules", ".pnpm"),
++        path.join(monorepoRoot, "node_modules", ".pnpm"),
++    ];
++    for (const pnpmStoreDir of pnpmStoreDirs) {
++        if (fs.existsSync(pnpmStoreDir)) {
++            for (const entry of fs.readdirSync(pnpmStoreDir)) {
++                if (vpsOnlyPackages.some((pkg) => entry.startsWith(pkg))) {
++                    const pkgDir = path.join(pnpmStoreDir, entry);
++                    fs.rmSync(pkgDir, { recursive: true, force: true });
++                    console.log(`  Removed VPS-only package from bundle: ${entry}`);
++                }
 +            }
 +        }
 +    }
++
      const result = await build({
          entryPoints: [openNextServer],
          bundle: true,
-@@ -100,7 +119,7 @@ export async function bundleServer(buildOpts, projectOpts) {
+@@ -100,7 +130,7 @@ export async function bundleServer(buildOpts, projectOpts) {
              // Apply updater updates, must be the last plugin
              updater.plugin,
          ],
