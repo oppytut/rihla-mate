@@ -85,10 +85,8 @@ test.describe("package creation flow", () => {
       { timeout: 10000 },
     );
 
-    await page.locator(SEL.title).pressSequentially("Playwright Test Package", { delay: 30 });
-    await page
-      .locator(SEL.slug)
-      .pressSequentially(`playwright-test-package-${Date.now()}`, { delay: 30 });
+    await page.locator(SEL.title).fill("Playwright Test Package");
+    await page.locator(SEL.slug).fill(`playwright-test-package-${Date.now()}`);
 
     await page.locator(SEL.description).fill("A test package created by Playwright");
     await page.locator(SEL.category).selectOption("premium");

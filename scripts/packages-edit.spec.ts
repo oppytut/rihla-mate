@@ -58,22 +58,22 @@ test.describe("packages edit flow", () => {
       { timeout: 10000 },
     );
 
-    await page
-      .locator('[data-testid="package-title"]')
-      .pressSequentially("Playwright Test Package Edit", { delay: 30 });
+    await page.locator('[data-testid="package-title"]').fill("Playwright Test Package Edit");
     await page
       .locator('[data-testid="package-slug"]')
-      .pressSequentially(`playwright-test-package-edit-${Date.now()}`, { delay: 30 });
-    await page.fill('[data-testid="package-description"]', "Package for edit test");
+      .fill(`playwright-test-package-edit-${Date.now()}`);
+    await page.locator('[data-testid="package-description"]').fill("Package for edit test");
     await page.selectOption('[data-testid="package-category"]', "standard");
-    await page.fill('[data-testid="package-duration-days"]', "3");
-    await page.fill('[data-testid="package-price"]', "1000000");
+    await page.locator('[data-testid="package-duration-days"]').fill("3");
+    await page.locator('[data-testid="package-price"]').fill("1000000");
     await page.selectOption('[data-testid="package-status"]', "draft");
-    await page.fill('[data-testid="package-itinerary"]', '[{"day": 1, "description": "Test day"}]');
-    await page.fill('[data-testid="package-inclusions"]', '["Test inclusion"]');
-    await page.fill('[data-testid="package-exclusions"]', '["Test exclusion"]');
-    await page.fill('[data-testid="package-available-dates"]', '["2026-07-01"]');
-    await page.fill('[data-testid="package-gallery"]', "[]");
+    await page
+      .locator('[data-testid="package-itinerary"]')
+      .fill('[{"day": 1, "description": "Test day"}]');
+    await page.locator('[data-testid="package-inclusions"]').fill('["Test inclusion"]');
+    await page.locator('[data-testid="package-exclusions"]').fill('["Test exclusion"]');
+    await page.locator('[data-testid="package-available-dates"]').fill('["2026-07-01"]');
+    await page.locator('[data-testid="package-gallery"]').fill("[]");
 
     // Register alert handler BEFORE clicking submit
     page.once("dialog", (dialog) => dialog.accept());
@@ -129,7 +129,7 @@ test.describe("packages edit flow", () => {
 
     // Modify fields
     await titleInput.clear();
-    await titleInput.pressSequentially("Playwright Test Package Edit (edited)", { delay: 30 });
+    await titleInput.fill("Playwright Test Package Edit (edited)");
 
     const priceInput = page.locator('[data-testid="package-price"]');
     await priceInput.clear();

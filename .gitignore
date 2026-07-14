@@ -18,3 +18,6 @@ playwright-report/
 test-results/
 .playwright-storage.json
 .playwright-auth.json
+# Visual regression test artifacts (only committed snapshots use -chromium-linux.png suffix)
+scripts/visual-regression.spec.ts-snapshots/*-linux.png
+!scripts/visual-regression.spec.ts-snapshots/*-chromium-linux.png
