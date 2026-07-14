@@ -45,7 +45,27 @@ test.describe("Cloudflare Workers build smoke", () => {
       expect(workerContent).not.toContain(forbidden);
     }
 
-    const hasDbClient = workerContent.includes("getDb") || workerContent.includes("neondatabase");
+    // DB client references live in handler chunks (server-functions/), not worker.js directly
+    const openNextDir = path.join(APP_DIR, ".open-next");
+    const searchDirs = [
+      path.join(openNextDir, "server-functions"),
+      path.join(openNextDir, "middleware"),
+      path.join(openNextDir, "cloudflare"),
+    ];
+    let hasDbClient = false;
+    for (const dir of searchDirs) {
+      if (!fs.existsSync(dir)) continue;
+      const files = fs.readdirSync(dir, { recursive: true, encoding: "utf-8" }) as string[];
+      for (const file of files) {
+        if (!file.endsWith(".mjs") && !file.endsWith(".js")) continue;
+        const content = fs.readFileSync(path.join(dir, file), "utf-8");
+        if (content.includes("getDb") || content.includes("neondatabase")) {
+          hasDbClient = true;
+          break;
+        }
+      }
+      if (hasDbClient) break;
+    }
     expect(hasDbClient).toBe(true);
   });
 });
