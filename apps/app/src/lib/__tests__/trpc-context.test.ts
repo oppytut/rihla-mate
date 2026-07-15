@@ -8,6 +8,13 @@ const { mockGetSession, mockLoggerError, mockGetOrInitAuth } = vi.hoisted(() => 
 
 vi.mock("../auth", () => ({
   getOrInitAuth: mockGetOrInitAuth,
+  initAuth: vi.fn(),
+}));
+
+vi.mock("@/env", () => ({
+  env: {
+    DEPLOYMENT_TARGET: "vps",
+  },
 }));
 
 vi.mock("../utils/logger", () => ({
