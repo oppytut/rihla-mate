@@ -1,0 +1,13 @@
+diff --git a/dist/build/edge/createEdgeBundle.js b/dist/build/edge/createEdgeBundle.js
+index 3533156bf7f9c4882336bbed8bac0761b1a45203..b94c02a25248efc61be1a17b75654e6991890bef 100644
+--- a/dist/build/edge/createEdgeBundle.js
++++ b/dist/build/edge/createEdgeBundle.js
+@@ -28,7 +28,7 @@ export async function buildEdgeBundle({ middlewareInfo, entrypoint, outfile, opt
+         entryPoints: [entrypoint],
+         bundle: true,
+         outfile,
+-        external: ["node:*", "next", "@aws-sdk/*"],
++        external: ["node:*", "next", "@aws-sdk/*", "pg", "pg-cloudflare", "pg-pool", "pg/*", "pg-pool/*", "pg-cloudflare/*"],
+         target: "es2022",
+         platform: "neutral",
+         plugins: [

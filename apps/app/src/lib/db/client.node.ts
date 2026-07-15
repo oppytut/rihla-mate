@@ -14,7 +14,7 @@ import * as schema from "./schema";
 export type DrizzleClient = PgDatabase<NeonQueryResultHKT, typeof schema>;
 
 export async function getNodeDb(): Promise<DrizzleClient> {
-  const { drizzle } = await import("drizzle-orm/node-postgres");
+  const { drizzle } = await import(/* turbopackIgnore: true */ "drizzle-orm/node-postgres");
   const { Pool } = await import(/* turbopackIgnore: true */ "pg");
   const pool = new Pool({
     connectionString: env.DATABASE_URL,

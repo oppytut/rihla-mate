@@ -136,7 +136,7 @@ jobs:
         run: pnpm exec playwright install chromium --with-deps
 
       - name: Run Playwright smoke tests
-        run: pnpm exec playwright test --config playwright.config.ts --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm exec playwright test --config playwright.config.ts --project=smoke --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload Playwright report
         if: failure()

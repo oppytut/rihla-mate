@@ -19,6 +19,17 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      testIgnore: ["**/cloudflare-smoke.spec.ts", "**/rtl-arabic.spec.ts"],
+    },
+    {
+      name: "smoke",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "cloudflare-smoke.spec.ts",
+    },
+    {
+      name: "rtl",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "rtl-arabic.spec.ts",
     },
   ],
   webServer: {

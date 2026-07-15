@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cairo } from "next/font/google";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -29,7 +29,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieLocale = (await cookies()).get("locale")?.value;
-  const locale = cookieLocale || "id";
+
+  // Detect locale from URL path (set by next-intl middleware)
+  // Fall back to cookie, then default "id"
+  const pathname = (await headers()).get("x-next-intl-locale") || "";
+  const locale = pathname || cookieLocale || "id";
   const isRtl = locale === "ar";
   const dir = isRtl ? "rtl" : "ltr";
 

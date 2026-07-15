@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 export function CtaFooterSection() {
-  const t = useTranslations("common");
+  const t = useTranslations();
   const year = new Date().getFullYear();
 
   return (
@@ -15,19 +15,19 @@ export function CtaFooterSection() {
           <div className="container mx-auto px-4 lg:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                {t("cta.headline")}
+                {t("marketing.cta.headline")}
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">{t("cta.subtitle")}</p>
+              <p className="mt-4 text-lg text-muted-foreground">{t("marketing.cta.subtitle")}</p>
               <div className="mt-8">
                 <Link
                   href="/sign-in"
                   className="inline-flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-all hover:bg-primary/90 hover:shadow-md"
                 >
-                  {t("cta.button")}
+                  {t("marketing.cta.button")}
                 </Link>
               </div>
               <p className="mt-4 text-sm text-muted-foreground">
-                {t("cta.contact")}{" "}
+                {t("marketing.cta.contact")}{" "}
                 <a href="mailto:hello@rihla-mate.com" className="text-primary hover:underline">
                   hello@rihla-mate.com
                 </a>
@@ -49,37 +49,39 @@ export function CtaFooterSection() {
                 </div>
                 <span className="font-semibold text-foreground">{t("common.appName")}</span>
               </div>
-              <p className="text-xs text-muted-foreground">{t("footer.tagline")}</p>
+              <p className="text-xs text-muted-foreground">{t("marketing.footer.tagline")}</p>
             </div>
             <div className="flex items-center gap-6">
               <Link
                 href="#features"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {t("footer.features")}
+                {t("marketing.footer.features")}
               </Link>
               <Link
                 href="#pricing"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {t("footer.pricing")}
+                {t("marketing.footer.pricing")}
               </Link>
               <Link
                 href="#faq"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {t("footer.faq")}
+                {t("marketing.footer.faq")}
               </Link>
               <Link
                 href="mailto:hello@rihla-mate.com"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {t("footer.contact")}
+                {t("marketing.footer.contact")}
               </Link>
             </div>
           </div>
           <div className="mt-6 border-t border-border/40 pt-6 text-center">
-            <p className="text-xs text-muted-foreground">{t("footer.copyright", { year })}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("marketing.footer.copyright", { year })}
+            </p>
           </div>
         </div>
       </footer>
