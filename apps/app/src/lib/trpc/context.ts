@@ -1,6 +1,7 @@
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { db } from "@/lib/db/client";
-import { getOrInitAuth } from "@/lib/auth";
+import { getOrInitAuth, initAuth } from "@/lib/auth";
+import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
 
 export type Session = {
@@ -32,10 +33,17 @@ export type TRPCContext = {
   session: Session | null;
 };
 
+async function getAuth() {
+  if (env.DEPLOYMENT_TARGET === "cloudflare") {
+    return initAuth();
+  }
+  return getOrInitAuth();
+}
+
 export async function createTRPCContext(opts: FetchCreateContextFnOptions): Promise<TRPCContext> {
   let session: Session | null = null;
   try {
-    const auth = await getOrInitAuth();
+    const auth = await getAuth();
     session = (await auth.api.getSession({
       headers: opts.req.headers,
     })) as Session | null;

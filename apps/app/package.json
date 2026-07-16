@@ -13,9 +13,9 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "build:cf": "opennextjs-cloudflare build",
+    "build:cf": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs",
     "deploy:cf": "opennextjs-cloudflare deploy",
-    "preview:cf": "opennextjs-cloudflare build && wrangler dev"
+    "preview:cf": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs && wrangler dev"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.6.20",
@@ -68,6 +68,7 @@
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-v8": "^3.2.6",
     "drizzle-kit": "^0.31.0",
+    "esbuild": "^0.28.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "jsdom": "^29.1.1",

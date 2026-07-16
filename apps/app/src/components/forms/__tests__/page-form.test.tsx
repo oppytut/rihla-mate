@@ -202,7 +202,7 @@ describe("PageFormContent", () => {
     it("uses initialPageForm defaults when no initialData provided", () => {
       render(<PageFormContent initialData={null} isEditMode={false} pageId={null} />);
 
-      const templateSelect = screen.getByTestId("page-template-id") as HTMLSelectElement;
+      const templateSelect = screen.getByTestId("page-template-id") as unknown as HTMLSelectElement;
       expect(templateSelect.value).toBe("default");
 
       const titleInput = screen.getByTestId("page-title") as HTMLInputElement;
@@ -523,7 +523,7 @@ describe("PageFormContent", () => {
     it("renders all template options", () => {
       render(<PageFormContent initialData={null} isEditMode={false} pageId={null} />);
 
-      const select = screen.getByTestId("page-template-id") as HTMLSelectElement;
+      const select = screen.getByTestId("page-template-id") as unknown as HTMLSelectElement;
       const options = Array.from(select.options).map((o) => o.value);
 
       expect(options).toContain("default");

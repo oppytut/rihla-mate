@@ -4,6 +4,10 @@
   "name": "rihla-mate",
   "compatibility_date": "2025-04-01",
   "compatibility_flags": ["nodejs_compat"],
+  "alias": {
+    "pg": "./src/lib/db/pg-stub.ts",
+    "drizzle-orm/node-postgres": "./src/lib/db/pg-stub.ts"
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"

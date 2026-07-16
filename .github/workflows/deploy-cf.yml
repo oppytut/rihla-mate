@@ -1,0 +1,75 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "!apps/app/package.json"
+      - "!**/workflows/**"
+      - "!**/vitest.config.*"
+      - "LICENSE"
+      - ".gitignore"
+      - ".husky/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@9.0.0 --activate
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build for Cloudflare Workers
+        run: pnpm build:cf
+        working-directory: apps/app
+        env:
+          DATABASE_URL: postgres://placeholder:placeholder@localhost:5432/db
+          BETTER_AUTH_SECRET: ci-build-only-not-used-at-runtime
+
+      - name: Create R2 bucket (idempotent)
+        run: |
+          set -e
+          BUCKET="rihla-mate-opennext-cache"
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X GET "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$BUCKET" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "R2 bucket '$BUCKET' already exists, skipping creation"
+          elif [ "$HTTP_CODE" = "404" ]; then
+            echo "Creating R2 bucket '$BUCKET'..."
+            curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets" \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"name\": \"$BUCKET\"}"
+            echo ""
+            echo "R2 bucket '$BUCKET' created"
+          else
+            echo "Unexpected response (HTTP $HTTP_CODE):"
+            echo "$RESPONSE" | head -n -1
+            exit 1
+          fi
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy to Cloudflare Workers
+        run: pnpm deploy:cf
+        working-directory: apps/app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

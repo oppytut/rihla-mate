@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ["pg", "drizzle-orm", "@neondatabase/serverless"],
 };
 
 export default withNextIntl(nextConfig);

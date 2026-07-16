@@ -86,3 +86,253 @@ index be3f893561dab6ad635e71a9cbb49603bfa44534..67f2219c2442d199102e62f5bb3a0c76
          alias: {
              // When @vercel/og is not used, alias the edge entry to a throwing shim so the
              // dynamic `import("next/dist/compiled/@vercel/og/index.edge.js")` call site
+diff --git a/dist/cli/utils/ensure-r2-bucket.js b/dist/cli/utils/ensure-r2-bucket.js
+index c74a08ae55a5095267157a3f1b5feecb80f81404..f2b7349d126c9d2f4cdd931b5edb8ea5d4336820 100644
+--- a/dist/cli/utils/ensure-r2-bucket.js
++++ b/dist/cli/utils/ensure-r2-bucket.js
+@@ -90,19 +90,27 @@ function wranglerLogin(options) {
+  */
+ export async function ensureR2Bucket(projectDir, bucketName, jurisdiction) {
+     try {
+-        const { packager, root: monorepoRoot } = findPackagerAndRoot(projectDir);
+-        const options = { packager, monorepoRoot };
+-        let authCredentials = getAuthCredentials(options);
+-        // If no credentials available, fall back to wrangler login
+-        if (!authCredentials) {
+-            const loginSuccess = wranglerLogin(options);
+-            if (!loginSuccess) {
+-                return { success: false, error: "wrangler login failed" };
+-            }
+-            // Get credentials after login
++        // Try environment variables first (CLOUDFLARE_API_TOKEN, CLOUDFLARE_API_KEY+EMAIL)
++        // before falling back to wrangler auth. This avoids "wrangler login failed" in CI
++        // where wrangler may not be available at the monorepo root.
++        let authCredentials;
++        if (process.env.CLOUDFLARE_API_TOKEN) {
++            authCredentials = { type: "token", token: process.env.CLOUDFLARE_API_TOKEN };
++        } else if (process.env.CLOUDFLARE_API_KEY && process.env.CLOUDFLARE_EMAIL) {
++            authCredentials = { type: "api_key", apiKey: process.env.CLOUDFLARE_API_KEY, apiEmail: process.env.CLOUDFLARE_EMAIL };
++        } else {
++            const { packager, root: monorepoRoot } = findPackagerAndRoot(projectDir);
++            const options = { packager, monorepoRoot };
+             authCredentials = getAuthCredentials(options);
+             if (!authCredentials) {
+-                return { success: false, error: "Could not determine Cloudflare auth credentials after login" };
++                const loginSuccess = wranglerLogin(options);
++                if (!loginSuccess) {
++                    return { success: false, error: "wrangler login failed" };
++                }
++                authCredentials = getAuthCredentials(options);
++                if (!authCredentials) {
++                    return { success: false, error: "Could not determine Cloudflare auth credentials after login" };
++                }
+             }
+         }
+         const client = authCredentials.type === "api_key"
+diff --git a/node_modules/.bin/cf-wrangler b/node_modules/.bin/cf-wrangler
+new file mode 100755
+index 0000000000000000000000000000000000000000..3326b56fe1d2f53646b759ccf26d5a1c598079f9
+--- /dev/null
++++ b/node_modules/.bin/cf-wrangler
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/cf-wrangler.js" "$@"
++else
++  exec node  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/cf-wrangler.js" "$@"
++fi
+diff --git a/node_modules/.bin/dotenvx b/node_modules/.bin/dotenvx
+new file mode 100755
+index 0000000000000000000000000000000000000000..ede539d5b4eaba611925805830a2cb03f53e5ce6
+--- /dev/null
++++ b/node_modules/.bin/dotenvx
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js" "$@"
++else
++  exec node  "$basedir/../../../../../../@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js" "$@"
++fi
+diff --git a/node_modules/.bin/git-dotenvx b/node_modules/.bin/git-dotenvx
+new file mode 100755
+index 0000000000000000000000000000000000000000..ede539d5b4eaba611925805830a2cb03f53e5ce6
+--- /dev/null
++++ b/node_modules/.bin/git-dotenvx
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@dotenvx+dotenvx@1.31.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js" "$@"
++else
++  exec node  "$basedir/../../../../../../@dotenvx+dotenvx@1.31.0/node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js" "$@"
++fi
+diff --git a/node_modules/.bin/glob b/node_modules/.bin/glob
+new file mode 100755
+index 0000000000000000000000000000000000000000..6473355754b44e75a009132118136f252f826a32
+--- /dev/null
++++ b/node_modules/.bin/glob
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/dist/esm/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/dist/esm/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules/glob/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/glob@12.0.0/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../glob@12.0.0/node_modules/glob/dist/esm/bin.mjs" "$@"
++else
++  exec node  "$basedir/../../../../../../glob@12.0.0/node_modules/glob/dist/esm/bin.mjs" "$@"
++fi
+diff --git a/node_modules/.bin/next b/node_modules/.bin/next
+new file mode 100755
+index 0000000000000000000000000000000000000000..a16017381fe4b4929ee102a6cc1351d1156c5754
+--- /dev/null
++++ b/node_modules/.bin/next
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/bin/next" "$@"
++else
++  exec node  "$basedir/../../../../../../next@16.2.9_@babel+core@7.29.7_@playwright+test@1.61.1_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/bin/next" "$@"
++fi
+diff --git a/node_modules/.bin/open-next b/node_modules/.bin/open-next
+new file mode 100755
+index 0000000000000000000000000000000000000000..a1cd8dce53f7be53980349d54a7fd6a56a4b154e
+--- /dev/null
++++ b/node_modules/.bin/open-next
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/dist/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/dist/index.js" "$@"
++else
++  exec node  "$basedir/../../../../../../@opennextjs+aws@4.0.2_patch_hash=l2ur5crjzx6zinn7m4rpmnd4km_next@16.2.9_@babel+core@7.29.7_@p_2e4yasa3qbsi2i32bd5edgy3xu/node_modules/@opennextjs/aws/dist/index.js" "$@"
++fi
+diff --git a/node_modules/.bin/opennextjs-cloudflare b/node_modules/.bin/opennextjs-cloudflare
+new file mode 100755
+index 0000000000000000000000000000000000000000..fe87f29e1e9167c974fdb052770b74f6bd35ff10
+--- /dev/null
++++ b/node_modules/.bin/opennextjs-cloudflare
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="dist/cli/node_modules:dist/node_modules:node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+cloudflare@1.20.1_patch_hash=2mvhzqxci7r3wjyf54w6rh73ga_next@16.2.9_@babel+core@7_257ptwsbr6k4yt3ypzgz5rhg44/node_modules/@opennextjs/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+cloudflare@1.20.1_patch_hash=2mvhzqxci7r3wjyf54w6rh73ga_next@16.2.9_@babel+core@7_257ptwsbr6k4yt3ypzgz5rhg44/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="dist/cli/node_modules:dist/node_modules:node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+cloudflare@1.20.1_patch_hash=2mvhzqxci7r3wjyf54w6rh73ga_next@16.2.9_@babel+core@7_257ptwsbr6k4yt3ypzgz5rhg44/node_modules/@opennextjs/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/@opennextjs+cloudflare@1.20.1_patch_hash=2mvhzqxci7r3wjyf54w6rh73ga_next@16.2.9_@babel+core@7_257ptwsbr6k4yt3ypzgz5rhg44/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../dist/cli/index.js" "$@"
++else
++  exec node  "$basedir/../../dist/cli/index.js" "$@"
++fi
+diff --git a/node_modules/.bin/wrangler b/node_modules/.bin/wrangler
+new file mode 100755
+index 0000000000000000000000000000000000000000..4d65f194ec3a617943dc394940ddc2a8617b5c9d
+--- /dev/null
++++ b/node_modules/.bin/wrangler
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/wrangler.js" "$@"
++else
++  exec node  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/wrangler.js" "$@"
++fi
+diff --git a/node_modules/.bin/wrangler2 b/node_modules/.bin/wrangler2
+new file mode 100755
+index 0000000000000000000000000000000000000000..4d65f194ec3a617943dc394940ddc2a8617b5c9d
+--- /dev/null
++++ b/node_modules/.bin/wrangler2
+@@ -0,0 +1,17 @@
++#!/bin/sh
++basedir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
++
++case `uname` in
++    *CYGWIN*) basedir=`cygpath -w "$basedir"`;;
++esac
++
++if [ -z "$NODE_PATH" ]; then
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules"
++else
++  export NODE_PATH="/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules:/home/ubuntu/bench/rihla-mate/node_modules/.pnpm/node_modules:$NODE_PATH"
++fi
++if [ -x "$basedir/node" ]; then
++  exec "$basedir/node"  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/wrangler.js" "$@"
++else
++  exec node  "$basedir/../../../../../../wrangler@4.110.0_@cloudflare+workers-types@5.20260712.1/node_modules/wrangler/bin/wrangler.js" "$@"
++fi
