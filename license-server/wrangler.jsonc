@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rihla-mate-license",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "LICENSE_PUBLIC_KEY": "",
+    "API_KEY": "",
+    "RESEND_API_KEY": ""
+  },
+  "env": {
+    "production": {
+      "vars": {
+        "LICENSE_PUBLIC_KEY": "",
+        "API_KEY": "",
+        "RESEND_API_KEY": ""
+      }
+    }
+  }
+}
