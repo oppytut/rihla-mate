@@ -45,6 +45,15 @@
         "LICENSE_KEY": "",
         "LICENSE_SERVER_URL": ""
       },
+      "services": [
+        {
+          "binding": "WORKER_SELF_REFERENCE",
+          "service": "rihla-mate"
+        }
+      ],
+      "images": {
+        "binding": "IMAGES"
+      },
       "queues": {
         "producers": [
           {
