@@ -1,8 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { serve } from "@hono/node-server";
-import "dotenv/config";
 
 import activateRoute from "./routes/activate";
 import checkinRoute from "./routes/checkin";
@@ -29,11 +27,3 @@ app.onError((err, c) => {
 });
 
 export default app;
-
-const isMainModule = process.argv[1]?.endsWith("index.ts") || process.argv[1]?.endsWith("index.js");
-if (isMainModule) {
-  const port = parseInt(process.env.PORT ?? "3001", 10);
-  serve({ fetch: app.fetch, port }, (info) => {
-    console.log(`License server running on http://localhost:${info.port}`);
-  });
-}
