@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "build:cf": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs",
     "deploy:cf": "opennextjs-cloudflare deploy",
+    "deploy:cf:prod": "opennextjs-cloudflare deploy --env production",
     "preview:cf": "opennextjs-cloudflare build && node scripts/inject-cron-handler.mjs && wrangler dev"
   },
   "dependencies": {

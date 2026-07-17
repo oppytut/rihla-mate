@@ -45,12 +45,6 @@
         "LICENSE_KEY": "",
         "LICENSE_SERVER_URL": ""
       },
-      "hyperdrive": [
-        {
-          "binding": "HYPERDRIVE",
-          "id": "rihla-mate-db"
-        }
-      ],
       "queues": {
         "producers": [
           {
