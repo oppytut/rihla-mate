@@ -51,6 +51,12 @@
           "service": "rihla-mate"
         }
       ],
+      "r2_buckets": [
+        {
+          "binding": "NEXT_INC_CACHE_R2_BUCKET",
+          "bucket_name": "rihla-mate-opennext-cache"
+        }
+      ],
       "images": {
         "binding": "IMAGES"
       },
