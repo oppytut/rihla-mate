@@ -1,9 +1,24 @@
 import { describe, it, expect } from "vitest";
-import {
-  generateKeyPair,
-  signPayload,
-  verifyKey,
-} from "../signing.js";
+import type { LicensePayload } from "@rihla-mate/shared";
+import { generateKeyPair, signPayload, verifyKey } from "../signing.js";
+
+function makePayload(overrides: Partial<LicensePayload> = {}): LicensePayload {
+  return {
+    licenseId: "lic_test",
+    customerId: "cust_test",
+    customerName: "Test Customer",
+    plan: "pro",
+    features: ["booking_engine", "custom_domain"],
+    maxTenants: 1,
+    maxMonthlyBookings: 100,
+    expiresAt: "2099-12-31T00:00:00.000Z",
+    gracePeriodDays: 7,
+    isTrial: false,
+    trialDays: 0,
+    apiUrl: "https://license.example.com",
+    ...overrides,
+  };
+}
 
 describe("generateKeyPair", () => {
   it("produces Uint8Array keys of correct length", async () => {
@@ -19,7 +34,7 @@ describe("generateKeyPair", () => {
 describe("signPayload + verifyKey", () => {
   it("round-trip: sign a payload and verify with correct public key returns valid", async () => {
     const { publicKey, privateKey } = await generateKeyPair();
-    const payload = { licenseKey: "test-123", issuedAt: new Date().toISOString() };
+    const payload = makePayload({ licenseId: "lic_roundtrip" });
 
     const signed = await signPayload(payload, privateKey);
     const result = await verifyKey(signed, publicKey);
@@ -30,7 +45,7 @@ describe("signPayload + verifyKey", () => {
 
   it("rejects tampered payload", async () => {
     const { publicKey, privateKey } = await generateKeyPair();
-    const payload = { licenseKey: "test-123", issuedAt: new Date().toISOString() };
+    const payload = makePayload({ licenseId: "lic_tamper" });
 
     const signed = await signPayload(payload, privateKey);
 
@@ -46,7 +61,7 @@ describe("signPayload + verifyKey", () => {
   it("rejects payload signed with a different key", async () => {
     const key1 = await generateKeyPair();
     const key2 = await generateKeyPair();
-    const payload = { licenseKey: "test-123", issuedAt: new Date().toISOString() };
+    const payload = makePayload({ licenseId: "lic_wrong_key" });
 
     const signed = await signPayload(payload, key1.privateKey);
 
@@ -57,9 +72,15 @@ describe("signPayload + verifyKey", () => {
 });
 
 describe("edge cases", () => {
-  it("empty payload round-trip works", async () => {
+  it("minimal valid payload round-trip works", async () => {
     const { publicKey, privateKey } = await generateKeyPair();
-    const payload = {};
+    const payload = makePayload({
+      customerName: "",
+      features: [],
+      maxTenants: 0,
+      maxMonthlyBookings: 0,
+      trialDays: 0,
+    });
 
     const signed = await signPayload(payload, privateKey);
     const result = await verifyKey(signed, publicKey);
@@ -72,7 +93,9 @@ describe("edge cases", () => {
 describe("base64url (tested via sign/verify)", () => {
   it("non-ASCII byte values round-trip through sign/verify", async () => {
     const { publicKey, privateKey } = await generateKeyPair();
-    const payload = { licenseKey: "test-\x00\x01\xfe\xff" };
+    const payload = makePayload({
+      customerName: "test-\u0000\u0001\u00fe\u00ff",
+    });
 
     const signed = await signPayload(payload, privateKey);
     const result = await verifyKey(signed, publicKey);

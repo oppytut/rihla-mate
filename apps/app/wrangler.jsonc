@@ -60,21 +60,8 @@
       "images": {
         "binding": "IMAGES"
       },
-      "queues": {
-        "producers": [
-          {
-            "binding": "EMAIL_QUEUE",
-            "queue": "rihla-mate-email"
-          }
-        ]
-      },
       "triggers": {
-        "crons": [
-          {
-            "binding": "LICENSE_CHECKIN",
-            "cron": "0 */24 * * *"
-          }
-        ]
+        "crons": ["0 0 * * *"]
       }
     },
     "preview": {
