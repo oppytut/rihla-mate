@@ -11,7 +11,9 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
-    "keygen": "tsx scripts/keygen-cli.ts"
+    "keygen": "tsx scripts/keygen-cli.ts",
+    "deploy:cf": "wrangler deploy",
+    "deploy:cf:prod": "wrangler deploy --env production"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.8.0",
@@ -29,6 +31,7 @@
     "drizzle-kit": "^0.31.7",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.110.0"
   }
 }

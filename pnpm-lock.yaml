@@ -270,6 +270,9 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.6(@types/node@22.20.0)(jiti@2.7.0)(jsdom@29.1.1(@noble/hashes@2.2.0))(lightningcss@1.32.0)(terser@5.16.9)(tsx@4.22.4)(yaml@2.9.0)
+      wrangler:
+        specifier: ^4.110.0
+        version: 4.110.0(@cloudflare/workers-types@5.20260712.1)
 
   packages/shared:
     devDependencies:
