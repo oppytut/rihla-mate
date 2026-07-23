@@ -32,7 +32,11 @@ jobs:
 
       - name: Migrate license database
         run: |
-          pnpm db:generate
+          # Generate SQL from schema when folder is empty (drizzle/ is gitignored).
+          # Skip regenerate if migrations already exist to avoid duplicate CREATE TABLE.
+          if [ ! -f drizzle/meta/_journal.json ]; then
+            pnpm db:generate
+          fi
           pnpm db:migrate
         working-directory: license-server
         env:
