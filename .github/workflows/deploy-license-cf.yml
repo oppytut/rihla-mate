@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "license-server/src/**"
+      - "license-server/scripts/**"
       - "license-server/package.json"
       - "license-server/wrangler.jsonc"
       - ".github/workflows/deploy-license-cf.yml"
@@ -28,6 +29,24 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Migrate license database
+        run: |
+          pnpm db:generate
+          pnpm db:migrate
+        working-directory: license-server
+        env:
+          DATABASE_URL: ${{ secrets.LICENSE_DATABASE_URL }}
+
+      - name: Bootstrap API key + sample license
+        run: pnpm db:bootstrap
+        working-directory: license-server
+        env:
+          DATABASE_URL: ${{ secrets.LICENSE_DATABASE_URL }}
+          LICENSE_PRIVATE_KEY: ${{ secrets.LICENSE_PRIVATE_KEY }}
+          LICENSE_PUBLIC_KEY: ${{ secrets.LICENSE_PUBLIC_KEY }}
+          BOOTSTRAP_API_KEY: ${{ secrets.LICENSE_API_KEY }}
+          API_URL: https://rihla-mate-license-production.ariefna95.workers.dev/api/v1
 
       - name: Set secrets for production environment
         run: |
