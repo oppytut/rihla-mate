@@ -9,14 +9,10 @@ let _dbPromise: Promise<DrizzleClient> | undefined;
 
 async function initDb(): Promise<DrizzleClient> {
   if (env.DEPLOYMENT_TARGET === "cloudflare") {
-    const { drizzle } = await import("drizzle-orm/neon-serverless");
-    const { Pool } = await import("@neondatabase/serverless");
-    const pool = new Pool({
-      connectionString: env.DATABASE_URL,
-      poolQueryViaFetch: true,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
-    return drizzle({ client: pool, schema });
+    const { drizzle } = await import("drizzle-orm/neon-http");
+    const { neon } = await import("@neondatabase/serverless");
+    const sql = neon(env.DATABASE_URL);
+    return drizzle(sql, { schema }) as unknown as DrizzleClient;
   }
 
   // VPS: pg is isolated in client.node.ts with turbopackIgnore to prevent
