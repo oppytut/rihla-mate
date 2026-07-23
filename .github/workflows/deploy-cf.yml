@@ -67,24 +67,33 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      # Deploy first so wrangler.jsonc vars win over stale plain-text bindings.
+      # LICENSE_KEY / LICENSE_SERVER_URL must NOT be plain vars (secret put fails with code 10053).
+      - name: Deploy to Cloudflare Workers (production)
+        run: pnpm deploy:cf:prod
+        working-directory: apps/app
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Set secrets for production environment
         run: |
-          if [ -n "$DATABASE_URL" ]; then
-            echo "Setting DATABASE_URL secret..."
-            echo "$DATABASE_URL" | npx wrangler secret put DATABASE_URL --env production
-          fi
-          if [ -n "$LICENSE_KEY" ]; then
-            echo "Setting LICENSE_KEY secret..."
-            echo "$LICENSE_KEY" | npx wrangler secret put LICENSE_KEY --env production
-          fi
-          if [ -n "$LICENSE_SERVER_URL" ]; then
-            echo "Setting LICENSE_SERVER_URL secret..."
-            echo "$LICENSE_SERVER_URL" | npx wrangler secret put LICENSE_SERVER_URL --env production
-          fi
-          if [ -n "$LICENSE_PUBLIC_KEY" ]; then
-            echo "Setting LICENSE_PUBLIC_KEY secret..."
-            echo "$LICENSE_PUBLIC_KEY" | npx wrangler secret put LICENSE_PUBLIC_KEY --env production
-          fi
+          set -euo pipefail
+          set_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -n "$value" ]; then
+              echo "Setting $name secret..."
+              echo "$value" | npx wrangler secret put "$name" --env production
+            else
+              echo "::warning::GitHub secret for $name is empty — skipping"
+            fi
+          }
+
+          set_secret "DATABASE_URL" "$DATABASE_URL"
+          set_secret "LICENSE_KEY" "$LICENSE_KEY"
+          set_secret "LICENSE_SERVER_URL" "$LICENSE_SERVER_URL"
+          set_secret "LICENSE_PUBLIC_KEY" "$LICENSE_PUBLIC_KEY"
         working-directory: apps/app
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -93,10 +102,3 @@ jobs:
           LICENSE_KEY: ${{ secrets.LICENSE_KEY }}
           LICENSE_SERVER_URL: ${{ secrets.LICENSE_SERVER_URL }}
           LICENSE_PUBLIC_KEY: ${{ secrets.LICENSE_PUBLIC_KEY }}
-
-      - name: Deploy to Cloudflare Workers (production)
-        run: pnpm deploy:cf:prod
-        working-directory: apps/app
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
