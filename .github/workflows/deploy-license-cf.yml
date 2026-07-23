@@ -31,13 +31,9 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Migrate license database
-        run: |
-          # Generate SQL from schema when folder is empty (drizzle/ is gitignored).
-          # Skip regenerate if migrations already exist to avoid duplicate CREATE TABLE.
-          if [ ! -f drizzle/meta/_journal.json ]; then
-            pnpm db:generate
-          fi
-          pnpm db:migrate
+        # Migrations are committed under license-server/drizzle/ (stable tags/hashes).
+        # Do NOT run db:generate in CI — random tags re-apply CREATE TABLE on Neon.
+        run: pnpm db:migrate
         working-directory: license-server
         env:
           DATABASE_URL: ${{ secrets.LICENSE_DATABASE_URL }}

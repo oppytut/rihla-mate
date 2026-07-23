@@ -1,9 +1,8 @@
 import type { Config } from "drizzle-kit";
 
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
-}
+// generate does not need a live DB; migrate uses LICENSE_DATABASE_URL / DATABASE_URL at runtime.
+const databaseUrl =
+  process.env.DATABASE_URL ?? "postgres://placeholder:placeholder@localhost:5432/license";
 
 export default {
   schema: "./src/db/schema.ts",

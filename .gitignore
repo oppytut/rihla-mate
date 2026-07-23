@@ -1,7 +1,8 @@
 node_modules/
 .next/
 dist/
-drizzle/
+# App migrations are generated in CI/local; license-server migrations are committed.
+apps/app/drizzle/
 .env
 .env.local
 .env.*.local
