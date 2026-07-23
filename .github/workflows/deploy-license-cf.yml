@@ -31,21 +31,26 @@ jobs:
 
       - name: Set secrets for production environment
         run: |
-          if [ -n "$DATABASE_URL" ]; then
-            echo "Setting DATABASE_URL secret..."
-            echo "$DATABASE_URL" | pnpm exec wrangler secret put DATABASE_URL --env production
-          fi
-          if [ -n "$LICENSE_PRIVATE_KEY" ]; then
-            echo "Setting LICENSE_PRIVATE_KEY secret..."
-            echo "$LICENSE_PRIVATE_KEY" | pnpm exec wrangler secret put LICENSE_PRIVATE_KEY --env production
-          fi
-          if [ -n "$UPSTASH_REDIS_URL" ]; then
-            echo "Setting UPSTASH_REDIS_URL secret..."
-            echo "$UPSTASH_REDIS_URL" | pnpm exec wrangler secret put UPSTASH_REDIS_URL --env production
-          fi
-          if [ -n "$UPSTASH_REDIS_TOKEN" ]; then
-            echo "Setting UPSTASH_REDIS_TOKEN secret..."
-            echo "$UPSTASH_REDIS_TOKEN" | pnpm exec wrangler secret put UPSTASH_REDIS_TOKEN --env production
+          MISSING=0
+          set_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -n "$value" ]; then
+              echo "Setting $name secret..."
+              echo "$value" | pnpm exec wrangler secret put "$name" --env production
+            else
+              echo "::warning::GitHub secret for $name is empty — worker will deploy but runtime may fail until it is set"
+              MISSING=1
+            fi
+          }
+
+          set_secret "DATABASE_URL" "$DATABASE_URL"
+          set_secret "LICENSE_PRIVATE_KEY" "$LICENSE_PRIVATE_KEY"
+          set_secret "UPSTASH_REDIS_URL" "$UPSTASH_REDIS_URL"
+          set_secret "UPSTASH_REDIS_TOKEN" "$UPSTASH_REDIS_TOKEN"
+
+          if [ "$MISSING" = "1" ]; then
+            echo "Missing secrets (optional for first deploy): LICENSE_DATABASE_URL, LICENSE_PRIVATE_KEY, UPSTASH_REDIS_URL, UPSTASH_REDIS_TOKEN"
           fi
         working-directory: license-server
         env:
