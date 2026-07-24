@@ -10,6 +10,10 @@ export const env = createEnv({
     LICENSE_KEY: z.string().optional(),
     LICENSE_PUBLIC_KEY: z.string().optional(),
     LICENSE_SERVER_URL: z.string().url().default("http://localhost:3001"),
+    /** API key for license-server `/api/v1/*` (Authorization Bearer or X-API-Key). */
+    LICENSE_API_KEY: z.string().optional(),
+    /** Stable instance fingerprint for activate/check-in (defaults applied at call sites). */
+    INSTANCE_ID: z.string().optional(),
     BETTER_AUTH_SECRET: z.string().min(1).default("ci-test-secret-key-for-build-only"),
     BETTER_AUTH_URL: z.string().url().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
@@ -34,6 +38,8 @@ export const env = createEnv({
     LICENSE_KEY: process.env.LICENSE_KEY,
     LICENSE_PUBLIC_KEY: process.env.LICENSE_PUBLIC_KEY,
     LICENSE_SERVER_URL: process.env.LICENSE_SERVER_URL,
+    LICENSE_API_KEY: process.env.LICENSE_API_KEY,
+    INSTANCE_ID: process.env.INSTANCE_ID,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
@@ -51,5 +57,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_MIDTRANS_CLIENT_KEY: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
   },
-  emptyStringAsUndefined: false,
+  // Treat empty Worker plain-text vars as unset so defaults (e.g. BETTER_AUTH_SECRET)
+  // apply instead of failing z.string().min(1).
+  emptyStringAsUndefined: true,
 });

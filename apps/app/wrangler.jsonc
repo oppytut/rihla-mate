@@ -39,8 +39,11 @@
         "NODE_ENV": "production",
         "STORAGE_DRIVER": "s3",
         "DEPLOYMENT_TARGET": "cloudflare",
-        "BETTER_AUTH_SECRET": "",
-        "BETTER_AUTH_URL": "https://your-domain.com",
+        // BETTER_AUTH_SECRET must be a Worker secret (not an empty plain var —
+        // empty string fails env min(1) and blocks secret put with CF 10053).
+        "BETTER_AUTH_URL": "https://rihla-mate.ariefna95.workers.dev",
+        "NEXT_PUBLIC_APP_URL": "https://rihla-mate.ariefna95.workers.dev",
+        "INSTANCE_ID": "rihla-mate-cf-production",
         "MIDTRANS_CLIENT_KEY": "",
         "NEXT_PUBLIC_MIDTRANS_CLIENT_KEY": ""
       },

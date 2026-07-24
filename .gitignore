@@ -1,8 +1,7 @@
 node_modules/
 .next/
 dist/
-# App migrations are generated in CI/local; license-server migrations are committed.
-apps/app/drizzle/
+# App + license-server migrations are committed (stable tags/hashes for Neon CI).
 .env
 .env.local
 .env.*.local

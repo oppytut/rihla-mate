@@ -33,6 +33,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Migrate app database (Neon)
+        # Migrations are committed under apps/app/drizzle/ (stable tags/hashes).
+        # Do NOT run db:generate in CI — random tags re-apply CREATE TABLE on Neon.
+        # Prefer DATABASE_URL_UNPOOLED (direct) when set; else DATABASE_URL.
+        run: pnpm db:migrate:neon
+        working-directory: apps/app
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+
       - name: Build for Cloudflare Workers
         run: pnpm build:cf
         working-directory: apps/app
@@ -68,7 +78,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       # Deploy first so wrangler.jsonc vars win over stale plain-text bindings.
-      # LICENSE_KEY / LICENSE_SERVER_URL must NOT be plain vars (secret put fails with code 10053).
+      # Secrets (DATABASE_URL, LICENSE_*, BETTER_AUTH_SECRET) must NOT be plain vars
+      # (secret put fails with code 10053 if a same-name plain var exists).
       - name: Deploy to Cloudflare Workers (production)
         run: pnpm deploy:cf:prod
         working-directory: apps/app
@@ -91,14 +102,18 @@ jobs:
           }
 
           set_secret "DATABASE_URL" "$DATABASE_URL"
+          set_secret "BETTER_AUTH_SECRET" "$BETTER_AUTH_SECRET"
           set_secret "LICENSE_KEY" "$LICENSE_KEY"
           set_secret "LICENSE_SERVER_URL" "$LICENSE_SERVER_URL"
           set_secret "LICENSE_PUBLIC_KEY" "$LICENSE_PUBLIC_KEY"
+          set_secret "LICENSE_API_KEY" "$LICENSE_API_KEY"
         working-directory: apps/app
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           LICENSE_KEY: ${{ secrets.LICENSE_KEY }}
           LICENSE_SERVER_URL: ${{ secrets.LICENSE_SERVER_URL }}
           LICENSE_PUBLIC_KEY: ${{ secrets.LICENSE_PUBLIC_KEY }}
+          LICENSE_API_KEY: ${{ secrets.LICENSE_API_KEY }}

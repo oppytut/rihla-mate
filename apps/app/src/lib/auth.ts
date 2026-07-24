@@ -118,7 +118,11 @@ let cfAuthInstance: Awaited<ReturnType<typeof buildCfAuth>> | null = null;
 async function buildCfAuth() {
   const { getCloudflareContext } = await import("@opennextjs/cloudflare");
   const { withCloudflare } = await import("better-auth-cloudflare");
-  const { db: cfDb } = await import("@/lib/db/client");
+  const { getDb, setDb } = await import("@/lib/db/client");
+
+  // CF path must initialize the async neon-http client before the adapter runs.
+  const cfDb = await getDb();
+  setDb(cfDb);
 
   const cfCtx = getCloudflareContext<Record<string, unknown>>();
 
