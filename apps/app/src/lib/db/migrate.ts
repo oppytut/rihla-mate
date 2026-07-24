@@ -12,13 +12,15 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 async function main() {
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = process.env.DATABASE_URL?.trim();
   if (!databaseUrl) {
     throw new Error("DATABASE_URL is required");
   }
 
-  // Prefer direct (non-pooler) URL for migrations when provided.
-  const migrateUrl = process.env.DATABASE_URL_UNPOOLED ?? databaseUrl;
+  // Prefer direct (non-pooler) URL when set. GitHub Actions injects empty string
+  // for missing secrets — `??` does not fall back, so treat "" as unset.
+  const unpooled = process.env.DATABASE_URL_UNPOOLED?.trim();
+  const migrateUrl = unpooled || databaseUrl;
 
   const sql = neon(migrateUrl);
   const db = drizzle(sql);
