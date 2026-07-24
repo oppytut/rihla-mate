@@ -36,7 +36,8 @@ jobs:
       - name: Migrate app database (Neon)
         # Migrations are committed under apps/app/drizzle/ (stable tags/hashes).
         # Do NOT run db:generate in CI — random tags re-apply CREATE TABLE on Neon.
-        # Prefer DATABASE_URL_UNPOOLED (direct) when set; else DATABASE_URL.
+        # Prefer DATABASE_URL_UNPOOLED (direct) when non-empty; else DATABASE_URL.
+        # Missing secrets become "" in Actions — migrate.ts treats empty as unset.
         run: pnpm db:migrate:neon
         working-directory: apps/app
         env:
