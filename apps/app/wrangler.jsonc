@@ -35,6 +35,9 @@
   },
   "env": {
     "production": {
+      // Pin name so --env production deploys to rihla-mate (not rihla-mate-production).
+      // BETTER_AUTH_URL / NEXT_PUBLIC_APP_URL already point at rihla-mate.*.workers.dev.
+      "name": "rihla-mate",
       "vars": {
         "NODE_ENV": "production",
         "STORAGE_DRIVER": "s3",
