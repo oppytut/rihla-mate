@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionWrapper } from "./section-wrapper";
@@ -72,17 +72,29 @@ export function PricingSection() {
                   ))}
                 </ul>
 
-                <Link
-                  href={key === "enterprise" ? "mailto:hello@rihla-mate.com" : "/activate"}
-                  className={cn(
-                    "inline-flex h-10 w-full items-center justify-center rounded-lg text-sm font-medium transition-all",
-                    isPopular
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "border border-input bg-background text-foreground hover:bg-accent",
-                  )}
-                >
-                  {t(`pricing.${key}.cta`)}
-                </Link>
+                {key === "enterprise" ? (
+                  <a
+                    href="mailto:hello@rihla-mate.com"
+                    className={cn(
+                      "inline-flex h-10 w-full items-center justify-center rounded-lg text-sm font-medium transition-all",
+                      "border border-input bg-background text-foreground hover:bg-accent",
+                    )}
+                  >
+                    {t(`pricing.${key}.cta`)}
+                  </a>
+                ) : (
+                  <Link
+                    href="/activate"
+                    className={cn(
+                      "inline-flex h-10 w-full items-center justify-center rounded-lg text-sm font-medium transition-all",
+                      isPopular
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "border border-input bg-background text-foreground hover:bg-accent",
+                    )}
+                  >
+                    {t(`pricing.${key}.cta`)}
+                  </Link>
+                )}
               </div>
             );
           })}
