@@ -47,7 +47,10 @@
     "brandingDescription": "Sesuaikan branding biro travel Anda.",
     "brandingComingSoon": "Konfigurasi branding segera hadir...",
     "creating": "Membuat...",
-    "createAccount": "Buat Akun"
+    "createAccount": "Buat Akun",
+    "systemCheckHint": "Memeriksa database dan lingkungan sistem…",
+    "systemCheckFailed": "Pemeriksaan sistem gagal",
+    "orDivider": "atau"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -153,7 +156,11 @@
       "priceRequired": "Harga wajib diisi",
       "priceInvalid": "Format harga tidak valid",
       "durationMin": "Durasi minimal 1 hari"
-    }
+    },
+    "notFoundTitle": "Paket tidak ditemukan",
+    "notFound": "Paket perjalanan ini tidak tersedia atau sudah dihapus.",
+    "notFoundHint": "Periksa tautan Anda, atau kembali ke beranda untuk melihat penawaran lain.",
+    "browsePackages": "Lihat penawaran"
   },
   "common": {
     "appName": "Rihla Mate",
@@ -198,14 +205,14 @@
       "totalPrice": "Total Harga",
       "bookingId": "ID Pemesanan",
       "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",
-      "footerCopyright": "\u00a9 {year} Rihla Mate. Seluruh hak cipta dilindungi."
+      "footerCopyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi."
     }
   },
   "bookings": {
     "title": "Pemesanan",
     "createTitle": "Pemesanan Baru",
     "editTitle": "Edit Pemesanan",
-    "backToList": "← Kembali ke Daftar",
+    "backToList": "Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
     "search": "Cari pemesanan...",
     "allStatus": "Semua Status",
@@ -302,7 +309,11 @@
       "statusInvalid": "Status tidak valid"
     },
     "noAvailableDates": "Tidak ada tanggal tersedia untuk paket ini. Silakan periksa kembali atau hubungi kami.",
-    "publicCreateTitle": "Pesan Perjalanan Anda"
+    "publicCreateTitle": "Pesan Perjalanan Anda",
+    "successMessage": "Terima kasih. Pemesanan Anda telah kami terima.",
+    "successNextSteps": "Simpan ID pemesanan di bawah. Kami akan menghubungi Anda untuk konfirmasi dan langkah berikutnya.",
+    "bookAgain": "Pesan lagi",
+    "backHome": "Kembali ke beranda"
   },
   "customers": {
     "title": "Pelanggan",
