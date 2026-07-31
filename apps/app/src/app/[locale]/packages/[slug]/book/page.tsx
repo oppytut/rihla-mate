@@ -11,10 +11,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
 import { validateBooking } from "@/lib/utils/validation";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useSnapPayment } from "@/components/payment/snap-payment";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 
 interface BookingForm {
@@ -41,7 +41,6 @@ export default function PublicBookingPage() {
   const router = useRouter();
   const params = useParams();
   const slug = params.slug as string;
-  const locale = params.locale as string;
 
   const [form, setForm] = useState<BookingForm>(initialForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -73,7 +72,7 @@ export default function PublicBookingPage() {
           setIsPaying(true);
         } else {
           // Already has a Midtrans order — redirect directly
-          router.push(`/${locale}/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+          router.push(`/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
         }
       },
       onError: (error) => {
@@ -89,9 +88,9 @@ export default function PublicBookingPage() {
   const handleSnapSuccess = useCallback(
     (result: Record<string, unknown>) => {
       void result;
-      router.push(`/${locale}/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+      router.push(`/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
     },
-    [locale, router, slug],
+    [router, slug],
   );
 
   const handleSnapError = useCallback(
@@ -244,7 +243,7 @@ export default function PublicBookingPage() {
         <header className="border-b border-border/40 bg-card">
           <div className="container mx-auto px-4 lg:px-8 py-6">
             <Link
-              href={`/${locale}`}
+              href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("bookings.backHome")}
@@ -258,7 +257,7 @@ export default function PublicBookingPage() {
               {packageQuery.error?.message || t("common.error")}
             </p>
             <Link
-              href={`/${locale}`}
+              href="/"
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
             >
               {t("bookings.backHome")}
@@ -275,7 +274,7 @@ export default function PublicBookingPage() {
         <header className="border-b border-border/40 bg-card">
           <div className="container mx-auto px-4 lg:px-8 py-6">
             <Link
-              href={`/${locale}`}
+              href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("bookings.backHome")}
@@ -291,15 +290,12 @@ export default function PublicBookingPage() {
             <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
             <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
               <Link
-                href={`/${locale}/marketing`}
+                href="/marketing"
                 className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
               >
                 {t("packages.browsePackages")}
               </Link>
-              <Link
-                href={`/${locale}`}
-                className="text-sm font-medium text-primary hover:underline"
-              >
+              <Link href="/" className="text-sm font-medium text-primary hover:underline">
                 {t("bookings.backHome")}
               </Link>
             </div>
@@ -336,7 +332,7 @@ export default function PublicBookingPage() {
         <header className="border-b border-border/40 bg-card">
           <div className="container mx-auto px-4 lg:px-8 py-6">
             <Link
-              href={`/${locale}`}
+              href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("bookings.backHome")}
@@ -348,7 +344,7 @@ export default function PublicBookingPage() {
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">{t("bookings.noAvailableDates")}</p>
             <Link
-              href={`/${locale}`}
+              href="/"
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
             >
               {t("bookings.backHome")}
@@ -367,7 +363,7 @@ export default function PublicBookingPage() {
       <header className="border-b border-border/40 bg-card">
         <div className="container mx-auto px-4 lg:px-8 py-6">
           <Link
-            href={`/${locale}`}
+            href="/"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {t("bookings.backHome")}
@@ -590,7 +586,7 @@ export default function PublicBookingPage() {
                       ? t("bookings.saving")
                       : t("bookings.save")}
                 </Button>
-                <Link href={`/${locale}`}>
+                <Link href="/">
                   <Button type="button" variant="outline" disabled={isSubmitting || isPaying}>
                     {t("bookings.backHome")}
                   </Button>
