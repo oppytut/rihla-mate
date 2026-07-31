@@ -20,7 +20,7 @@ export function CtaFooterSection() {
               <p className="mt-4 text-lg text-muted-foreground">{t("marketing.cta.subtitle")}</p>
               <div className="mt-8">
                 <Link
-                  href="/sign-in"
+                  href="/activate"
                   className="inline-flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-all hover:bg-primary/90 hover:shadow-md"
                 >
                   {t("marketing.cta.button")}

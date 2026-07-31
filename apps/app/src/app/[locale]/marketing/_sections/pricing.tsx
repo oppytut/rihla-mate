@@ -54,11 +54,11 @@ export function PricingSection() {
                   </p>
                 </div>
 
-                <div className="mb-6">
+                <div className="mb-6 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
                   <span className="text-4xl font-bold text-foreground">
                     {t(`pricing.${key}.price`)}
                   </span>
-                  <span className="ml-1 text-sm text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     {t(`pricing.${key}.period`)}
                   </span>
                 </div>
@@ -73,7 +73,7 @@ export function PricingSection() {
                 </ul>
 
                 <Link
-                  href="/sign-in"
+                  href={key === "enterprise" ? "mailto:hello@rihla-mate.com" : "/activate"}
                   className={cn(
                     "inline-flex h-10 w-full items-center justify-center rounded-lg text-sm font-medium transition-all",
                     isPopular

@@ -22,7 +22,7 @@ export default function BookingSuccessPage() {
             href={`/${locale}`}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            &larr; {t("bookings.backToList")}
+            {t("bookings.backHome")}
           </Link>
         </div>
       </header>
@@ -31,9 +31,9 @@ export default function BookingSuccessPage() {
         <div className="mx-auto max-w-lg">
           <Card>
             <CardHeader className="text-center pb-2">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
                 <svg
-                  className="h-8 w-8 text-green-600"
+                  className="h-8 w-8 text-green-600 dark:text-green-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -47,23 +47,27 @@ export default function BookingSuccessPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-center">
-              <p className="text-sm text-muted-foreground">{t("common.success")}</p>
+              <p className="text-sm text-muted-foreground">{t("bookings.successMessage")}</p>
 
-              {bookingId && (
-                <p className="text-xs text-muted-foreground">
-                  {t("email.booking.bookingId")}{" "}
-                  <span className="font-mono font-medium text-foreground">{bookingId}</span>
-                </p>
-              )}
+              {bookingId ? (
+                <div className="rounded-md border border-border bg-muted/40 px-4 py-3 text-left">
+                  <p className="text-xs text-muted-foreground">{t("email.booking.bookingId")}</p>
+                  <p className="mt-1 font-mono text-sm font-medium text-foreground break-all">
+                    {bookingId}
+                  </p>
+                </div>
+              ) : null}
 
-              <div className="pt-4">
-                <Link href={`/${locale}/packages/${slug}`}>
-                  <Button variant="outline" className="mr-2">
-                    {t("bookings.backToList")}
+              <p className="text-sm text-muted-foreground">{t("bookings.successNextSteps")}</p>
+
+              <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-center">
+                <Link href={`/${locale}/packages/${slug}/book`}>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    {t("bookings.bookAgain")}
                   </Button>
                 </Link>
                 <Link href={`/${locale}`}>
-                  <Button>{t("landing.cta")}</Button>
+                  <Button className="w-full sm:w-auto">{t("landing.cta")}</Button>
                 </Link>
               </div>
             </CardContent>

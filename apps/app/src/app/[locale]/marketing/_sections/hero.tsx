@@ -27,7 +27,7 @@ export function HeroSection() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/sign-in"
+              href="/activate"
               className="inline-flex h-12 items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-all hover:bg-primary/90 hover:shadow-md"
             >
               {t("hero.ctaTrial")}

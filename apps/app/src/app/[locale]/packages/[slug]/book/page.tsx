@@ -247,7 +247,7 @@ export default function PublicBookingPage() {
               href={`/${locale}`}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              &larr; {t("bookings.backToList")}
+              {t("bookings.backHome")}
             </Link>
             <h1 className="text-2xl font-semibold text-foreground mt-2">{t("common.error")}</h1>
           </div>
@@ -261,7 +261,7 @@ export default function PublicBookingPage() {
               href={`/${locale}`}
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
             >
-              &larr; {t("bookings.backToList")}
+              {t("bookings.backHome")}
             </Link>
           </div>
         </div>
@@ -269,9 +269,6 @@ export default function PublicBookingPage() {
     );
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Not found state                                                    */
-  /* ------------------------------------------------------------------ */
   if (!packageQuery.data) {
     return (
       <div className="min-h-screen bg-background">
@@ -281,20 +278,31 @@ export default function PublicBookingPage() {
               href={`/${locale}`}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              &larr; {t("bookings.backToList")}
+              {t("bookings.backHome")}
             </Link>
-            <h1 className="text-2xl font-semibold text-foreground mt-2">{t("packages.title")}</h1>
+            <h1 className="text-2xl font-semibold text-foreground mt-2">
+              {t("packages.notFoundTitle")}
+            </h1>
           </div>
         </header>
         <div className="container mx-auto px-4 lg:px-8 py-8">
-          <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center">
-            <p className="text-muted-foreground">{t("bookings.notFound")}</p>
-            <Link
-              href={`/${locale}`}
-              className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
-            >
-              &larr; {t("bookings.backToList")}
-            </Link>
+          <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
+            <p className="text-foreground font-medium">{t("packages.notFound")}</p>
+            <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Link
+                href={`/${locale}/marketing`}
+                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+              >
+                {t("packages.browsePackages")}
+              </Link>
+              <Link
+                href={`/${locale}`}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                {t("bookings.backHome")}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -331,7 +339,7 @@ export default function PublicBookingPage() {
               href={`/${locale}`}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              &larr; {t("bookings.backToList")}
+              {t("bookings.backHome")}
             </Link>
             <h1 className="text-2xl font-semibold text-foreground mt-2">{pkg.title}</h1>
           </div>
@@ -343,7 +351,7 @@ export default function PublicBookingPage() {
               href={`/${locale}`}
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
             >
-              &larr; {t("bookings.backToList")}
+              {t("bookings.backHome")}
             </Link>
           </div>
         </div>
@@ -362,7 +370,7 @@ export default function PublicBookingPage() {
             href={`/${locale}`}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            &larr; {t("bookings.backToList")}
+            {t("bookings.backHome")}
           </Link>
           <h1 className="text-2xl font-semibold text-foreground mt-2">{pkg.title}</h1>
         </div>
@@ -584,7 +592,7 @@ export default function PublicBookingPage() {
                 </Button>
                 <Link href={`/${locale}`}>
                   <Button type="button" variant="outline" disabled={isSubmitting || isPaying}>
-                    {t("bookings.backToList")}
+                    {t("bookings.backHome")}
                   </Button>
                 </Link>
               </div>

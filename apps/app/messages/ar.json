@@ -47,7 +47,10 @@
     "brandingDescription": "خصص العلامة التجارية لوكالة السفر الخاصة بك.",
     "brandingComingSoon": "تخصيص العلامة التجارية قريبًا...",
     "creating": "جارٍ الإنشاء...",
-    "createAccount": "إنشاء حساب"
+    "createAccount": "إنشاء حساب",
+    "systemCheckHint": "جارٍ فحص قاعدة البيانات وبيئة النظام…",
+    "systemCheckFailed": "فشل فحص النظام",
+    "orDivider": "أو"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -153,7 +156,11 @@
       "priceRequired": "السعر مطلوب",
       "priceInvalid": "تنسيق السعر غير صالح",
       "durationMin": "يجب أن تكون المدة يومًا واحدًا على الأقل"
-    }
+    },
+    "notFoundTitle": "الباقة غير موجودة",
+    "notFound": "باقة السفر هذه غير متاحة أو تم حذفها.",
+    "notFoundHint": "تحقق من الرابط، أو عد إلى الصفحة الرئيسية لعرض عروض أخرى.",
+    "browsePackages": "عرض العروض"
   },
   "common": {
     "appName": "رحلة ميت",
@@ -205,7 +212,7 @@
     "title": "الحجوزات",
     "createTitle": "حجز جديد",
     "editTitle": "تعديل الحجز",
-    "backToList": "← العودة للقائمة",
+    "backToList": "العودة للقائمة",
     "addBooking": "إضافة حجز",
     "search": "البحث في الحجوزات...",
     "allStatus": "جميع الحالات",
@@ -302,7 +309,11 @@
       "statusInvalid": "قيمة الحالة غير صالحة"
     },
     "noAvailableDates": "لا توجد تواريخ متاحة لهذه الباقة. يرجى التحقق لاحقًا أو التواصل معنا.",
-    "publicCreateTitle": "احجز رحلتك"
+    "publicCreateTitle": "احجز رحلتك",
+    "successMessage": "شكرًا لك. تم استلام حجزك.",
+    "successNextSteps": "احفظ رقم الحجز أدناه. سنتواصل معك للتأكيد والخطوات التالية.",
+    "bookAgain": "احجز مرة أخرى",
+    "backHome": "العودة للرئيسية"
   },
   "customers": {
     "title": "العملاء",

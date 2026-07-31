@@ -9,7 +9,8 @@ import { FaqSection } from "./_sections/faq";
 import { CtaFooterSection } from "./_sections/cta-footer";
 
 export default async function MarketingPage() {
-  const t = await getTranslations("common");
+  const t = await getTranslations("marketing");
+  const tCommon = await getTranslations("common");
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -18,10 +19,10 @@ export default async function MarketingPage() {
           <Link href="/" className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">
-                {t("common.appNameAbbr")}
+                {tCommon("appNameAbbr")}
               </span>
             </div>
-            <span className="font-semibold text-lg text-foreground">{t("common.appName")}</span>
+            <span className="font-semibold text-lg text-foreground">{tCommon("appName")}</span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link
@@ -51,7 +52,7 @@ export default async function MarketingPage() {
               {t("nav.signIn")}
             </Link>
             <Link
-              href="/sign-in"
+              href="/activate"
               className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
             >
               {t("nav.getStarted")}

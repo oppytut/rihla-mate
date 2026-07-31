@@ -33,8 +33,13 @@ export default function InstallerPage() {
   // Setup complete state
   const [setupComplete, setSetupComplete] = useState(false);
 
-  // Step 0: System Check query
-  const systemCheckQuery = useQuery(trpc.installer.systemCheck.queryOptions());
+  // Step 0: System Check query — timeout + retry so "Memuat..." cannot hang forever
+  const systemCheckQuery = useQuery({
+    ...trpc.installer.systemCheck.queryOptions(),
+    retry: 2,
+    retryDelay: 1500,
+    staleTime: 30_000,
+  });
 
   // Step 2: Admin account mutation
   const setupAdminMutation = useMutation(
@@ -150,17 +155,37 @@ export default function InstallerPage() {
           {step === 0 && (
             <div className="space-y-4">
               {systemCheckQuery.isLoading && (
-                <div className="flex items-center justify-center py-8">
-                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  <span className="ml-3 text-muted-foreground">{t("common.loading")}</span>
+                <div className="flex flex-col items-center justify-center gap-3 py-8">
+                  <div className="flex items-center">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <span className="ml-3 text-muted-foreground">{t("common.loading")}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground text-center max-w-xs">
+                    {t("installer.systemCheckHint")}
+                  </p>
                 </div>
               )}
 
               {systemCheckQuery.isError && (
-                <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4">
-                  <p className="text-sm text-destructive">
-                    {t("common.error")}: {systemCheckQuery.error?.message}
-                  </p>
+                <div className="space-y-3">
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-md p-4">
+                    <p className="text-sm text-destructive font-medium">
+                      {t("installer.systemCheckFailed")}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {systemCheckQuery.error?.message || t("common.error")}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => void systemCheckQuery.refetch()}
+                    disabled={systemCheckQuery.isFetching}
+                    data-testid="installer-system-check-retry"
+                  >
+                    {systemCheckQuery.isFetching ? t("common.loading") : t("common.tryAgain")}
+                  </Button>
                 </div>
               )}
 
@@ -354,11 +379,13 @@ export default function InstallerPage() {
               </div>
 
               <div className="relative">
-                <div className="absolute inset-0 flex items">
+                <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">or</span>
+                  <span className="bg-card px-2 text-muted-foreground">
+                    {t("installer.orDivider")}
+                  </span>
                 </div>
               </div>
 
@@ -484,13 +511,27 @@ export default function InstallerPage() {
 
             <div className="flex gap-2">
               {step === 0 && (
-                <Button
-                  onClick={() => setStep(1)}
-                  disabled={!canProceedFromSystemCheck}
-                  data-testid="installer-next-step-0"
-                >
-                  {t("installer.next")}
-                </Button>
+                <>
+                  {(systemCheckQuery.isError ||
+                    (systemCheckQuery.isSuccess && !systemCheckQuery.data?.database)) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => void systemCheckQuery.refetch()}
+                      disabled={systemCheckQuery.isFetching}
+                      data-testid="installer-system-check-retry-nav"
+                    >
+                      {systemCheckQuery.isFetching ? t("common.loading") : t("common.tryAgain")}
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => setStep(1)}
+                    disabled={!canProceedFromSystemCheck}
+                    data-testid="installer-next-step-0"
+                  >
+                    {t("installer.next")}
+                  </Button>
+                </>
               )}
 
               {step === 1 && (

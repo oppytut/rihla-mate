@@ -47,7 +47,10 @@
     "brandingDescription": "Customize your travel agency branding.",
     "brandingComingSoon": "Branding configuration coming soon...",
     "creating": "Creating...",
-    "createAccount": "Create Account"
+    "createAccount": "Create Account",
+    "systemCheckHint": "Checking database and system environment…",
+    "systemCheckFailed": "System check failed",
+    "orDivider": "or"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -61,7 +64,6 @@
       "pages": "Landing Pages",
       "analytics": "Analytics",
       "license": "Licenses",
-
       "settings": "Settings",
       "users": "Users"
     },
@@ -154,7 +156,11 @@
       "priceRequired": "Price is required",
       "priceInvalid": "Invalid price format",
       "durationMin": "Duration must be at least 1 day"
-    }
+    },
+    "notFoundTitle": "Package not found",
+    "notFound": "This travel package is unavailable or has been removed.",
+    "notFoundHint": "Check your link, or return home to browse other offers.",
+    "browsePackages": "View offers"
   },
   "common": {
     "appName": "Rihla Mate",
@@ -199,14 +205,14 @@
       "totalPrice": "Total Price",
       "bookingId": "Booking ID",
       "footerHelp": "If you have any questions, please contact us through our website or reply to this email.",
-      "footerCopyright": "\u00a9 {year} Rihla Mate. All rights reserved."
+      "footerCopyright": "© {year} Rihla Mate. All rights reserved."
     }
   },
   "bookings": {
     "title": "Bookings",
     "createTitle": "New Booking",
     "editTitle": "Edit Booking",
-    "backToList": "← Back to List",
+    "backToList": "Back to List",
     "addBooking": "Add Booking",
     "search": "Search bookings...",
     "allStatus": "All Status",
@@ -303,7 +309,11 @@
       "statusInvalid": "Invalid status value"
     },
     "noAvailableDates": "No available dates for this package. Please check back later or contact us.",
-    "publicCreateTitle": "Book Your Trip"
+    "publicCreateTitle": "Book Your Trip",
+    "successMessage": "Thank you. Your booking has been received.",
+    "successNextSteps": "Save the booking ID below. We will contact you with confirmation and next steps.",
+    "bookAgain": "Book again",
+    "backHome": "Back to home"
   },
   "customers": {
     "title": "Customers",
