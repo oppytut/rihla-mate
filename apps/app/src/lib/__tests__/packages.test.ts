@@ -537,6 +537,70 @@ describe("packagesRouter", () => {
   });
 
   // -----------------------------------------------------------------------
+  // getBySlug
+  // -----------------------------------------------------------------------
+
+  describe("getBySlug", () => {
+    it("returns package when found", async () => {
+      const ctx = makeMockContext({ session: null });
+
+      const mockPackage = {
+        id: "pkg-1",
+        title: "Bali Tour",
+        slug: "bali-tour",
+        description: "Amazing tour",
+        durationDays: 5,
+        price: "1500000",
+        currency: "IDR",
+        itinerary: [],
+        inclusions: [],
+        exclusions: [],
+        departureCity: "Jakarta",
+        availableDates: [],
+        featuredImage: "img.jpg",
+        gallery: [],
+        category: "premium",
+        status: "published",
+        createdAt: new Date("2025-01-01"),
+        updatedAt: new Date("2025-01-01"),
+      };
+
+      (ctx.db.select as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([mockPackage]),
+          }),
+        }),
+      });
+
+      const caller = await createCaller(ctx);
+      const result = await caller.getBySlug({ slug: "bali-tour" });
+
+      expect(result).toEqual(mockPackage);
+    });
+
+    it("throws NOT_FOUND when empty", async () => {
+      const ctx = makeMockContext({ session: null });
+
+      (ctx.db.select as ReturnType<typeof vi.fn>).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      });
+
+      const caller = await createCaller(ctx);
+
+      await expect(caller.getBySlug({ slug: "missing-slug" })).rejects.toThrow(TRPCError);
+      await expect(caller.getBySlug({ slug: "missing-slug" })).rejects.toMatchObject({
+        code: "NOT_FOUND",
+        message: "Package not found",
+      });
+    });
+  });
+
+  // -----------------------------------------------------------------------
   // create
   // -----------------------------------------------------------------------
 
