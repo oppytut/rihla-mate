@@ -1,5 +1,5 @@
 import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
-import { db } from "@/lib/db/client";
+import { getDb, setDb, type DrizzleClient } from "@/lib/db/client";
 import { getOrInitAuth, initAuth } from "@/lib/auth";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
@@ -29,7 +29,7 @@ export type Session = {
 
 export type TRPCContext = {
   headers: Headers;
-  db: typeof db;
+  db: DrizzleClient;
   session: Session | null;
 };
 
@@ -41,6 +41,9 @@ async function getAuth() {
 }
 
 export async function createTRPCContext(opts: FetchCreateContextFnOptions): Promise<TRPCContext> {
+  const resolvedDb = await getDb();
+  setDb(resolvedDb);
+
   let session: Session | null = null;
   try {
     const auth = await getAuth();
@@ -53,7 +56,7 @@ export async function createTRPCContext(opts: FetchCreateContextFnOptions): Prom
 
   return {
     headers: opts.req.headers,
-    db,
+    db: resolvedDb,
     session,
   };
 }
