@@ -1,5 +1,7 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { MarketingHeader } from "@/components/marketing/marketing-header";
+import { MarketingFooter } from "@/components/marketing/marketing-footer";
 
 const HOME_FEATURES = [
   {
@@ -78,51 +80,19 @@ const HOME_FEATURES = [
 
 export default async function HomePage() {
   const t = await getTranslations("marketing");
-  const tCommon = await getTranslations("common");
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">
-                {tCommon("appNameAbbr")}
-              </span>
-            </div>
-            <span className="font-semibold text-lg text-foreground">{tCommon("appName")}</span>
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/marketing"
-              className="hidden text-sm font-medium text-muted-foreground hover:text-foreground transition-colors sm:inline"
-            >
-              {t("nav.features")}
-            </Link>
-            <Link
-              href="/sign-in"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {t("nav.signIn")}
-            </Link>
-            <Link
-              href="/activate"
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-            >
-              {t("hero.ctaTrial")}
-            </Link>
-          </nav>
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col bg-background">
+      <MarketingHeader crossPageAnchors />
 
       <section className="flex-1">
-        <div className="container mx-auto px-4 lg:px-8 py-24 lg:py-32">
+        <div className="container mx-auto px-4 py-24 lg:px-8 lg:py-32">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               {t("hero.headline")}{" "}
               <span className="text-primary">{t("hero.headlineHighlight")}</span>
             </h1>
-            <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
               {t("hero.subtitle")}
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -144,7 +114,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="border-t border-border/40 py-20 lg:py-28">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="mx-auto max-w-5xl">
@@ -162,37 +131,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border/40 py-8">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-md bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xs">
-                  {tCommon("appNameAbbr")}
-                </span>
-              </div>
-              <span className="text-sm text-muted-foreground">
-                {t("footer.copyright", { year: new Date().getFullYear() })}
-              </span>
-            </div>
-            <div className="flex gap-6">
-              <Link
-                href="/marketing"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t("nav.features")}
-              </Link>
-              <Link
-                href="/sign-in"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t("nav.signIn")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter crossPageAnchors variant="simple" />
     </div>
   );
 }
