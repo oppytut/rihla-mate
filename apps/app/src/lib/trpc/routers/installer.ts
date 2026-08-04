@@ -4,6 +4,7 @@ import { eq, and, ne, sql } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../init";
 import { users } from "@/lib/db/schema/users";
 import { getOrInitAuth } from "@/lib/auth";
+import { checkSchemaReady, REQUIRED_APP_TABLES } from "@/lib/db/schema-ready";
 
 export const installerRouter = createTRPCRouter({
   resetForTesting: publicProcedure.mutation(async ({ ctx }) => {
@@ -60,9 +61,10 @@ export const installerRouter = createTRPCRouter({
 
   systemCheck: publicProcedure.query(async ({ ctx }) => {
     let database = false;
+    let schemaReady = false;
+    let missingTables: string[] = [];
     let diskSpace: { available: number; total: number } | null = null;
 
-    // Database connectivity check
     try {
       await ctx.db.execute(sql`SELECT 1`);
       database = true;
@@ -70,29 +72,43 @@ export const installerRouter = createTRPCRouter({
       database = false;
     }
 
-    // Disk space check
-    try {
-      const { execSync } = await import("child_process");
-      const output = execSync("df -BG / | tail -1", {
-        encoding: "utf-8",
-      })
-        .toString()
-        .trim();
-      const parts = output.split(/\s+/);
-      // df -BG / | tail -1 output example:
-      // /dev/sda1  50G  20G  30G  40% /
-      // columns: Filesystem, Size(1G-blocks), Used, Avail, Use%, Mounted on
-      const totalStr = parts[1]; // e.g. "50G"
-      const availStr = parts[3]; // e.g. "30G"
-      const total = parseInt(totalStr.replace("G", ""), 10);
-      const available = parseInt(availStr.replace("G", ""), 10);
-      diskSpace = { available, total };
-    } catch {
-      diskSpace = null;
+    if (database) {
+      try {
+        const schema = await checkSchemaReady(ctx.db);
+        schemaReady = schema.schemaReady;
+        missingTables = schema.missingTables;
+      } catch {
+        schemaReady = false;
+        missingTables = [...REQUIRED_APP_TABLES];
+      }
+    } else {
+      schemaReady = false;
+      missingTables = [...REQUIRED_APP_TABLES];
+    }
+
+    if (process.env.DEPLOYMENT_TARGET !== "cloudflare") {
+      try {
+        const { execSync } = await import("child_process");
+        const output = execSync("df -BG / | tail -1", {
+          encoding: "utf-8",
+        })
+          .toString()
+          .trim();
+        const parts = output.split(/\s+/);
+        const totalStr = parts[1];
+        const availStr = parts[3];
+        const total = parseInt(totalStr.replace("G", ""), 10);
+        const available = parseInt(availStr.replace("G", ""), 10);
+        diskSpace = { available, total };
+      } catch {
+        diskSpace = null;
+      }
     }
 
     return {
       database,
+      schemaReady,
+      missingTables,
       diskSpace,
       nodeVersion: process.version,
       timestamp: Date.now(),
