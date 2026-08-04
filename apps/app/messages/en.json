@@ -160,7 +160,8 @@
     "notFoundTitle": "Package not found",
     "notFound": "This travel package is unavailable or has been removed.",
     "notFoundHint": "Check your link, or return home to browse other offers.",
-    "browsePackages": "View offers"
+    "browsePackages": "View offers",
+    "temporaryUnavailable": "This package is temporarily unavailable. Please try again later."
   },
   "common": {
     "appName": "Rihla Mate",

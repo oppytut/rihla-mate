@@ -234,10 +234,48 @@ export default function PublicBookingPage() {
     );
   }
 
-  /* ------------------------------------------------------------------ */
-  /*  Error state                                                        */
-  /* ------------------------------------------------------------------ */
   if (packageQuery.isError) {
+    const errorCode = packageQuery.error?.data?.code;
+    const errorMessage = packageQuery.error?.message?.toLowerCase() ?? "";
+    const isNotFound = errorCode === "NOT_FOUND" || errorMessage.includes("not found");
+
+    if (isNotFound) {
+      return (
+        <div className="min-h-screen bg-background">
+          <header className="border-b border-border/40 bg-card">
+            <div className="container mx-auto px-4 lg:px-8 py-6">
+              <Link
+                href="/"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t("bookings.backHome")}
+              </Link>
+              <h1 className="text-2xl font-semibold text-foreground mt-2">
+                {t("packages.notFoundTitle")}
+              </h1>
+            </div>
+          </header>
+          <div className="container mx-auto px-4 lg:px-8 py-8">
+            <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
+              <p className="text-foreground font-medium">{t("packages.notFound")}</p>
+              <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Link
+                  href="/marketing"
+                  className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+                >
+                  {t("packages.browsePackages")}
+                </Link>
+                <Link href="/" className="text-sm font-medium text-primary hover:underline">
+                  {t("bookings.backHome")}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/40 bg-card">
@@ -252,10 +290,9 @@ export default function PublicBookingPage() {
           </div>
         </header>
         <div className="container mx-auto px-4 lg:px-8 py-8">
-          <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center">
-            <p className="text-muted-foreground">
-              {packageQuery.error?.message || t("common.error")}
-            </p>
+          <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
+            <p className="text-foreground font-medium">{t("packages.temporaryUnavailable")}</p>
+            <p className="text-sm text-muted-foreground">{t("common.unexpectedError")}</p>
             <Link
               href="/"
               className="mt-4 inline-block text-sm font-medium text-primary hover:underline"
