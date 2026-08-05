@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
+import { BrandMark } from "@/components/brand/brand-mark";
 
 type MarketingHeaderProps = {
   crossPageAnchors?: boolean;
@@ -17,13 +18,13 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <span className="text-sm font-bold text-primary-foreground">
-              {tCommon("appNameAbbr")}
-            </span>
-          </div>
-          <span className="text-lg font-semibold text-foreground">{tCommon("appName")}</span>
+        <Link href="/" className="flex shrink-0 items-center">
+          <BrandMark
+            size="md"
+            showWordmark
+            abbr={tCommon("appNameAbbr")}
+            wordmark={tCommon("appName")}
+          />
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
