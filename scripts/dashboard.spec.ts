@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { waitForPageHeading } from "./helpers/ready";
 
 test.describe("Dashboard Overview Page Smoke Test", () => {
   test("Dashboard overview page renders", async ({ page }) => {
@@ -7,13 +8,7 @@ test.describe("Dashboard Overview Page Smoke Test", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', {
-      state: "attached",
-      timeout: 10000,
-    });
-
-    const headingCount = await page.getByRole("heading").count();
-    expect(headingCount).toBeGreaterThan(0);
+    await waitForPageHeading(page);
 
     const statCards = page.locator('[data-testid^="stat-card-"]');
     await expect(statCards).toHaveCount(4, { timeout: 10000 });
