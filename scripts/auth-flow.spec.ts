@@ -42,10 +42,9 @@ test.describe("Auth Flow", () => {
     expect(page.url()).toContain("/dashboard");
     expect(page.url()).not.toContain("/sign-in");
 
-    await expect(page.getByRole("heading").first()).toBeVisible({
-      timeout: 10000,
+    await expect(page.getByTestId("page-heading")).toBeVisible({
+      timeout: 15000,
     });
-
     const statCards = page.locator('[data-testid^="stat-card-"]');
     await expect(statCards).toHaveCount(4, { timeout: 10000 });
 
@@ -115,9 +114,7 @@ test.describe("Auth Flow", () => {
     await context.close();
   });
 
-  test("Unauthorized access — no auth cookie, verify dashboard content is not accessible", async ({
-    browser,
-  }) => {
+  test("Unauthorized access — no auth cookie, verify redirect to sign-in", async ({ browser }) => {
     const context = await browser.newContext({
       storageState: { cookies: [], origins: [] },
     });
@@ -127,21 +124,9 @@ test.describe("Auth Flow", () => {
       waitUntil: "domcontentloaded",
     });
 
-    const url = page.url();
-
-    const notSignedIn = page.getByText("Not signed in");
-    const isNotSignedIn = await notSignedIn.isVisible().catch(() => false);
-
-    if (isNotSignedIn) {
-      expect(true).toBe(true);
-    }
-
-    if (url.includes("/sign-in")) {
-      expect(url).toContain("/sign-in");
-    } else {
-      expect(url).toContain("/dashboard");
-    }
-
+    await page.waitForURL("**/sign-in", { timeout: 15000 });
+    expect(page.url()).toContain("/sign-in");
+    expect(page.url()).not.toContain("/dashboard");
     await context.close();
   });
 });

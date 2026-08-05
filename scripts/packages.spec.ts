@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { waitForPageHeading } from "./helpers/ready";
 
 test.describe("Packages List Page Smoke Test", () => {
   test("Packages list page renders", async ({ page }) => {
@@ -7,13 +8,7 @@ test.describe("Packages List Page Smoke Test", () => {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', {
-      state: "attached",
-      timeout: 10000,
-    });
-
-    const headingCount = await page.getByRole("heading").count();
-    expect(headingCount).toBeGreaterThan(0);
+    await waitForPageHeading(page);
 
     const searchInput = page.locator('[data-testid="packages-search"]');
     await expect(searchInput).toBeVisible({ timeout: 10000 });
@@ -28,22 +23,17 @@ test.describe("Packages List Page Smoke Test", () => {
 });
 
 test.describe("unauthorized access", () => {
-  test("packages page renders even without auth (no guard implemented)", async ({ browser }) => {
-    // IMPORTANT: Use an isolated browser context (no storageState cookies)
-    // so that clearing auth does NOT pollute the shared page fixture.
-    // With workers: 1, using the shared page would poison ALL subsequent tests.
-    const context = await browser.newContext();
+  test("packages page redirects to sign-in without auth", async ({ browser }) => {
+    const context = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
     const page = await context.newPage();
 
     await page.goto(`${BASE_URL}/en/dashboard/packages`, {
       waitUntil: "domcontentloaded",
     });
-    await page.waitForSelector('[data-testid="page-heading"]', {
-      state: "attached",
-      timeout: 10000,
-    });
-    await expect(page.getByRole("heading", { name: "Packages" })).toBeVisible();
-    expect(page.url()).toContain("/dashboard/packages");
+    await page.waitForURL("**/sign-in", { timeout: 15000 });
+    expect(page.url()).toContain("/sign-in");
 
     await context.close();
   });

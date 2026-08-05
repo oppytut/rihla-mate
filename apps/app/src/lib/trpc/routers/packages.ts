@@ -134,7 +134,7 @@ export const packagesRouter = createTRPCRouter({
     const result = await ctx.db
       .select()
       .from(packages)
-      .where(eq(packages.slug, input.slug))
+      .where(and(eq(packages.slug, input.slug), eq(packages.status, "published")))
       .limit(1);
 
     if (result.length === 0) {

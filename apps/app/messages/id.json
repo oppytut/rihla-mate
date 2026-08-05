@@ -160,7 +160,8 @@
     "notFoundTitle": "Paket tidak ditemukan",
     "notFound": "Paket perjalanan ini tidak tersedia atau sudah dihapus.",
     "notFoundHint": "Periksa tautan Anda, atau kembali ke beranda untuk melihat penawaran lain.",
-    "browsePackages": "Lihat penawaran"
+    "browsePackages": "Lihat penawaran",
+    "temporaryUnavailable": "Paket ini sementara tidak tersedia. Silakan coba lagi nanti."
   },
   "common": {
     "appName": "Rihla Mate",

@@ -44,6 +44,14 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
 
+      - name: Seed demo catalog (idempotent)
+        run: pnpm db:seed:neon
+        working-directory: apps/app
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+          SEED_USE_NEON: "1"
+
       - name: Build for Cloudflare Workers
         run: pnpm build:cf
         working-directory: apps/app

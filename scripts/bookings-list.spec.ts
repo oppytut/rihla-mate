@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { waitForPageHeading } from "./helpers/ready";
 
 test.describe("Booking Pages Smoke Test", () => {
   test.describe("authenticated booking pages", () => {
@@ -8,10 +9,7 @@ test.describe("Booking Pages Smoke Test", () => {
         waitUntil: "domcontentloaded",
       });
 
-      await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
-
-      const headingCount = await page.getByRole("heading").count();
-      expect(headingCount).toBeGreaterThan(0);
+      await waitForPageHeading(page);
 
       expect(page.url()).toContain("/dashboard/bookings");
     });
@@ -21,10 +19,7 @@ test.describe("Booking Pages Smoke Test", () => {
         waitUntil: "domcontentloaded",
       });
 
-      await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
-
-      const headingCount = await page.getByRole("heading").count();
-      expect(headingCount).toBeGreaterThan(0);
+      await waitForPageHeading(page);
 
       const formElements = await page.locator('[data-testid^="booking-"]').count();
       expect(formElements).toBeGreaterThan(0);
@@ -35,17 +30,12 @@ test.describe("Booking Pages Smoke Test", () => {
 });
 
 test.describe("empty state", () => {
-  test("bookings list page loads without error and has heading", async ({
-    page,
-  }) => {
+  test("bookings list page loads without error and has heading", async ({ page }) => {
     await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector('[data-testid="page-heading"]', { state: "attached", timeout: 10000 });
-
-    const headingCount = await page.getByRole("heading").count();
-    expect(headingCount).toBeGreaterThan(0);
+    await waitForPageHeading(page);
 
     expect(page.url()).toContain("/dashboard/bookings");
     expect(page.url()).not.toContain("/new");

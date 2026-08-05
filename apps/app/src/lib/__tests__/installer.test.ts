@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { TRPCContext } from "../trpc/context";
+import { REQUIRED_APP_TABLES } from "../db/schema-ready";
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -45,6 +46,8 @@ vi.mock("child_process", () => ({
 // Test helpers
 // ---------------------------------------------------------------------------
 
+const ALL_TABLE_ROWS = REQUIRED_APP_TABLES.map((table_name) => ({ table_name }));
+
 function makeMockDb(): TRPCContext["db"] {
   const db: Record<string, unknown> = {};
 
@@ -70,6 +73,18 @@ function makeMockDb(): TRPCContext["db"] {
   }
 
   return db as unknown as TRPCContext["db"];
+}
+
+function mockDbHealthy(
+  execute: ReturnType<typeof vi.fn>,
+  tables: { table_name: string }[] = ALL_TABLE_ROWS,
+) {
+  execute.mockImplementation(async () => {
+    if (execute.mock.calls.length <= 1) {
+      return undefined;
+    }
+    return tables;
+  });
 }
 
 function makeMockContext(overrides?: Partial<TRPCContext>): TRPCContext {
@@ -320,9 +335,7 @@ describe("installerRouter", () => {
   describe("systemCheck", () => {
     it("returns database: true when db.execute succeeds", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
 
       const caller = await createCaller(ctx);
@@ -346,11 +359,54 @@ describe("installerRouter", () => {
       expect(result.database).toBe(false);
     });
 
-    it("returns diskSpace with available and total when df command succeeds", async () => {
+    it("returns schemaReady: true when all required tables present", async () => {
+      const ctx = makeMockContext();
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
+      mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
+
+      const caller = await createCaller(ctx);
+      const result = await caller.systemCheck();
+
+      expect(result.schemaReady).toBe(true);
+      expect(result.missingTables).toEqual([]);
+    });
+
+    it("returns schemaReady: false with missingTables when tables absent", async () => {
+      const ctx = makeMockContext();
+      const partial = ALL_TABLE_ROWS.filter(
+        (r) => r.table_name !== "packages" && r.table_name !== "bookings",
+      );
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>, partial);
+      mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
+
+      const caller = await createCaller(ctx);
+      const result = await caller.systemCheck();
+
+      expect(result.database).toBe(true);
+      expect(result.schemaReady).toBe(false);
+      expect(result.missingTables).toEqual(expect.arrayContaining(["packages", "bookings"]));
+      expect(result.missingTables).toHaveLength(2);
+    });
+
+    it("returns schemaReady: false and all required tables when database is false", async () => {
       const ctx = makeMockContext();
 
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      (ctx.db.execute as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error("Connection refused"),
+      );
+      mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
 
+      const caller = await createCaller(ctx);
+      const result = await caller.systemCheck();
+
+      expect(result.database).toBe(false);
+      expect(result.schemaReady).toBe(false);
+      expect(result.missingTables).toEqual([...REQUIRED_APP_TABLES]);
+    });
+
+    it("returns diskSpace with available and total when df command succeeds", async () => {
+      const ctx = makeMockContext();
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/sda1  100G  40G  60G  40% /\n");
 
       const caller = await createCaller(ctx);
@@ -361,9 +417,7 @@ describe("installerRouter", () => {
 
     it("returns diskSpace with correct values for small disk layout", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/xvda1  20G  15G  5G  75% /\n");
 
       const caller = await createCaller(ctx);
@@ -374,8 +428,7 @@ describe("installerRouter", () => {
 
     it("returns diskSpace: null when df command produces unparseable output", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
 
       mockExecSync.mockImplementation(() => {
         throw new Error("df command failed");
@@ -389,8 +442,7 @@ describe("installerRouter", () => {
 
     it("returns diskSpace: null when execSync throws", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
 
       mockExecSync.mockImplementation(() => {
         throw new Error("spawn df ENOENT");
@@ -404,8 +456,7 @@ describe("installerRouter", () => {
 
     it("returns nodeVersion from process.version", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
 
       const caller = await createCaller(ctx);
@@ -418,8 +469,7 @@ describe("installerRouter", () => {
 
     it("returns timestamp close to Date.now()", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/sda1  50G  20G  30G  40% /\n");
 
       const before = Date.now();
@@ -446,6 +496,7 @@ describe("installerRouter", () => {
       const result = await caller.systemCheck();
 
       expect(result.database).toBe(false);
+      expect(result.schemaReady).toBe(false);
       expect(result.diskSpace).toBeNull();
       expect(result.nodeVersion).toBe(process.version);
       expect(typeof result.timestamp).toBe("number");
@@ -453,9 +504,7 @@ describe("installerRouter", () => {
 
     it("parses diskSpace from multi-column df output with extra whitespace", async () => {
       const ctx = makeMockContext();
-
-      (ctx.db.execute as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
-
+      mockDbHealthy(ctx.db.execute as ReturnType<typeof vi.fn>);
       mockExecSync.mockReturnValue("/dev/mapper/vg-root  250G  180G  70G  73% /\n");
 
       const caller = await createCaller(ctx);

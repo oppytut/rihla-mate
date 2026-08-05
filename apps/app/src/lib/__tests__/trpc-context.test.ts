@@ -1,10 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const { mockGetSession, mockLoggerError, mockGetOrInitAuth } = vi.hoisted(() => ({
-  mockGetSession: vi.fn(),
-  mockLoggerError: vi.fn(),
-  mockGetOrInitAuth: vi.fn(),
-}));
+const { mockGetSession, mockLoggerError, mockGetOrInitAuth, mockDb, mockGetDb, mockSetDb } =
+  vi.hoisted(() => {
+    const mockDb = { __mockDb: true };
+    return {
+      mockGetSession: vi.fn(),
+      mockLoggerError: vi.fn(),
+      mockGetOrInitAuth: vi.fn(),
+      mockDb,
+      mockGetDb: vi.fn().mockResolvedValue(mockDb),
+      mockSetDb: vi.fn(),
+    };
+  });
 
 vi.mock("../auth", () => ({
   getOrInitAuth: mockGetOrInitAuth,
@@ -27,7 +34,9 @@ vi.mock("../utils/logger", () => ({
 }));
 
 vi.mock("../db/client", () => ({
-  db: { __mockDb: true },
+  db: mockDb,
+  getDb: mockGetDb,
+  setDb: mockSetDb,
 }));
 
 import { createTRPCContext } from "../trpc/context";
@@ -36,6 +45,7 @@ describe("createTRPCContext", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetOrInitAuth.mockResolvedValue({ api: { getSession: mockGetSession } });
+    mockGetDb.mockResolvedValue(mockDb);
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -47,6 +57,17 @@ describe("createTRPCContext", () => {
     };
   }
 
+  it("resolves db via getDb and setDb before returning context", async () => {
+    mockGetSession.mockResolvedValue(null);
+
+    const opts = makeOpts();
+    const ctx = await createTRPCContext(opts);
+
+    expect(mockGetDb).toHaveBeenCalledTimes(1);
+    expect(mockSetDb).toHaveBeenCalledWith(mockDb);
+    expect(ctx.db).toBe(mockDb);
+  });
+
   it("returns headers and db when no session exists", async () => {
     mockGetSession.mockResolvedValue(null);
 
@@ -54,7 +75,7 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.headers).toBe(opts.req.headers);
-    expect(ctx.db).toBeDefined();
+    expect(ctx.db).toBe(mockDb);
     expect(ctx.session).toBeNull();
   });
 
@@ -86,7 +107,9 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.session).toEqual(mockSession);
-    expect(ctx.db).toBeDefined();
+    expect(ctx.db).toBe(mockDb);
+    expect(mockGetDb).toHaveBeenCalled();
+    expect(mockSetDb).toHaveBeenCalledWith(mockDb);
   });
 
   it("returns session=null and logs error when getSession throws", async () => {
@@ -97,7 +120,7 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.session).toBeNull();
-    expect(ctx.db).toBeDefined();
+    expect(ctx.db).toBe(mockDb);
     expect(ctx.headers).toBe(opts.req.headers);
 
     expect(mockLoggerError).toHaveBeenCalledTimes(1);
@@ -115,7 +138,7 @@ describe("createTRPCContext", () => {
     const ctx = await createTRPCContext(opts);
 
     expect(ctx.session).toBeNull();
-    expect(ctx.db).toBeDefined();
+    expect(ctx.db).toBe(mockDb);
     expect(ctx.headers).toBeDefined();
     expect(mockLoggerError).toHaveBeenCalled();
   });

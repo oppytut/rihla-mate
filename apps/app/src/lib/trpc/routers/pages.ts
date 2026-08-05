@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq, desc, count } from "drizzle-orm";
+import { eq, and, desc, count } from "drizzle-orm";
 import { createTRPCRouter, adminProcedure, publicProcedure } from "../init";
 import { pages } from "@/lib/db/schema/pages";
 
@@ -103,7 +103,11 @@ export const pagesRouter = createTRPCRouter({
     }),
 
   getBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ ctx, input }) => {
-    const result = await ctx.db.select().from(pages).where(eq(pages.slug, input.slug)).limit(1);
+    const result = await ctx.db
+      .select()
+      .from(pages)
+      .where(and(eq(pages.slug, input.slug), eq(pages.isPublished, true)))
+      .limit(1);
     if (result.length === 0) {
       throw new TRPCError({ code: "NOT_FOUND", message: "Page not found" });
     }
