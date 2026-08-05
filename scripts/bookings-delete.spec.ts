@@ -102,8 +102,7 @@ test.describe("booking delete flow", () => {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    // Prefer mid-month future date (8/5 can be "today" and flaky with disabled:before).
-    const dayBtn = page.locator(SEL.calendarDay("8/15/2026")).first();
+    const dayBtn = page.locator(SEL.calendarDay("8/20/2026")).first();
     await expect(dayBtn).toBeVisible({ timeout: 5000 });
     await expect(dayBtn).toBeEnabled({ timeout: 5000 });
     await dayBtn.click();
