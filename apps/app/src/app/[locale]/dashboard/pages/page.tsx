@@ -216,8 +216,8 @@ export default function LandingPagesPage() {
                           className={cn(
                             "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
                             p.isPublished
-                              ? "bg-green-500/10 text-green-700 dark:text-green-300"
-                              : "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+                              ? "bg-success/10 text-success"
+                              : "bg-accent/20 text-accent-foreground",
                           )}
                         >
                           {p.isPublished
