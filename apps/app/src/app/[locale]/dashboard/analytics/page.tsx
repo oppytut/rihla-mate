@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
   const statusVariant = (status: string) => {
     switch (status) {
       case "paid":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-success/10 text-success";
       case "pending":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
       case "confirmed":
