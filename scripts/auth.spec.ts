@@ -3,7 +3,9 @@ import { BASE_URL } from "./helpers/auth";
 
 test.describe("unauthorized access", () => {
   test("bookings page redirects to sign-in without auth", async ({ browser }) => {
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
     const page = await context.newPage();
 
     await page.goto(`${BASE_URL}/en/dashboard/bookings`, {
