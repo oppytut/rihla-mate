@@ -16,8 +16,9 @@ test.describe("Customers Page Smoke Test", () => {
 
 test.describe("unauthorized access", () => {
   test("customers page redirects to sign-in without auth", async ({ browser }) => {
-    // Isolated context — no storageState cookies (do not poison shared fixture).
-    const context = await browser.newContext();
+    const context = await browser.newContext({
+      storageState: { cookies: [], origins: [] },
+    });
     const page = await context.newPage();
 
     await page.goto(`${BASE_URL}/en/dashboard/customers`, {
