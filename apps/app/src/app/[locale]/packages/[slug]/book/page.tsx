@@ -396,47 +396,56 @@ export default function PublicBookingPage() {
   /*  Main booking form                                                  */
   /* ------------------------------------------------------------------ */
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border/40 bg-card">
-        <div className="container mx-auto px-4 lg:px-8 py-6">
+    <div className="min-h-screen bg-background pb-24">
+      <header className="relative overflow-hidden border-b border-border/40 bg-card">
+        <div
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,oklch(0.42_0.09_165_/_0.12),transparent)]"
+          aria-hidden
+        />
+        <div className="container mx-auto px-4 lg:px-8 py-8">
           <Link
             href="/"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {t("bookings.backHome")}
           </Link>
-          <h1 className="text-2xl font-semibold text-foreground mt-2">{pkg.title}</h1>
+          <div className="mt-4 max-w-3xl">
+            <p className="text-xs font-medium uppercase tracking-wider text-primary">
+              {t("bookings.publicCreateTitle")}
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              {pkg.title}
+            </h1>
+            {pkg.description ? (
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {pkg.description}
+              </p>
+            ) : null}
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground shadow-sm">
+                <span className="text-xs font-normal opacity-90">{t("packages.fromPrice")}</span>
+                {formatPrice(pkg.price)}
+                <span className="text-xs font-normal opacity-90">{t("packages.perPerson")}</span>
+              </span>
+              {pkg.durationDays ? (
+                <span className="inline-flex items-center rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground">
+                  {pkg.durationDays} {t("packages.days")}
+                </span>
+              ) : null}
+              {pkg.departureCity ? (
+                <span className="inline-flex items-center rounded-full border border-border bg-background/80 px-3 py-1.5 text-xs font-medium text-foreground">
+                  {pkg.departureCity}
+                </span>
+              ) : null}
+            </div>
+          </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 lg:px-8 py-8">
         <div className="mx-auto max-w-2xl">
-          <div className="mb-8 rounded-lg border border-border bg-card p-6">
-            <div className="space-y-3">
-              <h2 className="text-lg font-medium text-foreground">{pkg.title}</h2>
-              {pkg.description && (
-                <p className="text-sm text-muted-foreground leading-relaxed">{pkg.description}</p>
-              )}
-              <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                  {formatPrice(pkg.price)}
-                </span>
-                {pkg.durationDays && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                    {pkg.durationDays} {t("packages.days")}
-                  </span>
-                )}
-                {pkg.departureCity && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                    {pkg.departureCity}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="rounded-lg border border-border bg-card p-6 space-y-8">
+          <form onSubmit={handleSubmit} noValidate id="public-booking-form">
+            <div className="rounded-xl border border-border bg-card p-6 space-y-8 shadow-sm">
               <section className="space-y-4">
                 <h2 className="text-lg font-medium text-foreground border-b border-border pb-2">
                   {t("bookings.fields.section.booking")}
@@ -615,7 +624,7 @@ export default function PublicBookingPage() {
                 </div>
               )}
 
-              <div className="flex items-center gap-4 pt-4 border-t border-border">
+              <div className="hidden items-center gap-4 border-t border-border pt-4 sm:flex">
                 <Button type="submit" disabled={isSubmitting || isPaying}>
                   {isPaying
                     ? t("bookings.processingPayment")
@@ -643,6 +652,32 @@ export default function PublicBookingPage() {
               )}
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-card/95 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur supports-[backdrop-filter]:bg-card/85">
+        <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 lg:px-8">
+          <div className="min-w-0">
+            <p className="truncate text-xs text-muted-foreground">{pkg.title}</p>
+            <p className="text-lg font-semibold tabular-nums text-foreground">
+              {formatPrice(totalPrice)}
+              <span className="ms-1 text-xs font-normal text-muted-foreground">
+                × {form.travelers}
+              </span>
+            </p>
+          </div>
+          <Button
+            type="submit"
+            form="public-booking-form"
+            disabled={isSubmitting || isPaying}
+            className="shrink-0 shadow-md"
+          >
+            {isPaying
+              ? t("bookings.processingPayment")
+              : isSubmitting
+                ? t("bookings.saving")
+                : t("bookings.save")}
+          </Button>
         </div>
       </div>
     </div>

@@ -30,9 +30,9 @@ export function FeaturesSection() {
           {featureIcons.map(({ Icon, key }) => (
             <div
               key={key}
-              className="group relative rounded-xl border border-border/50 bg-card p-6 transition-all hover:border-border hover:shadow-md"
+              className="group relative rounded-xl border border-border/50 bg-card p-6 shadow-sm transition-all hover:border-primary/25 hover:shadow-md"
             >
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/10 transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <Icon className="h-5 w-5" />
               </div>
               <h3 className="mb-2 font-semibold text-foreground">{t(`features.${key}.title`)}</h3>

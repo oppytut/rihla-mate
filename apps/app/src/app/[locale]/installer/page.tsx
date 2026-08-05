@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -122,6 +123,14 @@ export default function InstallerPage() {
   return (
     <div className="min-h-screen bg-background antialiased flex items-center justify-center">
       <div className="mx-auto max-w-lg w-full px-4">
+        <div className="mb-4 flex justify-center">
+          <BrandMark
+            size="lg"
+            showWordmark
+            abbr={t("common.appNameAbbr")}
+            wordmark={t("common.appName")}
+          />
+        </div>
         <h1 className="text-2xl font-semibold text-center mb-2 text-foreground">
           {t("installer.title")}
         </h1>
@@ -202,7 +211,7 @@ export default function InstallerPage() {
                           <span className="text-xs text-muted-foreground">
                             {t("installer.connected")}
                           </span>
-                          <span className="text-green-600 text-lg">✓</span>
+                          <span className="text-success text-lg">✓</span>
                         </>
                       ) : (
                         <>
@@ -234,7 +243,7 @@ export default function InstallerPage() {
                         </span>
                       )}
                       {systemCheckQuery.data.diskSpace && (
-                        <span className="text-green-600 text-lg">✓</span>
+                        <span className="text-success text-lg">✓</span>
                       )}
                     </div>
                   </div>
@@ -248,7 +257,7 @@ export default function InstallerPage() {
                       <span className="text-xs text-muted-foreground">
                         {systemCheckQuery.data.nodeVersion}
                       </span>
-                      <span className="text-green-600 text-lg">✓</span>
+                      <span className="text-success text-lg">✓</span>
                     </div>
                   </div>
                 </div>
@@ -261,8 +270,8 @@ export default function InstallerPage() {
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">{t("installer.databaseReady")}</p>
               {systemCheckQuery.data?.database ? (
-                <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
-                  <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+                <div className="bg-success/10 border border-success/20 rounded-md p-4">
+                  <p className="text-sm text-success font-medium">
                     {t("installer.databaseConnected")}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -465,8 +474,8 @@ export default function InstallerPage() {
             <div className="space-y-4">
               {setupComplete ? (
                 <div className="text-center py-6">
-                  <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                    <span className="text-green-600 text-2xl">✓</span>
+                  <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+                    <span className="text-success text-2xl">✓</span>
                   </div>
                   <h2 className="text-lg font-semibold text-foreground mb-2">
                     {t("installer.setupComplete")}

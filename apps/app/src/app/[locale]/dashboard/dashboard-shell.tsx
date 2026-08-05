@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { NotificationBanner } from "@/components/notification-banner";
@@ -52,17 +53,23 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background antialiased">
       <NotificationBanner currentVersion={APP_VERSION} />
       <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3 lg:hidden">
-        <div>
-          <h1 className="text-lg font-semibold text-foreground">Rihla Mate</h1>
-          <p className="text-xs text-muted-foreground">Travel Agency Platform</p>
-        </div>
+        <BrandMark
+          size="sm"
+          showWordmark
+          abbr={t("common.appNameAbbr")}
+          wordmark={t("common.appName")}
+        />
       </div>
 
       <div className="flex">
         <aside className="hidden bg-card border-r border-border lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
           <div className="border-b border-border px-4 py-5">
-            <h1 className="text-lg font-semibold text-foreground">Rihla Mate</h1>
-            <p className="text-xs text-muted-foreground">Travel Agency Platform</p>
+            <BrandMark
+              size="md"
+              showWordmark
+              abbr={t("common.appNameAbbr")}
+              wordmark={t("common.appName")}
+            />
           </div>
 
           <nav className="flex-1 space-y-1 px-3 py-4" data-testid="sidebar-nav">

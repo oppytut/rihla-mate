@@ -141,6 +141,8 @@
     "clearFilters": "مسح الفلاتر",
     "empty": "لا توجد باقات بعد. انقر على الزر أعلاه لإضافة واحدة.",
     "days": "أيام",
+    "perPerson": "للشخص",
+    "fromPrice": "من",
     "deleteConfirm": "هل أنت متأكد من حذف هذه الباقة؟",
     "pageInfo": "صفحة {page} من {total}",
     "category": {
@@ -615,6 +617,13 @@
       "ctaTrial": "ابدأ النسخة التجريبية المجانية",
       "ctaLearn": "اعرف المزيد",
       "trialNote": "نسخة تجريبية لمدة 14 يومًا. بدون بطاقة ائتمان."
+    },
+    "trust": {
+      "sectionLabel": "مصممة لوكلاء السفر الإندونيسيين",
+      "selfHosted": "استضافة ذاتية على خادمك",
+      "midtrans": "Midtrans · GoPay · QRIS",
+      "trial": "تجربة مجانية 14 يومًا",
+      "license": "ترخيص آمن Ed25519"
     },
     "features": {
       "sectionTitle": "كل ما تحتاجه للتحول الرقمي",

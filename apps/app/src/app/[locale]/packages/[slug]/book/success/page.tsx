@@ -30,9 +30,9 @@ export default function BookingSuccessPage() {
         <div className="mx-auto max-w-lg">
           <Card>
             <CardHeader className="pb-2 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/15">
                 <svg
-                  className="h-8 w-8 text-green-600 dark:text-green-400"
+                  className="h-8 w-8 text-success"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

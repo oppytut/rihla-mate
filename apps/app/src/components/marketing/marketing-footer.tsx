@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
+import { BrandMark } from "@/components/brand/brand-mark";
 
 type MarketingFooterProps = {
   crossPageAnchors?: boolean;
@@ -25,11 +26,7 @@ export async function MarketingFooter({
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary">
-                <span className="text-xs font-bold text-primary-foreground">
-                  {tCommon("appNameAbbr")}
-                </span>
-              </div>
+              <BrandMark size="sm" abbr={tCommon("appNameAbbr")} />
               <span className="text-sm text-muted-foreground">
                 {t("footer.copyright", { year })}
               </span>
@@ -60,14 +57,13 @@ export async function MarketingFooter({
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-center gap-2 sm:items-start">
-            <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                <span className="text-xs font-bold text-primary-foreground">
-                  {tCommon("appNameAbbr")}
-                </span>
-              </div>
-              <span className="font-semibold text-foreground">{tCommon("appName")}</span>
-            </div>
+            <BrandMark
+              size="sm"
+              showWordmark
+              abbr={tCommon("appNameAbbr")}
+              wordmark={tCommon("appName")}
+              wordmarkClassName="text-base"
+            />
             <p className="text-xs text-muted-foreground">{t("footer.tagline")}</p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
