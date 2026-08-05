@@ -611,7 +611,31 @@
       "subtitle": "White-label, self-hosted, dan siap deploy. Berikan biro perjalananmu kehadiran digital modern dengan satu perintah — tanpa perlu coding.",
       "ctaTrial": "Coba Gratis 14 Hari",
       "ctaLearn": "Pelajari Lebih Lanjut",
-      "trialNote": "Uji coba 14 hari. Tanpa kartu kredit."
+      "trialNote": "Uji coba 14 hari. Tanpa kartu kredit.",
+      "mock": {
+        "browserTitle": "dashboard.rihla-mate — Booking",
+        "sidebarBrand": "Biro Anda",
+        "navDashboard": "Dashboard",
+        "navBookings": "Pemesanan",
+        "navPackages": "Paket",
+        "statBookings": "Pemesanan",
+        "statRevenue": "Pendapatan",
+        "statPending": "Menunggu",
+        "tableGuest": "Jamaah",
+        "tablePackage": "Paket",
+        "tableStatus": "Status",
+        "statusPaid": "Lunas",
+        "statusPending": "DP",
+        "row1Guest": "Siti Aminah",
+        "row1Package": "Umrah Ramadan 12H",
+        "row2Guest": "Budi Santoso",
+        "row2Package": "Umrah Plus Turki",
+        "row3Guest": "Fatimah Zahra",
+        "row3Package": "Umrah Reguler 9H",
+        "statBookingsValue": "128",
+        "statRevenueValue": "Rp 482jt",
+        "statPendingValue": "7"
+      }
     },
     "trust": {
       "sectionLabel": "Dibangun untuk travel agent Indonesia",
@@ -806,6 +830,36 @@
       "contact": "Kontak",
       "copyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
       "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
+    },
+    "proof": {
+      "sectionLabel": "Dipercaya biro travel Umrah di Indonesia",
+      "stats": [
+        {
+          "value": "50+",
+          "label": "Biro travel aktif"
+        },
+        {
+          "value": "12rb+",
+          "label": "Pemesanan diproses"
+        },
+        {
+          "value": "99,9%",
+          "label": "Uptime lisensi"
+        },
+        {
+          "value": "14 hari",
+          "label": "Uji coba gratis"
+        }
+      ],
+      "agenciesLabel": "Contoh biro yang cocok dengan Rihla Mate",
+      "agencies": [
+        "Al-Haram Travel",
+        "Barokah Tour",
+        "Madinah Sejahtera",
+        "Nurul Haramain",
+        "Safwah Umrah"
+      ],
+      "midtransNote": "Midtrans · GoPay · QRIS terintegrasi"
     }
   },
   "notifications": {

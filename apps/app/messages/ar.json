@@ -616,7 +616,31 @@
       "subtitle": "علامة بيضاء، ذاتية الاستضافة، وجاهزة للنشر. امنح وكالة سفرك حضورًا رقميًا عصريًا بأمر واحد — بدون حاجة للبرمجة.",
       "ctaTrial": "ابدأ النسخة التجريبية المجانية",
       "ctaLearn": "اعرف المزيد",
-      "trialNote": "نسخة تجريبية لمدة 14 يومًا. بدون بطاقة ائتمان."
+      "trialNote": "نسخة تجريبية لمدة 14 يومًا. بدون بطاقة ائتمان.",
+      "mock": {
+        "browserTitle": "dashboard.rihla-mate — الحجوزات",
+        "sidebarBrand": "وكالتك",
+        "navDashboard": "لوحة التحكم",
+        "navBookings": "الحجوزات",
+        "navPackages": "الباقات",
+        "statBookings": "الحجوزات",
+        "statRevenue": "الإيرادات",
+        "statPending": "قيد الانتظار",
+        "tableGuest": "المعتمر",
+        "tablePackage": "الباقة",
+        "tableStatus": "الحالة",
+        "statusPaid": "مدفوع",
+        "statusPending": "عربون",
+        "row1Guest": "سيتي أمينة",
+        "row1Package": "عمرة رمضان 12 يومًا",
+        "row2Guest": "بودي سانتوسو",
+        "row2Package": "عمرة بلس تركيا",
+        "row3Guest": "فاطمة الزهراء",
+        "row3Package": "عمرة عادية 9 أيام",
+        "statBookingsValue": "128",
+        "statRevenueValue": "Rp 482M",
+        "statPendingValue": "7"
+      }
     },
     "trust": {
       "sectionLabel": "مصممة لوكلاء السفر الإندونيسيين",
@@ -811,6 +835,36 @@
       "contact": "تواصل معنا",
       "copyright": "© {year} رحلة ميت. جميع الحقوق محفوظة.",
       "tagline": "منصة عمرة ذات علامة بيضاء لوكلاء السفر الإندونيسيين."
+    },
+    "proof": {
+      "sectionLabel": "موثوق به لدى وكالات سفر العمرة في إندونيسيا",
+      "stats": [
+        {
+          "value": "50+",
+          "label": "وكالة نشطة"
+        },
+        {
+          "value": "12ألف+",
+          "label": "حجزًا مُعالَجًا"
+        },
+        {
+          "value": "99.9%",
+          "label": "وقت تشغيل الترخيص"
+        },
+        {
+          "value": "14 يومًا",
+          "label": "تجربة مجانية"
+        }
+      ],
+      "agenciesLabel": "مصممة لوكالات مثل",
+      "agencies": [
+        "Al-Haram Travel",
+        "Barokah Tour",
+        "Madinah Sejahtera",
+        "Nurul Haramain",
+        "Safwah Umrah"
+      ],
+      "midtransNote": "Midtrans · GoPay · QRIS مدمج"
     }
   },
   "validation": {
