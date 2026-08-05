@@ -102,7 +102,11 @@ test.describe("booking delete flow", () => {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("8/5/2026")).first().click();
+    // Prefer mid-month future date (8/5 can be "today" and flaky with disabled:before).
+    const dayBtn = page.locator(SEL.calendarDay("8/15/2026")).first();
+    await expect(dayBtn).toBeVisible({ timeout: 5000 });
+    await expect(dayBtn).toBeEnabled({ timeout: 5000 });
+    await dayBtn.click();
 
     await page.locator(SEL.travelers).fill("2");
     await page.locator(SEL.totalPrice).fill("1500000");

@@ -113,7 +113,12 @@ test.describe("booking creation flow", () => {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("8/1/2026")).first().click();
+    // 2026-08-01 is past (today >= Aug 4 2026) and disabled by Calendar.
+    // Bali package includes 2026-08-15 as an available date.
+    const dayBtn = page.locator(SEL.calendarDay("8/15/2026")).first();
+    await expect(dayBtn).toBeVisible({ timeout: 5000 });
+    await expect(dayBtn).toBeEnabled({ timeout: 5000 });
+    await dayBtn.click();
 
     await page.locator(SEL.travelers).fill("2");
     await page.locator(SEL.totalPrice).fill("1500000");
