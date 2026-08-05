@@ -1,40 +1,55 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Server, CreditCard, Clock, ShieldCheck } from "lucide-react";
-
-const BADGES = [
-  { key: "selfHosted" as const, Icon: Server },
-  { key: "midtrans" as const, Icon: CreditCard },
-  { key: "trial" as const, Icon: Clock },
-  { key: "license" as const, Icon: ShieldCheck },
-] as const;
 
 export function TrustBadgesSection() {
   const t = useTranslations("marketing");
+  const stats = t.raw("proof.stats") as Array<{ value: string; label: string }>;
+  const agencies = t.raw("proof.agencies") as string[];
 
   return (
     <section
-      className="border-y border-border/40 bg-card/60 py-10"
-      aria-label={t("trust.sectionLabel")}
+      className="border-y border-border/40 bg-card/60 py-10 lg:py-12"
+      aria-label={t("proof.sectionLabel")}
     >
       <div className="container mx-auto px-4 lg:px-8">
-        <p className="mb-6 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {t("trust.sectionLabel")}
+        <p className="mb-8 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {t("proof.sectionLabel")}
         </p>
-        <ul className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {BADGES.map(({ key, Icon }) => (
+
+        <ul className="mx-auto grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat) => (
             <li
-              key={key}
-              className="flex items-center gap-3 rounded-lg border border-border/50 bg-background/80 px-4 py-3 shadow-sm"
+              key={stat.label}
+              className="flex flex-col items-center rounded-xl border border-border/50 bg-background/90 px-4 py-5 text-center shadow-sm"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                <Icon className="h-4 w-4" aria-hidden />
+              <span className="text-2xl font-bold tracking-tight text-primary sm:text-3xl">
+                {stat.value}
               </span>
-              <span className="text-sm font-medium text-foreground">{t(`trust.${key}`)}</span>
+              <span className="mt-1.5 text-sm text-muted-foreground">{stat.label}</span>
+              <span className="mt-3 h-0.5 w-8 rounded-full bg-accent" aria-hidden />
             </li>
           ))}
         </ul>
+
+        <div className="mx-auto mt-10 max-w-4xl">
+          <p className="mb-4 text-center text-xs font-medium text-muted-foreground">
+            {t("proof.agenciesLabel")}
+          </p>
+          <ul className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {agencies.map((name) => (
+              <li
+                key={name}
+                className="rounded-full border border-border/60 bg-background px-3.5 py-1.5 text-xs font-semibold tracking-tight text-foreground/80 sm:text-sm"
+              >
+                {name}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            {t("proof.midtransNote")}
+          </p>
+        </div>
       </div>
     </section>
   );
