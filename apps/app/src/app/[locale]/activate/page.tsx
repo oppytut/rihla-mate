@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { logger } from "@/lib/utils/logger";
@@ -68,10 +69,18 @@ export default function ActivatePage() {
     <div className="min-h-screen bg-background antialiased">
       <div className="mx-auto max-w-md mt-20 px-4">
         <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-card-foreground mb-2">
+          <div className="mb-4 flex justify-center">
+            <BrandMark
+              size="lg"
+              showWordmark
+              abbr={t("common.appNameAbbr")}
+              wordmark={t("common.appName")}
+            />
+          </div>
+          <h1 className="text-2xl font-semibold text-card-foreground mb-2 text-center">
             {t("activate.title")}
           </h1>
-          <p className="text-muted-foreground text-sm mb-6">{t("activate.subtitle")}</p>
+          <p className="text-muted-foreground text-sm mb-6 text-center">{t("activate.subtitle")}</p>
 
           <div className="space-y-6">
             <div className="space-y-3">

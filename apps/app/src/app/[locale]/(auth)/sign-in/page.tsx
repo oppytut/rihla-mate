@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { BrandMark } from "@/components/brand/brand-mark";
 import { cn } from "@/lib/utils";
 
 export default function SignInPage() {
@@ -71,7 +72,15 @@ export default function SignInPage() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t("common.appName")}</CardTitle>
+          <div className="mb-3 flex justify-center">
+            <BrandMark
+              size="lg"
+              showWordmark
+              abbr={t("common.appNameAbbr")}
+              wordmark={t("common.appName")}
+            />
+          </div>
+          <CardTitle className="sr-only">{t("common.appName")}</CardTitle>
           <CardDescription>{t("auth.signInToAccount")}</CardDescription>
         </CardHeader>
 
