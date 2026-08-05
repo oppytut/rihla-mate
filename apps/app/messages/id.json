@@ -141,6 +141,8 @@
     "clearFilters": "Hapus Filter",
     "empty": "Belum ada paket. Klik tombol di atas untuk menambahkan.",
     "days": "hari",
+    "perPerson": "per orang",
+    "fromPrice": "Mulai",
     "deleteConfirm": "Apakah Anda yakin ingin menghapus paket ini?",
     "pageInfo": "Halaman {page} dari {total}",
     "category": {
@@ -610,6 +612,13 @@
       "ctaTrial": "Coba Gratis 14 Hari",
       "ctaLearn": "Pelajari Lebih Lanjut",
       "trialNote": "Uji coba 14 hari. Tanpa kartu kredit."
+    },
+    "trust": {
+      "sectionLabel": "Dibangun untuk travel agent Indonesia",
+      "selfHosted": "Self-hosted di server sendiri",
+      "midtrans": "Midtrans · GoPay · QRIS",
+      "trial": "Uji coba gratis 14 hari",
+      "license": "Lisensi aman Ed25519"
     },
     "features": {
       "sectionTitle": "Semua yang Kamu Butuhkan untuk Go Digital",

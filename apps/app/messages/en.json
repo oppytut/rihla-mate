@@ -141,6 +141,8 @@
     "clearFilters": "Clear Filters",
     "empty": "No packages yet. Click the button above to add one.",
     "days": "days",
+    "perPerson": "per person",
+    "fromPrice": "From",
     "deleteConfirm": "Are you sure you want to delete this package?",
     "pageInfo": "Page {page} of {total}",
     "category": {
@@ -615,6 +617,13 @@
       "ctaTrial": "Start Free Trial",
       "ctaLearn": "Learn More",
       "trialNote": "14-day trial. No credit card required."
+    },
+    "trust": {
+      "sectionLabel": "Built for Indonesian travel agents",
+      "selfHosted": "Self-hosted on your server",
+      "midtrans": "Midtrans · GoPay · QRIS",
+      "trial": "14-day free trial",
+      "license": "Ed25519 license security"
     },
     "features": {
       "sectionTitle": "Everything You Need to Go Digital",
