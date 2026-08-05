@@ -2,18 +2,16 @@ import { describe, it, expect } from "vitest";
 import { getStatusBadgeClass } from "../utils/badge";
 
 describe("getStatusBadgeClass", () => {
-  it("returns green classes for published status", () => {
+  it("returns success classes for published status", () => {
     const result = getStatusBadgeClass("published");
-    expect(result).toContain("bg-green-500/10");
-    expect(result).toContain("text-green-700");
-    expect(result).toContain("dark:text-green-300");
+    expect(result).toContain("bg-success/10");
+    expect(result).toContain("text-success");
   });
 
-  it("returns yellow classes for draft status", () => {
+  it("returns accent classes for draft status", () => {
     const result = getStatusBadgeClass("draft");
-    expect(result).toContain("bg-yellow-500/10");
-    expect(result).toContain("text-yellow-600");
-    expect(result).toContain("dark:text-yellow-400");
+    expect(result).toContain("bg-accent/20");
+    expect(result).toContain("text-accent-foreground");
   });
 
   it("returns muted classes for archived status", () => {
