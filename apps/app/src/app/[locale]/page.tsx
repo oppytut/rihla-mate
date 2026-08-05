@@ -85,9 +85,17 @@ export default async function HomePage() {
     <div className="flex min-h-screen flex-col bg-background">
       <MarketingHeader crossPageAnchors />
 
-      <section className="flex-1">
+      <section className="relative flex-1 overflow-hidden">
+        <div
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_70%_at_50%_-15%,oklch(0.42_0.09_165_/_0.12),transparent)]"
+          aria-hidden
+        />
         <div className="container mx-auto px-4 py-24 lg:px-8 lg:py-32">
           <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-card/90 px-4 py-1.5 text-sm font-medium text-foreground shadow-sm">
+              <span className="me-2 h-2 w-2 rounded-full bg-primary" />
+              {t("hero.badge")}
+            </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               {t("hero.headline")}{" "}
               <span className="text-primary">{t("hero.headlineHighlight")}</span>
@@ -98,13 +106,13 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/activate"
-                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow-md transition-colors hover:bg-primary/90"
               >
                 {t("hero.ctaTrial")}
               </Link>
               <Link
                 href="/marketing#features"
-                className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                className="inline-flex h-11 items-center justify-center rounded-md border border-input bg-background/80 px-8 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary/30 hover:bg-secondary"
               >
                 {t("hero.ctaLearn")}
               </Link>
@@ -114,7 +122,29 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="border-t border-border/40 py-20 lg:py-28">
+      <section
+        className="border-y border-border/40 bg-card/60 py-8"
+        aria-label={t("trust.sectionLabel")}
+      >
+        <div className="container mx-auto px-4 lg:px-8">
+          <ul className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
+            <li className="rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+              {t("trust.selfHosted")}
+            </li>
+            <li className="rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+              {t("trust.midtrans")}
+            </li>
+            <li className="rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+              {t("trust.trial")}
+            </li>
+            <li className="rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+              {t("trust.license")}
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="py-20 lg:py-28">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="mx-auto max-w-5xl">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
