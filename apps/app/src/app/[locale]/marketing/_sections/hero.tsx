@@ -8,7 +8,7 @@ export function HeroSection() {
   const t = useTranslations("marketing");
 
   return (
-    <section className="relative overflow-hidden py-16 lg:py-28">
+    <section className="relative overflow-hidden py-12 sm:py-16 lg:py-28">
       <div
         className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_70%_at_50%_-15%,oklch(0.42_0.09_165_/_0.14),transparent)]"
         aria-hidden
@@ -23,38 +23,38 @@ export function HeroSection() {
       />
 
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16">
+        <div className="grid items-center gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-14 xl:gap-16">
           <div className="mx-auto max-w-xl text-center lg:mx-0 lg:max-w-none lg:text-start">
-            <div className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-card/90 px-4 py-1.5 text-sm font-medium text-foreground shadow-sm backdrop-blur">
+            <div className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-card/90 px-4 py-1.5 text-sm font-medium text-foreground shadow-sm backdrop-blur sm:mb-6">
               <span className="me-2 h-2 w-2 rounded-full bg-primary" />
               {t("hero.badge")}
             </div>
 
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem] lg:leading-[1.1]">
+            <h1 className="text-[1.75rem] font-bold leading-tight tracking-tight text-foreground sm:text-4xl sm:leading-tight lg:text-[3.25rem] lg:leading-[1.1]">
               {t("hero.headline")}{" "}
               <span className="text-primary">{t("hero.headlineHighlight")}</span>
             </h1>
 
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg">
               {t("hero.subtitle")}
             </p>
 
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+            <div className="mt-7 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4 lg:justify-start">
               <Link
                 href="/activate"
-                className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg sm:w-auto"
+                className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg sm:h-12 sm:w-auto"
               >
                 {t("hero.ctaTrial")}
               </Link>
               <Link
                 href="#features"
-                className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-input bg-background/80 px-8 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-all hover:border-primary/30 hover:bg-secondary sm:w-auto"
+                className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-input bg-background/80 px-8 text-sm font-medium text-foreground shadow-sm backdrop-blur transition-all hover:border-primary/30 hover:bg-secondary sm:h-12 sm:w-auto"
               >
                 {t("hero.ctaLearn")}
               </Link>
             </div>
 
-            <p className="mt-4 text-sm text-muted-foreground">{t("hero.trialNote")}</p>
+            <p className="mt-3 text-sm text-muted-foreground sm:mt-4">{t("hero.trialNote")}</p>
           </div>
 
           <div className="relative lg:ps-2">
