@@ -2,7 +2,14 @@
 
 import { useTranslations } from "next-intl";
 import { Quote } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { SectionWrapper } from "./section-wrapper";
+
+const AVATAR_TONES = [
+  "bg-primary text-primary-foreground ring-accent/50",
+  "bg-primary/90 text-primary-foreground ring-primary/30",
+  "bg-[oklch(0.38_0.08_165)] text-primary-foreground ring-accent/40",
+] as const;
 
 function initials(name: string): string {
   const parts = name.replace(/\./g, "").trim().split(/\s+/).filter(Boolean);
@@ -28,11 +35,12 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-8 md:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:mt-16 md:grid-cols-3 md:gap-8">
           {[0, 1, 2].map((i) => {
             const author = t(`testimonials.items.${i}.author`);
             const role = t(`testimonials.items.${i}.role`);
             const city = t(`testimonials.items.${i}.city`);
+            const tone = AVATAR_TONES[i % AVATAR_TONES.length];
 
             return (
               <div
@@ -45,10 +53,17 @@ export function TestimonialsSection() {
                 </blockquote>
                 <div className="mt-4 flex items-center gap-3 border-t border-border/40 pt-4">
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-sm ring-2 ring-accent/40"
+                    className={cn(
+                      "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xs font-bold shadow-sm ring-2",
+                      tone,
+                    )}
                     aria-hidden
                   >
                     {initials(author)}
+                    <span
+                      className="absolute -bottom-0.5 -end-0.5 h-3 w-3 rounded-full border-2 border-card bg-success"
+                      aria-hidden
+                    />
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{author}</p>
