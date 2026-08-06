@@ -50,7 +50,9 @@
     "createAccount": "Create Account",
     "systemCheckHint": "Checking database and system environment…",
     "systemCheckFailed": "System check failed",
-    "orDivider": "or"
+    "orDivider": "or",
+    "secureNote": "Guided setup for your self-hosted Umrah platform",
+    "goToSignIn": "Go to sign in"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -193,7 +195,12 @@
     "activated": "License Activated Successfully!",
     "plan": "Plan",
     "expires": "Expires",
-    "seats": "Seats"
+    "seats": "Seats",
+    "backToHome": "Back to home",
+    "secureNote": "License activation for self-hosted Rihla Mate",
+    "trialFailed": "Could not start trial. Please try again.",
+    "activateFailed": "Could not activate license. Check your key and try again.",
+    "goToSignIn": "Continue to sign in"
   },
   "email": {
     "booking": {
@@ -580,7 +587,10 @@
     "orContinueWith": "or continue with",
     "signInHelp": "Contact your administrator for access",
     "emailPlaceholder": "email@example.com",
-    "passwordPlaceholder": "••••••••"
+    "passwordPlaceholder": "••••••••",
+    "backToHome": "Back to home",
+    "secureNote": "Secure operator access for your Umrah workspace",
+    "trialOrActivate": "Start free trial or activate a license"
   },
   "landing": {
     "title": "Rihla Mate",

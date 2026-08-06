@@ -50,7 +50,9 @@
     "createAccount": "Buat Akun",
     "systemCheckHint": "Memeriksa database dan lingkungan sistem…",
     "systemCheckFailed": "Pemeriksaan sistem gagal",
-    "orDivider": "atau"
+    "orDivider": "atau",
+    "secureNote": "Setup terpandu untuk platform Umrah self-hosted Anda",
+    "goToSignIn": "Ke halaman masuk"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -193,7 +195,12 @@
     "activated": "Lisensi Berhasil Diaktifkan!",
     "plan": "Paket",
     "expires": "Kadaluarsa",
-    "seats": "Kuota"
+    "seats": "Kuota",
+    "backToHome": "Kembali ke beranda",
+    "secureNote": "Aktivasi lisensi untuk Rihla Mate self-hosted",
+    "trialFailed": "Gagal memulai uji coba. Silakan coba lagi.",
+    "activateFailed": "Gagal mengaktifkan lisensi. Periksa kunci dan coba lagi.",
+    "goToSignIn": "Lanjut ke halaman masuk"
   },
   "email": {
     "booking": {
@@ -575,7 +582,10 @@
     "orContinueWith": "atau lanjutkan dengan",
     "signInHelp": "Hubungi administrator untuk mendapatkan akses",
     "emailPlaceholder": "email@example.com",
-    "passwordPlaceholder": "••••••••"
+    "passwordPlaceholder": "••••••••",
+    "backToHome": "Kembali ke beranda",
+    "secureNote": "Akses operator aman untuk workspace Umrah Anda",
+    "trialOrActivate": "Mulai uji coba gratis atau aktifkan lisensi"
   },
   "landing": {
     "title": "Rihla Mate",
