@@ -50,7 +50,9 @@
     "createAccount": "إنشاء حساب",
     "systemCheckHint": "جارٍ فحص قاعدة البيانات وبيئة النظام…",
     "systemCheckFailed": "فشل فحص النظام",
-    "orDivider": "أو"
+    "orDivider": "أو",
+    "secureNote": "إعداد موجّه لمنصة العمرة المستضافة ذاتيًا",
+    "goToSignIn": "الانتقال إلى تسجيل الدخول"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -193,7 +195,12 @@
     "activated": "تم تفعيل الترخيص بنجاح!",
     "plan": "الخطة",
     "expires": "تاريخ الانتهاء",
-    "seats": "المقاعد"
+    "seats": "المقاعد",
+    "backToHome": "العودة إلى الصفحة الرئيسية",
+    "secureNote": "تفعيل الترخيص لرحلة ميت المستضافة ذاتيًا",
+    "trialFailed": "تعذر بدء النسخة التجريبية. حاول مرة أخرى.",
+    "activateFailed": "تعذر تفعيل الترخيص. تحقق من المفتاح وحاول مرة أخرى.",
+    "goToSignIn": "المتابعة إلى تسجيل الدخول"
   },
   "email": {
     "booking": {
@@ -580,7 +587,10 @@
     "orContinueWith": "أو المتابعة باستخدام",
     "signInHelp": "تواصل مع مدير النظام للحصول على صلاحية الوصول",
     "emailPlaceholder": "email@example.com",
-    "passwordPlaceholder": "••••••••"
+    "passwordPlaceholder": "••••••••",
+    "backToHome": "العودة إلى الصفحة الرئيسية",
+    "secureNote": "وصول آمن للمشغّل إلى مساحة عمل العمرة",
+    "trialOrActivate": "ابدأ النسخة التجريبية أو فعّل الترخيص"
   },
   "landing": {
     "title": "رحلة ميت",
