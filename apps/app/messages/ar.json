@@ -70,9 +70,11 @@
       "users": "المستخدمون"
     },
     "layout": {
-      "brandName": "رحلة ميت",
-      "brandSubtitle": "منصة وكالات السفر",
-      "notSignedIn": "لم يتم تسجيل الدخول"
+      "brandName": "Rihla Mate",
+      "brandSubtitle": "منصة وكالة السفر",
+      "notSignedIn": "غير مسجل الدخول",
+      "openMenu": "فتح القائمة",
+      "closeMenu": "إغلاق القائمة"
     },
     "user": {
       "signedInAs": "مسجل الدخول باسم",
@@ -82,7 +84,9 @@
       "totalBookings": "إجمالي الحجوزات",
       "activePackages": "الباقات النشطة",
       "totalCustomers": "إجمالي العملاء",
-      "revenue": "الإيرادات"
+      "revenue": "الإيرادات",
+      "quickGlance": "لمحة للمشغّل",
+      "quickGlanceHint": "استخدم الحجوزات والباقات والتحليلات من الشريط الجانبي للعمليات اليومية."
     }
   },
   "packages": {
@@ -451,7 +455,8 @@
     "period": {
       "7d": "آخر 7 أيام",
       "30d": "آخر 30 يومًا",
-      "90d": "آخر 90 يومًا"
+      "90d": "آخر 90 يومًا",
+      "label": "الفترة الزمنية"
     }
   },
   "license": {

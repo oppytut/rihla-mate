@@ -72,7 +72,9 @@
     "layout": {
       "brandName": "Rihla Mate",
       "brandSubtitle": "Travel Agency Platform",
-      "notSignedIn": "Not signed in"
+      "notSignedIn": "Not signed in",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "user": {
       "signedInAs": "Signed in as",
@@ -82,7 +84,9 @@
       "totalBookings": "Total Bookings",
       "activePackages": "Active Packages",
       "totalCustomers": "Total Customers",
-      "revenue": "Revenue"
+      "revenue": "Revenue",
+      "quickGlance": "Operator snapshot",
+      "quickGlanceHint": "Use Bookings, Packages, and Analytics in the sidebar for day-to-day operations."
     }
   },
   "packages": {
@@ -451,7 +455,8 @@
     "period": {
       "7d": "Last 7 Days",
       "30d": "Last 30 Days",
-      "90d": "Last 90 Days"
+      "90d": "Last 90 Days",
+      "label": "Time period"
     }
   },
   "license": {
