@@ -21,7 +21,7 @@ export function PricingSection() {
           <p className="mt-4 text-lg text-muted-foreground">{t("pricing.sectionDescription")}</p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-5xl gap-8 lg:grid-cols-3">
+        <div className="mx-auto mt-14 grid max-w-5xl gap-6 sm:mt-16 lg:grid-cols-3 lg:gap-8">
           {planKeys.map((key) => {
             const isPopular = key === "pro";
             const featureCount = t.raw(`pricing.${key}.features`).length;
@@ -35,12 +35,12 @@ export function PricingSection() {
                 className={cn(
                   "relative flex flex-col rounded-xl border p-6 transition-all",
                   isPopular
-                    ? "border-accent/60 bg-card shadow-lg ring-1 ring-accent/30 lg:scale-105"
+                    ? "border-accent/60 bg-card pt-8 shadow-lg ring-1 ring-accent/30 lg:scale-105"
                     : "border-border/50 bg-card hover:border-border hover:shadow-md",
                 )}
               >
                 {isPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground shadow-sm">
+                  <div className="absolute start-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground shadow-sm rtl:translate-x-1/2">
                     {t("pricing.popular")}
                   </div>
                 )}
