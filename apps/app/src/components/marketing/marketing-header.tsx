@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
+import { MarketingMobileNav } from "./marketing-mobile-nav";
 import { BrandMark } from "@/components/brand/brand-mark";
 
 type MarketingHeaderProps = {
@@ -17,7 +18,7 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 lg:px-8">
+      <div className="relative container mx-auto flex h-14 items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center">
           <BrandMark
             size="md"
@@ -48,20 +49,33 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3">
           <LocaleSwitcher className="hidden sm:flex" />
           <Link
             href="/sign-in"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
           >
             {t("nav.signIn")}
           </Link>
           <Link
             href="/activate"
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-4"
+            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-4"
           >
             {t("nav.getStarted")}
           </Link>
+          <MarketingMobileNav
+            featuresHref={featuresHref}
+            pricingHref={pricingHref}
+            faqHref={faqHref}
+            labels={{
+              menu: t("nav.menu"),
+              close: t("nav.close"),
+              features: t("nav.features"),
+              pricing: t("nav.pricing"),
+              faq: t("nav.faq"),
+              signIn: t("nav.signIn"),
+            }}
+          />
         </div>
       </div>
     </header>
