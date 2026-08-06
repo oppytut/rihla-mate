@@ -90,19 +90,19 @@ test.describe("booking lifecycle", () => {
       .waitFor({ state: "attached", timeout: 15000 });
     await page.waitForTimeout(500);
 
-    // Resolve the option value for "Komodo Island Expedition" by its text content.
+    // Resolve the option value for "Umrah Plus 12 Hari" by its text content.
     // Using selectOption({ label }) can race with React re-renders (controlled component
     // resets value="") and Playwright's label matching is fragile. Instead, find the
     // option by text, extract its value, and selectOption by value.
-    const komodoOptionValue = await page
+    const plusOptionValue = await page
       .locator("#packageId option")
-      .filter({ hasText: "Komodo Island Expedition" })
+      .filter({ hasText: "Umrah Plus 12 Hari" })
       .getAttribute("value");
-    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
-    await page.locator(SEL.packageId).selectOption(komodoOptionValue);
+    if (!plusOptionValue) throw new Error("Umrah Plus 12 Hari option not found");
+    await page.locator(SEL.packageId).selectOption(plusOptionValue);
 
     // Wait for React to commit the state update — the controlled <select> value should match.
-    await expect(page.locator(SEL.packageId)).toHaveValue(komodoOptionValue, { timeout: 5000 });
+    await expect(page.locator(SEL.packageId)).toHaveValue(plusOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to August 20, 2026
     await page.locator(SEL.departureDateButton).click();

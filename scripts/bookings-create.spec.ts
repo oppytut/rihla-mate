@@ -94,13 +94,13 @@ test.describe("booking creation flow", () => {
     // Give the select one more beat to fully stabilize after TRPC data lands
     await page.waitForTimeout(500);
 
-    const baliOptionValue = await page
+    const ekonomiOptionValue = await page
       .locator("#packageId option")
-      .filter({ hasText: "Bali Sacred Temples" })
+      .filter({ hasText: "Umrah Ekonomi 9 Hari" })
       .getAttribute("value");
-    if (!baliOptionValue) throw new Error("Bali Sacred Temples option not found");
-    await page.locator(SEL.packageId).selectOption(baliOptionValue);
-    await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
+    if (!ekonomiOptionValue) throw new Error("Umrah Ekonomi 9 Hari option not found");
+    await page.locator(SEL.packageId).selectOption(ekonomiOptionValue);
+    await expect(page.locator(SEL.packageId)).toHaveValue(ekonomiOptionValue, { timeout: 5000 });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
@@ -113,8 +113,7 @@ test.describe("booking creation flow", () => {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    // 2026-08-01 is past (today >= Aug 4 2026) and disabled by Calendar.
-    // Bali package includes 2026-08-15 as an available date.
+    // Umrah Ekonomi includes 2026-08-15 as an available date.
     const dayBtn = page.locator(SEL.calendarDay("8/15/2026")).first();
     await expect(dayBtn).toBeVisible({ timeout: 5000 });
     await expect(dayBtn).toBeEnabled({ timeout: 5000 });

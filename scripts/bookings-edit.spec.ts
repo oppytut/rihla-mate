@@ -77,13 +77,13 @@ test.describe("booking edit flow", () => {
       { timeout: 10000 },
     );
 
-    const baliOptionValue = await page
+    const ekonomiOptionValue = await page
       .locator("#packageId option")
-      .filter({ hasText: "Bali Sacred Temples" })
+      .filter({ hasText: "Umrah Ekonomi 9 Hari" })
       .getAttribute("value");
-    if (!baliOptionValue) throw new Error("Bali Sacred Temples option not found");
-    await packageSelect.selectOption(baliOptionValue);
-    await expect(page.locator(SEL.packageId)).toHaveValue(baliOptionValue, { timeout: 5000 });
+    if (!ekonomiOptionValue) throw new Error("Umrah Ekonomi 9 Hari option not found");
+    await packageSelect.selectOption(ekonomiOptionValue);
+    await expect(page.locator(SEL.packageId)).toHaveValue(ekonomiOptionValue, { timeout: 5000 });
 
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
