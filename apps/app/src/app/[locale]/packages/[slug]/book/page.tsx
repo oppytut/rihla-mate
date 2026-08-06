@@ -16,6 +16,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useSnapPayment } from "@/components/payment/snap-payment";
 import { Link, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface BookingForm {
   customerName: string;
@@ -24,6 +25,29 @@ interface BookingForm {
   departureDate: string;
   travelers: number;
   notes: string;
+}
+
+function collectGalleryUrls(featuredImage: unknown, gallery: unknown): string[] {
+  const urls: string[] = [];
+  if (typeof featuredImage === "string" && featuredImage.trim()) {
+    urls.push(featuredImage.trim());
+  }
+  let galleryRaw: unknown = gallery;
+  if (typeof galleryRaw === "string") {
+    try {
+      galleryRaw = JSON.parse(galleryRaw);
+    } catch {
+      galleryRaw = [];
+    }
+  }
+  if (Array.isArray(galleryRaw)) {
+    for (const item of galleryRaw) {
+      if (typeof item === "string" && item.trim() && !urls.includes(item.trim())) {
+        urls.push(item.trim());
+      }
+    }
+  }
+  return urls.slice(0, 4);
 }
 
 const initialForm: BookingForm = {
@@ -357,6 +381,8 @@ export default function PublicBookingPage() {
     availableDates = [];
   }
 
+  const galleryUrls = collectGalleryUrls(pkg.featuredImage, pkg.gallery);
+
   const availableDateSet = new Set(availableDates);
   const totalPrice = parseFloat(pkg.price) * form.travelers;
 
@@ -439,6 +465,47 @@ export default function PublicBookingPage() {
               ) : null}
             </div>
           </div>
+
+          {galleryUrls.length > 0 ? (
+            <div className="mt-6 max-w-3xl" data-testid="book-media-strip">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {t("bookings.galleryLabel")}
+              </p>
+              <div
+                className={cn(
+                  "grid gap-2",
+                  galleryUrls.length === 1 && "grid-cols-1",
+                  galleryUrls.length === 2 && "grid-cols-2",
+                  galleryUrls.length >= 3 && "grid-cols-2 sm:grid-cols-3",
+                )}
+              >
+                {galleryUrls.map((url, index) => (
+                  <div
+                    key={url}
+                    className={cn(
+                      "relative overflow-hidden rounded-xl border border-border/60 bg-muted",
+                      index === 0 && galleryUrls.length >= 3
+                        ? "aspect-[16/10] sm:col-span-2 sm:row-span-2 sm:aspect-auto sm:min-h-[220px]"
+                        : "aspect-[4/3]",
+                    )}
+                  >
+                    <Image
+                      src={url}
+                      alt={`${pkg.title} — ${index + 1}`}
+                      fill
+                      sizes={
+                        index === 0 && galleryUrls.length >= 3
+                          ? "(max-width: 640px) 100vw, 66vw"
+                          : "(max-width: 640px) 50vw, 33vw"
+                      }
+                      className="object-cover"
+                      priority={index === 0}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </header>
 

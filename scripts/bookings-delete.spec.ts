@@ -81,14 +81,14 @@ test.describe("booking delete flow", () => {
       { timeout: 10000 },
     );
 
-    // Resolve the option value for "Komodo Island Expedition" by its text content
-    const komodoOptionValue = await page
+    // Resolve the option value for "Umrah Plus 12 Hari" by its text content
+    const plusOptionValue = await page
       .locator("#packageId option")
-      .filter({ hasText: "Komodo Island Expedition" })
+      .filter({ hasText: "Umrah Plus 12 Hari" })
       .getAttribute("value");
-    if (!komodoOptionValue) throw new Error("Komodo Island Expedition option not found");
-    await page.locator(SEL.packageSelect).selectOption(komodoOptionValue);
-    await expect(page.locator(SEL.packageSelect)).toHaveValue(komodoOptionValue, { timeout: 5000 });
+    if (!plusOptionValue) throw new Error("Umrah Plus 12 Hari option not found");
+    await page.locator(SEL.packageSelect).selectOption(plusOptionValue);
+    await expect(page.locator(SEL.packageSelect)).toHaveValue(plusOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to July 1, 2026
     await page.locator(SEL.departureDateButton).click();

@@ -63,183 +63,247 @@ export async function main() {
 
     await client.query("COMMIT");
 
-    // Seed 3 packages with static UUIDs so booking tests always have
-    // package options in the dropdown. The e2e/smoke CI steps run
-    // src/lib/db/seed.ts before Playwright, but the globalSetup also
-    // runs this script which only cleaned up user/bookings — adding
-    // packages here guarantees they exist regardless of ordering.
-    const pkgBaliId = "00000000-0000-0000-0000-000000000001";
-    const pkgKomodoId = "00000000-0000-0000-0000-000000000002";
-    const pkgJogjaId = "00000000-0000-0000-0000-000000000003";
+    // Static UUIDs so booking tests always have package options in the dropdown.
+    // Keep 0001..0003 stable across leisure→Umrah renames so existing fixtures stay valid.
+    const pkgEkonomiId = "00000000-0000-0000-0000-000000000001";
+    const pkgPlusId = "00000000-0000-0000-0000-000000000002";
+    const pkgVipId = "00000000-0000-0000-0000-000000000003";
+
+    const MEDIA = {
+      ekonomi: {
+        featured:
+          "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=80",
+        gallery: [
+          "https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
+        ],
+      },
+      plus: {
+        featured:
+          "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1600&q=80",
+        gallery: [
+          "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+        ],
+      },
+      vip: {
+        featured:
+          "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1600&q=80",
+        gallery: [
+          "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=1200&q=80",
+        ],
+      },
+    } as const;
+
+    const umrahSlugs = ["umrah-ekonomi-9hari", "umrah-plus-12hari", "umrah-vip-ramadhan"] as const;
+    const legacySlugs = [
+      "bali-sacred-temples",
+      "komodo-island-expedition",
+      "yogyakarta-heritage-tour",
+    ] as const;
 
     await client.query("BEGIN");
-    // Delete by slug first to avoid UNIQUE violation from seed.ts packages
-    await client.query(
-      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
-      ["bali-sacred-temples"],
-    );
-    await client.query(
-      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
-      ["komodo-island-expedition"],
-    );
-    await client.query(
-      "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
-      ["yogyakarta-heritage-tour"],
-    );
-    await client.query("DELETE FROM packages WHERE slug = $1", ["bali-sacred-temples"]);
-    await client.query("DELETE FROM packages WHERE slug = $1", ["komodo-island-expedition"]);
-    await client.query("DELETE FROM packages WHERE slug = $1", ["yogyakarta-heritage-tour"]);
-    // Also delete by static UUID (in case they exist from a previous run)
-    await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgBaliId]);
-    await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgKomodoId]);
-    await client.query("DELETE FROM bookings WHERE package_id = $1", [pkgJogjaId]);
-    await client.query("DELETE FROM packages WHERE id = $1", [pkgBaliId]);
-    await client.query("DELETE FROM packages WHERE id = $1", [pkgKomodoId]);
-    await client.query("DELETE FROM packages WHERE id = $1", [pkgJogjaId]);
+    for (const slug of [...legacySlugs, ...umrahSlugs]) {
+      await client.query(
+        "DELETE FROM bookings WHERE package_id IN (SELECT id FROM packages WHERE slug = $1)",
+        [slug],
+      );
+      await client.query("DELETE FROM packages WHERE slug = $1", [slug]);
+    }
+    for (const id of [pkgEkonomiId, pkgPlusId, pkgVipId]) {
+      await client.query("DELETE FROM bookings WHERE package_id = $1", [id]);
+      await client.query("DELETE FROM packages WHERE id = $1", [id]);
+    }
 
     const packageInserts = [
       {
-        id: pkgBaliId,
-        title: "Bali Sacred Temples",
-        slug: "bali-sacred-temples",
+        id: pkgEkonomiId,
+        title: "Umrah Ekonomi 9 Hari",
+        slug: "umrah-ekonomi-9hari",
         description:
-          "Journey through Bali's most revered temples — Uluwatu perched on cliffs, Tanah Lot surrounded by sea at sunset.",
-        durationDays: 3,
-        price: "2750000",
+          "Paket Umrah hemat 9 hari untuk jamaah Indonesia. Penerbangan Jakarta–Jeddah, hotel dekat Haram, mutawwif berbahasa Indonesia.",
+        durationDays: 9,
+        price: "28900000",
         currency: "IDR",
         itinerary: JSON.stringify([
           {
             day: 1,
-            title: "Arrival & Uluwatu",
-            description: "Airport pickup, Uluwatu Temple at sunset, Kecak fire dance",
+            title: "Keberangkatan Jakarta",
+            description: "Berkumpul di bandara, penerbangan ke Jeddah",
           },
           {
             day: 2,
-            title: "Tanah Lot & Tirta Empul",
-            description: "Morning at Tanah Lot, afternoon purification at Tirta Empul",
+            title: "Tiba Jeddah · Transfer Makkah",
+            description: "Transfer bus ke hotel Makkah",
           },
           {
             day: 3,
-            title: "Besakih & Departure",
-            description: "Besakih Mother Temple, transfer to airport",
+            title: "Umrah pertama",
+            description: "Thawaf, sa'i, tahallul didampingi mutawwif",
           },
+          {
+            day: 4,
+            title: "Ibadah di Masjidil Haram",
+            description: "Shalat berjamaah, waktu bebas ibadah",
+          },
+          { day: 5, title: "Transfer Madinah", description: "Perjalanan darat Makkah–Madinah" },
+          { day: 6, title: "Ziarah Madinah", description: "Masjid Nabawi, Raudhah, Baqi & Uhud" },
+          { day: 7, title: "Ibadah di Nabawi", description: "Shalat berjamaah, waktu bebas" },
+          { day: 8, title: "Persiapan pulang", description: "Belanja oleh-oleh, packing" },
+          { day: 9, title: "Kepulangan", description: "Transfer bandara, penerbangan ke Jakarta" },
         ]),
         inclusions: JSON.stringify([
-          "Private car with driver",
-          "English-speaking guide",
-          "Temple entrance fees",
-          "2 nights hotel (4★)",
+          "Tiket pesawat PP Jakarta–Jeddah",
+          "Visa Umrah",
+          "Hotel Makkah ★3 (dekat Haram)",
+          "Hotel Madinah ★3 (dekat Nabawi)",
+          "Transport bus AC",
+          "Mutawwif berbahasa Indonesia",
         ]),
         exclusions: JSON.stringify([
-          "International flights",
-          "Travel insurance",
-          "Personal expenses",
-          "Tips",
+          "Asuransi perjalanan",
+          "Pengeluaran pribadi",
+          "Tips mutawwif & crew",
+          "Kamar single supplement",
         ]),
-        departureCity: "Denpasar",
+        departureCity: "Jakarta",
         availableDates: JSON.stringify([
           "2026-07-01",
           "2026-07-15",
           "2026-08-01",
           "2026-08-15",
           "2026-09-01",
+          "2026-10-01",
         ]),
-        category: "culture",
+        featuredImage: MEDIA.ekonomi.featured,
+        gallery: JSON.stringify([...MEDIA.ekonomi.gallery]),
+        category: "economy",
         status: "published",
       },
       {
-        id: pkgKomodoId,
-        title: "Komodo Island Expedition",
-        slug: "komodo-island-expedition",
+        id: pkgPlusId,
+        title: "Umrah Plus 12 Hari",
+        slug: "umrah-plus-12hari",
         description:
-          "Sail through the Komodo archipelago on a liveaboard. Trek alongside the legendary Komodo dragons.",
-        durationDays: 5,
-        price: "6800000",
+          "Paket Umrah 12 hari dengan hotel lebih dekat, city tour Thaif & Jeddah, dan kuota Raudhah terfasilitasi.",
+        durationDays: 12,
+        price: "42500000",
         currency: "IDR",
         itinerary: JSON.stringify([
           {
             day: 1,
-            title: "Labuan Bajo & Embarkation",
-            description: "Airport pickup, board liveaboard",
+            title: "Keberangkatan",
+            description: "Berkumpul di embarkasi, penerbangan ke Jeddah",
           },
-          { day: 2, title: "Rinca Island Trek", description: "Komodo dragon trekking, snorkeling" },
-          {
-            day: 3,
-            title: "Komodo Island & Pink Beach",
-            description: "Dragon trekking, Pink Beach",
-          },
+          { day: 2, title: "Tiba · Makkah", description: "Transfer hotel Makkah, orientasi Haram" },
+          { day: 3, title: "Umrah & manasik lapangan", description: "Pelaksanaan Umrah lengkap" },
           {
             day: 4,
-            title: "Padar Island & Manta Point",
-            description: "Sunrise hike, manta ray snorkeling",
+            title: "Ibadah intensif Makkah",
+            description: "Shalat berjamaah, waktu ibadah bebas",
           },
-          { day: 5, title: "Disembarkation", description: "Transfer to Labuan Bajo airport" },
+          { day: 5, title: "Ziarah & Thaif", description: "City tour Thaif" },
+          { day: 6, title: "Ibadah di Haram", description: "Fokus ibadah" },
+          { day: 7, title: "Transfer Madinah", description: "Bus AC ke Madinah" },
+          {
+            day: 8,
+            title: "Raudhah & ziarah",
+            description: "Fasilitasi Raudhah, Baqi, Uhud, Quba",
+          },
+          { day: 9, title: "Ibadah Nabawi", description: "Shalat berjamaah, kajian singkat" },
+          { day: 10, title: "Waktu bebas Madinah", description: "Ibadah & belanja" },
+          {
+            day: 11,
+            title: "Jeddah · free program",
+            description: "City tour ringan, hotel transit",
+          },
+          { day: 12, title: "Kepulangan", description: "Penerbangan pulang ke Indonesia" },
         ]),
         inclusions: JSON.stringify([
-          "Liveaboard accommodation",
-          "All meals",
-          "Snorkeling gear",
-          "Park entrance fees",
-          "Guide",
+          "Tiket pesawat PP (CGK/SUB–JED)",
+          "Visa Umrah",
+          "Hotel Makkah ★4 (≤500m Haram)",
+          "Hotel Madinah ★4",
+          "Transport AC full program",
+          "Mutawwif + asisten",
+          "City tour Thaif & Jeddah",
+          "Fasilitasi Raudhah",
         ]),
         exclusions: JSON.stringify([
-          "Flights to Labuan Bajo",
-          "Alcoholic beverages",
-          "Travel insurance",
+          "Asuransi perjalanan premium",
+          "Pengeluaran pribadi",
           "Tips",
+          "Single room",
         ]),
-        departureCity: "Labuan Bajo",
+        departureCity: "Surabaya",
         availableDates: JSON.stringify([
           "2026-07-01",
           "2026-07-20",
           "2026-08-05",
           "2026-08-20",
           "2026-09-05",
+          "2026-10-12",
         ]),
-        category: "adventure",
+        featuredImage: MEDIA.plus.featured,
+        gallery: JSON.stringify([...MEDIA.plus.gallery]),
+        category: "premium",
         status: "published",
       },
       {
-        id: pkgJogjaId,
-        title: "Yogyakarta Heritage Tour",
-        slug: "yogyakarta-heritage-tour",
+        id: pkgVipId,
+        title: "Umrah VIP Ramadhan",
+        slug: "umrah-vip-ramadhan",
         description:
-          "Discover the cultural heart of Java. Explore Borobudur at sunrise and Prambanan's towering spires.",
-        durationDays: 4,
-        price: "3200000",
+          "Paket VIP 14 hari di musim Ramadhan: hotel bintang 5 walking distance, private handling, dan concierge jamaah.",
+        durationDays: 14,
+        price: "68900000",
         currency: "IDR",
         itinerary: JSON.stringify([
-          { day: 1, title: "Arrival & Malioboro", description: "Airport pickup, Malioboro Street" },
-          { day: 2, title: "Borobudur Sunrise", description: "Dawn at Borobudur, batik workshop" },
-          { day: 3, title: "Prambanan & Kraton", description: "Prambanan temple, Sultan's Palace" },
-          {
-            day: 4,
-            title: "Kotagede & Departure",
-            description: "Silver craft village, transfer to airport",
-          },
+          { day: 1, title: "VIP departure", description: "Fast-track bandara, lounge" },
+          { day: 2, title: "Makkah check-in", description: "Private transfer, hotel ★5" },
+          { day: 3, title: "Umrah VIP", description: "Pendampingan personal" },
+          { day: 4, title: "I'tikaf ringan", description: "Program ibadah malam Ramadhan" },
+          { day: 5, title: "Tarawih & kajian", description: "Tarawih berjamaah" },
+          { day: 6, title: "Ibadah full day", description: "Waktu bebas, concierge on-call" },
+          { day: 7, title: "Ziarah eksklusif", description: "Ziarah private" },
+          { day: 8, title: "Transfer Madinah VIP", description: "Private van ke hotel ★5" },
+          { day: 9, title: "Raudhah prioritas", description: "Fasilitasi slot Raudhah" },
+          { day: 10, title: "Ibadah Madinah", description: "Shalat berjamaah" },
+          { day: 11, title: "Program keluarga", description: "Aktivitas ringan lansia & keluarga" },
+          { day: 12, title: "Ibadah penutup", description: "Persiapan kepulangan spiritual" },
+          { day: 13, title: "Jeddah transit VIP", description: "Hotel transit, lounge access" },
+          { day: 14, title: "Kepulangan", description: "Fast-track kepulangan" },
         ]),
         inclusions: JSON.stringify([
-          "Private car with driver",
-          "English-speaking guide",
-          "Temple entrance fees",
-          "Batik workshop",
-          "3 nights hotel (3★)",
+          "Tiket pesawat premium PP",
+          "Visa Umrah + handling VIP",
+          "Hotel Makkah ★5 walking distance",
+          "Hotel Madinah ★5",
+          "Private transfer full program",
+          "Mutawwif senior 1:9",
+          "Concierge 24 jam",
+          "Fasilitasi Raudhah prioritas",
+          "Asuransi perjalanan",
         ]),
         exclusions: JSON.stringify([
-          "Flights to Yogyakarta",
-          "Travel insurance",
-          "Personal expenses",
-          "Tips",
+          "Pengeluaran pribadi & belanja",
+          "Tips di luar paket",
+          "Upgrade suite",
+          "Perpanjangan masa tinggal",
         ]),
-        departureCity: "Yogyakarta",
+        departureCity: "Jakarta",
         availableDates: JSON.stringify([
-          "2026-07-01",
-          "2026-07-10",
-          "2026-07-25",
-          "2026-08-10",
-          "2026-08-25",
+          "2026-02-15",
+          "2026-02-22",
+          "2026-03-01",
+          "2026-03-08",
+          "2027-02-10",
+          "2027-02-20",
         ]),
-        category: "culture",
+        featuredImage: MEDIA.vip.featured,
+        gallery: JSON.stringify([...MEDIA.vip.gallery]),
+        category: "vip",
         status: "published",
       },
     ];
@@ -247,8 +311,9 @@ export async function main() {
     for (const pkg of packageInserts) {
       await client.query(
         `INSERT INTO packages (id, title, slug, description, duration_days, price, currency,
-          itinerary, inclusions, exclusions, departure_city, available_dates, category, status, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+          itinerary, inclusions, exclusions, departure_city, available_dates,
+          featured_image, gallery, category, status, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
         [
           pkg.id,
           pkg.title,
@@ -262,6 +327,8 @@ export async function main() {
           pkg.exclusions,
           pkg.departureCity,
           pkg.availableDates,
+          pkg.featuredImage,
+          pkg.gallery,
           pkg.category,
           pkg.status,
           now,
@@ -400,9 +467,9 @@ export async function main() {
         email,
         password,
         packages: {
-          bali: pkgBaliId,
-          komodo: pkgKomodoId,
-          jogja: pkgJogjaId,
+          ekonomi: pkgEkonomiId,
+          plus: pkgPlusId,
+          vip: pkgVipId,
         },
       }),
     );
