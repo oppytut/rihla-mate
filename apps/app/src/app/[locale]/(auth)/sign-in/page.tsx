@@ -6,15 +6,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 export default function SignInPage() {
@@ -69,95 +62,95 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <div className="mb-3 flex justify-center">
-            <BrandMark
-              size="lg"
-              showWordmark
-              abbr={t("common.appNameAbbr")}
-              wordmark={t("common.appName")}
-            />
-          </div>
-          <CardTitle className="sr-only">{t("common.appName")}</CardTitle>
-          <CardDescription>{t("auth.signInToAccount")}</CardDescription>
-        </CardHeader>
+    <AuthShell maxWidth="sm">
+      <div className="mb-6 text-center">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+          {t("auth.signIn")}
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">{t("auth.signInToAccount")}</p>
+        <p className="mt-2 text-xs text-muted-foreground/90">{t("auth.secureNote")}</p>
+      </div>
 
-        <CardContent>
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-foreground">
-                {t("auth.email")}
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("auth.emailPlaceholder")}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
+      <form onSubmit={handleEmailSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium text-foreground">
+            {t("auth.email")}
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder={t("auth.emailPlaceholder")}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            data-testid="sign-in-email"
+          />
+        </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-foreground">
-                {t("auth.password")}
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t("auth.passwordPlaceholder")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-            </div>
+        <div className="space-y-2">
+          <label htmlFor="password" className="text-sm font-medium text-foreground">
+            {t("auth.password")}
+          </label>
+          <Input
+            id="password"
+            type="password"
+            placeholder={t("auth.passwordPlaceholder")}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            data-testid="sign-in-password"
+          />
+        </div>
 
-            {error && (
-              <p className="text-sm text-destructive" data-testid="sign-in-error">
-                {error}
-              </p>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-              data-testid="sign-in-submit"
-            >
-              {loading ? t("common.loading") : t("auth.signIn")}
-            </Button>
-          </form>
-
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-            data-testid="sign-in-google"
+        {error && (
+          <div
+            className="rounded-md border border-destructive/20 bg-destructive/10 px-3 py-2"
+            role="alert"
           >
-            <GoogleIcon className="mr-2 h-4 w-4" />
-            {t("auth.signInWithGoogle")}
-          </Button>
-        </CardContent>
+            <p className="text-sm text-destructive" data-testid="sign-in-error">
+              {error}
+            </p>
+          </div>
+        )}
 
-        <CardFooter className="justify-center">
-          <p className="text-xs text-muted-foreground">{t("auth.signInHelp")}</p>
-        </CardFooter>
-      </Card>
-    </div>
+        <Button type="submit" className="w-full" disabled={loading} data-testid="sign-in-submit">
+          {loading ? t("common.loading") : t("auth.signIn")}
+        </Button>
+      </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-card px-2 text-muted-foreground">{t("auth.orContinueWith")}</span>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={handleGoogleSignIn}
+        disabled={loading}
+        data-testid="sign-in-google"
+      >
+        <GoogleIcon className="me-2 h-4 w-4" />
+        {t("auth.signInWithGoogle")}
+      </Button>
+
+      <p className="mt-6 text-center text-xs text-muted-foreground">{t("auth.signInHelp")}</p>
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        <Link
+          href="/activate"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+          data-testid="sign-in-activate-link"
+        >
+          {t("auth.trialOrActivate")}
+        </Link>
+      </p>
+    </AuthShell>
   );
 }
 
