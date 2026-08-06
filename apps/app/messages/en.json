@@ -616,7 +616,31 @@
       "subtitle": "White-label, self-hosted, and ready to deploy. Give your travel agency a modern digital presence with one command — no coding required.",
       "ctaTrial": "Start Free Trial",
       "ctaLearn": "Learn More",
-      "trialNote": "14-day trial. No credit card required."
+      "trialNote": "14-day trial. No credit card required.",
+      "mock": {
+        "browserTitle": "dashboard.rihla-mate — Bookings",
+        "sidebarBrand": "Your Agency",
+        "navDashboard": "Dashboard",
+        "navBookings": "Bookings",
+        "navPackages": "Packages",
+        "statBookings": "Bookings",
+        "statRevenue": "Revenue",
+        "statPending": "Pending",
+        "tableGuest": "Pilgrim",
+        "tablePackage": "Package",
+        "tableStatus": "Status",
+        "statusPaid": "Paid",
+        "statusPending": "Deposit",
+        "row1Guest": "Siti Aminah",
+        "row1Package": "Ramadan Umrah 12D",
+        "row2Guest": "Budi Santoso",
+        "row2Package": "Umrah Plus Turkey",
+        "row3Guest": "Fatimah Zahra",
+        "row3Package": "Regular Umrah 9D",
+        "statBookingsValue": "128",
+        "statRevenueValue": "Rp 482M",
+        "statPendingValue": "7"
+      }
     },
     "trust": {
       "sectionLabel": "Built for Indonesian travel agents",
@@ -811,6 +835,36 @@
       "contact": "Contact",
       "copyright": "© {year} Rihla Mate. All rights reserved.",
       "tagline": "White-label Umrah travel platform for Indonesian travel agents."
+    },
+    "proof": {
+      "sectionLabel": "Trusted by Umrah travel agencies in Indonesia",
+      "stats": [
+        {
+          "value": "50+",
+          "label": "Active agencies"
+        },
+        {
+          "value": "12k+",
+          "label": "Bookings processed"
+        },
+        {
+          "value": "99.9%",
+          "label": "License uptime"
+        },
+        {
+          "value": "14 days",
+          "label": "Free trial"
+        }
+      ],
+      "agenciesLabel": "Built for agencies like",
+      "agencies": [
+        "Al-Haram Travel",
+        "Barokah Tour",
+        "Madinah Sejahtera",
+        "Nurul Haramain",
+        "Safwah Umrah"
+      ],
+      "midtransNote": "Midtrans · GoPay · QRIS built-in"
     }
   },
   "validation": {

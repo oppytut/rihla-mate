@@ -35,12 +35,12 @@ export function PricingSection() {
                 className={cn(
                   "relative flex flex-col rounded-xl border p-6 transition-all",
                   isPopular
-                    ? "border-primary/50 bg-card shadow-lg lg:scale-105"
+                    ? "border-accent/60 bg-card shadow-lg ring-1 ring-accent/30 lg:scale-105"
                     : "border-border/50 bg-card hover:border-border hover:shadow-md",
                 )}
               >
                 {isPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-medium text-primary-foreground">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground shadow-sm">
                     {t("pricing.popular")}
                   </div>
                 )}
@@ -55,7 +55,12 @@ export function PricingSection() {
                 </div>
 
                 <div className="mb-6 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                  <span className="text-4xl font-bold text-foreground">
+                  <span
+                    className={cn(
+                      "text-4xl font-bold",
+                      isPopular ? "text-primary" : "text-foreground",
+                    )}
+                  >
                     {t(`pricing.${key}.price`)}
                   </span>
                   <span className="text-sm text-muted-foreground">

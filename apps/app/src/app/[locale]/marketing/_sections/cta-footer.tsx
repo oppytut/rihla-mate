@@ -9,7 +9,7 @@ export function CtaBand() {
   return (
     <section className="border-t border-border/40">
       <div className="relative overflow-hidden py-20 lg:py-28">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,oklch(0.646_0.222_41.116_/_0.06),transparent)]" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,oklch(0.78_0.09_85_/_0.14),transparent)]" />
         <div className="container mx-auto px-4 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

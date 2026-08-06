@@ -32,7 +32,7 @@ export function HowItWorksSection() {
                     <Icon className="h-7 w-7 text-primary" />
                   </div>
 
-                  <span className="absolute -right-1 -top-1 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-chart-1 text-xs font-bold text-white">
+                  <span className="absolute -right-1 -top-1 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground shadow-sm ring-2 ring-background">
                     {t(`howItWorks.steps.${key}.step`)}
                   </span>
 
