@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { formatPrice, formatDisplayDate } from "@/lib/utils/format";
 import Link from "next/link";
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -55,22 +57,18 @@ export default function CustomersPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-          {t("customers.title")}
-        </h1>
-      </header>
+      <PageHeader title={t("customers.title")} />
 
       <div className="px-4 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            type="text"
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <Input
+            type="search"
             data-testid="customers-search"
             placeholder={t("customers.search")}
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("customers.search")}
-            className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            className="flex-1 bg-background"
           />
         </div>
 

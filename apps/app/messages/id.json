@@ -71,18 +71,22 @@
     },
     "layout": {
       "brandName": "Rihla Mate",
-      "brandSubtitle": "Travel Agency Platform",
-      "notSignedIn": "Belum login"
+      "brandSubtitle": "Platform Travel Agency",
+      "notSignedIn": "Belum masuk",
+      "openMenu": "Buka menu",
+      "closeMenu": "Tutup menu"
     },
     "user": {
       "signedInAs": "Login sebagai",
       "signOut": "Keluar"
     },
     "overview": {
-      "totalBookings": "Total Pemesanan",
+      "totalBookings": "Total Booking",
       "activePackages": "Paket Aktif",
       "totalCustomers": "Total Pelanggan",
-      "revenue": "Pendapatan"
+      "revenue": "Pendapatan",
+      "quickGlance": "Ringkasan operator",
+      "quickGlanceHint": "Gunakan Booking, Paket, dan Analitik di bilah sisi untuk operasional harian."
     }
   },
   "packages": {
@@ -483,7 +487,8 @@
     "period": {
       "7d": "7 Hari Terakhir",
       "30d": "30 Hari Terakhir",
-      "90d": "90 Hari Terakhir"
+      "90d": "90 Hari Terakhir",
+      "label": "Periode"
     }
   },
   "settings": {
