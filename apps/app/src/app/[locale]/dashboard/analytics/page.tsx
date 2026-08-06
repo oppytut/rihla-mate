@@ -4,6 +4,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { StatCard } from "@/components/dashboard/stat-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { CalendarCheck, Wallet, CircleDollarSign, Clock, Package } from "lucide-react";
 
 const PERIOD_OPTIONS = [
   { value: 7, key: "7d" },
@@ -30,171 +36,183 @@ export default function AnalyticsPage() {
     {
       label: t("analytics.totalBookings"),
       value: String(data?.totalBookings ?? "0"),
+      icon: CalendarCheck,
     },
     {
       label: t("analytics.revenue"),
       value: formatCurrency(data?.totalRevenue ?? "0"),
+      icon: Wallet,
     },
     {
       label: t("analytics.paidRevenue"),
       value: formatCurrency(data?.paidRevenue ?? "0"),
+      icon: CircleDollarSign,
     },
     {
       label: t("analytics.pendingRevenue"),
       value: formatCurrency(data?.pendingRevenue ?? "0"),
+      icon: Clock,
     },
     {
       label: t("analytics.publishedPackages"),
       value: String(data?.publishedPackages ?? "0"),
+      icon: Package,
     },
   ];
 
   const statusVariant = (status: string) => {
     switch (status) {
       case "paid":
-        return "bg-success/10 text-success";
+        return "border-transparent bg-success/10 text-success";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
       case "confirmed":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+        return "border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
       case "cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return "border-transparent bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
       default:
-        return "bg-muted text-muted-foreground";
+        return "border-transparent bg-muted text-muted-foreground";
     }
   };
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-              {t("analytics.title")}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">{t("analytics.overview")}</p>
-          </div>
-          <div className="flex gap-1 bg-muted rounded-lg p-1">
+      <PageHeader
+        title={t("analytics.title")}
+        description={t("analytics.overview")}
+        actions={
+          <div
+            className="flex gap-1 rounded-lg bg-muted p-1"
+            role="group"
+            aria-label={t("analytics.period.label")}
+            data-testid="analytics-period"
+          >
             {PERIOD_OPTIONS.map((opt) => (
               <button
                 key={opt.key}
                 type="button"
                 onClick={() => setDays(opt.value)}
-                className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-sm transition-colors",
                   days === opt.value
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                    : "text-muted-foreground hover:text-foreground",
+                )}
               >
                 {t(`analytics.period.${opt.key}`)}
               </button>
             ))}
           </div>
-        </div>
-      </header>
+        }
+      />
 
-      <div className="px-4 lg:px-8 py-6 space-y-6">
+      <div className="space-y-6 px-4 py-6 lg:px-8">
         {summaryQuery.isError ? (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
             <p className="text-sm text-destructive">
               {t("common.error")}: {summaryQuery.error?.message ?? t("analytics.noData")}
             </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {statCards.map((stat, index) => (
-                <div key={index} className="bg-card border border-border rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  {summaryQuery.isLoading ? (
-                    <div className="mt-1 h-8 w-24 bg-muted rounded animate-pulse" />
-                  ) : (
-                    <p className="text-2xl font-semibold text-foreground mt-1">{stat.value}</p>
-                  )}
-                </div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              {statCards.map((stat) => (
+                <StatCard
+                  key={stat.label}
+                  label={stat.label}
+                  value={stat.value}
+                  loading={summaryQuery.isLoading}
+                  icon={stat.icon}
+                />
               ))}
             </div>
 
             {data?.packagesByCategory && data.packagesByCategory.length > 0 && (
-              <div className="bg-card border border-border rounded-lg p-4">
-                <h2 className="text-lg font-semibold text-foreground mb-3">
-                  {t("analytics.packagesByCategory")}
-                </h2>
-                <div className="space-y-2">
-                  {data.packagesByCategory.map((item) => (
-                    <div
-                      key={item.category}
-                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                    >
-                      <span className="text-sm text-foreground capitalize">{item.category}</span>
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {item.count}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+                <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
+                  <CardTitle className="text-base font-semibold">
+                    {t("analytics.packagesByCategory")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 py-2 sm:px-6">
+                  <div className="divide-y divide-border">
+                    {data.packagesByCategory.map((item) => (
+                      <div key={item.category} className="flex items-center justify-between py-3">
+                        <span className="text-sm capitalize text-foreground">{item.category}</span>
+                        <span className="text-sm font-medium text-muted-foreground">
+                          {item.count}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            <div className="bg-card border border-border rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-foreground mb-3">
-                {t("analytics.recentBookings")}
-              </h2>
-              {summaryQuery.isLoading ? (
-                <div className="space-y-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div key={i} className="h-10 bg-muted rounded animate-pulse" />
-                  ))}
-                </div>
-              ) : !data?.recentBookings || data.recentBookings.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4">{t("analytics.noData")}</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-2 font-medium text-muted-foreground">
-                          {t("bookings.fields.customerName")}
-                        </th>
-                        <th className="text-left py-2 font-medium text-muted-foreground">
-                          {t("bookings.fields.totalPrice")}
-                        </th>
-                        <th className="text-left py-2 font-medium text-muted-foreground">
-                          {t("bookings.fields.travelers")}
-                        </th>
-                        <th className="text-left py-2 font-medium text-muted-foreground">
-                          {t("bookings.fields.status")}
-                        </th>
-                        <th className="text-left py-2 font-medium text-muted-foreground">
-                          {t("bookings.columns.date")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.recentBookings.map((booking) => (
-                        <tr key={booking.id} className="border-b border-border last:border-0">
-                          <td className="py-2 text-foreground">{booking.customerName}</td>
-                          <td className="py-2 text-foreground">
-                            {formatCurrency(String(booking.totalPrice))}
-                          </td>
-                          <td className="py-2 text-foreground">{booking.travelers}</td>
-                          <td className="py-2">
-                            <span
-                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${statusVariant(booking.status)}`}
-                            >
-                              {t(`bookings.status.${booking.status}`)}
-                            </span>
-                          </td>
-                          <td className="py-2 text-muted-foreground">
-                            {new Date(booking.createdAt).toLocaleDateString("id-ID")}
-                          </td>
+            <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+              <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
+                <CardTitle className="text-base font-semibold">
+                  {t("analytics.recentBookings")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 py-4 sm:px-6">
+                {summaryQuery.isLoading ? (
+                  <div className="space-y-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="h-10 animate-pulse rounded bg-muted" />
+                    ))}
+                  </div>
+                ) : !data?.recentBookings || data.recentBookings.length === 0 ? (
+                  <p className="py-4 text-sm text-muted-foreground">{t("analytics.noData")}</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.customerName")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.totalPrice")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.travelers")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.status")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.columns.date")}
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+                      </thead>
+                      <tbody>
+                        {data.recentBookings.map((booking) => (
+                          <tr key={booking.id} className="border-b border-border last:border-0">
+                            <td className="py-2.5 text-foreground">{booking.customerName}</td>
+                            <td className="py-2.5 text-foreground">
+                              {formatCurrency(String(booking.totalPrice))}
+                            </td>
+                            <td className="py-2.5 text-foreground">{booking.travelers}</td>
+                            <td className="py-2.5">
+                              <Badge
+                                variant="outline"
+                                className={cn("font-medium", statusVariant(booking.status))}
+                              >
+                                {t(`bookings.status.${booking.status}`)}
+                              </Badge>
+                            </td>
+                            <td className="py-2.5 text-muted-foreground">
+                              {new Date(booking.createdAt).toLocaleDateString("id-ID")}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
