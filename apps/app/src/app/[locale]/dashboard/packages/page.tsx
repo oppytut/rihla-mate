@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
 import { getStatusBadgeClass } from "@/lib/utils/badge";
@@ -78,27 +80,25 @@ export default function PackagesPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-            {t("packages.title")}
-          </h1>
+      <PageHeader
+        title={t("packages.title")}
+        actions={
           <Button asChild data-testid="packages-add-new">
             <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            type="text"
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <Input
+            type="search"
             data-testid="packages-search"
             placeholder={t("packages.search")}
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("packages.search")}
-            className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            className="flex-1 bg-background"
           />
           <select
             value={status}
@@ -108,7 +108,7 @@ export default function PackagesPage() {
             }}
             data-testid="packages-status-filter"
             aria-label={t("packages.allStatus")}
-            className="px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">{t("packages.allStatus")}</option>
             <option value="draft">{t("packages.status.draft")}</option>
