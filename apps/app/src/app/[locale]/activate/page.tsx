@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { BrandMark } from "@/components/brand/brand-mark";
+import { Input } from "@/components/ui/input";
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Link } from "@/i18n/navigation";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { logger } from "@/lib/utils/logger";
@@ -12,7 +13,6 @@ import { logger } from "@/lib/utils/logger";
 export default function ActivatePage() {
   const t = useTranslations();
   const trpc = useTRPC();
-  const router = useRouter();
   const [licenseKey, setLicenseKey] = useState("");
   const [trialKey, setTrialKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,6 @@ export default function ActivatePage() {
       onSuccess: (data) => {
         setTrialKey(data.key);
         setError(null);
-        setTimeout(() => router.push("/dashboard"), 1500);
       },
       onError: (err) => {
         logger.error("startTrial failed", { component: "activate" }, err);
@@ -46,7 +45,6 @@ export default function ActivatePage() {
           seats: data.seats,
         });
         setError(null);
-        setTimeout(() => router.push("/dashboard"), 1500);
       },
       onError: (err) => {
         logger.error("activate failed", { component: "activate" }, err);
@@ -66,124 +64,128 @@ export default function ActivatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background antialiased">
-      <div className="mx-auto max-w-md mt-20 px-4">
-        <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
-          <div className="mb-4 flex justify-center">
-            <BrandMark
-              size="lg"
-              showWordmark
-              abbr={t("common.appNameAbbr")}
-              wordmark={t("common.appName")}
+    <AuthShell maxWidth="md">
+      <div className="mb-6 text-center">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+          {t("activate.title")}
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">{t("activate.subtitle")}</p>
+        <p className="mt-2 text-xs text-muted-foreground/90">{t("activate.secureNote")}</p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <label htmlFor="license-key" className="text-sm font-medium text-foreground">
+            {t("activate.licenseKeyLabel")}
+          </label>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              id="license-key"
+              type="text"
+              value={licenseKey}
+              onChange={(e) => setLicenseKey(e.target.value)}
+              data-testid="activate-license-key"
+              placeholder={t("activate.licenseKeyPlaceholder")}
+              className="flex-1 font-mono text-sm"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleActivate();
+              }}
             />
-          </div>
-          <h1 className="text-2xl font-semibold text-card-foreground mb-2 text-center">
-            {t("activate.title")}
-          </h1>
-          <p className="text-muted-foreground text-sm mb-6 text-center">{t("activate.subtitle")}</p>
-
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <label htmlFor="license-key" className="text-sm font-medium text-foreground">
-                {t("activate.licenseKeyLabel")}
-              </label>
-              <div className="flex gap-2">
-                <input
-                  id="license-key"
-                  type="text"
-                  value={licenseKey}
-                  onChange={(e) => setLicenseKey(e.target.value)}
-                  data-testid="activate-license-key"
-                  placeholder={t("activate.licenseKeyPlaceholder")}
-                  className="flex-1 h-9 px-3 rounded-md border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent dark:bg-input/30"
-                />
-                <Button
-                  onClick={handleActivate}
-                  disabled={!licenseKey.trim() || activateMutation.isPending}
-                  variant="default"
-                  data-testid="activate-submit"
-                >
-                  {activateMutation.isPending ? t("activate.activating") : t("activate.activate")}
-                </Button>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
-                  {t("activate.orDivider")}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Button
-                onClick={handleStartTrial}
-                disabled={startTrialMutation.isPending}
-                variant="outline"
-                className="w-full"
-                data-testid="activate-start-trial"
-              >
-                {startTrialMutation.isPending
-                  ? t("activate.startingTrial")
-                  : t("activate.startTrial")}
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">{t("activate.trialNote")}</p>
-            </div>
-
-            {activateResult && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">{t("activate.activated")}</p>
-                <div className="bg-muted rounded-md p-3 space-y-1">
-                  {activateResult.plan && (
-                    <p className="text-xs text-muted-foreground">
-                      {t("activate.plan")}:{" "}
-                      <span className="text-foreground font-medium capitalize">
-                        {activateResult.plan}
-                      </span>
-                    </p>
-                  )}
-                  {activateResult.expiresAt && (
-                    <p className="text-xs text-muted-foreground">
-                      {t("activate.expires")}:{" "}
-                      <span className="text-foreground font-medium">
-                        {activateResult.expiresAt.toLocaleDateString()}
-                      </span>
-                    </p>
-                  )}
-                  {activateResult.seats !== undefined && (
-                    <p className="text-xs text-muted-foreground">
-                      {t("activate.seats")}:{" "}
-                      <span className="text-foreground font-medium">{activateResult.seats}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {trialKey && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-foreground">{t("activate.trialStarted")}</p>
-                <div className="bg-muted rounded-md p-3">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    {t("activate.trialKeyLabel")}
-                  </p>
-                  <code className="text-sm font-mono text-foreground break-all">{trialKey}</code>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            )}
+            <Button
+              onClick={handleActivate}
+              disabled={!licenseKey.trim() || activateMutation.isPending}
+              variant="default"
+              data-testid="activate-submit"
+              className="sm:shrink-0"
+            >
+              {activateMutation.isPending ? t("activate.activating") : t("activate.activate")}
+            </Button>
           </div>
         </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-card px-2 text-muted-foreground">{t("activate.orDivider")}</span>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Button
+            onClick={handleStartTrial}
+            disabled={startTrialMutation.isPending}
+            variant="outline"
+            className="w-full"
+            data-testid="activate-start-trial"
+          >
+            {startTrialMutation.isPending ? t("activate.startingTrial") : t("activate.startTrial")}
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">{t("activate.trialNote")}</p>
+        </div>
+
+        {activateResult && (
+          <div
+            className="space-y-3 rounded-lg border border-success/25 bg-success/10 p-3"
+            data-testid="activate-success"
+          >
+            <p className="text-sm font-medium text-foreground">{t("activate.activated")}</p>
+            <div className="space-y-1 rounded-md bg-card/60 p-3">
+              {activateResult.plan && (
+                <p className="text-xs text-muted-foreground">
+                  {t("activate.plan")}:{" "}
+                  <span className="font-medium capitalize text-foreground">
+                    {activateResult.plan}
+                  </span>
+                </p>
+              )}
+              {activateResult.expiresAt && (
+                <p className="text-xs text-muted-foreground">
+                  {t("activate.expires")}:{" "}
+                  <span className="font-medium text-foreground">
+                    {activateResult.expiresAt.toLocaleDateString()}
+                  </span>
+                </p>
+              )}
+              {activateResult.seats !== undefined && (
+                <p className="text-xs text-muted-foreground">
+                  {t("activate.seats")}:{" "}
+                  <span className="font-medium text-foreground">{activateResult.seats}</span>
+                </p>
+              )}
+            </div>
+            <Button asChild className="w-full" data-testid="activate-go-sign-in">
+              <Link href="/sign-in">{t("activate.goToSignIn")}</Link>
+            </Button>
+          </div>
+        )}
+
+        {trialKey && (
+          <div
+            className="space-y-3 rounded-lg border border-success/25 bg-success/10 p-3"
+            data-testid="activate-trial-success"
+          >
+            <p className="text-sm font-medium text-foreground">{t("activate.trialStarted")}</p>
+            <div className="rounded-md bg-card/60 p-3">
+              <p className="mb-1 text-xs text-muted-foreground">{t("activate.trialKeyLabel")}</p>
+              <code className="break-all font-mono text-sm text-foreground">{trialKey}</code>
+            </div>
+            <Button asChild className="w-full" data-testid="activate-trial-go-sign-in">
+              <Link href="/sign-in">{t("activate.goToSignIn")}</Link>
+            </Button>
+          </div>
+        )}
+
+        {error && (
+          <div
+            className="rounded-md border border-destructive/20 bg-destructive/10 p-3"
+            role="alert"
+          >
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
       </div>
-    </div>
+    </AuthShell>
   );
 }
