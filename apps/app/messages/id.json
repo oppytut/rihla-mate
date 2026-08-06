@@ -611,7 +611,9 @@
       "pricing": "Harga",
       "faq": "FAQ",
       "signIn": "Masuk",
-      "getStarted": "Mulai Sekarang"
+      "getStarted": "Mulai Sekarang",
+      "menu": "Menu",
+      "close": "Tutup"
     },
     "hero": {
       "badge": "Untuk Travel Agent",
@@ -643,7 +645,13 @@
         "row3Package": "Umrah Reguler 9H",
         "statBookingsValue": "128",
         "statRevenueValue": "Rp 482jt",
-        "statPendingValue": "7"
+        "statPendingValue": "7",
+        "navSettings": "Pengaturan",
+        "statTrend": "+18%",
+        "row4Guest": "Siti Aminah",
+        "row4Package": "Umrah Ekonomi 9H",
+        "statusConfirmed": "Dikonfirmasi",
+        "chartLabel": "Minggu ini"
       }
     },
     "trust": {
@@ -829,7 +837,13 @@
       "headline": "Siap Bawa Biro Travelmu ke Online?",
       "subtitle": "Bergabunglah dengan travel agent di seluruh Indonesia yang telah memodernisasi bisnisnya dengan Rihla Mate. Mulai uji coba gratis 14 hari sekarang.",
       "button": "Mulai Uji Coba Gratis",
-      "contact": "Pertanyaan? Hubungi kami di"
+      "contact": "Pertanyaan? Hubungi kami di",
+      "secondary": "Lihat harga",
+      "checklist": [
+        "Uji coba 14 hari — tanpa kartu",
+        "Deploy Docker Compose dalam hitungan menit",
+        "Merek, domain, dan data milik Anda"
+      ]
     },
     "footer": {
       "about": "Tentang",

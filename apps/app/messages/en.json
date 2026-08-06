@@ -616,7 +616,9 @@
       "pricing": "Pricing",
       "faq": "FAQ",
       "signIn": "Sign In",
-      "getStarted": "Get Started"
+      "getStarted": "Get Started",
+      "menu": "Menu",
+      "close": "Close"
     },
     "hero": {
       "badge": "For Travel Agents",
@@ -648,7 +650,13 @@
         "row3Package": "Regular Umrah 9D",
         "statBookingsValue": "128",
         "statRevenueValue": "Rp 482M",
-        "statPendingValue": "7"
+        "statPendingValue": "7",
+        "navSettings": "Settings",
+        "statTrend": "+18%",
+        "row4Guest": "Siti Aminah",
+        "row4Package": "Umrah Economy 9D",
+        "statusConfirmed": "Confirmed",
+        "chartLabel": "This week"
       }
     },
     "trust": {
@@ -834,7 +842,13 @@
       "headline": "Ready to Take Your Travel Agency Online?",
       "subtitle": "Join travel agents across Indonesia who've modernized their business with Rihla Mate. Start your 14-day free trial today.",
       "button": "Start Free Trial",
-      "contact": "Questions? Contact us at"
+      "contact": "Questions? Contact us at",
+      "secondary": "View pricing",
+      "checklist": [
+        "14-day free trial — no card required",
+        "Docker Compose deploy in minutes",
+        "Your brand, your domain, your data"
+      ]
     },
     "footer": {
       "about": "About",
