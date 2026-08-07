@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { SnapPayment } from "@/components/payment/snap-payment";
@@ -16,14 +16,19 @@ import { SnapPayment } from "@/components/payment/snap-payment";
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 10;
 
+const STATUS_FILTERS = new Set(["pending", "confirmed", "cancelled", "completed", "paid"]);
+
 export default function BookingsPage() {
   const t = useTranslations();
   const trpc = useTRPC();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const statusFromUrl = searchParams.get("status") ?? "";
+  const initialStatus = STATUS_FILTERS.has(statusFromUrl) ? statusFromUrl : "";
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [status, setStatus] = useState<string>("");
+  const [status, setStatus] = useState<string>(initialStatus);
   const [page, setPage] = useState(1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [snapToken, setSnapToken] = useState<string | null>(null);
@@ -37,6 +42,12 @@ export default function BookingsPage() {
       }
     };
   }, [t]);
+
+  useEffect(() => {
+    const next = searchParams.get("status") ?? "";
+    setStatus(STATUS_FILTERS.has(next) ? next : "");
+    setPage(1);
+  }, [searchParams]);
 
   const handleSearchChange = useCallback((value: string) => {
     setSearch(value);
