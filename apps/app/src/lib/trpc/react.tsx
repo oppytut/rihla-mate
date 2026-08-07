@@ -12,28 +12,39 @@ const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
 export { TRPCProvider, useTRPC };
 
-function getUrl() {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
+function getTrpcUrl() {
+  return "/api/trpc";
+}
+
+let browserQueryClient: ReturnType<typeof makeQueryClient> | undefined;
+
+function getQueryClient() {
+  if (typeof window === "undefined") {
+    return makeQueryClient();
   }
-  const vercelUrl = process.env.VERCEL_URL;
-  if (vercelUrl) return `https://${vercelUrl}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
+  browserQueryClient ??= makeQueryClient();
+  return browserQueryClient;
 }
 
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
-  const queryClient = useState(() => makeQueryClient())[0];
-  const trpcClient = useState(() =>
+  const queryClient = getQueryClient();
+  const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
         httpBatchLink({
-          url: `${getUrl()}/api/trpc`,
+          url: getTrpcUrl(),
           transformer: superjson,
           methodOverride: "POST",
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: "include",
+            });
+          },
         }),
       ],
     }),
-  )[0];
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
