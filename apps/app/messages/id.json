@@ -86,7 +86,21 @@
       "totalCustomers": "Total Pelanggan",
       "revenue": "Pendapatan",
       "quickGlance": "Ringkasan operator",
-      "quickGlanceHint": "Gunakan Booking, Paket, dan Analitik di bilah sisi untuk operasional harian."
+      "quickGlanceHint": "Gunakan Booking, Paket, dan Analitik di bilah sisi untuk operasional harian.",
+      "recentBookings": "Pemesanan terbaru",
+      "recentEmpty": "Belum ada pemesanan. Buat satu untuk mengisi antrean operator.",
+      "viewAll": "Lihat semua",
+      "package": "Paket",
+      "pendingBookings": "Menunggu pembayaran",
+      "pendingHint": "Menunggu pembayaran atau konfirmasi.",
+      "quickActions": "Aksi cepat",
+      "actions": {
+        "newBooking": "Pemesanan baru",
+        "viewBookings": "Semua pemesanan",
+        "viewPackages": "Kelola paket",
+        "viewAnalytics": "Buka analitik",
+        "viewPending": "Tinjau pending"
+      }
     }
   },
   "packages": {
