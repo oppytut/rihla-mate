@@ -505,6 +505,12 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
     router.push(`/dashboard/bookings/${bookingId}/payment?status=success`);
   };
 
+  const handleSnapPending = () => {
+    toast.info(t("bookings.snap.pending"));
+    router.push(`/dashboard/bookings/${bookingId}/payment?status=pending`);
+    setSnapToken(null);
+  };
+
   const handleSnapError = () => {
     toast.error(t("bookings.snap.error"));
     setSnapToken(null);
@@ -665,6 +671,7 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
       <SnapPayment
         token={snapToken}
         onSuccess={handleSnapSuccess}
+        onPending={handleSnapPending}
         onError={handleSnapError}
         onClose={handleSnapClose}
       />

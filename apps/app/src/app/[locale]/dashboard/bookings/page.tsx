@@ -431,8 +431,13 @@ export default function BookingsPage() {
       <SnapPayment
         token={snapToken}
         onSuccess={() => {
-          toast.success(t("bookings.snap.success"));
           router.push(`/dashboard/bookings/${payingBookingId}/payment?status=success`);
+          setSnapToken(null);
+          setPayingBookingId(null);
+        }}
+        onPending={() => {
+          toast.info(t("bookings.snap.pending"));
+          router.push(`/dashboard/bookings/${payingBookingId}/payment?status=pending`);
           setSnapToken(null);
           setPayingBookingId(null);
         }}
