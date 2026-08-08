@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { SnapPayment } from "@/components/payment/snap-payment";
 
@@ -48,22 +48,19 @@ export default function BookingsPage() {
     };
   }, [t]);
 
-  const handleStatusChange = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value && STATUS_FILTERS.has(value)) {
-        params.set("status", value);
-      } else {
-        params.delete("status");
-      }
-      const qs = params.toString();
-      router.replace(qs ? `/dashboard/bookings?${qs}` : "/dashboard/bookings");
-      setPage(1);
-    },
-    [router, searchParams],
-  );
+  function handleStatusChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && STATUS_FILTERS.has(value)) {
+      params.set("status", value);
+    } else {
+      params.delete("status");
+    }
+    const qs = params.toString();
+    router.replace(qs ? `/dashboard/bookings?${qs}` : "/dashboard/bookings");
+    setPage(1);
+  }
 
-  const handleSearchChange = useCallback((value: string) => {
+  function handleSearchChange(value: string) {
     setSearch(value);
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -72,7 +69,7 @@ export default function BookingsPage() {
       setDebouncedSearch(value);
       setPage(1);
     }, DEBOUNCE_MS);
-  }, []);
+  }
 
   const bookingsQuery = useQuery(
     trpc.bookings.list.queryOptions({
