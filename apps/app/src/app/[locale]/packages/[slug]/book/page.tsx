@@ -429,12 +429,24 @@ export default function PublicBookingPage() {
           aria-hidden
         />
         <div className="container mx-auto px-4 lg:px-8 py-8">
-          <Link
-            href="/"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("bookings.backHome")}
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <Link
+              href="/"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("bookings.backHome")}
+            </Link>
+            <span className="text-muted-foreground/50" aria-hidden>
+              ·
+            </span>
+            <Link
+              href={`/packages/${slug}`}
+              className="text-muted-foreground transition-colors hover:text-foreground"
+              data-testid="book-back-to-package"
+            >
+              {pkg.title}
+            </Link>
+          </div>
           <div className="mt-4 max-w-3xl">
             <p className="text-xs font-medium uppercase tracking-wider text-primary">
               {t("bookings.publicCreateTitle")}

@@ -183,7 +183,18 @@
     "notFound": "This travel package is unavailable or has been removed.",
     "notFoundHint": "Check your link, or return home to browse other offers.",
     "browsePackages": "View offers",
-    "temporaryUnavailable": "This package is temporarily unavailable. Please try again later."
+    "temporaryUnavailable": "This package is temporarily unavailable. Please try again later.",
+    "detail": {
+      "bookCta": "Book this package",
+      "itinerary": "Itinerary",
+      "inclusions": "What's included",
+      "exclusions": "Not included",
+      "availableDates": "Available departure dates",
+      "noDates": "Departure dates will be announced soon.",
+      "gallery": "Gallery",
+      "about": "About this package",
+      "dayLabel": "Day {day}"
+    }
   },
   "common": {
     "appName": "Rihla Mate",
