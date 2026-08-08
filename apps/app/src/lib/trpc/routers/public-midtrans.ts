@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { createTRPCRouter, publicProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
@@ -90,10 +90,32 @@ export const publicMidtransRouter = createTRPCRouter({
         },
       });
 
-      await ctx.db
+      const claimed = await ctx.db
         .update(bookings)
         .set({ midtransOrderId: orderId })
-        .where(eq(bookings.id, input.bookingId));
+        .where(and(eq(bookings.id, input.bookingId), isNull(bookings.midtransOrderId)))
+        .returning({ id: bookings.id });
+
+      if (claimed.length === 0) {
+        const again = await ctx.db
+          .select({ midtransOrderId: bookings.midtransOrderId })
+          .from(bookings)
+          .where(eq(bookings.id, input.bookingId))
+          .limit(1);
+        const existingOrderId = again[0]?.midtransOrderId;
+        if (existingOrderId) {
+          return {
+            token: null,
+            redirectUrl: null,
+            alreadyOrdered: true as const,
+            orderId: existingOrderId,
+          };
+        }
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Could not claim payment order for booking",
+        });
+      }
 
       logger.info("[public-midtrans] Snap token created", {
         component: "midtrans",
