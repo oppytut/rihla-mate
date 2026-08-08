@@ -82,16 +82,17 @@ rihla-mate/
 
 ## Scripts
 
-| Command            | Description                          |
-| ------------------ | ------------------------------------ |
-| `pnpm dev`         | Start development server (Turbopack) |
-| `pnpm build`       | Build all packages                   |
-| `pnpm check`       | TypeScript type checking             |
-| `pnpm lint`        | ESLint across all packages           |
-| `pnpm test`        | Run unit tests (Vitest)              |
-| `pnpm db:generate` | Generate Drizzle migrations          |
-| `pnpm db:migrate`  | Apply Drizzle migrations             |
-| `pnpm keygen`      | Generate Ed25519 license key pair    |
+| Command                  | Description                                                  |
+| ------------------------ | ------------------------------------------------------------ |
+| `pnpm dev`               | Start development server (Turbopack)                         |
+| `pnpm build`             | Build all packages                                           |
+| `pnpm check`             | TypeScript type checking                                     |
+| `pnpm lint`              | ESLint across all packages                                   |
+| `pnpm test`              | Run unit tests (Vitest)                                      |
+| `pnpm db:generate`       | Generate Drizzle migrations                                  |
+| `pnpm db:migrate`        | Apply Drizzle migrations                                     |
+| `pnpm db:seed:e2e-admin` | Guarded e2e admin user (`E2E_ADMIN_SEED=1` + `DATABASE_URL`) |
+| `pnpm keygen`            | Generate Ed25519 license key pair                            |
 
 ## Infrastructure & CI
 
