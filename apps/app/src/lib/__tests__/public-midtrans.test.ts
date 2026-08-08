@@ -249,7 +249,7 @@ describe("publicMidtransRouter.createTransaction", () => {
     });
   });
 
-  it("returns null token and redirectUrl when midtransOrderId already exists", async () => {
+  it("returns alreadyOrdered when midtransOrderId already exists", async () => {
     const caller = await createCaller(db);
 
     vi.mocked(db.select).mockReturnValueOnce(db as never);
@@ -262,7 +262,12 @@ describe("publicMidtransRouter.createTransaction", () => {
 
     const result = await caller.createTransaction({ bookingId });
 
-    expect(result).toEqual({ token: null, redirectUrl: null });
+    expect(result).toEqual({
+      token: null,
+      redirectUrl: null,
+      alreadyOrdered: true,
+      orderId: "RIHLA-existing-order",
+    });
   });
 
   it("creates a Snap transaction and updates booking with orderId", async () => {
@@ -284,6 +289,8 @@ describe("publicMidtransRouter.createTransaction", () => {
     expect(result.redirectUrl).toBe(
       "https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-txn",
     );
+    expect(result.alreadyOrdered).toBe(false);
+    expect(result.orderId).toMatch(/^RIHLA-/);
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
     const fetchCall = mockFetch.mock.calls.find((call) =>
