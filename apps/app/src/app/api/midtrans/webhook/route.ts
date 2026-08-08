@@ -114,10 +114,31 @@ export async function POST(request: NextRequest) {
 
     const paymentChannel = resolvePaymentChannel(notification, paymentType);
 
+    const existing = await db
+      .select({
+        id: bookings.id,
+        status: bookings.status,
+      })
+      .from(bookings)
+      .where(eq(bookings.midtransOrderId, orderId))
+      .limit(1);
+
+    const current = existing[0];
+    if (!current) {
+      logger.warn("[midtrans webhook] No booking for order_id", {
+        component: "midtrans",
+        orderId,
+      });
+      return NextResponse.json({ status: "ok" });
+    }
+
+    // Never demote a paid booking (late expire/cancel/pending must not wipe settlement).
+    const applyStatus = !(current.status === "paid" && bookingStatus !== "paid");
+
     await db
       .update(bookings)
       .set({
-        status: bookingStatus,
+        ...(applyStatus ? { status: bookingStatus } : {}),
         paymentMethod: paymentType ?? null,
         midtransTransactionId: transactionId ?? null,
         transactionStatus,
@@ -129,7 +150,8 @@ export async function POST(request: NextRequest) {
     logger.info("[midtrans webhook] Booking updated", {
       component: "midtrans",
       orderId,
-      bookingStatus,
+      bookingStatus: applyStatus ? bookingStatus : current.status,
+      statusApplied: applyStatus,
       transactionStatus,
     });
 

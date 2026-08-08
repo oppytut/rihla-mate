@@ -281,7 +281,8 @@ describe("publicMidtransRouter.createTransaction", () => {
 
     vi.mocked(db.update).mockReturnValueOnce(db as never);
     vi.mocked(db.set).mockReturnValueOnce(db as never);
-    vi.mocked(db.where).mockResolvedValueOnce(undefined as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ id: bookingId }] as never);
 
     const result = await caller.createTransaction({ bookingId });
 
@@ -321,7 +322,8 @@ describe("publicMidtransRouter.createTransaction", () => {
 
     vi.mocked(db.update).mockReturnValueOnce(db as never);
     vi.mocked(db.set).mockReturnValueOnce(db as never);
-    vi.mocked(db.where).mockResolvedValueOnce(undefined as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ id: bookingId }] as never);
 
     const result = await caller.createTransaction({ bookingId });
 
@@ -352,7 +354,8 @@ describe("publicMidtransRouter.createTransaction", () => {
 
     vi.mocked(db.update).mockReturnValueOnce(db as never);
     vi.mocked(db.set).mockReturnValueOnce(db as never);
-    vi.mocked(db.where).mockResolvedValueOnce(undefined as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ id: bookingId }] as never);
 
     const result = await caller.createTransaction({ bookingId });
 

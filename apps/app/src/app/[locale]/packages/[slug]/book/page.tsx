@@ -114,9 +114,22 @@ export default function PublicBookingPage() {
   const handleSnapSuccess = useCallback(
     (result: Record<string, unknown>) => {
       void result;
-      router.push(`/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+      router.push(
+        `/packages/${slug}/book/success?bookingId=${bookingIdRef.current}&status=success`,
+      );
     },
     [router, slug],
+  );
+
+  const handleSnapPending = useCallback(
+    (result: Record<string, unknown>) => {
+      void result;
+      toast.info(t("bookings.snap.pending"));
+      router.push(
+        `/packages/${slug}/book/success?bookingId=${bookingIdRef.current}&status=pending`,
+      );
+    },
+    [router, slug, t],
   );
 
   const handleSnapError = useCallback(
@@ -138,11 +151,19 @@ export default function PublicBookingPage() {
     if (!snapToken || !isPaying) return;
     pay(snapToken, {
       onSuccess: handleSnapSuccess,
-      onPending: handleSnapSuccess,
+      onPending: handleSnapPending,
       onError: handleSnapError,
       onClose: handleSnapClose,
     });
-  }, [snapToken, isPaying, pay, handleSnapSuccess, handleSnapError, handleSnapClose]);
+  }, [
+    snapToken,
+    isPaying,
+    pay,
+    handleSnapSuccess,
+    handleSnapPending,
+    handleSnapError,
+    handleSnapClose,
+  ]);
 
   const updateField = <K extends keyof BookingForm>(field: K, value: BookingForm[K]) => {
     setForm((prev) => ({ ...prev, [field]: value }));
