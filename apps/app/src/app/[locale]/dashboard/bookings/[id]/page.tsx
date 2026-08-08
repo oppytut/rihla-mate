@@ -487,9 +487,9 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
       onSuccess: (result) => {
         if (result.token) {
           setSnapToken(result.token);
-        } else {
-          router.push(`/dashboard/bookings/${bookingId}/payment?status=success`);
+          return;
         }
+        router.push(`/dashboard/bookings/${bookingId}/payment?status=pending`);
       },
       onError: (error) => {
         toast.error(error.message || t("common.error"));
