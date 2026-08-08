@@ -36,6 +36,13 @@
       "when": 1782807897812,
       "tag": "0004_wooden_quentin_quire",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783550000000,
+      "tag": "0005_booking_paid_at",
+      "breakpoints": true
     }
   ]
 }
