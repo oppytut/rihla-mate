@@ -82,17 +82,19 @@ rihla-mate/
 
 ## Scripts
 
-| Command                  | Description                                                  |
-| ------------------------ | ------------------------------------------------------------ |
-| `pnpm dev`               | Start development server (Turbopack)                         |
-| `pnpm build`             | Build all packages                                           |
-| `pnpm check`             | TypeScript type checking                                     |
-| `pnpm lint`              | ESLint across all packages                                   |
-| `pnpm test`              | Run unit tests (Vitest)                                      |
-| `pnpm db:generate`       | Generate Drizzle migrations                                  |
-| `pnpm db:migrate`        | Apply Drizzle migrations                                     |
-| `pnpm db:seed:e2e-admin` | Guarded e2e admin user (`E2E_ADMIN_SEED=1` + `DATABASE_URL`) |
-| `pnpm keygen`            | Generate Ed25519 license key pair                            |
+| Command                     | Description                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------- |
+| `pnpm dev`                  | Start development server (Turbopack)                                              |
+| `pnpm build`                | Build all packages                                                                |
+| `pnpm check`                | TypeScript type checking                                                          |
+| `pnpm lint`                 | ESLint across all packages                                                        |
+| `pnpm test`                 | Run unit tests (Vitest)                                                           |
+| `pnpm db:generate`          | Generate Drizzle migrations                                                       |
+| `pnpm db:migrate`           | Apply Drizzle migrations                                                          |
+| `pnpm db:seed:catalog`      | Upsert Umrah demo packages (local/`pg`; see [docs/seed-ops.md](docs/seed-ops.md)) |
+| `pnpm db:seed:catalog:neon` | Same catalog seed via Neon HTTP (`SEED_USE_NEON=1`)                               |
+| `pnpm db:seed:e2e-admin`    | Guarded e2e admin user (`E2E_ADMIN_SEED=1` + `DATABASE_URL`)                      |
+| `pnpm keygen`               | Generate Ed25519 license key pair                                                 |
 
 ## Infrastructure & CI
 
