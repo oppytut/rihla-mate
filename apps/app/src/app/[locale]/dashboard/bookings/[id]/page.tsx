@@ -647,13 +647,33 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
               {booking.transactionStatus && (
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">
-                    {t("bookings.payment.paidAt")}
+                    {t("bookings.payment.transactionStatus")}
                   </span>
                   <span className="text-sm font-medium text-foreground">
                     {booking.transactionStatus}
                   </span>
                 </div>
               )}
+              {"paymentChannel" in booking && booking.paymentChannel ? (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.channel")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {String(booking.paymentChannel)}
+                  </span>
+                </div>
+              ) : null}
+              {booking.paidAt ? (
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">
+                    {t("bookings.payment.paidAt")}
+                  </span>
+                  <span className="text-sm font-medium text-foreground">
+                    {new Date(booking.paidAt).toLocaleString()}
+                  </span>
+                </div>
+              ) : null}
             </div>
             <div className="mt-4 pt-4 border-t border-border">
               <Link
