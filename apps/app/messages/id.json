@@ -169,7 +169,18 @@
     "notFound": "Paket perjalanan ini tidak tersedia atau sudah dihapus.",
     "notFoundHint": "Periksa tautan Anda, atau kembali ke beranda untuk melihat penawaran lain.",
     "browsePackages": "Lihat penawaran",
-    "temporaryUnavailable": "Paket ini sementara tidak tersedia. Silakan coba lagi nanti."
+    "temporaryUnavailable": "Paket ini sementara tidak tersedia. Silakan coba lagi nanti.",
+    "detail": {
+      "bookCta": "Pesan paket ini",
+      "itinerary": "Itinerary",
+      "inclusions": "Termasuk",
+      "exclusions": "Tidak termasuk",
+      "availableDates": "Tanggal keberangkatan",
+      "noDates": "Tanggal keberangkatan akan diumumkan segera.",
+      "gallery": "Galeri",
+      "about": "Tentang paket ini",
+      "dayLabel": "Hari {day}"
+    }
   },
   "common": {
     "appName": "Rihla Mate",
