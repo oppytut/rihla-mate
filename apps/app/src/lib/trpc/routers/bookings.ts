@@ -105,8 +105,9 @@ export const bookingsRouter = createTRPCRouter({
             paymentMethod: bookings.paymentMethod,
             grossAmount: bookings.grossAmount,
             paymentStatus: bookings.transactionStatus,
+            paymentChannel: bookings.paymentChannel,
             redirectUrl: sql<string | null>`NULL`,
-            paidAt: sql<string | null>`NULL`,
+            paidAt: bookings.paidAt,
             packageTitle: packages.title,
           })
           .from(bookings)
@@ -177,8 +178,9 @@ export const bookingsRouter = createTRPCRouter({
           paymentMethod: bookings.paymentMethod,
           grossAmount: bookings.grossAmount,
           paymentStatus: bookings.transactionStatus,
+          paymentChannel: bookings.paymentChannel,
           redirectUrl: sql<string | null>`NULL`,
-          paidAt: sql<string | null>`NULL`,
+          paidAt: bookings.paidAt,
           packageTitle: packages.title,
         })
         .from(bookings)

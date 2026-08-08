@@ -64,10 +64,11 @@ function formatPrice(amount: number | string | null | undefined): string {
   }).format(num);
 }
 
-function formatDateTime(dateString: string | null | undefined): string {
-  if (!dateString) return "-";
+function formatDateTime(value: string | Date | null | undefined): string {
+  if (!value) return "-";
   try {
-    const date = new Date(dateString);
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
     return new Intl.DateTimeFormat("id-ID", {
       year: "numeric",
       month: "short",

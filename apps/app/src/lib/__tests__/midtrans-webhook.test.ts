@@ -30,6 +30,7 @@ vi.mock("@/lib/db/schema/bookings", () => ({
     paymentChannel: "bookings.paymentChannel",
     grossAmount: "bookings.grossAmount",
     transactionStatus: "bookings.transactionStatus",
+    paidAt: "bookings.paidAt",
     notes: "bookings.notes",
     createdAt: "bookings.createdAt",
     updatedAt: "bookings.updatedAt",
@@ -249,11 +250,22 @@ describe("POST /api/midtrans/webhook", () => {
 
   // --- 4. Settlement → paid ---
 
-  function stubBookingLookup(webhookDb: DrizzleMockInstance, status: string = "pending"): void {
+  function stubBookingLookup(
+    webhookDb: DrizzleMockInstance,
+    status: string = "pending",
+    opts: { totalPrice?: string; paidAt?: Date | null } = {},
+  ): void {
     vi.mocked(webhookDb.select).mockReturnValueOnce(webhookDb as never);
     vi.mocked(webhookDb.from).mockReturnValueOnce(webhookDb as never);
     vi.mocked(webhookDb.where).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.limit).mockResolvedValueOnce([{ id: "b-1", status }] as never);
+    vi.mocked(webhookDb.limit).mockResolvedValueOnce([
+      {
+        id: "b-1",
+        status,
+        totalPrice: opts.totalPrice ?? "1500000.00",
+        paidAt: opts.paidAt ?? null,
+      },
+    ] as never);
   }
 
   function stubBookingUpdate(webhookDb: DrizzleMockInstance): void {
@@ -281,6 +293,56 @@ describe("POST /api/midtrans/webhook", () => {
         paymentChannel: "credit_card",
         midtransTransactionId: "txn-mid-123",
         paymentMethod: "credit_card",
+        paidAt: expect.any(Date),
+      }),
+    );
+  });
+
+  it("refuses paid status when gross_amount mismatches booking totalPrice", async () => {
+    const webhookDb = mockDb();
+    const { POST } = await setupWebhook({ db: webhookDb });
+
+    stubBookingLookup(webhookDb, "pending", { totalPrice: "1500000.00" });
+    stubBookingUpdate(webhookDb);
+
+    const { request } = mockRequest(
+      validNotificationJson({
+        transaction_status: "settlement",
+        gross_amount: "999.00",
+      }),
+    );
+    const response = await POST(request as never);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ status: "ok" });
+    const setArg = vi.mocked(webhookDb.set).mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(setArg).toEqual(
+      expect.objectContaining({
+        status: "pending",
+        grossAmount: "999.00",
+        transactionStatus: "settlement",
+      }),
+    );
+    expect(setArg).not.toHaveProperty("paidAt");
+  });
+
+  it("preserves existing paidAt on idempotent settlement", async () => {
+    const webhookDb = mockDb();
+    const { POST } = await setupWebhook({ db: webhookDb });
+    const existingPaidAt = new Date("2026-01-15T10:00:00.000Z");
+
+    stubBookingLookup(webhookDb, "paid", { paidAt: existingPaidAt });
+    stubBookingUpdate(webhookDb);
+
+    const { request } = mockRequest(validNotificationJson({ transaction_status: "settlement" }));
+    const response = await POST(request as never);
+
+    expect(response.status).toBe(200);
+    expect(vi.mocked(webhookDb.set)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "paid",
+        paidAt: existingPaidAt,
       }),
     );
   });

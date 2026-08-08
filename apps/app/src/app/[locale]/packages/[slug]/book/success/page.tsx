@@ -12,6 +12,7 @@ export default function BookingSuccessPage() {
   const searchParams = useSearchParams();
   const slug = params.slug as string;
   const bookingId = searchParams.get("bookingId");
+  const isPending = searchParams.get("status") === "pending";
 
   const nextSteps = [
     t("bookings.successStep1"),
@@ -39,27 +40,50 @@ export default function BookingSuccessPage() {
       <div className="container mx-auto px-4 py-10 lg:px-8">
         <div className="mx-auto max-w-lg space-y-6">
           <Card className="overflow-hidden border-border/80 shadow-sm">
-            <div className="h-1.5 bg-success" aria-hidden />
+            <div className={isPending ? "h-1.5 bg-accent" : "h-1.5 bg-success"} aria-hidden />
             <CardHeader className="pb-2 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/15 ring-4 ring-success/10">
-                <svg
-                  className="h-8 w-8 text-success"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  aria-hidden
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+              <div
+                className={
+                  isPending
+                    ? "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/20 ring-4 ring-accent/10"
+                    : "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success/15 ring-4 ring-success/10"
+                }
+              >
+                {isPending ? (
+                  <svg
+                    className="h-8 w-8 text-accent-foreground"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-8 w-8 text-success"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
               </div>
               <CardTitle className="text-xl text-foreground">
-                {t("bookings.successTitle")}
+                {isPending ? t("bookings.successPendingTitle") : t("bookings.successTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 text-center">
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {t("bookings.successMessage")}
+                {isPending ? t("bookings.successPendingMessage") : t("bookings.successMessage")}
               </p>
 
               <div

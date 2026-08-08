@@ -29,6 +29,7 @@ export const bookings = pgTable("bookings", {
   paymentChannel: varchar("payment_channel", { length: 100 }),
   grossAmount: numeric("gross_amount", { precision: 12, scale: 2 }),
   transactionStatus: varchar("transaction_status", { length: 50 }),
+  paidAt: timestamp("paid_at", { withTimezone: true }),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })

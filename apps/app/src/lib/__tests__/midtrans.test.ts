@@ -821,6 +821,8 @@ describe("POST /api/midtrans/webhook", () => {
         grossAmount: "bookings.grossAmount",
         transactionStatus: "bookings.transactionStatus",
         midtransTransactionId: "bookings.midtransTransactionId",
+        totalPrice: "bookings.totalPrice",
+        paidAt: "bookings.paidAt",
       },
     }));
     vi.doMock("@/lib/payment/midtrans", () => ({
@@ -846,7 +848,14 @@ describe("POST /api/midtrans/webhook", () => {
     vi.mocked(webhookDb.select).mockReturnValueOnce(webhookDb as never);
     vi.mocked(webhookDb.from).mockReturnValueOnce(webhookDb as never);
     vi.mocked(webhookDb.where).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.limit).mockResolvedValueOnce([{ id: "b-1", status }] as never);
+    vi.mocked(webhookDb.limit).mockResolvedValueOnce([
+      {
+        id: "b-1",
+        status,
+        totalPrice: "1500000.00",
+        paidAt: null,
+      },
+    ] as never);
   }
 
   function stubWebhookUpdate(webhookDb: DrizzleMockInstance): void {

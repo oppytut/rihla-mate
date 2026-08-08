@@ -292,7 +292,9 @@
       "grossAmount": "Jumlah",
       "paidAt": "Dibayar Pada",
       "notConfigured": "Gateway pembayaran tidak dikonfigurasi.",
-      "viewDetails": "Lihat Detail Pembayaran"
+      "viewDetails": "Lihat Detail Pembayaran",
+      "channel": "Kanal pembayaran",
+      "transactionStatus": "Status transaksi"
     },
     "fields": {
       "package": "Paket",
@@ -361,7 +363,9 @@
     "successStep2": "Anda menerima konfirmasi lewat email atau WhatsApp.",
     "successStep3": "Selesaikan instruksi pembayaran jika belum dibayar.",
     "bookAgain": "Pesan lagi",
-    "backHome": "Kembali ke beranda"
+    "backHome": "Kembali ke beranda",
+    "successPendingTitle": "Pembayaran masih diproses",
+    "successPendingMessage": "Pesanan Anda tercatat. Pembayaran masih menunggu konfirmasi dari Midtrans. Kami akan memperbarui status setelah settlement."
   },
   "customers": {
     "title": "Pelanggan",
