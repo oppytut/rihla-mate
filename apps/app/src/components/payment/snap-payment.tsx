@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { logger } from "@/lib/utils/logger";
 
@@ -35,11 +35,54 @@ declare global {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+function getSnapScriptSrc(): string {
+  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? "";
+  const isSandbox = !clientKey || clientKey.startsWith("SB-Mid-client-");
+  return isSandbox
+    ? "https://app.sandbox.midtrans.com/snap/snap.js"
+    : "https://app.midtrans.com/snap/snap.js";
+}
 
-const SNAP_SCRIPT_SRC = "https://app.sandbox.midtrans.com/snap/snap.js";
+function ensureSnapScript(onReady: () => void, onError?: () => void): () => void {
+  if (typeof window !== "undefined" && window.snap) {
+    onReady();
+    return () => {};
+  }
+
+  const existing = document.querySelector<HTMLScriptElement>("script[data-midtrans-snap]");
+  if (existing) {
+    if (window.snap) {
+      onReady();
+      return () => {};
+    }
+    const handleLoad = () => onReady();
+    const handleError = () => onError?.();
+    existing.addEventListener("load", handleLoad);
+    existing.addEventListener("error", handleError);
+    return () => {
+      existing.removeEventListener("load", handleLoad);
+      existing.removeEventListener("error", handleError);
+    };
+  }
+
+  const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY ?? "";
+  const script = document.createElement("script");
+  script.src = getSnapScriptSrc();
+  script.async = true;
+  script.dataset.midtransSnap = "1";
+  if (clientKey) {
+    script.dataset.clientKey = clientKey;
+  }
+
+  script.onload = () => onReady();
+  script.onerror = () => onError?.();
+  document.head.appendChild(script);
+
+  return () => {
+    script.onload = null;
+    script.onerror = null;
+  };
+}
 
 // ---------------------------------------------------------------------------
 // SnapPayment — component
@@ -56,48 +99,25 @@ interface SnapPaymentProps {
 function SnapPayment({ token, onSuccess, onPending, onError, onClose }: SnapPaymentProps) {
   const t = useTranslations();
   const [isReady, setIsReady] = useState(false);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
-  const hasInjectedRef = useRef(false);
   const onErrorRef = useRef(onError);
+  const paidTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
     onErrorRef.current = onError;
   }, [onError]);
 
-  // Inject the Snap.js script once
   useEffect(() => {
-    if (hasInjectedRef.current) return;
-    hasInjectedRef.current = true;
-
-    const script = document.createElement("script");
-    script.src = SNAP_SCRIPT_SRC;
-    script.async = true;
-    script.dataset.clientId = "midtrans-snap";
-
-    script.onload = () => {
-      setIsReady(true);
-    };
-
-    script.onerror = () => {
-      onErrorRef.current?.({ error: t("bookings.snap.loadError") });
-    };
-
-    document.head.appendChild(script);
-    scriptRef.current = script;
-
-    return () => {
-      if (scriptRef.current) {
-        document.head.removeChild(scriptRef.current);
-        scriptRef.current = null;
-        hasInjectedRef.current = false;
-      }
-    };
+    return ensureSnapScript(
+      () => setIsReady(true),
+      () => onErrorRef.current?.({ error: t("bookings.snap.loadError") }),
+    );
   }, [t]);
 
-  // Trigger payment when token becomes available and Snap is ready
   useEffect(() => {
     if (!token) return;
     if (!isReady || !window.snap) return;
+    if (paidTokenRef.current === token) return;
+    paidTokenRef.current = token;
 
     window.snap.pay(token, {
       onSuccess,
@@ -121,41 +141,15 @@ interface UseSnapPaymentReturn {
 
 function useSnapPayment(): UseSnapPaymentReturn {
   const [isReady, setIsReady] = useState(false);
-  const scriptRef = useRef<HTMLScriptElement | null>(null);
-  const hasInjectedRef = useRef(false);
 
-  // Inject the Snap.js script once
   useEffect(() => {
-    if (hasInjectedRef.current) return;
-    hasInjectedRef.current = true;
-
-    const script = document.createElement("script");
-    script.src = SNAP_SCRIPT_SRC;
-    script.async = true;
-    script.dataset.clientId = "midtrans-snap";
-
-    script.onload = () => {
-      setIsReady(true);
-    };
-
-    script.onerror = () => {
-      // Snap failed to load — isReady stays false, pay() will be a no-op
-      logger.error("Failed to load Midtrans Snap.js");
-    };
-
-    document.head.appendChild(script);
-    scriptRef.current = script;
-
-    return () => {
-      if (scriptRef.current) {
-        document.head.removeChild(scriptRef.current);
-        scriptRef.current = null;
-        hasInjectedRef.current = false;
-      }
-    };
+    return ensureSnapScript(
+      () => setIsReady(true),
+      () => logger.error("Failed to load Midtrans Snap.js"),
+    );
   }, []);
 
-  const pay = useCallback((token: string, callbacks?: SnapCallbacks) => {
+  function pay(token: string, callbacks?: SnapCallbacks) {
     if (!window.snap) return;
     window.snap.pay(token, {
       onSuccess: callbacks?.onSuccess,
@@ -163,7 +157,7 @@ function useSnapPayment(): UseSnapPaymentReturn {
       onError: callbacks?.onError,
       onClose: callbacks?.onClose,
     });
-  }, []);
+  }
 
   return { isReady, pay };
 }
