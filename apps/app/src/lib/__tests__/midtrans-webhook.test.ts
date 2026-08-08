@@ -249,13 +249,25 @@ describe("POST /api/midtrans/webhook", () => {
 
   // --- 4. Settlement → paid ---
 
+  function stubBookingLookup(webhookDb: DrizzleMockInstance, status: string = "pending"): void {
+    vi.mocked(webhookDb.select).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.from).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.where).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.limit).mockResolvedValueOnce([{ id: "b-1", status }] as never);
+  }
+
+  function stubBookingUpdate(webhookDb: DrizzleMockInstance): void {
+    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+  }
+
   it("returns 200 and updates booking to 'paid' for settlement transaction status", async () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "settlement" }));
     const response = await POST(request as never);
@@ -277,9 +289,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(
       validNotificationJson({
@@ -306,9 +317,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(
       validNotificationJson({
@@ -332,9 +342,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(
       validNotificationJson({
@@ -358,9 +367,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "cancel" }));
     const response = await POST(request as never);
@@ -377,9 +385,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "expire" }));
     const response = await POST(request as never);
@@ -396,9 +403,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "deny" }));
     const response = await POST(request as never);
@@ -411,15 +417,40 @@ describe("POST /api/midtrans/webhook", () => {
     );
   });
 
+  it("does not demote paid booking on late expire notification", async () => {
+    const webhookDb = mockDb();
+    const { POST } = await setupWebhook({ db: webhookDb });
+
+    stubBookingLookup(webhookDb, "paid");
+    stubBookingUpdate(webhookDb);
+
+    const { request } = mockRequest(validNotificationJson({ transaction_status: "expire" }));
+    const response = await POST(request as never);
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ status: "ok" });
+    expect(vi.mocked(webhookDb.set)).toHaveBeenCalledWith(
+      expect.not.objectContaining({ status: "cancelled" }),
+    );
+    const setArg = vi.mocked(webhookDb.set).mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(setArg).not.toHaveProperty("status");
+    expect(setArg).toEqual(
+      expect.objectContaining({
+        transactionStatus: "expire",
+        midtransTransactionId: "txn-mid-123",
+      }),
+    );
+  });
+
   // --- 8. Pending → pending ---
 
   it("returns 200 and updates booking to 'pending' for pending transaction status", async () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "pending" }));
     const response = await POST(request as never);
@@ -468,9 +499,10 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockRejectedValueOnce(new Error("DB connection lost"));
+    vi.mocked(webhookDb.select).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.from).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.where).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.limit).mockRejectedValueOnce(new Error("DB connection lost"));
 
     const { request } = mockRequest(validNotificationJson({ transaction_status: "settlement" }));
     const response = await POST(request as never);
@@ -486,10 +518,8 @@ describe("POST /api/midtrans/webhook", () => {
     const webhookDb = mockDb();
     const { POST } = await setupWebhook({ db: webhookDb });
 
-    // First call
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "pending");
+    stubBookingUpdate(webhookDb);
 
     const { request: req1 } = mockRequest(validNotificationJson());
     const response1 = await POST(req1 as never);
@@ -498,10 +528,8 @@ describe("POST /api/midtrans/webhook", () => {
     expect(response1.status).toBe(200);
     expect(body1).toEqual({ status: "ok" });
 
-    // Second call with same payload — idempotent
-    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
-    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+    stubBookingLookup(webhookDb, "paid");
+    stubBookingUpdate(webhookDb);
 
     const { request: req2 } = mockRequest(validNotificationJson());
     const response2 = await POST(req2 as never);
@@ -510,7 +538,6 @@ describe("POST /api/midtrans/webhook", () => {
     expect(response2.status).toBe(200);
     expect(body2).toEqual({ status: "ok" });
 
-    // Both calls should have triggered the same db.set with "paid" status
     const setCalls = vi.mocked(webhookDb.set).mock.calls;
     expect(setCalls).toHaveLength(2);
     expect(setCalls[0]).toEqual([expect.objectContaining({ status: "paid" })]);
