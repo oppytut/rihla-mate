@@ -86,7 +86,21 @@
       "totalCustomers": "إجمالي العملاء",
       "revenue": "الإيرادات",
       "quickGlance": "لمحة للمشغّل",
-      "quickGlanceHint": "استخدم الحجوزات والباقات والتحليلات من الشريط الجانبي للعمليات اليومية."
+      "quickGlanceHint": "استخدم الحجوزات والباقات والتحليلات من الشريط الجانبي للعمليات اليومية.",
+      "recentBookings": "أحدث الحجوزات",
+      "recentEmpty": "لا توجد حجوزات بعد. أنشئ حجزًا لبدء قائمة التشغيل.",
+      "viewAll": "عرض الكل",
+      "package": "الباقة",
+      "pendingBookings": "مدفوعات معلّقة",
+      "pendingHint": "بانتظار الدفع أو التأكيد.",
+      "quickActions": "إجراءات سريعة",
+      "actions": {
+        "newBooking": "حجز جديد",
+        "viewBookings": "كل الحجوزات",
+        "viewPackages": "إدارة الباقات",
+        "viewAnalytics": "فتح التحليلات",
+        "viewPending": "مراجعة المعلّق"
+      }
     }
   },
   "packages": {

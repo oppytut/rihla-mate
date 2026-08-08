@@ -8,22 +8,32 @@ import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { SnapPayment } from "@/components/payment/snap-payment";
 
 const DEBOUNCE_MS = 300;
 const PAGE_SIZE = 10;
 
+const STATUS_FILTERS = new Set(["pending", "confirmed", "cancelled", "completed", "paid"]);
+
+function statusFromSearchParams(
+  searchParams: URLSearchParams | { get: (key: string) => string | null },
+) {
+  const raw = searchParams.get("status") ?? "";
+  return STATUS_FILTERS.has(raw) ? raw : "";
+}
+
 export default function BookingsPage() {
   const t = useTranslations();
   const trpc = useTRPC();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const status = statusFromSearchParams(searchParams);
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [status, setStatus] = useState<string>("");
   const [page, setPage] = useState(1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [snapToken, setSnapToken] = useState<string | null>(null);
@@ -38,7 +48,19 @@ export default function BookingsPage() {
     };
   }, [t]);
 
-  const handleSearchChange = useCallback((value: string) => {
+  function handleStatusChange(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && STATUS_FILTERS.has(value)) {
+      params.set("status", value);
+    } else {
+      params.delete("status");
+    }
+    const qs = params.toString();
+    router.replace(qs ? `/dashboard/bookings?${qs}` : "/dashboard/bookings");
+    setPage(1);
+  }
+
+  function handleSearchChange(value: string) {
     setSearch(value);
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -47,7 +69,7 @@ export default function BookingsPage() {
       setDebouncedSearch(value);
       setPage(1);
     }, DEBOUNCE_MS);
-  }, []);
+  }
 
   const bookingsQuery = useQuery(
     trpc.bookings.list.queryOptions({
@@ -157,10 +179,7 @@ export default function BookingsPage() {
           />
           <select
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
-              setPage(1);
-            }}
+            onChange={(e) => handleStatusChange(e.target.value)}
             data-testid="bookings-status-filter"
             aria-label={t("bookings.allStatus")}
             className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
@@ -251,8 +270,7 @@ export default function BookingsPage() {
                   onClick={() => {
                     setSearch("");
                     setDebouncedSearch("");
-                    setStatus("");
-                    setPage(1);
+                    handleStatusChange("");
                   }}
                   data-testid="bookings-clear-filters"
                 >

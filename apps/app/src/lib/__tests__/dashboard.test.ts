@@ -25,6 +25,9 @@ vi.mock("@/lib/db/schema/bookings", () => ({
     customerName: "bookings.customerName",
     totalPrice: "bookings.totalPrice",
     status: "bookings.status",
+    travelers: "bookings.travelers",
+    createdAt: "bookings.createdAt",
+    packageId: "bookings.packageId",
   },
 }));
 
@@ -32,6 +35,7 @@ vi.mock("@/lib/db/schema/packages", () => ({
   packages: {
     id: "packages.id",
     status: "packages.status",
+    title: "packages.title",
   },
 }));
 
@@ -107,6 +111,18 @@ function createCaller(db: DrizzleMock) {
   return callerFactory(ctx);
 }
 
+const sampleRecent = [
+  {
+    id: "b-1",
+    customerName: "Aisha",
+    totalPrice: "25000000",
+    status: "pending",
+    travelers: 2,
+    createdAt: new Date("2026-08-01T00:00:00.000Z"),
+    packageTitle: "Umrah Ekonomi",
+  },
+];
+
 describe("dashboardRouter.stats", () => {
   it("returns dashboard stats", async () => {
     const db = mockDb();
@@ -115,11 +131,16 @@ describe("dashboardRouter.stats", () => {
       .mockResolvedValueOnce([{ count: 42 }])
       .mockReturnValueOnce(db)
       .mockResolvedValueOnce([{ count: 15 }])
+      .mockReturnValueOnce(db)
+      .mockReturnValueOnce(db)
       .mockReturnValueOnce(db);
 
     vi.mocked(db.where)
       .mockResolvedValueOnce([{ count: 8 }])
-      .mockResolvedValueOnce([{ total: "50000" }]);
+      .mockResolvedValueOnce([{ total: "50000" }])
+      .mockResolvedValueOnce([{ count: 3 }]);
+
+    vi.mocked(db.limit).mockResolvedValueOnce(sampleRecent);
 
     const caller = createCaller(db);
     const result = await caller.stats();
@@ -129,6 +150,8 @@ describe("dashboardRouter.stats", () => {
       activePackages: 8,
       totalCustomers: 15,
       revenue: "50000",
+      pendingBookings: 3,
+      recentBookings: sampleRecent,
     });
   });
 
@@ -139,9 +162,16 @@ describe("dashboardRouter.stats", () => {
       .mockResolvedValueOnce([])
       .mockReturnValueOnce(db)
       .mockResolvedValueOnce([])
+      .mockReturnValueOnce(db)
+      .mockReturnValueOnce(db)
       .mockReturnValueOnce(db);
 
-    vi.mocked(db.where).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    vi.mocked(db.where)
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+
+    vi.mocked(db.limit).mockResolvedValueOnce([]);
 
     const caller = createCaller(db);
     const result = await caller.stats();
@@ -151,6 +181,8 @@ describe("dashboardRouter.stats", () => {
       activePackages: 0,
       totalCustomers: 0,
       revenue: "0",
+      pendingBookings: 0,
+      recentBookings: [],
     });
   });
 
@@ -161,7 +193,16 @@ describe("dashboardRouter.stats", () => {
       .mockRejectedValueOnce(new Error("DB connection lost"))
       .mockReturnValueOnce(db)
       .mockRejectedValueOnce(new Error("DB connection lost"))
+      .mockReturnValueOnce(db)
+      .mockReturnValueOnce(db)
       .mockReturnValueOnce(db);
+
+    vi.mocked(db.where)
+      .mockRejectedValueOnce(new Error("DB connection lost"))
+      .mockRejectedValueOnce(new Error("DB connection lost"))
+      .mockRejectedValueOnce(new Error("DB connection lost"));
+
+    vi.mocked(db.limit).mockRejectedValueOnce(new Error("DB connection lost"));
 
     const caller = createCaller(db);
     const result = await caller.stats();
@@ -171,6 +212,8 @@ describe("dashboardRouter.stats", () => {
       activePackages: 0,
       totalCustomers: 0,
       revenue: "0",
+      pendingBookings: 0,
+      recentBookings: [],
     });
   });
 });

@@ -86,7 +86,21 @@
       "totalCustomers": "Total Customers",
       "revenue": "Revenue",
       "quickGlance": "Operator snapshot",
-      "quickGlanceHint": "Use Bookings, Packages, and Analytics in the sidebar for day-to-day operations."
+      "quickGlanceHint": "Use Bookings, Packages, and Analytics in the sidebar for day-to-day operations.",
+      "recentBookings": "Recent bookings",
+      "recentEmpty": "No bookings yet. Create one to start the operator queue.",
+      "viewAll": "View all",
+      "package": "Package",
+      "pendingBookings": "Pending payments",
+      "pendingHint": "Awaiting payment or confirmation.",
+      "quickActions": "Quick actions",
+      "actions": {
+        "newBooking": "New booking",
+        "viewBookings": "All bookings",
+        "viewPackages": "Manage packages",
+        "viewAnalytics": "Open analytics",
+        "viewPending": "Review pending"
+      }
     }
   },
   "packages": {
