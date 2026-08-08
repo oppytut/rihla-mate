@@ -7,6 +7,21 @@ import { logger } from "@/lib/utils/logger";
 
 export const dynamic = "force-dynamic";
 
+function resolvePaymentChannel(
+  notification: Record<string, unknown>,
+  paymentType: string | undefined,
+): string | null {
+  const vaNumbers = notification.va_numbers;
+  if (Array.isArray(vaNumbers) && vaNumbers.length > 0) {
+    const first = vaNumbers[0] as { bank?: string } | undefined;
+    if (first?.bank) return first.bank;
+  }
+  if (typeof notification.permata_va_number === "string") return "permata";
+  if (typeof notification.payment_code === "string") return "convenience_store";
+  if (typeof notification.store === "string") return notification.store;
+  return paymentType ?? null;
+}
+
 /**
  * Midtrans notification webhook handler.
  *
@@ -58,8 +73,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Verify webhook signature
-    const isValid = verifyWebhookSignature(orderId, statusCode, grossAmount, signatureKey);
+    const isValid = await verifyWebhookSignature(orderId, statusCode, grossAmount, signatureKey);
 
     if (!isValid) {
       logger.error("[midtrans webhook] Invalid signature", {
@@ -98,7 +112,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "ok" });
     }
 
-    // Update booking record
+    const paymentChannel = resolvePaymentChannel(notification, paymentType);
+
     await db
       .update(bookings)
       .set({
@@ -107,7 +122,7 @@ export async function POST(request: NextRequest) {
         midtransTransactionId: transactionId ?? null,
         transactionStatus,
         grossAmount: grossAmount,
-        paymentChannel: null, // Will be populated if available in future
+        paymentChannel,
       })
       .where(eq(bookings.midtransOrderId, orderId));
 
