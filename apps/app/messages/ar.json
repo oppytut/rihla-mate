@@ -292,7 +292,9 @@
       "grossAmount": "المبلغ",
       "paidAt": "تاريخ الدفع",
       "notConfigured": "بوابة الدفع غير مهيأة.",
-      "viewDetails": "عرض تفاصيل الدفع"
+      "viewDetails": "عرض تفاصيل الدفع",
+      "channel": "قناة الدفع",
+      "transactionStatus": "حالة المعاملة"
     },
     "fields": {
       "package": "الباقة",
@@ -361,7 +363,9 @@
     "successStep2": "تصلك رسالة تأكيد عبر البريد أو واتساب.",
     "successStep3": "أكمل تعليمات الدفع إن لم تُسدَّد بعد.",
     "bookAgain": "احجز مرة أخرى",
-    "backHome": "العودة للرئيسية"
+    "backHome": "العودة للرئيسية",
+    "successPendingTitle": "الدفع قيد المعالجة",
+    "successPendingMessage": "تم تسجيل حجزك. الدفع لا يزال بانتظار تأكيد ميدترانس. سيتم تحديث الحالة بعد التسوية."
   },
   "customers": {
     "title": "العملاء",

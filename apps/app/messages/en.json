@@ -292,7 +292,9 @@
       "grossAmount": "Amount",
       "paidAt": "Paid At",
       "notConfigured": "Payment gateway is not configured.",
-      "viewDetails": "View Payment Details"
+      "viewDetails": "View Payment Details",
+      "channel": "Payment channel",
+      "transactionStatus": "Transaction status"
     },
     "fields": {
       "package": "Package",
@@ -361,7 +363,9 @@
     "successStep2": "You receive confirmation by email or WhatsApp.",
     "successStep3": "Complete payment instructions if not paid yet.",
     "bookAgain": "Book again",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "successPendingTitle": "Payment still processing",
+    "successPendingMessage": "Your booking is recorded. Payment is still awaiting Midtrans confirmation. Status will update after settlement."
   },
   "customers": {
     "title": "Customers",
