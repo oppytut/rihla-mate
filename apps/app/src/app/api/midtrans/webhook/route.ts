@@ -7,6 +7,31 @@ import { logger } from "@/lib/utils/logger";
 
 export const dynamic = "force-dynamic";
 
+export function amountsMatch(notifyGross: string, bookingTotal: string): boolean {
+  const a = Number.parseFloat(notifyGross);
+  const b = Number.parseFloat(bookingTotal);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
+  return Math.round(a * 100) === Math.round(b * 100);
+}
+
+function resolvePaidAt(
+  notification: Record<string, unknown>,
+  existingPaidAt: Date | string | null | undefined,
+): Date {
+  if (existingPaidAt) {
+    return existingPaidAt instanceof Date ? existingPaidAt : new Date(existingPaidAt);
+  }
+  const settlement = notification.settlement_time;
+  const transactionTime = notification.transaction_time;
+  for (const raw of [settlement, transactionTime]) {
+    if (typeof raw === "string" && raw.length > 0) {
+      const parsed = new Date(raw.includes("T") ? raw : raw.replace(" ", "T") + "Z");
+      if (!Number.isNaN(parsed.getTime())) return parsed;
+    }
+  }
+  return new Date();
+}
+
 function resolvePaymentChannel(
   notification: Record<string, unknown>,
   paymentType: string | undefined,
@@ -118,6 +143,8 @@ export async function POST(request: NextRequest) {
       .select({
         id: bookings.id,
         status: bookings.status,
+        totalPrice: bookings.totalPrice,
+        paidAt: bookings.paidAt,
       })
       .from(bookings)
       .where(eq(bookings.midtransOrderId, orderId))
@@ -132,13 +159,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ status: "ok" });
     }
 
+    const amountOk = amountsMatch(grossAmount, String(current.totalPrice ?? ""));
+    let effectiveStatus = bookingStatus;
+    if (bookingStatus === "paid" && !amountOk) {
+      logger.error("[midtrans webhook] Amount mismatch — refusing paid status", {
+        component: "midtrans",
+        orderId,
+        notifyGross: grossAmount,
+        bookingTotal: current.totalPrice,
+      });
+      effectiveStatus = current.status === "paid" ? "paid" : "pending";
+    }
+
     // Never demote a paid booking (late expire/cancel/pending must not wipe settlement).
-    const applyStatus = !(current.status === "paid" && bookingStatus !== "paid");
+    const applyStatus = !(current.status === "paid" && effectiveStatus !== "paid");
+
+    const willBePaid = applyStatus ? effectiveStatus === "paid" : current.status === "paid";
+    const paidAtUpdate =
+      willBePaid && amountOk
+        ? { paidAt: resolvePaidAt(notification, current.paidAt) }
+        : willBePaid && current.paidAt
+          ? { paidAt: current.paidAt instanceof Date ? current.paidAt : new Date(current.paidAt) }
+          : {};
 
     await db
       .update(bookings)
       .set({
-        ...(applyStatus ? { status: bookingStatus } : {}),
+        ...(applyStatus ? { status: effectiveStatus } : {}),
+        ...paidAtUpdate,
         paymentMethod: paymentType ?? null,
         midtransTransactionId: transactionId ?? null,
         transactionStatus,
@@ -150,8 +198,9 @@ export async function POST(request: NextRequest) {
     logger.info("[midtrans webhook] Booking updated", {
       component: "midtrans",
       orderId,
-      bookingStatus: applyStatus ? bookingStatus : current.status,
+      bookingStatus: applyStatus ? effectiveStatus : current.status,
       statusApplied: applyStatus,
+      amountOk,
       transactionStatus,
     });
 
