@@ -88,7 +88,21 @@ export default function PaymentStatusPage() {
   const searchParams = useSearchParams();
   const bookingId = params.id as string;
 
-  const bookingQuery = useQuery(trpc.bookings.getById.queryOptions({ id: bookingId }));
+  const bookingQuery = useQuery({
+    ...trpc.bookings.getById.queryOptions({ id: bookingId }),
+    refetchInterval: (query) => {
+      const b = query.state.data;
+      if (!b) return false;
+      const terminalTxn = ["settlement", "capture", "cancel", "deny", "expire", "failure", "error"];
+      if (b.status === "paid" || b.status === "cancelled" || b.status === "completed") {
+        return false;
+      }
+      if (b.transactionStatus && terminalTxn.includes(b.transactionStatus)) {
+        return false;
+      }
+      return 3000;
+    },
+  });
 
   useEffect(() => {
     document.title = `${t("bookings.paymentStatus.title")} - Rihla Mate`;
