@@ -3,10 +3,6 @@ import { render, cleanup, act } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { SnapPayment, useSnapPayment } from "../snap-payment";
 
-// ---------------------------------------------------------------------------
-// Mocks
-// ---------------------------------------------------------------------------
-
 vi.mock("next-intl", () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
@@ -20,11 +16,6 @@ vi.mock("@/lib/utils/logger", () => ({
   logger: { debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Create a mock Snap.js pay function that records calls */
 function createMockSnap() {
   const pay = vi.fn();
   Object.defineProperty(window, "snap", {
@@ -35,29 +26,26 @@ function createMockSnap() {
   return pay;
 }
 
-/** Remove window.snap */
 function clearWindowSnap() {
   delete (window as unknown as Record<string, unknown>).snap;
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
+function getSnapScript(): HTMLScriptElement | null {
+  return document.querySelector("script[data-midtrans-snap]");
+}
 
 describe("SnapPayment", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clearWindowSnap();
     document.head.innerHTML = "";
+    vi.stubEnv("NEXT_PUBLIC_MIDTRANS_CLIENT_KEY", "SB-Mid-client-test");
   });
 
   afterEach(() => {
     cleanup();
+    vi.unstubAllEnvs();
   });
-
-  // -----------------------------------------------------------------------
-  // Rendering
-  // -----------------------------------------------------------------------
 
   describe("rendering", () => {
     it("renders nothing to the DOM", () => {
@@ -65,15 +53,35 @@ describe("SnapPayment", () => {
       expect(container.innerHTML).toBe("");
     });
 
-    it("injects the Midtrans Snap.js script into document head", () => {
+    it("injects the Midtrans Snap.js sandbox script when client key is sandbox", () => {
       render(<SnapPayment token={null} />);
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement | null;
+      const script = getSnapScript();
       expect(script).not.toBeNull();
-      expect(script?.dataset.clientId).toBe("midtrans-snap");
+      expect(script?.src).toBe("https://app.sandbox.midtrans.com/snap/snap.js");
+      expect(script?.dataset.midtransSnap).toBe("1");
+      expect(script?.dataset.clientKey).toBe("SB-Mid-client-test");
       expect(script?.async).toBe(true);
+    });
+
+    it("injects production Snap.js when client key is production", () => {
+      vi.stubEnv("NEXT_PUBLIC_MIDTRANS_CLIENT_KEY", "Mid-client-prod");
+      render(<SnapPayment token={null} />);
+
+      const script = getSnapScript();
+      expect(script?.src).toBe("https://app.midtrans.com/snap/snap.js");
+    });
+
+    it("reuses an existing data-midtrans-snap script without injecting another", () => {
+      const existing = document.createElement("script");
+      existing.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+      existing.dataset.midtransSnap = "1";
+      document.head.appendChild(existing);
+
+      render(<SnapPayment token={null} />);
+
+      const scripts = document.querySelectorAll("script[data-midtrans-snap]");
+      expect(scripts).toHaveLength(1);
     });
 
     it("injects the script only once across re-renders", () => {
@@ -81,41 +89,34 @@ describe("SnapPayment", () => {
       rerender(<SnapPayment token="tok-1" />);
       rerender(<SnapPayment token="tok-2" />);
 
-      const scripts = document.querySelectorAll(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      );
-      expect(scripts).toHaveLength(1);
+      expect(document.querySelectorAll("script[data-midtrans-snap]")).toHaveLength(1);
     });
   });
-
-  // -----------------------------------------------------------------------
-  // Loading state
-  // -----------------------------------------------------------------------
 
   describe("loading state", () => {
     it("does not call snap.pay when Snap.js has not loaded yet", () => {
-      createMockSnap();
+      clearWindowSnap();
       render(<SnapPayment token="tok-123" />);
 
-      expect(window.snap?.pay).not.toHaveBeenCalled();
+      expect(window.snap?.pay).toBeUndefined();
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Payment trigger
-  // -----------------------------------------------------------------------
-
   describe("payment trigger", () => {
     it("calls snap.pay with the token and callbacks when Snap.js loads", async () => {
-      const pay = createMockSnap();
+      clearWindowSnap();
+      const pay = vi.fn();
 
       render(
         <SnapPayment token="tok-abc" onSuccess={vi.fn()} onError={vi.fn()} onClose={vi.fn()} />,
       );
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
+      const script = getSnapScript() as HTMLScriptElement;
+      Object.defineProperty(window, "snap", {
+        value: { pay },
+        writable: true,
+        configurable: true,
+      });
       await act(async () => {
         script.dispatchEvent(new Event("load"));
       });
@@ -133,13 +134,6 @@ describe("SnapPayment", () => {
 
       render(<SnapPayment token={null} />);
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
-      await act(async () => {
-        script.dispatchEvent(new Event("load"));
-      });
-
       expect(pay).not.toHaveBeenCalled();
     });
 
@@ -148,98 +142,69 @@ describe("SnapPayment", () => {
 
       render(<SnapPayment token="" />);
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
-      await act(async () => {
-        script.dispatchEvent(new Event("load"));
-      });
-
       expect(pay).not.toHaveBeenCalled();
     });
 
-    it("waits for snap to be ready when token is already available", () => {
-      clearWindowSnap();
-      render(<SnapPayment token="tok-waiting" />);
+    it("calls snap.pay immediately when window.snap is already present", async () => {
+      const pay = createMockSnap();
+
+      await act(async () => {
+        render(<SnapPayment token="tok-ready" onSuccess={vi.fn()} />);
+      });
+
+      expect(pay).toHaveBeenCalledWith("tok-ready", expect.any(Object));
     });
   });
-
-  // -----------------------------------------------------------------------
-  // onSuccess callback
-  // -----------------------------------------------------------------------
 
   describe("onSuccess callback", () => {
     it("calls onSuccess when payment succeeds", async () => {
       const pay = createMockSnap();
       const onSuccess = vi.fn();
-      const onError = vi.fn();
-      const onClose = vi.fn();
 
-      render(
-        <SnapPayment
-          token="tok-success"
-          onSuccess={onSuccess}
-          onError={onError}
-          onClose={onClose}
-        />,
-      );
-
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
       await act(async () => {
-        script.dispatchEvent(new Event("load"));
+        render(
+          <SnapPayment
+            token="tok-success"
+            onSuccess={onSuccess}
+            onError={vi.fn()}
+            onClose={vi.fn()}
+          />,
+        );
       });
 
       const callArgs = pay.mock.calls[0] as [string, Record<string, (result: unknown) => void>];
-      const passedOnSuccess = callArgs[1].onSuccess;
-
       const result = { transaction_status: "settlement", order_id: "ORD-123" };
-      passedOnSuccess(result);
+      callArgs[1].onSuccess(result);
 
       expect(onSuccess).toHaveBeenCalledWith(result);
     });
   });
 
-  // -----------------------------------------------------------------------
-  // onError callback
-  // -----------------------------------------------------------------------
-
   describe("onError callback", () => {
     it("calls onError when payment fails", async () => {
       const pay = createMockSnap();
-      const onSuccess = vi.fn();
       const onError = vi.fn();
-      const onClose = vi.fn();
 
-      render(
-        <SnapPayment token="tok-error" onSuccess={onSuccess} onError={onError} onClose={onClose} />,
-      );
-
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
       await act(async () => {
-        script.dispatchEvent(new Event("load"));
+        render(
+          <SnapPayment token="tok-error" onSuccess={vi.fn()} onError={onError} onClose={vi.fn()} />,
+        );
       });
 
       const callArgs = pay.mock.calls[0] as [string, Record<string, (result: unknown) => void>];
-      const passedOnError = callArgs[1].onError;
-
       const result = { transaction_status: "deny", status_message: "Payment denied" };
-      passedOnError(result);
+      callArgs[1].onError(result);
 
       expect(onError).toHaveBeenCalledWith(result);
     });
 
     it("calls onError when Snap.js script fails to load", async () => {
+      clearWindowSnap();
       const onError = vi.fn();
 
       render(<SnapPayment token="tok-loadfail" onError={onError} />);
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
+      const script = getSnapScript() as HTMLScriptElement;
 
       await act(async () => {
         script.dispatchEvent(new Event("error"));
@@ -251,102 +216,63 @@ describe("SnapPayment", () => {
     });
   });
 
-  // -----------------------------------------------------------------------
-  // onClose callback
-  // -----------------------------------------------------------------------
-
   describe("onClose callback", () => {
     it("calls onClose when payment modal is closed", async () => {
       const pay = createMockSnap();
-      const onSuccess = vi.fn();
-      const onError = vi.fn();
       const onClose = vi.fn();
 
-      render(
-        <SnapPayment token="tok-close" onSuccess={onSuccess} onError={onError} onClose={onClose} />,
-      );
-
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
       await act(async () => {
-        script.dispatchEvent(new Event("load"));
+        render(
+          <SnapPayment token="tok-close" onSuccess={vi.fn()} onError={vi.fn()} onClose={onClose} />,
+        );
       });
 
       const callArgs = pay.mock.calls[0] as [string, Record<string, () => void>];
-      const passedOnClose = callArgs[1].onClose;
-
-      passedOnClose();
+      callArgs[1].onClose();
 
       expect(onClose).toHaveBeenCalledOnce();
     });
   });
-
-  // -----------------------------------------------------------------------
-  // onPending callback
-  // -----------------------------------------------------------------------
 
   describe("onPending callback", () => {
     it("calls onPending when payment is pending", async () => {
       const pay = createMockSnap();
       const onPending = vi.fn();
 
-      render(<SnapPayment token="tok-pending" onPending={onPending} />);
-
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
       await act(async () => {
-        script.dispatchEvent(new Event("load"));
+        render(<SnapPayment token="tok-pending" onPending={onPending} />);
       });
 
       const callArgs = pay.mock.calls[0] as [string, Record<string, (result: unknown) => void>];
-      const passedOnPending = callArgs[1].onPending;
-
       const result = { transaction_status: "pending", order_id: "ORD-456" };
-      passedOnPending(result);
+      callArgs[1].onPending(result);
 
       expect(onPending).toHaveBeenCalledWith(result);
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Cleanup
-  // -----------------------------------------------------------------------
-
   describe("cleanup", () => {
-    it("removes the Snap.js script from head on unmount", () => {
+    it("does not remove shared Snap.js script on unmount", () => {
       const { unmount } = render(<SnapPayment token={null} />);
 
-      const scriptBefore = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      );
-      expect(scriptBefore).not.toBeNull();
+      expect(getSnapScript()).not.toBeNull();
 
       unmount();
 
-      const scriptAfter = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      );
-      expect(scriptAfter).toBeNull();
+      expect(getSnapScript()).not.toBeNull();
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Callback stability across re-renders
-  // -----------------------------------------------------------------------
-
   describe("callback stability", () => {
     it("uses the latest onError when script load fails", async () => {
+      clearWindowSnap();
       const onErrorV1 = vi.fn();
       const onErrorV2 = vi.fn();
 
       const { rerender } = render(<SnapPayment token="tok-cb" onError={onErrorV1} />);
       rerender(<SnapPayment token="tok-cb" onError={onErrorV2} />);
 
-      const script = document.querySelector(
-        'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-      ) as HTMLScriptElement;
+      const script = getSnapScript() as HTMLScriptElement;
 
       await act(async () => {
         script.dispatchEvent(new Event("error"));
@@ -360,19 +286,17 @@ describe("SnapPayment", () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// useSnapPayment hook tests
-// ---------------------------------------------------------------------------
-
 describe("useSnapPayment", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clearWindowSnap();
     document.head.innerHTML = "";
+    vi.stubEnv("NEXT_PUBLIC_MIDTRANS_CLIENT_KEY", "SB-Mid-client-test");
   });
 
   afterEach(() => {
     cleanup();
+    vi.unstubAllEnvs();
   });
 
   it("returns isReady=false initially", () => {
@@ -406,9 +330,7 @@ describe("useSnapPayment", () => {
 
     render(<TestComponent />);
 
-    const script = document.querySelector(
-      'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-    ) as HTMLScriptElement;
+    const script = getSnapScript() as HTMLScriptElement;
     await act(async () => {
       script.dispatchEvent(new Event("load"));
     });
@@ -433,13 +355,8 @@ describe("useSnapPayment", () => {
       return null;
     }
 
-    render(<TestComponent />);
-
-    const script = document.querySelector(
-      'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-    ) as HTMLScriptElement;
     await act(async () => {
-      script.dispatchEvent(new Event("load"));
+      render(<TestComponent />);
     });
 
     const onSuccess = vi.fn();
@@ -477,9 +394,6 @@ describe("useSnapPayment", () => {
     const { rerender } = render(<TestComponent />);
     rerender(<TestComponent />);
 
-    const scripts = document.querySelectorAll(
-      'script[src="https://app.sandbox.midtrans.com/snap/snap.js"]',
-    );
-    expect(scripts).toHaveLength(1);
+    expect(document.querySelectorAll("script[data-midtrans-snap]")).toHaveLength(1);
   });
 });

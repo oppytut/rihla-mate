@@ -97,11 +97,13 @@ export default function BookingsPage() {
       onSuccess: (result) => {
         if (result.token) {
           setSnapToken(result.token);
-        } else {
-          // Token is null when midtransOrderId already exists
-          router.push(`/dashboard/bookings/${payingBookingId}/payment?status=success`);
-          setPayingBookingId(null);
+          return;
         }
+        // Existing Midtrans order — open status page (pending), not fake success
+        if (payingBookingId) {
+          router.push(`/dashboard/bookings/${payingBookingId}/payment?status=pending`);
+        }
+        setPayingBookingId(null);
       },
       onError: (error) => {
         toast.error(`${t("common.error")}: ${error.message}`);

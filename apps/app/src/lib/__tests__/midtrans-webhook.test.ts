@@ -128,7 +128,7 @@ async function setupWebhook(mocks: {
   verifySignature?: ReturnType<typeof vi.fn>;
 }) {
   const webhookDb = mocks.db ?? mockDb();
-  const mockVerify = mocks.verifySignature ?? vi.fn().mockReturnValue(true);
+  const mockVerify = mocks.verifySignature ?? vi.fn().mockResolvedValue(true);
 
   vi.doMock("@/lib/db/client", () => ({ db: webhookDb }));
   vi.doMock("@/lib/payment/midtrans", () => ({
@@ -230,7 +230,7 @@ describe("POST /api/midtrans/webhook", () => {
   // --- 3. Invalid webhook signature ---
 
   it("returns 401 for invalid webhook signature", async () => {
-    const mockVerify = vi.fn().mockReturnValue(false);
+    const mockVerify = vi.fn().mockResolvedValue(false);
     const { POST } = await setupWebhook({ verifySignature: mockVerify });
 
     const { request } = mockRequest(validNotificationJson());
@@ -264,7 +264,39 @@ describe("POST /api/midtrans/webhook", () => {
     expect(response.status).toBe(200);
     expect(body).toEqual({ status: "ok" });
     expect(vi.mocked(webhookDb.set)).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "paid" }),
+      expect.objectContaining({
+        status: "paid",
+        paymentChannel: "credit_card",
+        midtransTransactionId: "txn-mid-123",
+        paymentMethod: "credit_card",
+      }),
+    );
+  });
+
+  it("sets paymentChannel from bank VA when va_numbers present", async () => {
+    const webhookDb = mockDb();
+    const { POST } = await setupWebhook({ db: webhookDb });
+
+    vi.mocked(webhookDb.update).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.set).mockReturnValueOnce(webhookDb as never);
+    vi.mocked(webhookDb.where).mockResolvedValueOnce(undefined as never);
+
+    const { request } = mockRequest(
+      validNotificationJson({
+        transaction_status: "settlement",
+        payment_type: "bank_transfer",
+        va_numbers: [{ bank: "bca", va_number: "123" }],
+      }),
+    );
+    const response = await POST(request as never);
+
+    expect(response.status).toBe(200);
+    expect(vi.mocked(webhookDb.set)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: "paid",
+        paymentChannel: "bca",
+        paymentMethod: "bank_transfer",
+      }),
     );
   });
 

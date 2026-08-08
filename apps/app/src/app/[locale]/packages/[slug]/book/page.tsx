@@ -94,10 +94,12 @@ export default function PublicBookingPage() {
         if (data.token) {
           setSnapToken(data.token);
           setIsPaying(true);
-        } else {
-          // Already has a Midtrans order — redirect directly
-          router.push(`/packages/${slug}/book/success?bookingId=${bookingIdRef.current}`);
+          return;
         }
+        toast.info(t("bookings.snap.pending"));
+        router.push(
+          `/packages/${slug}/book/success?bookingId=${bookingIdRef.current}&status=pending`,
+        );
       },
       onError: (error) => {
         toast.error(error.message || t("common.error"));

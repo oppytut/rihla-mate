@@ -60,9 +60,15 @@ export const midtransRouter = createTRPCRouter({
         });
       }
 
-      // If a Midtrans order already exists and is still pending, return it
+      // Existing Snap order: Snap tokens are single-use and not stored.
+      // Clients should open the payment status page, not treat this as paid.
       if (b.midtransOrderId) {
-        return { token: null, redirectUrl: null };
+        return {
+          token: null,
+          redirectUrl: null,
+          alreadyOrdered: true as const,
+          orderId: b.midtransOrderId,
+        };
       }
 
       const orderId = `RIHLA-${b.id}-${Date.now()}`;
@@ -86,7 +92,6 @@ export const midtransRouter = createTRPCRouter({
         },
       });
 
-      // Store the Midtrans order ID on the booking
       await ctx.db
         .update(bookings)
         .set({ midtransOrderId: orderId })
@@ -101,6 +106,8 @@ export const midtransRouter = createTRPCRouter({
       return {
         token: result.token,
         redirectUrl: result.redirectUrl,
+        alreadyOrdered: false as const,
+        orderId,
       };
     }),
 });

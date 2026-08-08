@@ -60,9 +60,13 @@ export const publicMidtransRouter = createTRPCRouter({
         });
       }
 
-      // If a Midtrans order already exists and is still pending, return it
       if (b.midtransOrderId) {
-        return { token: null, redirectUrl: null };
+        return {
+          token: null,
+          redirectUrl: null,
+          alreadyOrdered: true as const,
+          orderId: b.midtransOrderId,
+        };
       }
 
       const orderId = `RIHLA-${b.id}-${Date.now()}`;
@@ -86,7 +90,6 @@ export const publicMidtransRouter = createTRPCRouter({
         },
       });
 
-      // Store the Midtrans order ID on the booking
       await ctx.db
         .update(bookings)
         .set({ midtransOrderId: orderId })
@@ -101,6 +104,8 @@ export const publicMidtransRouter = createTRPCRouter({
       return {
         token: result.token,
         redirectUrl: result.redirectUrl,
+        alreadyOrdered: false as const,
+        orderId,
       };
     }),
 });

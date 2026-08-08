@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getMessages } from "next-intl/server";
 import { cookies } from "next/headers";
 import Script from "next/script";
 import { TRPCReactProvider } from "@/lib/trpc/react";
@@ -15,7 +14,14 @@ function MidtransSnapScript() {
     ? "https://app.sandbox.midtrans.com/snap/snap.js"
     : "https://app.midtrans.com/snap/snap.js";
 
-  return <Script src={snapUrl} data-client-key={clientKey} strategy="afterInteractive" />;
+  return (
+    <Script
+      src={snapUrl}
+      data-client-key={clientKey}
+      data-midtrans-snap="1"
+      strategy="afterInteractive"
+    />
+  );
 }
 
 export default async function LocaleLayout({
