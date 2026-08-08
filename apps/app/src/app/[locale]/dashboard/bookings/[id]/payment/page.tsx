@@ -94,10 +94,17 @@ export default function PaymentStatusPage() {
   }, [t]);
 
   useEffect(() => {
-    if (searchParams.get("status") === "success") {
+    const urlStatus = searchParams.get("status");
+    if (!urlStatus || !bookingQuery.data) return;
+    const dbStatus = bookingQuery.data.status;
+    if (urlStatus === "success" && dbStatus === "paid") {
       toast.success(t("bookings.snap.success"));
+      return;
     }
-  }, [searchParams, t]);
+    if (urlStatus === "success" || urlStatus === "pending") {
+      toast.info(t("bookings.snap.pending"));
+    }
+  }, [searchParams, t, bookingQuery.data]);
 
   if (bookingQuery.isLoading) {
     return (
