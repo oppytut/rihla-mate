@@ -28,16 +28,56 @@ function getAuthHeader(): string {
 // Types
 // ---------------------------------------------------------------------------
 
+export interface SnapLineItem {
+  id: string;
+  price: number;
+  quantity: number;
+  name: string;
+  category?: string;
+}
+
+export function buildSnapPackageLineItem(input: {
+  packageId: string;
+  packageTitle: string | null | undefined;
+  packagePrice: string | null | undefined;
+  travelers: number | null | undefined;
+  grossAmount: number;
+}): SnapLineItem {
+  const name = input.packageTitle?.trim() || "Booking";
+  const quantity = Math.max(1, Math.floor(Number(input.travelers)) || 1);
+  const gross = Number(input.grossAmount);
+  const catalogUnit =
+    input.packagePrice != null && input.packagePrice !== "" ? Number(input.packagePrice) : NaN;
+
+  if (
+    Number.isFinite(catalogUnit) &&
+    catalogUnit > 0 &&
+    Number.isFinite(gross) &&
+    Math.abs(catalogUnit * quantity - gross) < 0.02
+  ) {
+    return { id: input.packageId, price: catalogUnit, quantity, name };
+  }
+
+  const hasCatalog = Number.isFinite(catalogUnit) && catalogUnit > 0;
+  if (!hasCatalog && quantity > 1 && Number.isFinite(gross) && gross >= 0) {
+    const unit = Math.round((gross / quantity) * 100) / 100;
+    if (Math.abs(unit * quantity - gross) < 0.02) {
+      return { id: input.packageId, price: unit, quantity, name };
+    }
+  }
+
+  return {
+    id: input.packageId,
+    price: Number.isFinite(gross) ? gross : 0,
+    quantity: 1,
+    name,
+  };
+}
+
 export interface CreateSnapTransactionParams {
   orderId: string;
   grossAmount: number;
-  items: Array<{
-    id: string;
-    price: number;
-    quantity: number;
-    name: string;
-    category?: string;
-  }>;
+  items: Array<SnapLineItem>;
   customer: {
     firstName?: string;
     lastName?: string;

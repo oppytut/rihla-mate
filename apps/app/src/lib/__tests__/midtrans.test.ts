@@ -125,6 +125,66 @@ function mockDb(): DrizzleMock {
   return db as unknown as DrizzleMock;
 }
 
+describe("buildSnapPackageLineItem", () => {
+  let buildSnapPackageLineItem: typeof import("../payment/midtrans").buildSnapPackageLineItem;
+
+  beforeAll(async () => {
+    const mod = await import("../payment/midtrans");
+    buildSnapPackageLineItem = mod.buildSnapPackageLineItem;
+  });
+
+  it("uses catalog unit price × travelers when product matches gross", () => {
+    expect(
+      buildSnapPackageLineItem({
+        packageId: "pkg-1",
+        packageTitle: "Umrah",
+        packagePrice: "5000000",
+        travelers: 3,
+        grossAmount: 15000000,
+      }),
+    ).toEqual({
+      id: "pkg-1",
+      price: 5000000,
+      quantity: 3,
+      name: "Umrah",
+    });
+  });
+
+  it("falls back to single gross line when unit × qty would mismatch", () => {
+    expect(
+      buildSnapPackageLineItem({
+        packageId: "pkg-1",
+        packageTitle: "Umrah",
+        packagePrice: "5000000",
+        travelers: 2,
+        grossAmount: 12000000,
+      }),
+    ).toEqual({
+      id: "pkg-1",
+      price: 12000000,
+      quantity: 1,
+      name: "Umrah",
+    });
+  });
+
+  it("derives unit from gross / travelers when packagePrice missing", () => {
+    expect(
+      buildSnapPackageLineItem({
+        packageId: "pkg-1",
+        packageTitle: null,
+        packagePrice: null,
+        travelers: 2,
+        grossAmount: 10000000,
+      }),
+    ).toEqual({
+      id: "pkg-1",
+      price: 5000000,
+      quantity: 2,
+      name: "Booking",
+    });
+  });
+});
+
 describe("createSnapTransaction", () => {
   let createSnapTransaction: typeof import("../payment/midtrans").createSnapTransaction;
 
@@ -517,6 +577,7 @@ describe("midtransRouter.createTransaction", () => {
     id: bookingId,
     packageId: pkgId,
     totalPrice: "1500000",
+    travelers: 1,
     status: "pending",
     customerName: "John Doe",
     customerEmail: "john@test.com",
@@ -688,6 +749,37 @@ describe("midtransRouter.createTransaction", () => {
     expect(body.transaction_details.gross_amount).toBe(1500000);
     expect(body.item_details[0].id).toBe(pkgId);
     expect(body.item_details[0].name).toBe("Bali Adventure");
+    expect(body.item_details[0].price).toBe(1500000);
+    expect(body.item_details[0].quantity).toBe(1);
+  });
+
+  it("sends unit price × travelers on Snap item_details for multi-pax", async () => {
+    const caller = await createCaller(db);
+    const multi = {
+      ...pendingBooking,
+      totalPrice: "4500000",
+      travelers: 3,
+      packagePrice: "1500000",
+    };
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([multi] as never);
+
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    await caller.createTransaction({ bookingId });
+
+    const fetchCall = mockFetch.mock.calls[0][1];
+    const body = JSON.parse(fetchCall.body as string);
+    expect(body.transaction_details.gross_amount).toBe(4500000);
+    expect(body.item_details[0].price).toBe(1500000);
+    expect(body.item_details[0].quantity).toBe(3);
   });
 
   it("returns alreadyOrdered when concurrent claim loses race", async () => {
