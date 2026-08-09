@@ -48,10 +48,12 @@ function BookingFormContent({
   initialData,
   isEditMode,
   bookingId,
+  priceLocked = false,
 }: {
   initialData: BookingForm | null;
   isEditMode: boolean;
   bookingId: string;
+  priceLocked?: boolean;
 }) {
   const t = useTranslations();
   const trpc = useTRPC();
@@ -133,7 +135,7 @@ function BookingFormContent({
       customerEmail: form.customerEmail || undefined,
       customerPhone: form.customerPhone || undefined,
       travelers: form.travelers,
-      totalPrice: form.totalPrice,
+      ...(priceLocked ? {} : { totalPrice: form.totalPrice }),
       status: form.status,
       paymentRef: form.paymentRef || undefined,
       notes: form.notes || undefined,
@@ -393,7 +395,8 @@ function BookingFormContent({
                     value={form.totalPrice}
                     onChange={(e) => updateField("totalPrice", e.target.value)}
                     required
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || priceLocked}
+                    readOnly={priceLocked}
                     placeholder="1500000"
                     data-testid="booking-total-price"
                     aria-label={t("bookings.fields.totalPrice")}
@@ -597,7 +600,12 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
         </div>
       )}
 
-      <BookingFormContent initialData={initialData} isEditMode={true} bookingId={bookingId} />
+      <BookingFormContent
+        initialData={initialData}
+        isEditMode={true}
+        bookingId={bookingId}
+        priceLocked={Boolean(booking?.midtransOrderId)}
+      />
 
       {hasPayment && (
         <div className="px-4 lg:px-8 py-6">

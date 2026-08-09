@@ -754,6 +754,79 @@ describe("bookingsRouter.update", () => {
 
     expect(result).toEqual(updated);
   });
+
+  it("rejects totalPrice change when midtransOrderId is set", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      {
+        id: bookingId,
+        midtransOrderId: "RIHLA-1-123",
+        totalPrice: "1500000.00",
+      },
+    ] as never);
+
+    await expect(caller.update({ id: bookingId, totalPrice: "2000000.00" })).rejects.toMatchObject({
+      code: "BAD_REQUEST",
+    });
+  });
+
+  it("allows same totalPrice when midtransOrderId is set (no-op strip)", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      {
+        id: bookingId,
+        midtransOrderId: "RIHLA-1-123",
+        totalPrice: "1500000.00",
+      },
+    ] as never);
+
+    const updated = { id: bookingId, customerName: "Same Price" };
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([updated] as never);
+
+    const result = await caller.update({
+      id: bookingId,
+      totalPrice: "1500000.00",
+      customerName: "Same Price",
+    });
+
+    expect(result).toEqual(updated);
+    expect(db.set).toHaveBeenCalledWith(
+      expect.not.objectContaining({ totalPrice: expect.anything() }),
+    );
+  });
+
+  it("allows totalPrice change when midtransOrderId is null", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([
+      { id: bookingId, midtransOrderId: null, totalPrice: "1500000.00" },
+    ] as never);
+
+    const updated = { id: bookingId, totalPrice: "2000000.00" };
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([updated] as never);
+
+    const result = await caller.update({ id: bookingId, totalPrice: "2000000.00" });
+
+    expect(result).toEqual(updated);
+    expect(db.set).toHaveBeenCalledWith(expect.objectContaining({ totalPrice: "2000000.00" }));
+  });
 });
 
 describe("bookingsRouter.delete", () => {

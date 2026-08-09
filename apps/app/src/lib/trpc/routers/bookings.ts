@@ -384,7 +384,11 @@ export const bookingsRouter = createTRPCRouter({
     const { id, ...data } = input;
 
     const existing = await ctx.db
-      .select({ id: bookings.id })
+      .select({
+        id: bookings.id,
+        midtransOrderId: bookings.midtransOrderId,
+        totalPrice: bookings.totalPrice,
+      })
       .from(bookings)
       .where(eq(bookings.id, id))
       .limit(1);
@@ -394,6 +398,18 @@ export const bookingsRouter = createTRPCRouter({
         code: "NOT_FOUND",
         message: "Booking not found",
       });
+    }
+
+    if (existing[0].midtransOrderId && data.totalPrice !== undefined) {
+      const current = String(existing[0].totalPrice ?? "");
+      if (data.totalPrice !== current) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "totalPrice cannot be changed after Midtrans order is created (midtransOrderId set)",
+        });
+      }
+      delete data.totalPrice;
     }
 
     if (data.packageId !== undefined || data.departureDate !== undefined) {
