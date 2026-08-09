@@ -134,7 +134,7 @@ function BookingFormContent({
       customerName: form.customerName,
       customerEmail: form.customerEmail || undefined,
       customerPhone: form.customerPhone || undefined,
-      travelers: form.travelers,
+      ...(priceLocked ? {} : { travelers: form.travelers }),
       ...(priceLocked ? {} : { totalPrice: form.totalPrice }),
       status: form.status,
       paymentRef: form.paymentRef || undefined,
@@ -268,7 +268,8 @@ function BookingFormContent({
                       updateField("travelers", isNaN(val) ? 0 : val);
                     }}
                     required
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || priceLocked}
+                    readOnly={priceLocked}
                     data-testid="booking-travelers"
                     aria-label={t("bookings.fields.travelers")}
                     aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
