@@ -4,7 +4,11 @@ import { and, eq, isNull } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
-import { createSnapTransaction, isMidtransConfigured } from "@/lib/payment/midtrans";
+import {
+  buildSnapPackageLineItem,
+  createSnapTransaction,
+  isMidtransConfigured,
+} from "@/lib/payment/midtrans";
 import { logger } from "@/lib/utils/logger";
 
 export const midtransRouter = createTRPCRouter({
@@ -31,6 +35,7 @@ export const midtransRouter = createTRPCRouter({
           id: bookings.id,
           packageId: bookings.packageId,
           totalPrice: bookings.totalPrice,
+          travelers: bookings.travelers,
           status: bookings.status,
           customerName: bookings.customerName,
           customerEmail: bookings.customerEmail,
@@ -73,18 +78,18 @@ export const midtransRouter = createTRPCRouter({
 
       const orderId = `RIHLA-${b.id}-${Date.now()}`;
       const grossAmount = Number(b.totalPrice);
+      const item = buildSnapPackageLineItem({
+        packageId: b.packageId,
+        packageTitle: b.packageTitle,
+        packagePrice: b.packagePrice,
+        travelers: b.travelers,
+        grossAmount,
+      });
 
       const result = await createSnapTransaction({
         orderId,
         grossAmount,
-        items: [
-          {
-            id: b.packageId,
-            price: grossAmount,
-            quantity: 1,
-            name: b.packageTitle ?? "Booking",
-          },
-        ],
+        items: [item],
         customer: {
           firstName: b.customerName,
           email: b.customerEmail ?? "",

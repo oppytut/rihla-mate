@@ -149,6 +149,7 @@ describe("publicMidtransRouter.createTransaction", () => {
     id: bookingId,
     packageId: pkgId,
     totalPrice: "1500000",
+    travelers: 1,
     status: "pending",
     customerName: "John Doe",
     customerEmail: "john@test.com",
@@ -303,6 +304,40 @@ describe("publicMidtransRouter.createTransaction", () => {
     expect(body.transaction_details.gross_amount).toBe(1500000);
     expect(body.item_details[0].id).toBe(pkgId);
     expect(body.item_details[0].name).toBe("Bali Adventure");
+    expect(body.item_details[0].price).toBe(1500000);
+    expect(body.item_details[0].quantity).toBe(1);
+  });
+
+  it("sends unit price × travelers on Snap item_details for multi-pax", async () => {
+    const caller = await createCaller(db);
+    const multi = {
+      ...pendingBooking,
+      totalPrice: "3000000",
+      travelers: 2,
+      packagePrice: "1500000",
+    };
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([multi] as never);
+
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ id: bookingId }] as never);
+
+    await caller.createTransaction({ bookingId });
+
+    const fetchCall = mockFetch.mock.calls.find((call) =>
+      (call[0] as string).includes("/snap/v1/transactions"),
+    );
+    if (!fetchCall) throw new Error("Expected fetch call not found");
+    const body = JSON.parse(fetchCall[1].body as string);
+    expect(body.transaction_details.gross_amount).toBe(3000000);
+    expect(body.item_details[0].price).toBe(1500000);
+    expect(body.item_details[0].quantity).toBe(2);
   });
 
   it("handles booking with null customerEmail and customerPhone", async () => {
