@@ -428,6 +428,52 @@ describe("bookingsRouter.getById", () => {
   });
 });
 
+describe("bookingsRouter.getPublicStatus", () => {
+  let db: ReturnType<typeof mockDb>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    db = mockDb();
+  });
+
+  it("returns public status fields when found", async () => {
+    const caller = createCaller(db);
+    const row = {
+      id: "00000000-0000-0000-0000-000000000001",
+      status: "pending",
+      transactionStatus: "pending",
+      paidAt: null,
+      packageTitle: "Lombok Escape",
+    };
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([row] as never);
+
+    const result = await caller.getPublicStatus({
+      id: "00000000-0000-0000-0000-000000000001",
+    });
+
+    expect(result).toEqual(row);
+  });
+
+  it("throws NOT_FOUND when booking does not exist", async () => {
+    const caller = createCaller(db);
+
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.leftJoin).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([] as never);
+
+    await expect(
+      caller.getPublicStatus({ id: "00000000-0000-0000-0000-000000000099" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+});
+
 describe("bookingsRouter.create", () => {
   let db: ReturnType<typeof mockDb>;
 
