@@ -203,6 +203,32 @@ export const bookingsRouter = createTRPCRouter({
       };
     }),
 
+  getPublicStatus: publicProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select({
+          id: bookings.id,
+          status: bookings.status,
+          transactionStatus: bookings.transactionStatus,
+          paidAt: bookings.paidAt,
+          packageTitle: packages.title,
+        })
+        .from(bookings)
+        .leftJoin(packages, eq(bookings.packageId, packages.id))
+        .where(eq(bookings.id, input.id))
+        .limit(1);
+
+      if (result.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Booking not found",
+        });
+      }
+
+      return result[0];
+    }),
+
   create: adminProcedure
     .input(
       z.object({

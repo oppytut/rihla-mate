@@ -5,20 +5,52 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useTRPC } from "@/lib/trpc/react";
+import { useQuery } from "@tanstack/react-query";
+
+const TERMINAL_TXN = ["settlement", "capture", "cancel", "deny", "expire", "failure", "error"];
 
 export default function BookingSuccessPage() {
   const t = useTranslations();
+  const trpc = useTRPC();
   const params = useParams();
   const searchParams = useSearchParams();
   const slug = params.slug as string;
   const bookingId = searchParams.get("bookingId");
-  const isPending = searchParams.get("status") === "pending";
+  const urlStatus = searchParams.get("status");
+
+  const statusQuery = useQuery({
+    ...trpc.bookings.getPublicStatus.queryOptions({
+      id: bookingId ?? "00000000-0000-0000-0000-000000000000",
+    }),
+    enabled: Boolean(bookingId),
+    refetchInterval: (query) => {
+      const b = query.state.data;
+      if (!b) return false;
+      if (b.status === "paid" || b.status === "cancelled" || b.status === "completed") {
+        return false;
+      }
+      if (b.transactionStatus && TERMINAL_TXN.includes(b.transactionStatus)) {
+        return false;
+      }
+      return 3000;
+    },
+  });
+
+  const dbStatus = statusQuery.data?.status;
+  const isPaid = dbStatus === "paid" || dbStatus === "completed";
+  const isPending = isPaid
+    ? false
+    : urlStatus === "pending" || Boolean(statusQuery.data) || !dbStatus;
 
   const nextSteps = [
     t("bookings.successStep1"),
     t("bookings.successStep2"),
     t("bookings.successStep3"),
   ];
+
+  const title = isPaid ? t("bookings.successTitle") : t("bookings.successPendingTitle");
+  const message = isPaid ? t("bookings.successMessage") : t("bookings.successPendingMessage");
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,14 +109,10 @@ export default function BookingSuccessPage() {
                   </svg>
                 )}
               </div>
-              <CardTitle className="text-xl text-foreground">
-                {isPending ? t("bookings.successPendingTitle") : t("bookings.successTitle")}
-              </CardTitle>
+              <CardTitle className="text-xl text-foreground">{title}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 text-center">
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {isPending ? t("bookings.successPendingMessage") : t("bookings.successMessage")}
-              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{message}</p>
 
               <div
                 className="rounded-xl border border-border bg-muted/30 p-4 text-start"
@@ -108,7 +136,9 @@ export default function BookingSuccessPage() {
                     <dt className="text-xs text-muted-foreground">
                       {t("bookings.successPackage")}
                     </dt>
-                    <dd className="mt-1 text-sm font-medium text-foreground">{slug}</dd>
+                    <dd className="mt-1 text-sm font-medium text-foreground">
+                      {statusQuery.data?.packageTitle ?? slug}
+                    </dd>
                   </div>
                 </dl>
               </div>
