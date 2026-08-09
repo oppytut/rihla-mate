@@ -8,7 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 function getTransactionStatusBadge(status: string | null | undefined): {
@@ -87,6 +87,7 @@ export default function PaymentStatusPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const bookingId = params.id as string;
+  const snapToastKeyRef = useRef<string | null>(null);
 
   const bookingQuery = useQuery({
     ...trpc.bookings.getById.queryOptions({ id: bookingId }),
@@ -112,14 +113,22 @@ export default function PaymentStatusPage() {
     const urlStatus = searchParams.get("status");
     if (!urlStatus || !bookingQuery.data) return;
     const dbStatus = bookingQuery.data.status;
-    if (urlStatus === "success" && dbStatus === "paid") {
+    const toastKind =
+      urlStatus === "success" && dbStatus === "paid"
+        ? "success"
+        : urlStatus === "success" || urlStatus === "pending"
+          ? "pending"
+          : null;
+    if (!toastKind) return;
+    const toastKey = `${bookingId}:${urlStatus}:${toastKind}`;
+    if (snapToastKeyRef.current === toastKey) return;
+    snapToastKeyRef.current = toastKey;
+    if (toastKind === "success") {
       toast.success(t("bookings.snap.success"));
       return;
     }
-    if (urlStatus === "success" || urlStatus === "pending") {
-      toast.info(t("bookings.snap.pending"));
-    }
-  }, [searchParams, t, bookingQuery.data]);
+    toast.info(t("bookings.snap.pending"));
+  }, [searchParams, t, bookingQuery.data, bookingId]);
 
   if (bookingQuery.isLoading) {
     return (
