@@ -220,7 +220,11 @@ export const bookingsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const pkg = await ctx.db
-        .select({ id: packages.id, availableDates: packages.availableDates })
+        .select({
+          id: packages.id,
+          price: packages.price,
+          availableDates: packages.availableDates,
+        })
         .from(packages)
         .where(eq(packages.id, input.packageId))
         .limit(1);
@@ -264,6 +268,8 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
 
+      const totalPrice = (parseFloat(pkg[0].price) * input.travelers).toFixed(2);
+
       const result = await ctx.db
         .insert(bookings)
         .values({
@@ -273,7 +279,7 @@ export const bookingsRouter = createTRPCRouter({
           customerEmail: input.customerEmail || null,
           customerPhone: input.customerPhone || null,
           travelers: input.travelers,
-          totalPrice: input.totalPrice,
+          totalPrice,
           status: input.status,
           paymentRef: input.paymentRef || null,
           notes: input.notes || null,
@@ -388,6 +394,7 @@ export const bookingsRouter = createTRPCRouter({
         id: bookings.id,
         midtransOrderId: bookings.midtransOrderId,
         totalPrice: bookings.totalPrice,
+        travelers: bookings.travelers,
       })
       .from(bookings)
       .where(eq(bookings.id, id))
@@ -410,6 +417,17 @@ export const bookingsRouter = createTRPCRouter({
         });
       }
       delete data.totalPrice;
+    }
+
+    if (existing[0].midtransOrderId && data.travelers !== undefined) {
+      if (data.travelers !== existing[0].travelers) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message:
+            "travelers cannot be changed after Midtrans order is created (midtransOrderId set)",
+        });
+      }
+      delete data.travelers;
     }
 
     if (data.packageId !== undefined || data.departureDate !== undefined) {
