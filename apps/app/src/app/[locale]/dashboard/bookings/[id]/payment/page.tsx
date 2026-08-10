@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useParams, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
@@ -130,15 +131,19 @@ export default function PaymentStatusPage() {
     toast.info(t("bookings.snap.pending"));
   }, [searchParams, t, bookingQuery.data, bookingId]);
 
+  const backToBookings = (
+    <Link
+      href="/dashboard/bookings"
+      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {t("bookings.backToList")}
+    </Link>
+  );
+
   if (bookingQuery.isLoading) {
     return (
       <>
-        <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-          <div className="flex items-center gap-4">
-            <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-          </div>
-          <div className="h-7 w-48 bg-muted rounded animate-pulse mt-2" />
-        </header>
+        <PageHeader title={t("bookings.paymentStatus.title")} leading={backToBookings} />
         <div className="px-4 lg:px-8 py-6">
           <div className="bg-card border border-border rounded-lg p-6">
             <div className="animate-pulse space-y-4">
@@ -156,14 +161,7 @@ export default function PaymentStatusPage() {
   if (bookingQuery.isError) {
     return (
       <>
-        <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-          <Link
-            href="/dashboard/bookings"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("bookings.backToList")}
-          </Link>
-        </header>
+        <PageHeader title={t("bookings.paymentStatus.title")} leading={backToBookings} />
         <div className="px-4 lg:px-8 py-6">
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
             <p className="text-sm text-destructive">
@@ -180,14 +178,7 @@ export default function PaymentStatusPage() {
   if (!booking) {
     return (
       <>
-        <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-          <Link
-            href="/dashboard/bookings"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {t("bookings.backToList")}
-          </Link>
-        </header>
+        <PageHeader title={t("bookings.paymentStatus.title")} leading={backToBookings} />
         <div className="px-4 lg:px-8 py-6">
           <div className="bg-card border border-border rounded-lg p-6 text-center">
             <p className="text-muted-foreground">Booking not found</p>
@@ -201,19 +192,17 @@ export default function PaymentStatusPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={t("bookings.paymentStatus.title")}
+        leading={
           <Link
             href={`/dashboard/bookings/${bookingId}`}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {t("bookings.backToList")}
           </Link>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
-          {t("bookings.paymentStatus.title")}
-        </h1>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <Card>

@@ -9,6 +9,7 @@ import { formatPrice, formatDisplayDate } from "@/lib/utils/format";
 import { getStatusBadgeClass } from "@/lib/utils/badge";
 import { useParams, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { useState, useEffect } from "react";
 
 const PAGE_SIZE = 10;
@@ -43,22 +44,18 @@ export default function CustomerDetailPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <Link
-              href="/dashboard/customers"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors mb-1 block"
-            >
-              {t("customers.backToList")}
-            </Link>
-            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-              {customerName}
-            </h1>
-            {customerEmail && <p className="text-sm text-muted-foreground mt-1">{customerEmail}</p>}
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title={customerName}
+        leading={
+          <Link
+            href="/dashboard/customers"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("customers.backToList")}
+          </Link>
+        }
+        description={customerEmail || undefined}
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">
