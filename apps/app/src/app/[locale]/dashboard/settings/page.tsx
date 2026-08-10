@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useCallback, startTransition } from "react";
 import { toast } from "sonner";
@@ -119,13 +121,13 @@ export default function SettingsPage() {
         <label htmlFor={key} className="block text-sm font-medium text-foreground">
           {t(`settings.fields.${key}`)}
         </label>
-        <input
+        <Input
           id={key}
           type={isPassword ? "password" : "text"}
           value={strValue}
           onChange={(e) => updateField(key, e.target.value)}
           disabled={saveMutation.isPending}
-          className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-background"
         />
       </div>
     );
@@ -133,11 +135,7 @@ export default function SettingsPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <h1 data-testid="dashboard-heading" className="text-2xl font-semibold text-foreground">
-          {t("settings.title")}
-        </h1>
-      </header>
+      <PageHeader title={t("settings.title")} titleTestId="dashboard-heading" />
 
       <div className="px-4 lg:px-8 py-6">
         <div className="flex gap-6">

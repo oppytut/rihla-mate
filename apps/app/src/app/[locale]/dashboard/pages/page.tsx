@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -52,16 +53,14 @@ export default function LandingPagesPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-            {t("landingPages.title")}
-          </h1>
+      <PageHeader
+        title={t("landingPages.title")}
+        actions={
           <Button asChild data-testid="pages-add-new">
             <Link href="/dashboard/pages/new">{t("landingPages.addPage")}</Link>
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         {pagesQuery.isError && (

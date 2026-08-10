@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
@@ -102,34 +104,30 @@ export default function LicensePage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-              {t("license.title")}
-            </h1>
-            {statusQuery.isSuccess && statusData && (
-              <p className="text-sm text-muted-foreground mt-1" data-testid="license-status">
-                {t("license.statusSummary", {
-                  active: statusData.active,
-                  total: statusData.total,
-                })}
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title={t("license.title")}
+        description={
+          statusQuery.isSuccess && statusData ? (
+            <span data-testid="license-status">
+              {t("license.statusSummary", {
+                active: statusData.active,
+                total: statusData.total,
+              })}
+            </span>
+          ) : undefined
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <input
-            type="text"
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <Input
+            type="search"
             data-testid="license-search"
             placeholder={t("license.search")}
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("license.search")}
-            className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+            className="flex-1 bg-background"
           />
         </div>
 
