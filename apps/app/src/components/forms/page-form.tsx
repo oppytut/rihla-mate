@@ -9,6 +9,7 @@ import { slugify } from "@/lib/utils/slug";
 import { tryParseJson } from "@/lib/utils/slug";
 import { useState, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { toast } from "sonner";
 
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -179,8 +180,9 @@ export function PageFormContent({
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={isEditMode ? t("pages.editTitle") : t("pages.createTitle")}
+        leading={
           <Link
             href="/dashboard/pages"
             data-testid="pages-back-to-list"
@@ -188,11 +190,8 @@ export function PageFormContent({
           >
             {t("pages.backToList")}
           </Link>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
-          {isEditMode ? t("pages.editTitle") : t("pages.createTitle")}
-        </h1>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <form onSubmit={handleSubmit} noValidate className="max-w-3xl">
