@@ -742,6 +742,9 @@
     "howItWorks": {
       "sectionTitle": "Dari Nol ke Live dalam 4 Langkah",
       "sectionDescription": "Tanpa setup rumit. Tanpa tim teknis. Kamu sudah online sebelum kopi berikutnya habis.",
+      "badge": "Cara kerja",
+      "ctaHint": "Siap coba alurnya?",
+      "cta": "Mulai deploy uji coba",
       "steps": {
         "deploy": {
           "step": "1",
