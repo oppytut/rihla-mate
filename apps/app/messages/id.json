@@ -768,9 +768,11 @@
     "pricing": {
       "sectionTitle": "Harga Sederhana dan Transparan",
       "sectionDescription": "Setup satu kali, lisensi bulanan terjangkau. Tanpa biaya tersembunyi. Tanpa biaya kejutan.",
+      "badge": "Harga",
       "currency": "Rp",
       "month": "/bulan",
       "popular": "Paling Populer",
+      "footnote": "Semua paket termasuk update platform. Batalkan kapan saja. Hubungi kami untuk multi-instance atau white-glove onboarding.",
       "starter": {
         "name": "Starter",
         "price": "Gratis",

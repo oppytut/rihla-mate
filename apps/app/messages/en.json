@@ -773,9 +773,11 @@
     "pricing": {
       "sectionTitle": "Simple, Transparent Pricing",
       "sectionDescription": "One-time setup, affordable monthly license. No hidden fees. No surprise charges.",
+      "badge": "Pricing",
       "currency": "IDR",
       "month": "/mo",
       "popular": "Most Popular",
+      "footnote": "All plans include platform updates. Cancel anytime. Contact us for multi-instance or white-glove onboarding.",
       "starter": {
         "name": "Starter",
         "price": "Free",
