@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -51,11 +52,7 @@ export default function MediaPage() {
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-          {t("media.title")}
-        </h1>
-      </header>
+      <PageHeader title={t("media.title")} />
 
       <div className="px-4 lg:px-8 py-6">
         {mediaQuery.isError && (
