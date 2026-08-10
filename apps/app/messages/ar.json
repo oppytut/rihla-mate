@@ -849,6 +849,10 @@
     "faq": {
       "sectionTitle": "الأسئلة الشائعة",
       "sectionDescription": "كل ما تحتاج معرفته قبل البدء.",
+      "badge": "الأسئلة الشائعة",
+      "stillHaveQuestions": "هل ما زالت لديك أسئلة؟",
+      "contactHint": "فريقنا مستعد للمساعدة في الإعداد والترخيص وتهيئة وكالة سفرك.",
+      "contactCta": "راسل hello@rihla-mate.com",
       "items": [
         {
           "question": "ماذا يعني 'ذاتي الاستضافة'؟",
