@@ -603,7 +603,9 @@
     "createSuccess": "User created successfully",
     "updateSuccess": "User updated successfully",
     "invite": "Invite User",
-    "inviteSuccess": "Invitation sent successfully"
+    "inviteSuccess": "Invitation sent successfully",
+    "emptyHint": "Multi-user management is not available yet. Seeded admin accounts can still sign in from the sign-in page.",
+    "backToOverview": "Back to overview"
   },
   "notifications": {
     "updateAvailable": "A new version of Rihla Mate is available: {version}",

@@ -603,7 +603,9 @@
     "createSuccess": "Pengguna berhasil dibuat",
     "updateSuccess": "Pengguna berhasil diperbarui",
     "invite": "Undang Pengguna",
-    "inviteSuccess": "Undangan berhasil dikirim"
+    "inviteSuccess": "Undangan berhasil dikirim",
+    "emptyHint": "Manajemen multi-pengguna belum tersedia. Akun admin e2e/seed tetap bisa masuk lewat halaman masuk.",
+    "backToOverview": "Kembali ke ringkasan"
   },
   "auth": {
     "signIn": "Masuk",
