@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/dashboard/page-header";

@@ -9,9 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { formatDisplayDate } from "@/lib/utils/format";
 import { validateBooking } from "@/lib/utils/validation";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 
 type BookingForm = {

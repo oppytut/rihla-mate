@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { formatPrice, formatDisplayDate } from "@/lib/utils/format";
 import { getStatusBadgeClass } from "@/lib/utils/badge";
 import { useParams, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 
 const PAGE_SIZE = 10;

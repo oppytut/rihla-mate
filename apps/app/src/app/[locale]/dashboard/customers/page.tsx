@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { formatPrice, formatDisplayDate } from "@/lib/utils/format";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
 
 const DEBOUNCE_MS = 300;
