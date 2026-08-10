@@ -66,6 +66,19 @@ Every PR description must end with:
 - [ ] Next: <concrete next step>
 ```
 
+## Process & Resource Limits (HARD)
+
+> OpenCode/host dies when agents spawn too many parallel shells, reads, or subagents.
+> Prefer slow + stable over fast + killed.
+
+1. **Max concurrent tool batches: 3.** Never fire 8–12 parallel `Read`/`Bash`/`task` calls in one turn.
+2. **Max background subagents: 1** (explore/librarian/visual). Wait for completion before starting another. No parallel visual-engineering + multimodal-looker.
+3. **Max parallel Bash: 2.** Prefer one sequential chain (`&&`) over many shells.
+4. **File reads: ≤3 per turn**, then act. Do not pre-read an entire feature tree “just in case.”
+5. **No process thrash:** no long-lived watchers, no `gh run watch`, no retry/`sleep` loops, no bulk `pnpm`/`playwright` unless the task requires it.
+6. **If host was recently killed for load:** drop to serial mode (one tool call family at a time) until the task finishes.
+7. **Delegation:** implement small mechanical edits yourself; only spawn subagents for true exploration or hard UI—never both at once.
+
 ## Anti-Patterns
 
 - ❌ Working on `main` branch
@@ -74,3 +87,5 @@ Every PR description must end with:
 - ❌ Empty PR descriptions
 - ❌ Force-push to shared branches
 - ❌ Merging without CI green
+- ❌ Spawning many parallel agents / shells / file reads (kills OpenCode)
+- ❌ “Read everything first” batch of 10+ files in one message
