@@ -747,6 +747,9 @@
     "howItWorks": {
       "sectionTitle": "From Zero to Live in 4 Steps",
       "sectionDescription": "No complex setup. No technical team needed. You're up and running before your next coffee.",
+      "badge": "How it works",
+      "ctaHint": "Ready to try the flow?",
+      "cta": "Start trial deploy",
       "steps": {
         "deploy": {
           "step": "1",
