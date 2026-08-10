@@ -663,12 +663,16 @@
     },
     "hero": {
       "badge": "Untuk Travel Agent",
+      "badgeAccent": "Self-hosted",
       "headline": "Platform Travel Umrah Branded Milikmu Sendiri",
       "headlineHighlight": "Dalam Hitungan Menit.",
       "subtitle": "White-label, self-hosted, dan siap deploy. Berikan biro perjalananmu kehadiran digital modern dengan satu perintah — tanpa perlu coding.",
       "ctaTrial": "Coba Gratis 14 Hari",
       "ctaLearn": "Pelajari Lebih Lanjut",
       "trialNote": "Uji coba 14 hari. Tanpa kartu kredit.",
+      "liveBadge": "Dashboard live",
+      "floatCaption": "Pemesanan minggu ini",
+      "floatValue": "+18% vs minggu lalu",
       "mock": {
         "browserTitle": "dashboard.rihla-mate — Booking",
         "sidebarBrand": "Biro Anda",
