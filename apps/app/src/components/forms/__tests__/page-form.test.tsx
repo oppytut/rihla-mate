@@ -11,12 +11,9 @@ const { mockPush, mockToastSuccess } = vi.hoisted(() => ({
   mockToastSuccess: vi.fn(),
 }));
 
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({ push: mockPush }),
-}));
-
-vi.mock("next/link", () => ({
-  default: ({
+  Link: ({
     children,
     href,
     ...props

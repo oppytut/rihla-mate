@@ -90,22 +90,16 @@ vi.mock("next-intl", () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// Mock next/navigation
+// Mock @/i18n/navigation
 // ---------------------------------------------------------------------------
-vi.mock("next/navigation", () => ({
+vi.mock("@/i18n/navigation", () => ({
   useRouter: () => ({
     push: mockRouterPush,
     replace: vi.fn(),
     back: vi.fn(),
     prefetch: vi.fn(),
   }),
-}));
-
-// ---------------------------------------------------------------------------
-// Mock next/link
-// ---------------------------------------------------------------------------
-vi.mock("next/link", () => ({
-  default: ({
+  Link: ({
     children,
     href,
     ...props
