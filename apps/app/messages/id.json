@@ -844,6 +844,10 @@
     "faq": {
       "sectionTitle": "Pertanyaan yang Sering Diajukan",
       "sectionDescription": "Semua yang perlu kamu tahu sebelum memulai.",
+      "badge": "FAQ",
+      "stillHaveQuestions": "Masih ada pertanyaan?",
+      "contactHint": "Tim kami siap membantu setup, lisensi, dan onboarding biro travel Anda.",
+      "contactCta": "Email hello@rihla-mate.com",
       "items": [
         {
           "question": "Apa maksudnya 'self-hosted'?",

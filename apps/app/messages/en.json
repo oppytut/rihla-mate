@@ -849,6 +849,10 @@
     "faq": {
       "sectionTitle": "Frequently Asked Questions",
       "sectionDescription": "Everything you need to know before getting started.",
+      "badge": "FAQ",
+      "stillHaveQuestions": "Still have questions?",
+      "contactHint": "Our team can help with setup, licensing, and onboarding your travel agency.",
+      "contactCta": "Email hello@rihla-mate.com",
       "items": [
         {
           "question": "What does 'self-hosted' mean?",
