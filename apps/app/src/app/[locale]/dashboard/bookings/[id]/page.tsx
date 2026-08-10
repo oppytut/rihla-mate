@@ -9,6 +9,7 @@ import { formatDateForDisplay, formatDateForStorage } from "@/lib/utils/format";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
@@ -146,8 +147,9 @@ function BookingFormContent({
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={t("bookings.editTitle")}
+        leading={
           <Link
             href="/dashboard/bookings"
             data-testid="bookings-back-to-list"
@@ -155,11 +157,8 @@ function BookingFormContent({
           >
             {t("bookings.backToList")}
           </Link>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
-          {t("bookings.editTitle")}
-        </h1>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <form onSubmit={handleSubmit} className="max-w-3xl">
@@ -547,12 +546,8 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
   if (bookingQuery.isError) {
     return (
       <>
+        <PageHeader title={t("bookings.editTitle")} />
         <div className="px-4 lg:px-8 py-6">
-          <header className="mb-6">
-            <h1 className="text-2xl font-semibold text-foreground" data-testid="page-heading">
-              {t("bookings.editTitle")}
-            </h1>
-          </header>
           <div
             className="bg-destructive/10 border border-destructive/20 rounded-lg p-6"
             data-testid="error-message"

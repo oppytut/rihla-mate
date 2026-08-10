@@ -9,6 +9,7 @@ import { slugify } from "@/lib/utils/slug";
 import { validatePackage } from "@/lib/utils/validation";
 import { useState, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { toast } from "sonner";
 
 export type PackageForm = {
@@ -172,8 +173,9 @@ export function PackageFormContent({
 
   return (
     <>
-      <header className="px-4 lg:px-8 py-6 border-b border-border bg-card">
-        <div className="flex items-center gap-4">
+      <PageHeader
+        title={isEditMode ? t("packages.editTitle") : t("packages.createTitle")}
+        leading={
           <Link
             href="/dashboard/packages"
             data-testid="packages-back-to-list"
@@ -181,11 +183,8 @@ export function PackageFormContent({
           >
             {t("packages.backToList")}
           </Link>
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground mt-2" data-testid="page-heading">
-          {isEditMode ? t("packages.editTitle") : t("packages.createTitle")}
-        </h1>
-      </header>
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <form onSubmit={handleSubmit} noValidate className="max-w-3xl">
