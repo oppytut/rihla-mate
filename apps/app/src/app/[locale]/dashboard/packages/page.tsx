@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
 import { getStatusBadgeClass } from "@/lib/utils/badge";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 

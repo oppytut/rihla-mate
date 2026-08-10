@@ -7,9 +7,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
 import { tryParseJson } from "@/lib/utils/slug";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { Link, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
