@@ -604,8 +604,13 @@
     "updateSuccess": "User updated successfully",
     "invite": "Invite User",
     "inviteSuccess": "Invitation sent successfully",
-    "emptyHint": "Multi-user management is not available yet. Seeded admin accounts can still sign in from the sign-in page.",
-    "backToOverview": "Back to overview"
+    "emptyHint": "No users yet. Add staff or admin accounts so they can sign in to the dashboard.",
+    "backToOverview": "Back to overview",
+    "allRoles": "All roles",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "password": "Password"
   },
   "notifications": {
     "updateAvailable": "A new version of Rihla Mate is available: {version}",

@@ -604,8 +604,13 @@
     "updateSuccess": "Pengguna berhasil diperbarui",
     "invite": "Undang Pengguna",
     "inviteSuccess": "Undangan berhasil dikirim",
-    "emptyHint": "Manajemen multi-pengguna belum tersedia. Akun admin e2e/seed tetap bisa masuk lewat halaman masuk.",
-    "backToOverview": "Kembali ke ringkasan"
+    "emptyHint": "Belum ada pengguna terdaftar. Tambahkan staf atau admin agar mereka bisa masuk ke dasbor.",
+    "backToOverview": "Kembali ke ringkasan",
+    "allRoles": "Semua peran",
+    "save": "Simpan",
+    "saving": "Menyimpan...",
+    "cancel": "Batal",
+    "password": "Kata sandi"
   },
   "auth": {
     "signIn": "Masuk",
