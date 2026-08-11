@@ -39,6 +39,24 @@ function makeDrizzleAdapter(dbInstance: DrizzleClient) {
 const baseOptions = {
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({
+      user,
+      url,
+    }: {
+      user: { email: string; name: string };
+      url: string;
+      token: string;
+    }) => {
+      const { sendPasswordSetupEmail } = await import("@/lib/email/auth");
+      const { getPasswordEmailKind } = await import("@/lib/email/password-email-kind");
+      await sendPasswordSetupEmail({
+        to: user.email,
+        name: user.name || user.email,
+        url,
+        locale: "id",
+        kind: getPasswordEmailKind(),
+      });
+    },
   },
   user: {
     additionalFields: {
