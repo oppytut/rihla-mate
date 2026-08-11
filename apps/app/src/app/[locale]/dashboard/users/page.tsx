@@ -173,6 +173,7 @@ export default function UsersPage() {
         id: editTarget.id,
         name: formName.trim(),
         role: formRole,
+        ...(formPassword.trim().length >= 8 ? { password: formPassword } : {}),
       });
     }
   }
@@ -275,10 +276,10 @@ export default function UsersPage() {
                   autoComplete="email"
                 />
               </div>
-              {formMode === "create" && (
+              {(formMode === "create" || formMode === "edit") && (
                 <div className="space-y-1.5">
                   <label htmlFor="user-password" className="text-sm font-medium text-foreground">
-                    {t("users.password")}
+                    {formMode === "edit" ? t("users.newPasswordOptional") : t("users.password")}
                   </label>
                   <Input
                     id="user-password"
@@ -286,10 +287,11 @@ export default function UsersPage() {
                     data-testid="users-form-password"
                     value={formPassword}
                     onChange={(e) => setFormPassword(e.target.value)}
-                    required
-                    minLength={8}
+                    required={formMode === "create"}
+                    minLength={formMode === "create" ? 8 : undefined}
                     maxLength={128}
                     autoComplete="new-password"
+                    placeholder={formMode === "edit" ? t("users.passwordLeaveBlank") : undefined}
                   />
                 </div>
               )}

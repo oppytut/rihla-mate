@@ -610,7 +610,9 @@
     "save": "Simpan",
     "saving": "Menyimpan...",
     "cancel": "Batal",
-    "password": "Kata sandi"
+    "password": "Kata sandi",
+    "newPasswordOptional": "Kata sandi baru (opsional)",
+    "passwordLeaveBlank": "Kosongkan jika tidak diubah"
   },
   "auth": {
     "signIn": "Masuk",
