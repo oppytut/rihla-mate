@@ -1,11 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { eq, ilike, and, or, count, desc, sql, type SQLWrapper } from "drizzle-orm";
+import { hashPassword } from "@better-auth/utils/password";
 import { createTRPCRouter, protectedProcedure, adminProcedure } from "../init";
 import { users } from "@/lib/db/schema/users";
+import { accounts } from "@/lib/db/schema/accounts";
 import { getOrInitAuth } from "@/lib/auth";
 
 const roleSchema = z.enum(["owner", "admin", "staff"]);
+const ELEVATED_ROLES = new Set(["owner", "admin"]);
+
+function isElevatedRole(role: string | null | undefined): boolean {
+  return role != null && ELEVATED_ROLES.has(role);
+}
 
 export const userRouter = createTRPCRouter({
   me: protectedProcedure.query(async ({ ctx }) => {
@@ -139,11 +146,12 @@ export const userRouter = createTRPCRouter({
         id: z.string().uuid(),
         name: z.string().min(1).max(255).optional(),
         role: roleSchema.optional(),
+        password: z.string().min(8).max(128).optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await ctx.db
-        .select({ id: users.id, role: users.role })
+        .select({ id: users.id, role: users.role, email: users.email })
         .from(users)
         .where(eq(users.id, input.id))
         .limit(1);
@@ -152,28 +160,26 @@ export const userRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       }
 
-      if (
-        input.role &&
-        existing[0].role === "admin" &&
-        input.role !== "admin" &&
-        input.id === ctx.session.user.id
-      ) {
+      const demotingElevated =
+        input.role !== undefined && isElevatedRole(existing[0].role) && !isElevatedRole(input.role);
+
+      if (demotingElevated && input.id === ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "You cannot demote your own admin account",
+          message: "You cannot demote your own elevated account",
         });
       }
 
-      if (input.role && existing[0].role === "admin" && input.role !== "admin") {
-        const [{ adminCount }] = await ctx.db
-          .select({ adminCount: sql<number>`cast(count(*) as int)` })
+      if (demotingElevated) {
+        const [{ elevatedCount }] = await ctx.db
+          .select({ elevatedCount: sql<number>`cast(count(*) as int)` })
           .from(users)
-          .where(eq(users.role, "admin"));
+          .where(or(eq(users.role, "admin"), eq(users.role, "owner")));
 
-        if (adminCount <= 1) {
+        if (elevatedCount <= 1) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Cannot demote the last admin user",
+            message: "Cannot demote the last elevated user",
           });
         }
       }
@@ -182,24 +188,61 @@ export const userRouter = createTRPCRouter({
       if (input.name !== undefined) patch.name = input.name;
       if (input.role !== undefined) patch.role = input.role;
 
-      if (Object.keys(patch).length === 0) {
+      if (Object.keys(patch).length === 0 && !input.password) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No fields to update" });
       }
 
-      const [updated] = await ctx.db
-        .update(users)
-        .set(patch)
-        .where(eq(users.id, input.id))
-        .returning({
+      if (input.password) {
+        const passwordHash = await hashPassword(input.password);
+        const creds = await ctx.db
+          .select({ id: accounts.id })
+          .from(accounts)
+          .where(and(eq(accounts.userId, input.id), eq(accounts.providerId, "credential")))
+          .limit(1);
+
+        if (creds.length === 0) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "User has no password credential account",
+          });
+        }
+
+        await ctx.db
+          .update(accounts)
+          .set({ password: passwordHash })
+          .where(eq(accounts.id, creds[0].id));
+      }
+
+      if (Object.keys(patch).length > 0) {
+        const [updated] = await ctx.db
+          .update(users)
+          .set(patch)
+          .where(eq(users.id, input.id))
+          .returning({
+            id: users.id,
+            email: users.email,
+            name: users.name,
+            role: users.role,
+            createdAt: users.createdAt,
+            updatedAt: users.updatedAt,
+          });
+        return updated;
+      }
+
+      const [current] = await ctx.db
+        .select({
           id: users.id,
           email: users.email,
           name: users.name,
           role: users.role,
           createdAt: users.createdAt,
           updatedAt: users.updatedAt,
-        });
+        })
+        .from(users)
+        .where(eq(users.id, input.id))
+        .limit(1);
 
-      return updated;
+      return current;
     }),
 
   delete: adminProcedure
@@ -222,16 +265,16 @@ export const userRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
       }
 
-      if (existing[0].role === "admin") {
-        const [{ adminCount }] = await ctx.db
-          .select({ adminCount: sql<number>`cast(count(*) as int)` })
+      if (isElevatedRole(existing[0].role)) {
+        const [{ elevatedCount }] = await ctx.db
+          .select({ elevatedCount: sql<number>`cast(count(*) as int)` })
           .from(users)
-          .where(eq(users.role, "admin"));
+          .where(or(eq(users.role, "admin"), eq(users.role, "owner")));
 
-        if (adminCount <= 1) {
+        if (elevatedCount <= 1) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "Cannot delete the last admin user",
+            message: "Cannot delete the last elevated user",
           });
         }
       }

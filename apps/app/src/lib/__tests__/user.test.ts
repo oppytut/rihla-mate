@@ -40,7 +40,7 @@ vi.mock("../trpc/init", async () => {
     if (!ctx.session) {
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
-    if (ctx.session.user.role !== "admin") {
+    if (ctx.session.user.role !== "admin" && ctx.session.user.role !== "owner") {
       throw new TRPCError({ code: "FORBIDDEN" });
     }
     return next({ ctx: { ...ctx, session: ctx.session } });
@@ -289,6 +289,53 @@ describe("userRouter", () => {
       const { createCallerFactory } = await import("../trpc/init");
       const caller = createCallerFactory(userRouter)(ctx);
       await expect(caller.list({})).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    it("allows owner to list users", async () => {
+      const items = [
+        {
+          id: "u1",
+          email: "a@example.com",
+          name: "A",
+          role: "owner",
+          emailVerified: true,
+          image: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ];
+      const db = makeMockDb() as unknown as Record<string, ReturnType<typeof vi.fn>>;
+      let selectCall = 0;
+      db.select = vi.fn(() => {
+        selectCall += 1;
+        if (selectCall === 1) {
+          const terminal = {
+            from: vi.fn(() => terminal),
+            where: vi.fn(() => terminal),
+            orderBy: vi.fn(() => terminal),
+            limit: vi.fn(() => terminal),
+            offset: vi.fn(() => terminal),
+            then: (resolve: (v: unknown) => unknown) => Promise.resolve(items).then(resolve),
+          };
+          return terminal;
+        }
+        const countTerminal = {
+          from: vi.fn(() => countTerminal),
+          where: vi.fn(() => countTerminal),
+          then: (resolve: (v: unknown) => unknown) => Promise.resolve([{ count: 1 }]).then(resolve),
+        };
+        return countTerminal;
+      });
+
+      const ctx = makeMockContext({
+        session: adminSession({ role: "owner", id: "owner-1", email: "owner@example.com" }),
+        db: db as unknown as TRPCContext["db"],
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      const result = await caller.list({ page: 1, limit: 20 });
+      expect(result.items).toEqual(items);
+      expect(result.total).toBe(1);
     });
 
     it("returns items for admin", async () => {
