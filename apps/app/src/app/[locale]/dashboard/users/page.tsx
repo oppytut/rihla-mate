@@ -15,7 +15,7 @@ const PAGE_SIZE = 10;
 
 type UserRole = "owner" | "admin" | "staff";
 
-type FormMode = "closed" | "create" | "edit";
+type FormMode = "closed" | "create" | "invite" | "edit";
 
 type EditTarget = {
   id: string;
@@ -94,6 +94,19 @@ export default function UsersPage() {
     }),
   );
 
+  const inviteMutation = useMutation(
+    trpc.user.invite.mutationOptions({
+      onSuccess: () => {
+        toast.success(t("users.inviteSuccess"));
+        closeForm();
+        usersQuery.refetch();
+      },
+      onError: (error) => {
+        toast.error(`${t("common.error")}: ${error.message}`);
+      },
+    }),
+  );
+
   const updateMutation = useMutation(
     trpc.user.update.mutationOptions({
       onSuccess: () => {
@@ -142,6 +155,15 @@ export default function UsersPage() {
     setFormMode("create");
   }
 
+  function openInvite() {
+    setEditTarget(null);
+    setFormName("");
+    setFormEmail("");
+    setFormPassword("");
+    setFormRole("staff");
+    setFormMode("invite");
+  }
+
   function openEdit(user: EditTarget) {
     setEditTarget(user);
     setFormName(user.name);
@@ -159,6 +181,14 @@ export default function UsersPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (formMode === "invite") {
+      inviteMutation.mutate({
+        name: formName.trim(),
+        email: formEmail.trim(),
+        role: formRole,
+      });
+      return;
+    }
     if (formMode === "create") {
       createMutation.mutate({
         name: formName.trim(),
@@ -178,7 +208,7 @@ export default function UsersPage() {
     }
   }
 
-  const formBusy = createMutation.isPending || updateMutation.isPending;
+  const formBusy = createMutation.isPending || inviteMutation.isPending || updateMutation.isPending;
 
   function roleLabel(role: string): string {
     if (role === "owner" || role === "admin" || role === "staff") {
@@ -202,9 +232,14 @@ export default function UsersPage() {
       <PageHeader
         title={t("users.title")}
         actions={
-          <Button onClick={openCreate} data-testid="users-add">
-            {t("users.addUser")}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={openInvite} data-testid="users-invite" variant="default">
+              {t("users.inviteUser")}
+            </Button>
+            <Button onClick={openCreate} data-testid="users-add" variant="outline">
+              {t("users.addUser")}
+            </Button>
+          </div>
         }
       />
 
@@ -242,8 +277,17 @@ export default function UsersPage() {
             data-testid="users-form"
           >
             <h2 className="mb-4 text-base font-semibold text-foreground">
-              {formMode === "create" ? t("users.addUser") : t("users.edit")}
+              {formMode === "invite"
+                ? t("users.inviteUser")
+                : formMode === "create"
+                  ? t("users.addUser")
+                  : t("users.edit")}
             </h2>
+            {formMode === "invite" && (
+              <p className="mb-4 text-sm text-muted-foreground" data-testid="users-invite-hint">
+                {t("users.inviteHint")}
+              </p>
+            )}
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label htmlFor="user-name" className="text-sm font-medium text-foreground">
@@ -269,7 +313,7 @@ export default function UsersPage() {
                   data-testid="users-form-email"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
-                  required={formMode === "create"}
+                  required={formMode === "create" || formMode === "invite"}
                   disabled={formMode === "edit"}
                   maxLength={255}
                   autoComplete="email"
@@ -312,7 +356,13 @@ export default function UsersPage() {
               </div>
               <div className="flex flex-wrap gap-2 sm:col-span-2">
                 <Button type="submit" disabled={formBusy} data-testid="users-form-submit">
-                  {formBusy ? t("users.saving") : t("users.save")}
+                  {formBusy
+                    ? formMode === "invite"
+                      ? t("users.inviteSending")
+                      : t("users.saving")
+                    : formMode === "invite"
+                      ? t("users.sendInvite")
+                      : t("users.save")}
                 </Button>
                 <Button
                   type="button"

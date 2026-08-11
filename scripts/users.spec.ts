@@ -12,7 +12,19 @@ test.describe("Users Page Smoke Test", () => {
 
     expect(page.url()).toContain("/dashboard/users");
     await expect(page.getByTestId("users-add")).toBeVisible();
+    await expect(page.getByTestId("users-invite")).toBeVisible();
     await expect(page.getByTestId("users-search")).toBeVisible();
+  });
+
+  test("Invite form opens without password field", async ({ page }) => {
+    await page.goto(`${BASE_URL}/en/dashboard/users`, {
+      waitUntil: "domcontentloaded",
+    });
+    await waitForPageHeading(page);
+    await page.getByTestId("users-invite").click();
+    await expect(page.getByTestId("users-form")).toBeVisible();
+    await expect(page.getByTestId("users-invite-hint")).toBeVisible();
+    await expect(page.getByTestId("users-form-password")).toHaveCount(0);
   });
 });
 
