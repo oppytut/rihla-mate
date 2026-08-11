@@ -223,6 +223,67 @@ export const userRouter = createTRPCRouter({
       return updated;
     }),
 
+  resendInvite: adminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.db
+        .select({ id: users.id, email: users.email, name: users.name, role: users.role })
+        .from(users)
+        .where(eq(users.id, input.id))
+        .limit(1);
+
+      if (existing.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      }
+
+      const target = existing[0];
+      const creds = await ctx.db
+        .select({ id: accounts.id })
+        .from(accounts)
+        .where(and(eq(accounts.userId, target.id), eq(accounts.providerId, "credential")))
+        .limit(1);
+
+      if (creds.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User has no password credential account",
+        });
+      }
+
+      const appBase = (
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.BETTER_AUTH_URL ||
+        "http://localhost:3000"
+      ).replace(/\/$/, "");
+      const redirectTo = `${appBase}/reset-password`;
+
+      const auth = await getOrInitAuth();
+      try {
+        const { withPasswordEmailKind } = await import("@/lib/email/password-email-kind");
+        await withPasswordEmailKind("invite", async () => {
+          await auth.api.requestPasswordReset({
+            body: {
+              email: target.email,
+              redirectTo,
+            },
+          });
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err instanceof Error ? err.message : "Failed to resend invite email",
+          cause: err,
+        });
+      }
+
+      return {
+        id: target.id,
+        email: target.email,
+        name: target.name,
+        role: target.role,
+      };
+    }),
+
   update: adminProcedure
     .input(
       z.object({

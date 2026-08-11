@@ -460,6 +460,86 @@ describe("userRouter", () => {
     });
   });
 
+  describe("resendInvite", () => {
+    it("throws FORBIDDEN for staff", async () => {
+      const ctx = makeMockContext({
+        session: adminSession({ role: "staff", id: "staff-1", email: "s@example.com" }),
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      await expect(
+        caller.resendInvite({ id: "00000000-0000-4000-8000-000000000001" }),
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    it("throws NOT_FOUND when user missing", async () => {
+      const db = makeMockDb() as unknown as Record<string, ReturnType<typeof vi.fn>>;
+      const empty = {
+        from: vi.fn(() => empty),
+        where: vi.fn(() => empty),
+        limit: vi.fn(async () => []),
+        then: (resolve: (v: unknown) => unknown) => Promise.resolve([]).then(resolve),
+      };
+      db.select = vi.fn(() => empty);
+
+      const ctx = makeMockContext({
+        session: adminSession(),
+        db: db as unknown as TRPCContext["db"],
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      await expect(
+        caller.resendInvite({ id: "00000000-0000-4000-8000-000000000099" }),
+      ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    });
+
+    it("requests password reset for existing credential user", async () => {
+      mockRequestPasswordReset.mockClear();
+      mockSignUpEmail.mockClear();
+      const db = makeMockDb() as unknown as Record<string, ReturnType<typeof vi.fn>>;
+      let selectCall = 0;
+      db.select = vi.fn(() => {
+        selectCall += 1;
+        if (selectCall === 1) {
+          const userRow = {
+            id: "00000000-0000-4000-8000-000000000010",
+            email: "staff@example.com",
+            name: "Staff",
+            role: "staff",
+          };
+          const chain: Record<string, unknown> = {};
+          const self = () => chain;
+          chain.from = vi.fn(self);
+          chain.where = vi.fn(self);
+          chain.limit = vi.fn(async () => [userRow]);
+          return chain;
+        }
+        const credChain: Record<string, unknown> = {};
+        const self = () => credChain;
+        credChain.from = vi.fn(self);
+        credChain.where = vi.fn(self);
+        credChain.limit = vi.fn(async () => [{ id: "cred-1" }]);
+        return credChain;
+      });
+
+      const ctx = makeMockContext({
+        session: adminSession(),
+        db: db as unknown as TRPCContext["db"],
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      const result = await caller.resendInvite({
+        id: "00000000-0000-4000-8000-000000000010",
+      });
+      expect(result).toMatchObject({
+        id: "00000000-0000-4000-8000-000000000010",
+        email: "staff@example.com",
+      });
+      expect(mockRequestPasswordReset).toHaveBeenCalled();
+      expect(mockSignUpEmail).not.toHaveBeenCalled();
+    });
+  });
+
   describe("delete", () => {
     it("rejects deleting own account", async () => {
       const ctx = makeMockContext({ session: adminSession() });
