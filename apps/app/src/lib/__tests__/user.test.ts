@@ -9,18 +9,27 @@ vi.mock("../trpc/rate-limit", () => ({
       next({ ctx }),
 }));
 
+const mockRequestPasswordReset = vi.fn(async () => ({ status: true }));
+const mockSignUpEmail = vi.fn(async ({ body }: { body: { email: string; name: string } }) => ({
+  user: {
+    id: "new-user-id",
+    email: body.email,
+    name: body.name,
+  },
+}));
+
 vi.mock("../auth", () => ({
   getOrInitAuth: vi.fn(async () => ({
     api: {
-      signUpEmail: vi.fn(async ({ body }: { body: { email: string; name: string } }) => ({
-        user: {
-          id: "new-user-id",
-          email: body.email,
-          name: body.name,
-        },
-      })),
+      signUpEmail: mockSignUpEmail,
+      requestPasswordReset: mockRequestPasswordReset,
     },
   })),
+}));
+
+vi.mock("../email/password-email-kind", () => ({
+  withPasswordEmailKind: async (_kind: string, fn: () => Promise<unknown>) => fn(),
+  getPasswordEmailKind: () => "reset",
 }));
 
 vi.mock("../trpc/init", async () => {
@@ -390,6 +399,64 @@ describe("userRouter", () => {
       expect(result.items).toEqual(items);
       expect(result.total).toBe(1);
       expect(result.page).toBe(1);
+    });
+  });
+
+  describe("invite", () => {
+    it("throws FORBIDDEN for staff", async () => {
+      const ctx = makeMockContext({
+        session: adminSession({ role: "staff", id: "staff-1", email: "s@example.com" }),
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      await expect(
+        caller.invite({ email: "new@example.com", name: "New", role: "staff" }),
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    it("creates user and requests password reset for admin", async () => {
+      const db = makeMockDb() as unknown as Record<string, ReturnType<typeof vi.fn>>;
+      let selectCall = 0;
+      db.select = vi.fn(() => {
+        selectCall += 1;
+        const empty = {
+          from: vi.fn(() => empty),
+          where: vi.fn(() => empty),
+          limit: vi.fn(async () => []),
+          then: (resolve: (v: unknown) => unknown) => Promise.resolve([]).then(resolve),
+        };
+        return empty;
+      });
+      const updated = {
+        id: "new-user-id",
+        email: "invitee@example.com",
+        name: "Invitee",
+        role: "staff",
+        createdAt: new Date(),
+      };
+      const updateChain: Record<string, unknown> = {};
+      const self = () => updateChain;
+      for (const m of ["set", "where", "returning"]) {
+        updateChain[m] = vi.fn(self);
+      }
+      updateChain.returning = vi.fn(async () => [updated]);
+      db.update = vi.fn(() => updateChain);
+
+      const ctx = makeMockContext({
+        session: adminSession(),
+        db: db as unknown as TRPCContext["db"],
+      });
+      const { createCallerFactory } = await import("../trpc/init");
+      const caller = createCallerFactory(userRouter)(ctx);
+      const result = await caller.invite({
+        email: "invitee@example.com",
+        name: "Invitee",
+        role: "staff",
+      });
+      expect(result).toMatchObject({ id: "new-user-id", email: "invitee@example.com" });
+      expect(mockSignUpEmail).toHaveBeenCalled();
+      expect(mockRequestPasswordReset).toHaveBeenCalled();
+      void selectCall;
     });
   });
 
