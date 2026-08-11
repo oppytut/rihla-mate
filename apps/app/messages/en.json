@@ -637,7 +637,10 @@
     "inviteMode": "Invite (email)",
     "createMode": "Create with password",
     "inviteSending": "Sending invite...",
-    "sendInvite": "Send invite"
+    "sendInvite": "Send invite",
+    "resendInvite": "Resend invite",
+    "resendInviteSuccess": "Invite resent successfully",
+    "resendInviteConfirm": "Resend the invite email to this user?"
   },
   "notifications": {
     "updateAvailable": "A new version of Rihla Mate is available: {version}",
