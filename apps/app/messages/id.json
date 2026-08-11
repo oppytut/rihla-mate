@@ -245,6 +245,25 @@
       "bookingId": "ID Pemesanan",
       "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",
       "footerCopyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi."
+    },
+    "auth": {
+      "invite": {
+        "subject": "Undangan ke Rihla Mate — atur kata sandi Anda",
+        "heading": "Anda diundang",
+        "subheading": "Bergabung dengan dasbor Rihla Mate",
+        "greeting": "Halo {name},",
+        "body": "Anda diundang untuk bergabung. Klik tombol di bawah untuk mengatur kata sandi dan masuk ke dasbor.",
+        "cta": "Atur kata sandi"
+      },
+      "reset": {
+        "subject": "Atur ulang kata sandi Rihla Mate",
+        "heading": "Atur ulang kata sandi",
+        "subheading": "Permintaan reset kata sandi",
+        "greeting": "Halo {name},",
+        "body": "Kami menerima permintaan untuk mengatur ulang kata sandi Anda. Klik tombol di bawah untuk melanjutkan. Jika Anda tidak meminta ini, abaikan email ini.",
+        "cta": "Atur ulang kata sandi"
+      },
+      "footerCopyright": "© {year} Rihla Mate. Semua hak dilindungi."
     }
   },
   "bookings": {
@@ -612,7 +631,13 @@
     "cancel": "Batal",
     "password": "Kata sandi",
     "newPasswordOptional": "Kata sandi baru (opsional)",
-    "passwordLeaveBlank": "Kosongkan jika tidak diubah"
+    "passwordLeaveBlank": "Kosongkan jika tidak diubah",
+    "inviteUser": "Undang lewat email",
+    "inviteHint": "Pengguna menerima email untuk mengatur kata sandi sendiri. Tidak perlu mengisi kata sandi di sini.",
+    "inviteMode": "Undang (email)",
+    "createMode": "Buat dengan kata sandi",
+    "inviteSending": "Mengirim undangan...",
+    "sendInvite": "Kirim undangan"
   },
   "auth": {
     "signIn": "Masuk",
@@ -628,7 +653,21 @@
     "passwordPlaceholder": "••••••••",
     "backToHome": "Kembali ke beranda",
     "secureNote": "Akses operator aman untuk workspace Umrah Anda",
-    "trialOrActivate": "Mulai uji coba gratis atau aktifkan lisensi"
+    "trialOrActivate": "Mulai uji coba gratis atau aktifkan lisensi",
+    "forgotPassword": "Lupa kata sandi?",
+    "forgotPasswordTitle": "Lupa kata sandi",
+    "forgotPasswordHelp": "Masukkan email akun Anda. Kami akan mengirim tautan untuk mengatur ulang kata sandi.",
+    "sendResetLink": "Kirim tautan reset",
+    "resetEmailSent": "Jika email terdaftar, tautan reset telah dikirim.",
+    "resetPasswordTitle": "Atur kata sandi baru",
+    "resetPasswordHelp": "Masukkan kata sandi baru untuk akun Anda.",
+    "newPassword": "Kata sandi baru",
+    "confirmPassword": "Konfirmasi kata sandi",
+    "passwordMismatch": "Kata sandi tidak cocok.",
+    "resetSuccess": "Kata sandi berhasil diubah. Silakan masuk.",
+    "resetFailed": "Gagal mengatur kata sandi. Tautan mungkin kedaluwarsa.",
+    "invalidResetToken": "Tautan reset tidak valid atau kedaluwarsa.",
+    "backToSignIn": "Kembali ke masuk"
   },
   "landing": {
     "title": "Rihla Mate",

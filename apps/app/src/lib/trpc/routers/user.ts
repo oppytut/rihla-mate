@@ -140,6 +140,89 @@ export const userRouter = createTRPCRouter({
       return updated;
     }),
 
+  invite: adminProcedure
+    .input(
+      z.object({
+        email: z.string().email().max(255),
+        name: z.string().min(1).max(255),
+        role: roleSchema.default("staff"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, input.email))
+        .limit(1);
+
+      if (existing.length > 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "A user with this email already exists",
+        });
+      }
+
+      const tempPassword = `Inv!${crypto.randomUUID().replace(/-/g, "").slice(0, 24)}`;
+      const auth = await getOrInitAuth();
+      let createdId: string;
+      try {
+        const result = await auth.api.signUpEmail({
+          body: {
+            email: input.email,
+            password: tempPassword,
+            name: input.name,
+          },
+        });
+        createdId = result.user.id;
+      } catch (err) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: err instanceof Error ? err.message : "Failed to invite user",
+          cause: err,
+        });
+      }
+
+      const [updated] = await ctx.db
+        .update(users)
+        .set({ role: input.role })
+        .where(eq(users.id, createdId))
+        .returning({
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          role: users.role,
+          createdAt: users.createdAt,
+        });
+
+      const appBase = (
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.BETTER_AUTH_URL ||
+        "http://localhost:3000"
+      ).replace(/\/$/, "");
+      const redirectTo = `${appBase}/reset-password`;
+
+      try {
+        const { withPasswordEmailKind } = await import("@/lib/email/password-email-kind");
+        await withPasswordEmailKind("invite", async () => {
+          await auth.api.requestPasswordReset({
+            body: {
+              email: input.email,
+              redirectTo,
+            },
+          });
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            err instanceof Error ? err.message : "User created but failed to send invite email",
+          cause: err,
+        });
+      }
+
+      return updated;
+    }),
+
   update: adminProcedure
     .input(
       z.object({

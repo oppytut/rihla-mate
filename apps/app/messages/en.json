@@ -245,6 +245,25 @@
       "bookingId": "Booking ID",
       "footerHelp": "If you have any questions, please contact us through our website or reply to this email.",
       "footerCopyright": "© {year} Rihla Mate. All rights reserved."
+    },
+    "auth": {
+      "invite": {
+        "subject": "Invitation to Rihla Mate — set your password",
+        "heading": "You're invited",
+        "subheading": "Join the Rihla Mate dashboard",
+        "greeting": "Hi {name},",
+        "body": "You have been invited to join. Click the button below to set your password and access the dashboard.",
+        "cta": "Set password"
+      },
+      "reset": {
+        "subject": "Reset your Rihla Mate password",
+        "heading": "Reset password",
+        "subheading": "Password reset request",
+        "greeting": "Hi {name},",
+        "body": "We received a request to reset your password. Click the button below to continue. If you did not request this, you can ignore this email.",
+        "cta": "Reset password"
+      },
+      "footerCopyright": "© {year} Rihla Mate. All rights reserved."
     }
   },
   "bookings": {
@@ -612,7 +631,13 @@
     "cancel": "Cancel",
     "password": "Password",
     "newPasswordOptional": "New password (optional)",
-    "passwordLeaveBlank": "Leave blank to keep current"
+    "passwordLeaveBlank": "Leave blank to keep current",
+    "inviteUser": "Invite by email",
+    "inviteHint": "The user gets an email to set their own password. No password needed here.",
+    "inviteMode": "Invite (email)",
+    "createMode": "Create with password",
+    "inviteSending": "Sending invite...",
+    "sendInvite": "Send invite"
   },
   "notifications": {
     "updateAvailable": "A new version of Rihla Mate is available: {version}",
@@ -633,7 +658,21 @@
     "passwordPlaceholder": "••••••••",
     "backToHome": "Back to home",
     "secureNote": "Secure operator access for your Umrah workspace",
-    "trialOrActivate": "Start free trial or activate a license"
+    "trialOrActivate": "Start free trial or activate a license",
+    "forgotPassword": "Forgot password?",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordHelp": "Enter your account email. We will send a link to reset your password.",
+    "sendResetLink": "Send reset link",
+    "resetEmailSent": "If the email is registered, a reset link has been sent.",
+    "resetPasswordTitle": "Set a new password",
+    "resetPasswordHelp": "Enter a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Passwords do not match.",
+    "resetSuccess": "Password updated. Please sign in.",
+    "resetFailed": "Could not set password. The link may have expired.",
+    "invalidResetToken": "Reset link is invalid or expired.",
+    "backToSignIn": "Back to sign in"
   },
   "landing": {
     "title": "Rihla Mate",
