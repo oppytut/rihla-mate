@@ -69,11 +69,14 @@ export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, session: ctx.session } });
 });
 
+const ELEVATED_ROLES = new Set(["admin", "owner"]);
+
 export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   if (!ctx.session) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
-  if (ctx.session.user.role !== "admin") {
+  const role = ctx.session.user.role;
+  if (role == null || !ELEVATED_ROLES.has(role)) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
   return next({ ctx: { ...ctx, session: ctx.session } });

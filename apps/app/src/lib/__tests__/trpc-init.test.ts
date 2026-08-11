@@ -136,6 +136,21 @@ describe("adminProcedure", () => {
     const result = await caller.adminHello();
     expect(result).toBe("hello admin");
   });
+
+  it("allows access when user is owner", async () => {
+    const session = {
+      ...makeAdminSession(),
+      user: {
+        ...makeAdminSession().user,
+        id: "owner-1",
+        email: "owner@test.com",
+        role: "owner" as const,
+      },
+    };
+    const caller = callerFactory(makeContext({ session }));
+    const result = await caller.adminHello();
+    expect(result).toBe("hello admin");
+  });
 });
 
 describe("rate limit exports", () => {

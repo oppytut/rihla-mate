@@ -610,7 +610,9 @@
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
-    "password": "Password"
+    "password": "Password",
+    "newPasswordOptional": "New password (optional)",
+    "passwordLeaveBlank": "Leave blank to keep current"
   },
   "notifications": {
     "updateAvailable": "A new version of Rihla Mate is available: {version}",

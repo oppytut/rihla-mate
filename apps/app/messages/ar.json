@@ -610,7 +610,9 @@
     "save": "حفظ",
     "saving": "جارٍ الحفظ...",
     "cancel": "إلغاء",
-    "password": "كلمة المرور"
+    "password": "كلمة المرور",
+    "newPasswordOptional": "كلمة مرور جديدة (اختياري)",
+    "passwordLeaveBlank": "اتركه فارغًا للإبقاء على الحالي"
   },
   "notifications": {
     "updateAvailable": "يتوفر إصدار جديد من رحلة ميت: {version}",
