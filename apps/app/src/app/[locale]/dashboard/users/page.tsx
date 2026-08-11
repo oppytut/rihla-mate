@@ -201,7 +201,6 @@ export default function UsersPage() {
     <>
       <PageHeader
         title={t("users.title")}
-        titleTestId="dashboard-heading"
         actions={
           <Button onClick={openCreate} data-testid="users-add">
             {t("users.addUser")}
