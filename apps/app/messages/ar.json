@@ -637,7 +637,10 @@
     "inviteMode": "دعوة (بريد)",
     "createMode": "إنشاء بكلمة مرور",
     "inviteSending": "جارٍ إرسال الدعوة...",
-    "sendInvite": "إرسال الدعوة"
+    "sendInvite": "إرسال الدعوة",
+    "resendInvite": "إعادة إرسال الدعوة",
+    "resendInviteSuccess": "تمت إعادة إرسال الدعوة بنجاح",
+    "resendInviteConfirm": "إعادة إرسال بريد الدعوة إلى هذا المستخدم؟"
   },
   "notifications": {
     "updateAvailable": "يتوفر إصدار جديد من رحلة ميت: {version}",

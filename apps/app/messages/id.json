@@ -637,7 +637,10 @@
     "inviteMode": "Undang (email)",
     "createMode": "Buat dengan kata sandi",
     "inviteSending": "Mengirim undangan...",
-    "sendInvite": "Kirim undangan"
+    "sendInvite": "Kirim undangan",
+    "resendInvite": "Kirim ulang undangan",
+    "resendInviteSuccess": "Undangan berhasil dikirim ulang",
+    "resendInviteConfirm": "Kirim ulang email undangan ke pengguna ini?"
   },
   "auth": {
     "signIn": "Masuk",

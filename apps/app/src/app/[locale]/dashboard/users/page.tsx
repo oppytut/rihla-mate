@@ -132,6 +132,17 @@ export default function UsersPage() {
     }),
   );
 
+  const resendInviteMutation = useMutation(
+    trpc.user.resendInvite.mutationOptions({
+      onSuccess: () => {
+        toast.success(t("users.resendInviteSuccess"));
+      },
+      onError: (error) => {
+        toast.error(`${t("common.error")}: ${error.message}`);
+      },
+    }),
+  );
+
   const items = usersQuery.data?.items ?? [];
   const total = usersQuery.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -176,6 +187,12 @@ export default function UsersPage() {
   function handleDelete(id: string) {
     if (window.confirm(t("users.deleteConfirm"))) {
       deleteMutation.mutate({ id });
+    }
+  }
+
+  function handleResendInvite(id: string) {
+    if (window.confirm(t("users.resendInviteConfirm"))) {
+      resendInviteMutation.mutate({ id });
     }
   }
 
@@ -527,6 +544,16 @@ export default function UsersPage() {
                               }
                             >
                               {t("users.edit")}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              data-testid={`users-resend-invite-${user.id}`}
+                              disabled={resendInviteMutation.isPending}
+                              onClick={() => handleResendInvite(user.id)}
+                            >
+                              {t("users.resendInvite")}
                             </Button>
                             <Button
                               type="button"
