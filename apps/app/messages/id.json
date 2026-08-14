@@ -194,7 +194,10 @@
       "gallery": "Galeri",
       "about": "Tentang paket ini",
       "dayLabel": "Hari {day}"
-    }
+    },
+    "description": "Kelola paket Umrah: cari, saring status, dan edit dari satu daftar.",
+    "emptyHint": "Tambah paket pertama agar tampil di landing dan bisa dipesan.",
+    "listCount": "{count} paket"
   },
   "common": {
     "appName": "Rihla Mate",

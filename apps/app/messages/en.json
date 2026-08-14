@@ -194,7 +194,10 @@
       "gallery": "Gallery",
       "about": "About this package",
       "dayLabel": "Day {day}"
-    }
+    },
+    "description": "Manage Umrah packages: search, filter by status, and edit from one list.",
+    "emptyHint": "Add your first package so it appears on the landing page and can be booked.",
+    "listCount": "{count} packages"
   },
   "common": {
     "appName": "Rihla Mate",
