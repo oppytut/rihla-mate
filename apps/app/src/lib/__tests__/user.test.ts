@@ -29,7 +29,11 @@ vi.mock("../auth", () => ({
 
 vi.mock("../email/password-email-kind", () => ({
   withPasswordEmailKind: async (_kind: string, fn: () => Promise<unknown>) => fn(),
+  withInvitePasswordEmail: async (_cookie: string | null, fn: () => Promise<unknown>) => fn(),
   getPasswordEmailKind: () => "reset",
+  getPasswordEmailLocale: () => null,
+  normalizeAppLocale: (v: string | null | undefined) =>
+    v === "en" || v === "ar" || v === "id" ? v : "id",
 }));
 
 vi.mock("../trpc/init", async () => {
