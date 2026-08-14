@@ -202,8 +202,8 @@ export const userRouter = createTRPCRouter({
       const redirectTo = `${appBase}/reset-password`;
 
       try {
-        const { withPasswordEmailKind } = await import("@/lib/email/password-email-kind");
-        await withPasswordEmailKind("invite", async () => {
+        const { withInvitePasswordEmail } = await import("@/lib/email/password-email-kind");
+        await withInvitePasswordEmail(ctx.headers.get("cookie"), async () => {
           await auth.api.requestPasswordReset({
             body: {
               email: input.email,
@@ -259,8 +259,8 @@ export const userRouter = createTRPCRouter({
 
       const auth = await getOrInitAuth();
       try {
-        const { withPasswordEmailKind } = await import("@/lib/email/password-email-kind");
-        await withPasswordEmailKind("invite", async () => {
+        const { withInvitePasswordEmail } = await import("@/lib/email/password-email-kind");
+        await withInvitePasswordEmail(ctx.headers.get("cookie"), async () => {
           await auth.api.requestPasswordReset({
             body: {
               email: target.email,

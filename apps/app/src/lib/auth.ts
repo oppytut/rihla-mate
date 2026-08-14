@@ -48,12 +48,22 @@ const baseOptions = {
       token: string;
     }) => {
       const { sendPasswordSetupEmail } = await import("@/lib/email/auth");
-      const { getPasswordEmailKind } = await import("@/lib/email/password-email-kind");
+      const { getPasswordEmailKind, getPasswordEmailLocale, normalizeAppLocale } =
+        await import("@/lib/email/password-email-kind");
+      let locale = getPasswordEmailLocale();
+      if (!locale) {
+        try {
+          const { cookies } = await import("next/headers");
+          locale = normalizeAppLocale((await cookies()).get("locale")?.value);
+        } catch {
+          locale = "id";
+        }
+      }
       await sendPasswordSetupEmail({
         to: user.email,
         name: user.name || user.email,
         url,
-        locale: "id",
+        locale,
         kind: getPasswordEmailKind(),
       });
     },
