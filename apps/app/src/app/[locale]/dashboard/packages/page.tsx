@@ -246,7 +246,7 @@ export default function PackagesPage() {
         {!packagesQuery.isLoading && !packagesQuery.isError && packages.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-testid="packages-table">
                 <thead className="bg-muted/50">
                   <tr>
                     <th
