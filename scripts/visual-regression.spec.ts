@@ -38,7 +38,7 @@ test.describe("visual regression", () => {
       // Waiting for a data-specific element ensures we capture the real page,
       // not the loading skeleton — critical for CI where queries are slower.
       await page.waitForSelector(
-        '[data-testid$="-page-info"], [data-testid$="-add-new-empty"], [data-testid$="-clear-filters"], [data-testid$="-submit"], [data-testid^="stat-card-"]',
+        '[data-testid$="-page-info"], [data-testid$="-add-new-empty"], [data-testid$="-clear-filters"], [data-testid$="-submit"], [data-testid$="-table"], [data-testid^="stat-card-"]',
         { state: "visible", timeout: 15000 },
       );
 
