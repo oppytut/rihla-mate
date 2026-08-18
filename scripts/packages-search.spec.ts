@@ -236,11 +236,28 @@ test.describe("packages search and filter", () => {
     });
   });
 
-  test("pagination buttons are present and previous is disabled on page 1", async ({ page }) => {
+  test("pagination is hidden on a single page, else previous is disabled on page 1", async ({
+    page,
+  }) => {
+    await expect(page.locator('[data-testid="page-heading"]')).toBeVisible({ timeout: 15000 });
+    await expect(
+      page
+        .locator('[data-testid="packages-table"], [data-testid="packages-add-new-empty"]')
+        .first(),
+    ).toBeVisible({ timeout: 15000 });
+
     const prevBtn = page.locator(SEL.prevPage);
     const nextBtn = page.locator(SEL.nextPage);
+    const pageInfo = page.locator(SEL.pageInfo);
 
-    await expect(prevBtn).toBeVisible({ timeout: 15000 });
+    const prevCount = await prevBtn.count();
+    if (prevCount === 0) {
+      await expect(nextBtn).toHaveCount(0);
+      await expect(pageInfo).toHaveCount(0);
+      return;
+    }
+
+    await expect(prevBtn).toBeVisible({ timeout: 5000 });
     await expect(nextBtn).toBeVisible({ timeout: 5000 });
     await expect(prevBtn).toBeDisabled({ timeout: 5000 });
   });
