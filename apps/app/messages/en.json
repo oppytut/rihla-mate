@@ -431,6 +431,9 @@
   },
   "media": {
     "title": "Media Library",
+    "description": "Uploaded files used across packages and pages.",
+    "listCount": "{count} files",
+    "emptyHint": "Files appear here after they are uploaded.",
     "empty": "No media items yet.",
     "delete": "Delete",
     "deleteConfirm": "Are you sure you want to delete this media item?",

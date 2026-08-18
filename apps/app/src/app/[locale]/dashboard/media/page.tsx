@@ -42,7 +42,7 @@ export default function MediaPage() {
 
   const mediaItems = mediaQuery.data?.items ?? [];
   const total = mediaQuery.data?.total ?? 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const handleDelete = (id: string) => {
     if (window.confirm(t("media.deleteConfirm"))) {
@@ -52,7 +52,12 @@ export default function MediaPage() {
 
   return (
     <>
-      <PageHeader title={t("media.title")} />
+      <PageHeader
+        title={t("media.title")}
+        description={
+          mediaQuery.isSuccess ? t("media.listCount", { count: total }) : t("media.description")
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         {mediaQuery.isError && (
@@ -72,14 +77,23 @@ export default function MediaPage() {
         )}
 
         {!mediaQuery.isLoading && !mediaQuery.isError && mediaItems.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            <p className="text-muted-foreground">{t("media.empty")}</p>
+          <div
+            className="rounded-lg border border-border bg-card p-10 text-center sm:p-12"
+            data-testid="media-empty"
+          >
+            <p className="text-base font-medium text-foreground">{t("media.empty")}</p>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+              {t("media.emptyHint")}
+            </p>
           </div>
         )}
 
         {!mediaQuery.isLoading && !mediaQuery.isError && mediaItems.length > 0 && (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+              data-testid="media-grid"
+            >
               {mediaItems.map((item) => (
                 <div
                   key={item.id}
@@ -144,33 +158,35 @@ export default function MediaPage() {
               ))}
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 mt-6 border-t border-border">
-              <p className="text-sm text-muted-foreground" data-testid="media-page-info">
-                {t("media.pageInfo", { page, total: totalPages || 1 })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  data-testid="media-prev-page"
-                  aria-label={t("common.previous")}
-                >
-                  {t("common.previous")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  data-testid="media-next-page"
-                  aria-label={t("common.next")}
-                >
-                  {t("common.next")}
-                </Button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 mt-6 border-t border-border">
+                <p className="text-sm text-muted-foreground" data-testid="media-page-info">
+                  {t("media.pageInfo", { page, total: totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    data-testid="media-prev-page"
+                    aria-label={t("common.previous")}
+                  >
+                    {t("common.previous")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    data-testid="media-next-page"
+                    aria-label={t("common.next")}
+                  >
+                    {t("common.next")}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>
