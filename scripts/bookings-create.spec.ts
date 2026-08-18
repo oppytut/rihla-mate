@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { pickFutureEkonomiDate } from "./helpers/seed-dates";
 
 const SEL = {
   customerName: '[data-testid="booking-customer-name"]',
@@ -108,12 +109,12 @@ test.describe("booking creation flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (9 - (new Date().getMonth() + 1));
-    for (let i = 0; i < monthsAhead; i++) {
+    const calendarTarget = pickFutureEkonomiDate();
+    for (let i = 0; i < calendarTarget.monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    const dayBtn = page.locator(SEL.calendarDay("9/1/2026")).first();
+    const dayBtn = page.locator(SEL.calendarDay(calendarTarget.dataDay)).first();
     await expect(dayBtn).toBeVisible({ timeout: 5000 });
     await expect(dayBtn).toBeEnabled({ timeout: 5000 });
     await dayBtn.click();
