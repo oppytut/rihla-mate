@@ -207,9 +207,26 @@ test.describe("bookings search and filter", () => {
     await expect(page.getByText("Bob Search Test")).toBeVisible({ timeout: 5000 });
   });
 
-  test("pagination buttons are present and previous is disabled on page 1", async ({ page }) => {
+  test("pagination is hidden on a single page, else previous is disabled on page 1", async ({
+    page,
+  }) => {
+    await expect(page.locator('[data-testid="page-heading"]')).toBeVisible({ timeout: 15000 });
+    await expect(
+      page
+        .locator('[data-testid="bookings-table"], [data-testid="bookings-add-new-empty"]')
+        .first(),
+    ).toBeVisible({ timeout: 15000 });
+
     const prevBtn = page.locator(SEL.prevPage);
     const nextBtn = page.locator(SEL.nextPage);
+    const pageInfo = page.locator(SEL.pageInfo);
+
+    const prevCount = await prevBtn.count();
+    if (prevCount === 0) {
+      await expect(nextBtn).toHaveCount(0);
+      await expect(pageInfo).toHaveCount(0);
+      return;
+    }
 
     await expect(prevBtn).toBeVisible({ timeout: 5000 });
     await expect(nextBtn).toBeVisible({ timeout: 5000 });
