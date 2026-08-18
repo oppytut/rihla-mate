@@ -439,6 +439,9 @@
   },
   "license": {
     "title": "Lisensi",
+    "description": "Cari dan cabut kunci lisensi dari satu daftar.",
+    "listCount": "{count} lisensi",
+    "emptyHint": "Kunci lisensi muncul di sini setelah diterbitkan.",
     "search": "Cari lisensi...",
     "columns": {
       "key": "Kunci Lisensi",

@@ -523,6 +523,9 @@
   },
   "license": {
     "title": "Licenses",
+    "description": "Search and revoke license keys from one list.",
+    "listCount": "{count} licenses",
+    "emptyHint": "License keys appear here after they are issued.",
     "search": "Search licenses...",
     "columns": {
       "key": "License Key",
