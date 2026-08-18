@@ -92,7 +92,7 @@ export default function LicensePage() {
 
   const licenses = licenseQuery.data?.items ?? [];
   const total = licenseQuery.data?.total ?? 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasFilters = search !== "";
   const statusData = statusQuery.data;
 
@@ -107,14 +107,19 @@ export default function LicensePage() {
       <PageHeader
         title={t("license.title")}
         description={
-          statusQuery.isSuccess && statusData ? (
-            <span data-testid="license-status">
-              {t("license.statusSummary", {
-                active: statusData.active,
-                total: statusData.total,
-              })}
-            </span>
-          ) : undefined
+          <>
+            {licenseQuery.isSuccess
+              ? t("license.listCount", { count: total })
+              : t("license.description")}
+            {statusQuery.isSuccess && statusData ? (
+              <span className="block text-sm text-muted-foreground" data-testid="license-status">
+                {t("license.statusSummary", {
+                  active: statusData.active,
+                  total: statusData.total,
+                })}
+              </span>
+            ) : null}
+          </>
         }
       />
 
@@ -153,25 +158,25 @@ export default function LicensePage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("license.columns.type")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("license.columns.seats")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("license.columns.issued")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("license.columns.expires")}
                     </th>
@@ -195,16 +200,16 @@ export default function LicensePage() {
                       <td className="px-4 py-3">
                         <div className="h-4 w-40 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="h-4 w-16 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 md:table-cell">
                         <div className="h-4 w-10 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
@@ -222,23 +227,30 @@ export default function LicensePage() {
         )}
 
         {!licenseQuery.isLoading && !licenseQuery.isError && licenses.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            {hasFilters ? (
-              <>
-                <p className="text-muted-foreground mb-4">{t("license.noResults")}</p>
-                <Button
-                  onClick={() => {
-                    setSearch("");
-                    setDebouncedSearch("");
-                    setPage(1);
-                  }}
-                  data-testid="license-clear-filters"
-                >
-                  {t("license.clearFilters")}
-                </Button>
-              </>
-            ) : (
-              <p className="text-muted-foreground">{t("license.empty")}</p>
+          <div
+            className="rounded-lg border border-border bg-card p-10 text-center sm:p-12"
+            data-testid="license-empty"
+          >
+            <p className="text-base font-medium text-foreground">
+              {hasFilters ? t("license.noResults") : t("license.empty")}
+            </p>
+            {!hasFilters && (
+              <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                {t("license.emptyHint")}
+              </p>
+            )}
+            {hasFilters && (
+              <Button
+                className="mt-6"
+                onClick={() => {
+                  setSearch("");
+                  setDebouncedSearch("");
+                  setPage(1);
+                }}
+                data-testid="license-clear-filters"
+              >
+                {t("license.clearFilters")}
+              </Button>
             )}
           </div>
         )}
@@ -246,7 +258,7 @@ export default function LicensePage() {
         {!licenseQuery.isLoading && !licenseQuery.isError && licenses.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-testid="license-table">
                 <thead className="bg-muted/50">
                   <tr>
                     <th
@@ -257,25 +269,25 @@ export default function LicensePage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("license.columns.type")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("license.columns.seats")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("license.columns.issued")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("license.columns.expires")}
                     </th>
@@ -305,7 +317,7 @@ export default function LicensePage() {
                             {shortKey}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground">
+                        <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
                           {t(
                             `license.type.${license.type}` as
                               | "node-locked"
@@ -313,11 +325,13 @@ export default function LicensePage() {
                               | "subscription",
                           )}
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground">{license.seats}</td>
-                        <td className="px-4 py-3 text-muted-foreground">
+                        <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
+                          {license.seats}
+                        </td>
+                        <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                           {license.issuedAt ? new Date(license.issuedAt).toLocaleDateString() : "-"}
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground">
+                        <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                           {license.expiresAt
                             ? new Date(license.expiresAt).toLocaleDateString()
                             : "-"}
@@ -351,33 +365,35 @@ export default function LicensePage() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-              <p className="text-sm text-muted-foreground" data-testid="license-page-info">
-                {t("license.pageInfo", { page, total: totalPages || 1 })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  data-testid="license-prev-page"
-                  aria-label={t("common.previous")}
-                >
-                  {t("common.previous")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  data-testid="license-next-page"
-                  aria-label={t("common.next")}
-                >
-                  {t("common.next")}
-                </Button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground" data-testid="license-page-info">
+                  {t("license.pageInfo", { page, total: totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    data-testid="license-prev-page"
+                    aria-label={t("common.previous")}
+                  >
+                    {t("common.previous")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    data-testid="license-next-page"
+                    aria-label={t("common.next")}
+                  >
+                    {t("common.next")}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>
