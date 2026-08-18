@@ -431,6 +431,9 @@
   },
   "media": {
     "title": "Perpustakaan Media",
+    "description": "Berkas yang diunggah untuk paket dan halaman.",
+    "listCount": "{count} berkas",
+    "emptyHint": "Berkas muncul di sini setelah diunggah.",
     "empty": "Belum ada item media.",
     "delete": "Hapus",
     "deleteConfirm": "Apakah Anda yakin ingin menghapus item media ini?",
