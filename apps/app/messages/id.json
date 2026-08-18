@@ -275,6 +275,9 @@
     "editTitle": "Edit Pemesanan",
     "backToList": "Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
+    "description": "Kelola pemesanan: cari, saring status, dan edit dari satu daftar.",
+    "listCount": "{count} pemesanan",
+    "emptyHint": "Tambah pemesanan pertama agar tampil di daftar ini dan bisa dibayar.",
     "search": "Cari pemesanan...",
     "allStatus": "Semua Status",
     "status": {

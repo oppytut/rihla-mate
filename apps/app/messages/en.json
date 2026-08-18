@@ -275,6 +275,9 @@
     "editTitle": "Edit Booking",
     "backToList": "Back to List",
     "addBooking": "Add Booking",
+    "description": "Manage bookings: search, filter by status, and edit from one list.",
+    "listCount": "{count} bookings",
+    "emptyHint": "Add your first booking so it appears in this list and can be paid.",
     "search": "Search bookings...",
     "allStatus": "All Status",
     "status": {
