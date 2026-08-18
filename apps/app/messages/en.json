@@ -440,7 +440,10 @@
   "landingPages": {
     "title": "Landing Pages",
     "addPage": "Add Page",
+    "description": "Manage landing pages: create, publish, and edit from one list.",
+    "listCount": "{count} pages",
     "empty": "No landing pages yet.",
+    "emptyHint": "Add your first landing page so visitors can see your Umrah packages.",
     "columns": {
       "title": "Title",
       "slug": "Slug",

@@ -11,7 +11,7 @@ test.describe("Pages Management Smoke Test", () => {
     await waitForPageHeading(page);
 
     // Verify data actually loaded (not false-positive from unconditional header)
-    await expect(page.locator('[data-testid="pages-page-info"]')).toBeVisible({
+    await expect(page.locator('[data-testid="pages-table"]')).toBeVisible({
       timeout: 15000,
     });
     await expect(page.locator('[data-testid="pages-add-new-empty"]')).not.toBeVisible();
@@ -20,6 +20,33 @@ test.describe("Pages Management Smoke Test", () => {
     await expect(addNewButton).toBeVisible({ timeout: 10000 });
 
     expect(page.url()).toContain("/dashboard/pages");
+  });
+
+  test("pagination is hidden on a single page, else previous is disabled on page 1", async ({
+    page,
+  }) => {
+    await page.goto(`${BASE_URL}/en/dashboard/pages`, {
+      waitUntil: "domcontentloaded",
+    });
+    await waitForPageHeading(page);
+    await expect(
+      page.locator('[data-testid="pages-table"], [data-testid="pages-add-new-empty"]').first(),
+    ).toBeVisible({ timeout: 15000 });
+
+    const prevBtn = page.locator('[data-testid="pages-prev-page"]');
+    const nextBtn = page.locator('[data-testid="pages-next-page"]');
+    const pageInfo = page.locator('[data-testid="pages-page-info"]');
+
+    const prevCount = await prevBtn.count();
+    if (prevCount === 0) {
+      await expect(nextBtn).toHaveCount(0);
+      await expect(pageInfo).toHaveCount(0);
+      return;
+    }
+
+    await expect(prevBtn).toBeVisible({ timeout: 5000 });
+    await expect(nextBtn).toBeVisible({ timeout: 5000 });
+    await expect(prevBtn).toBeDisabled({ timeout: 5000 });
   });
 });
 

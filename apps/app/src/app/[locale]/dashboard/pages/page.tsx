@@ -43,7 +43,7 @@ export default function LandingPagesPage() {
 
   const pages = pagesQuery.data?.items ?? [];
   const total = pagesQuery.data?.total ?? 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const handleDelete = (pageId: string) => {
     if (window.confirm(t("landingPages.deleteConfirm"))) {
@@ -55,6 +55,11 @@ export default function LandingPagesPage() {
     <>
       <PageHeader
         title={t("landingPages.title")}
+        description={
+          pagesQuery.isSuccess
+            ? t("landingPages.listCount", { count: total })
+            : t("landingPages.description")
+        }
         actions={
           <Button asChild data-testid="pages-add-new">
             <Link href="/dashboard/pages/new">{t("landingPages.addPage")}</Link>
@@ -64,10 +69,7 @@ export default function LandingPagesPage() {
 
       <div className="px-4 lg:px-8 py-6">
         {pagesQuery.isError && (
-          <div
-            className="bg-destructive/10 border border-destructive/20 rounded-lg p-6"
-            data-testid="pages-page-info"
-          >
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
             <p className="text-sm text-destructive">
               {t("common.error")}: {pagesQuery.error?.message || "Failed to load pages"}
             </p>
@@ -88,13 +90,13 @@ export default function LandingPagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("landingPages.columns.slug")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("landingPages.columns.template")}
                     </th>
@@ -106,7 +108,7 @@ export default function LandingPagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("landingPages.columns.updated")}
                     </th>
@@ -124,16 +126,16 @@ export default function LandingPagesPage() {
                       <td className="px-4 py-3">
                         <div className="h-4 w-32 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 md:table-cell">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-20 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
                         <div className="h-5 w-20 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
@@ -148,9 +150,12 @@ export default function LandingPagesPage() {
         )}
 
         {!pagesQuery.isLoading && !pagesQuery.isError && pages.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            <p className="text-muted-foreground mb-4">{t("landingPages.empty")}</p>
-            <Button asChild data-testid="pages-add-new-empty">
+          <div className="rounded-lg border border-border bg-card p-10 text-center sm:p-12">
+            <p className="text-base font-medium text-foreground">{t("landingPages.empty")}</p>
+            <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+              {t("landingPages.emptyHint")}
+            </p>
+            <Button asChild className="mt-6" data-testid="pages-add-new-empty">
               <Link href="/dashboard/pages/new">{t("landingPages.addPage")}</Link>
             </Button>
           </div>
@@ -159,7 +164,7 @@ export default function LandingPagesPage() {
         {!pagesQuery.isLoading && !pagesQuery.isError && pages.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-testid="pages-table">
                 <thead className="bg-muted/50">
                   <tr>
                     <th
@@ -170,13 +175,13 @@ export default function LandingPagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("landingPages.columns.slug")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("landingPages.columns.template")}
                     </th>
@@ -188,7 +193,7 @@ export default function LandingPagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("landingPages.columns.updated")}
                     </th>
@@ -206,10 +211,12 @@ export default function LandingPagesPage() {
                       <td className="px-4 py-3 font-medium text-foreground">
                         <span className="block max-w-[200px] truncate">{p.title}</span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                         <span className="block max-w-[150px] truncate">{p.slug}</span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{p.templateId}</td>
+                      <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
+                        {p.templateId}
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className={cn(
@@ -229,7 +236,7 @@ export default function LandingPagesPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
                         {p.updatedAt ? new Date(p.updatedAt).toLocaleDateString() : "-"}
                       </td>
                       <td className="px-4 py-3">
@@ -259,29 +266,35 @@ export default function LandingPagesPage() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-              <p className="text-sm text-muted-foreground" data-testid="pages-page-info">
-                {t("landingPages.pageInfo", { page, total: totalPages || 1 })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                >
-                  {t("common.previous")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  {t("common.next")}
-                </Button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground" data-testid="pages-page-info">
+                  {t("landingPages.pageInfo", { page, total: totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    data-testid="pages-prev-page"
+                    aria-label={t("common.previous")}
+                  >
+                    {t("common.previous")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    data-testid="pages-next-page"
+                    aria-label={t("common.next")}
+                  >
+                    {t("common.next")}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

@@ -472,7 +472,10 @@
   "landingPages": {
     "title": "Landing Pages",
     "addPage": "Tambah Halaman",
+    "description": "Kelola landing page: buat, terbitkan, dan edit dari satu daftar.",
+    "listCount": "{count} halaman",
     "empty": "Belum ada landing page.",
+    "emptyHint": "Tambah landing page pertama agar pengunjung melihat paket Umrah Anda.",
     "columns": {
       "title": "Judul",
       "slug": "Slug",
