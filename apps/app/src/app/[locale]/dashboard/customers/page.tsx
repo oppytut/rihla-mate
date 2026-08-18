@@ -52,12 +52,19 @@ export default function CustomersPage() {
 
   const customers = customersQuery.data?.items ?? [];
   const total = customersQuery.data?.total ?? 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasFilters = search !== "";
 
   return (
     <>
-      <PageHeader title={t("customers.title")} />
+      <PageHeader
+        title={t("customers.title")}
+        description={
+          customersQuery.isSuccess
+            ? t("customers.listCount", { count: total })
+            : t("customers.description")
+        }
+      />
 
       <div className="px-4 lg:px-8 py-6">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
@@ -86,25 +93,46 @@ export default function CustomersPage() {
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.name")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
+                    >
                       {t("customers.columns.email")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
+                    >
                       {t("customers.columns.phone")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
+                    >
                       {t("customers.columns.bookings")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.totalSpent")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
+                    >
                       {t("customers.columns.lastBooking")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.actions")}
                     </th>
                   </tr>
@@ -115,19 +143,19 @@ export default function CustomersPage() {
                       <td className="px-4 py-3">
                         <div className="h-4 w-32 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 md:table-cell">
                         <div className="h-4 w-40 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-28 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="h-4 w-8 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-20 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
@@ -142,23 +170,30 @@ export default function CustomersPage() {
         )}
 
         {!customersQuery.isLoading && !customersQuery.isError && customers.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
-            {hasFilters ? (
-              <>
-                <p className="text-muted-foreground mb-4">{t("customers.noResults")}</p>
-                <Button
-                  onClick={() => {
-                    setSearch("");
-                    setDebouncedSearch("");
-                    setPage(1);
-                  }}
-                  data-testid="customers-clear-filters"
-                >
-                  {t("customers.clearFilters")}
-                </Button>
-              </>
-            ) : (
-              <p className="text-muted-foreground">{t("customers.empty")}</p>
+          <div
+            className="rounded-lg border border-border bg-card p-10 text-center sm:p-12"
+            data-testid="customers-empty"
+          >
+            <p className="text-base font-medium text-foreground">
+              {hasFilters ? t("customers.noResults") : t("customers.empty")}
+            </p>
+            {!hasFilters && (
+              <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                {t("customers.emptyHint")}
+              </p>
+            )}
+            {hasFilters && (
+              <Button
+                className="mt-6"
+                onClick={() => {
+                  setSearch("");
+                  setDebouncedSearch("");
+                  setPage(1);
+                }}
+                data-testid="customers-clear-filters"
+              >
+                {t("customers.clearFilters")}
+              </Button>
             )}
           </div>
         )}
@@ -166,28 +201,49 @@ export default function CustomersPage() {
         {!customersQuery.isLoading && !customersQuery.isError && customers.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-testid="customers-table">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.name")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
+                    >
                       {t("customers.columns.email")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
+                    >
                       {t("customers.columns.phone")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
+                    >
                       {t("customers.columns.bookings")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.totalSpent")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
+                    >
                       {t("customers.columns.lastBooking")}
                     </th>
-                    <th className="px-4 py-3 text-left font-medium text-muted-foreground">
+                    <th
+                      scope="col"
+                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                    >
                       {t("customers.columns.actions")}
                     </th>
                   </tr>
@@ -208,19 +264,21 @@ export default function CustomersPage() {
                           </span>
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                         <span className="block max-w-[200px] truncate">
                           {customer.customerEmail ?? "-"}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                         {customer.customerPhone || "-"}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{customer.totalBookings}</td>
+                      <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
+                        {customer.totalBookings}
+                      </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {formatPrice(customer.totalSpent ?? "0", "IDR")}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                         {customer.lastBookingDate
                           ? formatDisplayDate(customer.lastBookingDate)
                           : "-"}
@@ -245,33 +303,35 @@ export default function CustomersPage() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-              <p className="text-sm text-muted-foreground" data-testid="customers-page-info">
-                {t("customers.pageInfo", { page, total: totalPages || 1 })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  data-testid="customers-prev-page"
-                  aria-label={t("common.previous")}
-                >
-                  {t("common.previous")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  data-testid="customers-next-page"
-                  aria-label={t("common.next")}
-                >
-                  {t("common.next")}
-                </Button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground" data-testid="customers-page-info">
+                  {t("customers.pageInfo", { page, total: totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    data-testid="customers-prev-page"
+                    aria-label={t("common.previous")}
+                  >
+                    {t("common.previous")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    data-testid="customers-next-page"
+                    aria-label={t("common.next")}
+                  >
+                    {t("common.next")}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

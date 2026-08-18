@@ -394,7 +394,12 @@
   },
   "customers": {
     "title": "Customers",
+    "description": "Customers from bookings: search and open a profile from one list.",
+    "listCount": "{count} customers",
     "empty": "No customers yet.",
+    "emptyHint": "Customers appear here after a booking is created.",
+    "noResults": "No customers match your search criteria.",
+    "clearFilters": "Clear Filters",
     "search": "Search customers...",
     "columns": {
       "name": "Name",
