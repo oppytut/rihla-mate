@@ -69,7 +69,7 @@ export default function PackagesPage() {
 
   const packages = packagesQuery.data?.items ?? [];
   const total = packagesQuery.data?.total ?? 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasFilters = search !== "" || status !== "";
 
   const handleDelete = (pkgId: string) => {
@@ -82,6 +82,11 @@ export default function PackagesPage() {
     <>
       <PageHeader
         title={t("packages.title")}
+        description={
+          packagesQuery.isSuccess
+            ? t("packages.listCount", { count: total })
+            : t("packages.description")
+        }
         actions={
           <Button asChild data-testid="packages-add-new">
             <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
@@ -139,19 +144,19 @@ export default function PackagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("packages.columns.slug")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("packages.columns.category")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("packages.columns.duration")}
                     </th>
@@ -181,13 +186,13 @@ export default function PackagesPage() {
                       <td className="px-4 py-3">
                         <div className="h-4 w-32 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 md:table-cell">
                         <div className="h-4 w-24 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 lg:table-cell">
                         <div className="h-4 w-20 bg-muted rounded animate-pulse" />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         <div className="h-4 w-16 bg-muted rounded animate-pulse" />
                       </td>
                       <td className="px-4 py-3">
@@ -208,29 +213,32 @@ export default function PackagesPage() {
         )}
 
         {!packagesQuery.isLoading && !packagesQuery.isError && packages.length === 0 && (
-          <div className="bg-card border border-border rounded-lg p-12 text-center">
+          <div className="rounded-lg border border-border bg-card p-10 text-center sm:p-12">
+            <p className="text-base font-medium text-foreground">
+              {hasFilters ? t("packages.noResults") : t("packages.empty")}
+            </p>
+            {!hasFilters && (
+              <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
+                {t("packages.emptyHint")}
+              </p>
+            )}
             {hasFilters ? (
-              <>
-                <p className="text-muted-foreground mb-4">{t("packages.noResults")}</p>
-                <Button
-                  onClick={() => {
-                    setSearch("");
-                    setDebouncedSearch("");
-                    setStatus("");
-                    setPage(1);
-                  }}
-                  data-testid="packages-clear-filters"
-                >
-                  {t("packages.clearFilters")}
-                </Button>
-              </>
+              <Button
+                className="mt-6"
+                onClick={() => {
+                  setSearch("");
+                  setDebouncedSearch("");
+                  setStatus("");
+                  setPage(1);
+                }}
+                data-testid="packages-clear-filters"
+              >
+                {t("packages.clearFilters")}
+              </Button>
             ) : (
-              <>
-                <p className="text-muted-foreground mb-4">{t("packages.empty")}</p>
-                <Button asChild data-testid="packages-add-new-empty">
-                  <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
-                </Button>
-              </>
+              <Button asChild className="mt-6" data-testid="packages-add-new-empty">
+                <Link href="/dashboard/packages/new">{t("packages.addPackage")}</Link>
+              </Button>
             )}
           </div>
         )}
@@ -238,7 +246,7 @@ export default function PackagesPage() {
         {!packagesQuery.isLoading && !packagesQuery.isError && packages.length > 0 && (
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" data-testid="packages-table">
                 <thead className="bg-muted/50">
                   <tr>
                     <th
@@ -249,19 +257,19 @@ export default function PackagesPage() {
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground md:table-cell"
                     >
                       {t("packages.columns.slug")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground lg:table-cell"
                     >
                       {t("packages.columns.category")}
                     </th>
                     <th
                       scope="col"
-                      className="px-4 py-3 text-left font-medium text-muted-foreground"
+                      className="hidden px-4 py-3 text-left font-medium text-muted-foreground sm:table-cell"
                     >
                       {t("packages.columns.duration")}
                     </th>
@@ -291,11 +299,13 @@ export default function PackagesPage() {
                       <td className="px-4 py-3 font-medium text-foreground">
                         <span className="block max-w-[200px] truncate">{pkg.title}</span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                         <span className="block max-w-[150px] truncate">{pkg.slug}</span>
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">{pkg.category || "-"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">
+                      <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
+                        {pkg.category || "-"}
+                      </td>
+                      <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
                         {pkg.durationDays} {t("packages.days")}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
@@ -344,33 +354,35 @@ export default function PackagesPage() {
               </table>
             </div>
 
-            <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-              <p className="text-sm text-muted-foreground" data-testid="packages-page-info">
-                {t("packages.pageInfo", { page, total: totalPages || 1 })}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page === 1}
-                  onClick={() => setPage((p) => p - 1)}
-                  data-testid="packages-prev-page"
-                  aria-label={t("common.previous")}
-                >
-                  {t("common.previous")}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= totalPages}
-                  onClick={() => setPage((p) => p + 1)}
-                  data-testid="packages-next-page"
-                  aria-label={t("common.next")}
-                >
-                  {t("common.next")}
-                </Button>
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                <p className="text-sm text-muted-foreground" data-testid="packages-page-info">
+                  {t("packages.pageInfo", { page, total: totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    data-testid="packages-prev-page"
+                    aria-label={t("common.previous")}
+                  >
+                    {t("common.previous")}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    data-testid="packages-next-page"
+                    aria-label={t("common.next")}
+                  >
+                    {t("common.next")}
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

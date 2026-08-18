@@ -91,12 +91,12 @@ test.describe("booking edit flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (9 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    await page.locator(SEL.calendarDay("8/15/2026")).first().click();
+    await page.locator(SEL.calendarDay("9/1/2026")).first().click();
 
     await page.locator(SEL.travelers).fill("2");
     await page.locator(SEL.totalPrice).fill("1500000");

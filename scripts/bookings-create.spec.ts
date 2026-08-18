@@ -108,13 +108,12 @@ test.describe("booking creation flow", () => {
       timeout: 5000,
     });
 
-    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (8 - (new Date().getMonth() + 1));
+    const monthsAhead = (2026 - new Date().getFullYear()) * 12 + (9 - (new Date().getMonth() + 1));
     for (let i = 0; i < monthsAhead; i++) {
       await page.locator(SEL.calendarNextButton).click();
       await page.waitForTimeout(100);
     }
-    // Umrah Ekonomi includes 2026-08-15 as an available date.
-    const dayBtn = page.locator(SEL.calendarDay("8/15/2026")).first();
+    const dayBtn = page.locator(SEL.calendarDay("9/1/2026")).first();
     await expect(dayBtn).toBeVisible({ timeout: 5000 });
     await expect(dayBtn).toBeEnabled({ timeout: 5000 });
     await dayBtn.click();
