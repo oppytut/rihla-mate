@@ -7,6 +7,15 @@ export const EKONOMI_AVAILABLE_DATES = [
   "2026-10-01",
 ] as const;
 
+export const PLUS_AVAILABLE_DATES = [
+  "2026-07-01",
+  "2026-07-20",
+  "2026-08-05",
+  "2026-08-20",
+  "2026-09-05",
+  "2026-10-12",
+] as const;
+
 export type CalendarTarget = {
   iso: string;
   dataDay: string;
@@ -30,12 +39,16 @@ function monthsBetween(from: Date, to: Date): number {
   return (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
 }
 
-export function pickFutureEkonomiDate(now = new Date()): CalendarTarget {
+function pickFutureDate(
+  isoDates: readonly string[],
+  label: string,
+  now = new Date(),
+): CalendarTarget {
   const today = startOfToday(now);
-  const match = EKONOMI_AVAILABLE_DATES.map(parseIsoDate).find((d) => d >= today);
+  const match = isoDates.map(parseIsoDate).find((d) => d >= today);
   if (!match) {
     throw new Error(
-      `No Ekonomi availableDates on or after ${today.toISOString().slice(0, 10)}. Update playwright-seed.ts.`,
+      `No ${label} availableDates on or after ${today.toISOString().slice(0, 10)}. Update playwright-seed.ts.`,
     );
   }
   return {
@@ -43,4 +56,12 @@ export function pickFutureEkonomiDate(now = new Date()): CalendarTarget {
     dataDay: toDataDay(match),
     monthsAhead: Math.max(0, monthsBetween(today, match)),
   };
+}
+
+export function pickFutureEkonomiDate(now = new Date()): CalendarTarget {
+  return pickFutureDate(EKONOMI_AVAILABLE_DATES, "Ekonomi", now);
+}
+
+export function pickFuturePlusDate(now = new Date()): CalendarTarget {
+  return pickFutureDate(PLUS_AVAILABLE_DATES, "Plus", now);
 }
