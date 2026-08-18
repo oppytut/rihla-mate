@@ -394,7 +394,12 @@
   },
   "customers": {
     "title": "Pelanggan",
+    "description": "Pelanggan dari pemesanan: cari dan buka profil dari satu daftar.",
+    "listCount": "{count} pelanggan",
     "empty": "Belum ada pelanggan.",
+    "emptyHint": "Pelanggan muncul di sini setelah pemesanan dibuat.",
+    "noResults": "Tidak ada pelanggan yang cocok dengan pencarian.",
+    "clearFilters": "Hapus Filter",
     "search": "Cari pelanggan...",
     "columns": {
       "name": "Nama",
