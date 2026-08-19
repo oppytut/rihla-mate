@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/format";
 import {
   CalendarCheck,
   Package,
@@ -39,11 +40,6 @@ function statusVariant(status: string) {
 export default function DashboardPage() {
   const t = useTranslations();
   const locale = useLocale();
-  const intlLocale = locale.startsWith("en")
-    ? "en-US"
-    : locale.startsWith("ar")
-      ? "ar-SA"
-      : "id-ID";
   const trpc = useTRPC();
 
   const userQuery = useQuery(trpc.user.me.queryOptions());
@@ -51,12 +47,6 @@ export default function DashboardPage() {
 
   const statsQuery = useQuery(trpc.dashboard.stats.queryOptions());
   const stats = statsQuery.data;
-
-  const formatCurrency = (value: string | number | null | undefined) => {
-    const num = Number(value ?? 0);
-    if (isNaN(num)) return "Rp 0";
-    return `Rp ${num.toLocaleString(intlLocale)}`;
-  };
 
   const statCards = [
     {
@@ -79,7 +69,7 @@ export default function DashboardPage() {
     },
     {
       label: t("dashboard.overview.revenue"),
-      value: stats?.revenue ? formatCurrency(stats.revenue) : "Rp 0",
+      value: stats?.revenue ? formatPrice(stats.revenue, "IDR", locale) : "Rp 0",
       icon: Wallet,
       testId: "stat-card-3",
     },
@@ -222,7 +212,7 @@ export default function DashboardPage() {
                             {booking.packageTitle ?? "—"}
                           </td>
                           <td className="py-2.5 text-foreground">
-                            {formatCurrency(booking.totalPrice)}
+                            {formatPrice(booking.totalPrice, "IDR", locale)}
                           </td>
                           <td className="py-2.5">
                             <Badge
