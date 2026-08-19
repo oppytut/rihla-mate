@@ -4,6 +4,7 @@ import {
   formatDisplayDate,
   formatDateForDisplay,
   formatDateForStorage,
+  formatDateTime,
 } from "../utils/format";
 
 describe("formatPrice", () => {
@@ -93,6 +94,24 @@ describe("formatDateForDisplay", () => {
     const date = new Date(2026, 11, 25);
     const result = formatDateForDisplay(date);
     expect(result).toBe("Dec 25, 2026");
+  });
+});
+
+describe("formatDateTime", () => {
+  it("returns dash for empty input", () => {
+    expect(formatDateTime(null)).toBe("-");
+    expect(formatDateTime(undefined)).toBe("-");
+    expect(formatDateTime("")).toBe("-");
+  });
+
+  it("returns dash for invalid date", () => {
+    expect(formatDateTime("not-a-date")).toBe("-");
+  });
+
+  it("includes year and time for a valid date", () => {
+    const result = formatDateTime(new Date(Date.UTC(2026, 6, 15, 8, 30)), "en");
+    expect(result).toContain("2026");
+    expect(result).toMatch(/\d/);
   });
 });
 
