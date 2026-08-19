@@ -1,5 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { pickFutureEkonomiDate } from "./helpers/seed-dates";
 
 const SEL = {
   customerName: '[data-testid="booking-customer-name"]',
@@ -10,8 +11,47 @@ const SEL = {
   departureDateButton: '[data-testid="booking-departure-date"]',
   submitButton: '[data-testid="booking-submit"]',
   popoverContent: '[data-slot="popover-content"]',
+  calendarNextButton: '[data-slot="calendar"] button[class*="button_next"]',
+  calendarDay: (date: string) => `[data-slot="calendar"] button[data-day*="${date}"]`,
   validationError: '[data-testid^="validation-error-"]',
 } as const;
+
+async function selectEkonomiPackage(page: Page) {
+  const packageSelect = page.locator(SEL.packageId);
+  await page.waitForFunction(
+    (sel) => {
+      const el = document.querySelector(sel) as HTMLSelectElement;
+      return el && el.options.length > 1;
+    },
+    SEL.packageId,
+    { timeout: 10000 },
+  );
+  const ekonomiOptionValue = await page
+    .locator("#packageId option")
+    .filter({ hasText: "Umrah Ekonomi 9 Hari" })
+    .getAttribute("value");
+  if (!ekonomiOptionValue) throw new Error("Umrah Ekonomi 9 Hari option not found");
+  await packageSelect.selectOption(ekonomiOptionValue);
+  await expect(packageSelect).toHaveValue(ekonomiOptionValue, { timeout: 5000 });
+}
+
+async function pickSeedDepartureDate(page: Page) {
+  await page.locator(SEL.departureDateButton).click();
+  await page.waitForSelector(SEL.popoverContent, {
+    state: "visible",
+    timeout: 5000,
+  });
+  const calendarTarget = pickFutureEkonomiDate();
+  for (let i = 0; i < calendarTarget.monthsAhead; i++) {
+    await page.locator(SEL.calendarNextButton).click();
+    await page.waitForTimeout(100);
+  }
+  const dayBtn = page.locator(SEL.calendarDay(calendarTarget.dataDay)).first();
+  await expect(dayBtn).toBeVisible({ timeout: 5000 });
+  await expect(dayBtn).toBeEnabled({ timeout: 5000 });
+  await dayBtn.click();
+  return calendarTarget;
+}
 
 test.describe("booking edge cases", () => {
   test("shows validation errors when submitting empty form", async ({ page }) => {
@@ -60,32 +100,8 @@ test.describe("booking edge cases", () => {
 
     await page.locator(SEL.customerName).fill("Email Test Customer");
 
-    const packageSelect = page.locator(SEL.packageId);
-    await page.waitForFunction(
-      (sel) => {
-        const el = document.querySelector(sel) as HTMLSelectElement;
-        return el && el.options.length > 1;
-      },
-      SEL.packageId,
-      { timeout: 10000 },
-    );
-    await packageSelect.selectOption({ index: 1 });
-
-    // Select a future date: navigate to next month, pick the 15th
-    await page.locator(SEL.departureDateButton).click();
-    await page.waitForSelector(SEL.popoverContent, {
-      state: "visible",
-      timeout: 5000,
-    });
-    const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
-    await nextButton.click();
-
-    const now = new Date();
-    const nextMonth = now.getMonth() + 2;
-    const nextYear = nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
-    const displayMonth = nextMonth > 12 ? nextMonth - 12 : nextMonth;
-    const dateStr = `${displayMonth}/15/${nextYear}`;
-    await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
+    await selectEkonomiPackage(page);
+    await pickSeedDepartureDate(page);
 
     await page.locator(SEL.travelers).fill("2");
     await page.locator(SEL.totalPrice).fill("1000000");
@@ -119,32 +135,8 @@ test.describe("booking edge cases", () => {
     // Fill required fields
     await page.locator(SEL.customerName).fill("Travelers Test Customer");
 
-    const packageSelect = page.locator(SEL.packageId);
-    await page.waitForFunction(
-      (sel) => {
-        const el = document.querySelector(sel) as HTMLSelectElement;
-        return el && el.options.length > 1;
-      },
-      SEL.packageId,
-      { timeout: 10000 },
-    );
-    await packageSelect.selectOption({ index: 1 });
-
-    // Select a future date: navigate to next month, pick the 15th
-    await page.locator(SEL.departureDateButton).click();
-    await page.waitForSelector(SEL.popoverContent, {
-      state: "visible",
-      timeout: 5000,
-    });
-    const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
-    await nextButton.click();
-
-    const now = new Date();
-    const nextMonth = now.getMonth() + 2;
-    const nextYear = nextMonth > 12 ? now.getFullYear() + 1 : now.getFullYear();
-    const displayMonth = nextMonth > 12 ? nextMonth - 12 : nextMonth;
-    const dateStr = `${displayMonth}/15/${nextYear}`;
-    await page.locator(`[data-slot="calendar"] button[data-day*="${dateStr}"]`).first().click();
+    await selectEkonomiPackage(page);
+    await pickSeedDepartureDate(page);
 
     await page.locator(SEL.totalPrice).fill("1000000");
 
@@ -176,75 +168,39 @@ test.describe("booking edge cases", () => {
       timeout: 10000,
     });
 
-    // Select a package first to ensure the form is fully interactive
-    const packageSelect = page.locator(SEL.packageId);
-    await page.waitForFunction(
-      (sel) => {
-        const el = document.querySelector(sel) as HTMLSelectElement;
-        return el && el.options.length > 1;
-      },
-      SEL.packageId,
-      { timeout: 10000 },
-    );
-    await packageSelect.selectOption({ index: 1 });
+    await selectEkonomiPackage(page);
 
-    // Open the calendar
     await page.locator(SEL.departureDateButton).click();
     await page.waitForSelector(SEL.popoverContent, {
       state: "visible",
       timeout: 5000,
     });
 
-    // Yesterday's date should be disabled
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    const day = yesterday.getDate();
-    const month = yesterday.getMonth() + 1;
-    const year = yesterday.getFullYear();
-    const yesterdayStr = `${month}/${day}/${year}`;
+    const yesterdayStr = `${yesterday.getMonth() + 1}/${yesterday.getDate()}/${yesterday.getFullYear()}`;
 
-    const yesterdayButton = page
-      .locator(`[data-slot="calendar"] button[data-day*="${yesterdayStr}"]`)
-      .first();
-
+    const yesterdayButton = page.locator(SEL.calendarDay(yesterdayStr)).first();
     const hasYesterday = await yesterdayButton.count();
     if (hasYesterday > 0) {
       const isDisabled = await yesterdayButton.getAttribute("disabled");
-      // Past dates should either be disabled or not present
       if (isDisabled !== null) {
         expect(isDisabled).toBeDefined();
       }
-      // If not disabled attribute, check aria-disabled
       const ariaDisabled = await yesterdayButton.getAttribute("aria-disabled");
       if (ariaDisabled) {
         expect(ariaDisabled).toBe("true");
       }
     }
 
-    // Today or tomorrow should be enabled
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tDay = tomorrow.getDate();
-    const tMonth = tomorrow.getMonth() + 1;
-    const tYear = tomorrow.getFullYear();
-    const tomorrowStr = `${tMonth}/${tDay}/${tYear}`;
-
-    // Navigate to next month if needed
-    const todayMonth = new Date().getMonth();
-    if (tMonth !== todayMonth + 1) {
-      const nextButton = page.locator('[data-slot="calendar"] button[class*="button_next"]');
-      await nextButton.click();
+    const calendarTarget = pickFutureEkonomiDate();
+    for (let i = 0; i < calendarTarget.monthsAhead; i++) {
+      await page.locator(SEL.calendarNextButton).click();
+      await page.waitForTimeout(100);
     }
-
-    const tomorrowButton = page
-      .locator(`[data-slot="calendar"] button[data-day*="${tomorrowStr}"]`)
-      .first();
-
-    const hasTomorrow = await tomorrowButton.count();
-    if (hasTomorrow > 0) {
-      const isDisabled = await tomorrowButton.getAttribute("disabled");
-      expect(isDisabled).toBeNull();
-    }
+    const seedDay = page.locator(SEL.calendarDay(calendarTarget.dataDay)).first();
+    await expect(seedDay).toBeVisible({ timeout: 5000 });
+    await expect(seedDay).toBeEnabled({ timeout: 5000 });
 
     await page.keyboard.press("Escape");
   });
