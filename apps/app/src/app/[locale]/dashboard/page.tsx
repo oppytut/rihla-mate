@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
@@ -38,6 +38,12 @@ function statusVariant(status: string) {
 
 export default function DashboardPage() {
   const t = useTranslations();
+  const locale = useLocale();
+  const intlLocale = locale.startsWith("en")
+    ? "en-US"
+    : locale.startsWith("ar")
+      ? "ar-SA"
+      : "id-ID";
   const trpc = useTRPC();
 
   const userQuery = useQuery(trpc.user.me.queryOptions());
@@ -49,7 +55,7 @@ export default function DashboardPage() {
   const formatCurrency = (value: string | number | null | undefined) => {
     const num = Number(value ?? 0);
     if (isNaN(num)) return "Rp 0";
-    return `Rp ${num.toLocaleString("id-ID")}`;
+    return `Rp ${num.toLocaleString(intlLocale)}`;
   };
 
   const statCards = [
