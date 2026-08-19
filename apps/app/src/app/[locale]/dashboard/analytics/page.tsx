@@ -9,6 +9,7 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay, formatPrice } from "@/lib/utils/format";
 import { CalendarCheck, Wallet, CircleDollarSign, Clock, Package } from "lucide-react";
 
 const PERIOD_OPTIONS = [
@@ -20,23 +21,12 @@ const PERIOD_OPTIONS = [
 export default function AnalyticsPage() {
   const t = useTranslations();
   const locale = useLocale();
-  const intlLocale = locale.startsWith("en")
-    ? "en-US"
-    : locale.startsWith("ar")
-      ? "ar-SA"
-      : "id-ID";
   const trpc = useTRPC();
   const [days, setDays] = useState(30);
 
   const summaryQuery = useQuery(trpc.analytics.summary.queryOptions({ days }));
 
   const data = summaryQuery.data;
-
-  const formatCurrency = (value: string) => {
-    const num = Number(value);
-    if (isNaN(num)) return "Rp 0";
-    return `Rp ${num.toLocaleString(intlLocale)}`;
-  };
 
   const statCards = [
     {
@@ -46,17 +36,17 @@ export default function AnalyticsPage() {
     },
     {
       label: t("analytics.revenue"),
-      value: formatCurrency(data?.totalRevenue ?? "0"),
+      value: formatPrice(data?.totalRevenue ?? "0", "IDR", locale),
       icon: Wallet,
     },
     {
       label: t("analytics.paidRevenue"),
-      value: formatCurrency(data?.paidRevenue ?? "0"),
+      value: formatPrice(data?.paidRevenue ?? "0", "IDR", locale),
       icon: CircleDollarSign,
     },
     {
       label: t("analytics.pendingRevenue"),
-      value: formatCurrency(data?.pendingRevenue ?? "0"),
+      value: formatPrice(data?.pendingRevenue ?? "0", "IDR", locale),
       icon: Clock,
     },
     {
@@ -197,7 +187,7 @@ export default function AnalyticsPage() {
                           <tr key={booking.id} className="border-b border-border last:border-0">
                             <td className="py-2.5 text-foreground">{booking.customerName}</td>
                             <td className="py-2.5 text-foreground">
-                              {formatCurrency(String(booking.totalPrice))}
+                              {formatPrice(String(booking.totalPrice), "IDR", locale)}
                             </td>
                             <td className="py-2.5 text-foreground">{booking.travelers}</td>
                             <td className="py-2.5">
@@ -209,7 +199,7 @@ export default function AnalyticsPage() {
                               </Badge>
                             </td>
                             <td className="py-2.5 text-muted-foreground">
-                              {new Date(booking.createdAt).toLocaleDateString(intlLocale)}
+                              {formatDateForDisplay(new Date(booking.createdAt), locale)}
                             </td>
                           </tr>
                         ))}
