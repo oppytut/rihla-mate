@@ -1,7 +1,24 @@
-export function formatPrice(price: string | number, currency: string = "IDR"): string {
+import { normalizeAppLocale, type AppLocale } from "@/lib/email/password-email-kind";
+
+const INTL_LOCALES: Record<AppLocale, string> = {
+  id: "id-ID",
+  en: "en-US",
+  ar: "ar-SA",
+};
+
+function intlLocale(locale?: string, fallback: AppLocale = "id"): string {
+  if (!locale) return INTL_LOCALES[fallback];
+  return INTL_LOCALES[normalizeAppLocale(locale)];
+}
+
+export function formatPrice(
+  price: string | number,
+  currency: string = "IDR",
+  locale?: string,
+): string {
   const num = typeof price === "string" ? parseFloat(price) : price;
   if (isNaN(num)) return "Rp 0";
-  return new Intl.NumberFormat("id-ID", {
+  return new Intl.NumberFormat(intlLocale(locale, "id"), {
     style: "currency",
     currency,
     minimumFractionDigits: 0,
@@ -9,7 +26,7 @@ export function formatPrice(price: string | number, currency: string = "IDR"): s
   }).format(num);
 }
 
-export function formatDisplayDate(dateStr: string): string {
+export function formatDisplayDate(dateStr: string, locale?: string): string {
   if (!dateStr) return "";
   const parts = dateStr.split("-");
   if (parts.length !== 3) return dateStr;
@@ -19,11 +36,15 @@ export function formatDisplayDate(dateStr: string): string {
   const day = parseInt(dayStr, 10);
   if (isNaN(year) || isNaN(month) || isNaN(day)) return dateStr;
   const d = new Date(Date.UTC(year, month - 1, day));
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString(intlLocale(locale, "en"), {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
-export function formatDateForDisplay(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+export function formatDateForDisplay(date: Date, locale?: string): string {
+  return date.toLocaleDateString(intlLocale(locale, "en"), {
     month: "short",
     day: "numeric",
     year: "numeric",

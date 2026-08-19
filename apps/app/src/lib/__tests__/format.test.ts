@@ -41,6 +41,11 @@ describe("formatPrice", () => {
     const result = formatPrice(50000);
     expect(result).toContain("Rp");
   });
+
+  it("formats with en grouping when locale is en", () => {
+    const result = formatPrice(1500000, "IDR", "en");
+    expect(result).toContain("1,500,000");
+  });
 });
 
 describe("formatDisplayDate", () => {
@@ -62,6 +67,12 @@ describe("formatDisplayDate", () => {
   it("handles leap year date", () => {
     const result = formatDisplayDate("2024-02-29");
     expect(result).toBe("Feb 29, 2024");
+  });
+
+  it("formats with id locale", () => {
+    const result = formatDisplayDate("2026-07-15", "id");
+    expect(result.toLowerCase()).toContain("2026");
+    expect(result).not.toBe("Jul 15, 2026");
   });
 });
 
