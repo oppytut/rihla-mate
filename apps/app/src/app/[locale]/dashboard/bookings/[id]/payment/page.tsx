@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -53,11 +53,17 @@ function getTransactionStatusBadge(status: string | null | undefined): {
   }
 }
 
-function formatPrice(amount: number | string | null | undefined): string {
+function intlLocale(locale: string): string {
+  if (locale.startsWith("en")) return "en-US";
+  if (locale.startsWith("ar")) return "ar-SA";
+  return "id-ID";
+}
+
+function formatPrice(amount: number | string | null | undefined, locale: string): string {
   if (amount === null || amount === undefined) return "-";
   const num = typeof amount === "string" ? parseFloat(amount) : amount;
   if (isNaN(num)) return "-";
-  return new Intl.NumberFormat("id-ID", {
+  return new Intl.NumberFormat(intlLocale(locale), {
     style: "currency",
     currency: "IDR",
     minimumFractionDigits: 0,
@@ -65,12 +71,12 @@ function formatPrice(amount: number | string | null | undefined): string {
   }).format(num);
 }
 
-function formatDateTime(value: string | Date | null | undefined): string {
+function formatDateTime(value: string | Date | null | undefined, locale: string): string {
   if (!value) return "-";
   try {
     const date = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(date.getTime())) return "-";
-    return new Intl.DateTimeFormat("id-ID", {
+    return new Intl.DateTimeFormat(intlLocale(locale), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -84,6 +90,7 @@ function formatDateTime(value: string | Date | null | undefined): string {
 
 export default function PaymentStatusPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -252,14 +259,14 @@ export default function PaymentStatusPage() {
                     {t("bookings.payment.grossAmount")}
                   </p>
                   <p className="text-foreground font-medium" data-testid="payment-amount">
-                    {formatPrice(booking.grossAmount)}
+                    {formatPrice(booking.grossAmount, locale)}
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">{t("bookings.payment.paidAt")}</p>
                   <p className="text-foreground font-medium" data-testid="payment-paid-at">
-                    {formatDateTime(booking.paidAt)}
+                    {formatDateTime(booking.paidAt, locale)}
                   </p>
                 </div>
               </div>
