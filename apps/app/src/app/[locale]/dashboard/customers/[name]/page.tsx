@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ const PAGE_SIZE = 10;
 
 export default function CustomerDetailPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -182,11 +183,11 @@ export default function CustomerDetailPage() {
                   {bookings.map((booking) => (
                     <tr key={booking.id} className="hover:bg-muted/30 transition-colors">
                       <td className="px-4 py-3 text-muted-foreground">
-                        {formatDisplayDate(booking.departureDate)}
+                        {formatDisplayDate(booking.departureDate, locale)}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">{booking.travelers}</td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {formatPrice(booking.totalPrice, "IDR")}
+                        {formatPrice(booking.totalPrice, "IDR", locale)}
                       </td>
                       <td className="px-4 py-3">
                         <span

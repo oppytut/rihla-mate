@@ -1,12 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
+import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useState, useRef, useEffect } from "react";
@@ -27,6 +28,7 @@ function statusFromSearchParams(
 
 export default function BookingsPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -116,25 +118,6 @@ export default function BookingsPage() {
   const total = bookingsQuery.data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasFilters = search !== "" || status !== "";
-
-  const formatPrice = (price: string | number) => {
-    const num = typeof price === "string" ? parseFloat(price) : price;
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("id-ID", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
-  };
 
   const getStatusBadgeClass = (bookingStatus: string) => {
     switch (bookingStatus) {
@@ -381,13 +364,13 @@ export default function BookingsPage() {
                         </span>
                       </td>
                       <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
-                        {formatDate(booking.departureDate)}
+                        {formatDisplayDate(booking.departureDate, locale)}
                       </td>
                       <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                         {booking.travelers}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {formatPrice(booking.totalPrice)}
+                        {formatPrice(booking.totalPrice, "IDR", locale)}
                       </td>
                       <td className="px-4 py-3">
                         <span

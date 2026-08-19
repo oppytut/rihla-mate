@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ const initialForm: BookingForm = {
 
 export default function BookingCreatePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const router = useRouter();
 
@@ -212,7 +213,7 @@ export default function BookingCreatePage() {
                       }
                     >
                       {form.departureDate
-                        ? formatDisplayDate(form.departureDate)
+                        ? formatDisplayDate(form.departureDate, locale)
                         : t("bookings.pickDate")}
                     </Button>
                   </PopoverTrigger>
