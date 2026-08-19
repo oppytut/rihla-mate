@@ -1,17 +1,19 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Link } from "@/i18n/navigation";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
+import { formatDateForDisplay } from "@/lib/utils/format";
 import { logger } from "@/lib/utils/logger";
 
 export default function ActivatePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const [licenseKey, setLicenseKey] = useState("");
   const [trialKey, setTrialKey] = useState<string | null>(null);
@@ -144,7 +146,7 @@ export default function ActivatePage() {
                 <p className="text-xs text-muted-foreground">
                   {t("activate.expires")}:{" "}
                   <span className="font-medium text-foreground">
-                    {activateResult.expiresAt.toLocaleDateString()}
+                    {formatDateForDisplay(activateResult.expiresAt, locale)}
                   </span>
                 </p>
               )}

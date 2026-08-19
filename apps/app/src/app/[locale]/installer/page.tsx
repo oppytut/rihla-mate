@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthShell } from "@/components/auth/auth-shell";
@@ -9,10 +9,12 @@ import { Link } from "@/i18n/navigation";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay } from "@/lib/utils/format";
 import { logger } from "@/lib/utils/logger";
 
 export default function InstallerPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const [step, setStep] = useState(0);
   const instanceIdRef = useRef(crypto.randomUUID());
@@ -431,7 +433,7 @@ export default function InstallerPage() {
                     <p className="text-xs text-muted-foreground">
                       {t("installer.expires")}:{" "}
                       <span className="font-medium text-foreground">
-                        {activateResult.expiresAt.toLocaleDateString()}
+                        {formatDateForDisplay(activateResult.expiresAt, locale)}
                       </span>
                     </p>
                   )}
