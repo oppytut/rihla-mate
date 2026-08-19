@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,7 @@ const initialForm: BookingForm = {
 
 export default function PublicBookingPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const router = useRouter();
   const params = useParams();
@@ -485,7 +486,7 @@ export default function PublicBookingPage() {
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground shadow-sm">
                 <span className="text-xs font-normal opacity-90">{t("packages.fromPrice")}</span>
-                {formatPrice(pkg.price)}
+                {formatPrice(pkg.price, "IDR", locale)}
                 <span className="text-xs font-normal opacity-90">{t("packages.perPerson")}</span>
               </span>
               {pkg.durationDays ? (
@@ -572,7 +573,7 @@ export default function PublicBookingPage() {
                         )}
                       >
                         {form.departureDate
-                          ? formatDisplayDate(form.departureDate)
+                          ? formatDisplayDate(form.departureDate, locale)
                           : t("bookings.pickDate")}
                       </Button>
                     </PopoverTrigger>
@@ -632,7 +633,7 @@ export default function PublicBookingPage() {
                     {t("bookings.fields.totalPrice")}
                   </label>
                   <div className="w-full rounded-md border border-border bg-muted/30 px-3 py-2 text-foreground">
-                    {formatPrice(totalPrice)}
+                    {formatPrice(totalPrice, "IDR", locale)}
                   </div>
                 </div>
 
@@ -762,7 +763,7 @@ export default function PublicBookingPage() {
           <div className="min-w-0">
             <p className="truncate text-xs text-muted-foreground">{pkg.title}</p>
             <p className="text-lg font-semibold tabular-nums text-foreground">
-              {formatPrice(totalPrice)}
+              {formatPrice(totalPrice, "IDR", locale)}
               <span className="ms-1 text-xs font-normal text-muted-foreground">
                 × {form.travelers}
               </span>
