@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -19,6 +19,12 @@ const PERIOD_OPTIONS = [
 
 export default function AnalyticsPage() {
   const t = useTranslations();
+  const locale = useLocale();
+  const intlLocale = locale.startsWith("en")
+    ? "en-US"
+    : locale.startsWith("ar")
+      ? "ar-SA"
+      : "id-ID";
   const trpc = useTRPC();
   const [days, setDays] = useState(30);
 
@@ -29,7 +35,7 @@ export default function AnalyticsPage() {
   const formatCurrency = (value: string) => {
     const num = Number(value);
     if (isNaN(num)) return "Rp 0";
-    return `Rp ${num.toLocaleString("id-ID")}`;
+    return `Rp ${num.toLocaleString(intlLocale)}`;
   };
 
   const statCards = [
@@ -203,7 +209,7 @@ export default function AnalyticsPage() {
                               </Badge>
                             </td>
                             <td className="py-2.5 text-muted-foreground">
-                              {new Date(booking.createdAt).toLocaleDateString("id-ID")}
+                              {new Date(booking.createdAt).toLocaleDateString(intlLocale)}
                             </td>
                           </tr>
                         ))}
