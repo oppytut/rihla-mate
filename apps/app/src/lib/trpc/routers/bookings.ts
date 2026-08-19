@@ -6,6 +6,7 @@ import { bookings } from "@/lib/db/schema/bookings";
 import { packages } from "@/lib/db/schema/packages";
 import { logger } from "@/lib/utils/logger";
 import { sendBookingConfirmation } from "@/lib/email/booking";
+import { localeFromCookieHeader } from "@/lib/email/password-email-kind";
 
 import { BOOKING_STATUSES } from "@/lib/utils/constants";
 
@@ -406,7 +407,7 @@ export const bookingsRouter = createTRPCRouter({
           totalPrice,
           bookingId: result[0].id,
         },
-        "id",
+        localeFromCookieHeader(ctx.headers.get("cookie")),
       );
 
       return result[0];

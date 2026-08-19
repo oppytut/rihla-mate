@@ -244,6 +244,7 @@
       "package": "Paket",
       "departureDate": "Tanggal Keberangkatan",
       "travelers": "Jamaah",
+      "travelersValue": "{count} orang",
       "totalPrice": "Total Harga",
       "bookingId": "ID Pemesanan",
       "footerHelp": "Jika ada pertanyaan, silakan hubungi kami melalui website atau balas email ini.",

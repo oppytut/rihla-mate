@@ -8,6 +8,13 @@
 import { getTranslations } from "next-intl/server";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
+import { normalizeAppLocale, type AppLocale } from "@/lib/email/password-email-kind";
+
+const DATE_LOCALES: Record<AppLocale, string> = {
+  id: "id-ID",
+  en: "en-US",
+  ar: "ar-SA",
+};
 
 export interface SendBookingConfirmationParams {
   customerName: string;
@@ -19,10 +26,10 @@ export interface SendBookingConfirmationParams {
   bookingId: string;
 }
 
-function formatDate(dateStr: string): string {
+function formatDate(dateStr: string, locale: AppLocale): string {
   try {
     const date = new Date(dateStr + "T00:00:00Z");
-    return date.toLocaleDateString("id-ID", {
+    return date.toLocaleDateString(DATE_LOCALES[locale], {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -52,12 +59,15 @@ export async function sendBookingConfirmation(
       return;
     }
 
-    const formattedDate = formatDate(params.departureDate);
-    const t = await getTranslations({ locale, namespace: "email.booking" });
+    const appLocale = normalizeAppLocale(locale);
+    const formattedDate = formatDate(params.departureDate, appLocale);
+    const t = await getTranslations({ locale: appLocale, namespace: "email.booking" });
+    const travelersLabel = t("travelersValue", { count: params.travelers });
+    const priceLabel = `Rp ${Number(params.totalPrice).toLocaleString(DATE_LOCALES[appLocale])}`;
 
     const html = `
 <!DOCTYPE html>
-<html lang="id">
+<html lang="${appLocale}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -75,7 +85,7 @@ export async function sendBookingConfirmation(
           </tr>
           <tr>
             <td style="padding:32px 40px;">
-              <p style="color:#374151;font-size:16px;margin:0 0 8px;">Dear <strong>${params.customerName}</strong>,</p>
+              <p style="color:#374151;font-size:16px;margin:0 0 8px;">${t("greeting", { name: params.customerName })}</p>
               <p style="color:#6b7280;font-size:14px;line-height:1.6;margin:0 0 24px;">
                 ${t("bodyIntro")}
               </p>
@@ -91,11 +101,11 @@ export async function sendBookingConfirmation(
                 </tr>
                 <tr style="background-color:#f9fafb;">
                   <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("travelers")}</td>
-                  <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">${params.travelers} orang</td>
+                  <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">${travelersLabel}</td>
                 </tr>
                 <tr>
                   <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("totalPrice")}</td>
-                  <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">Rp ${Number(params.totalPrice).toLocaleString("id-ID")}</td>
+                  <td style="padding:12px 16px;color:#111827;font-size:14px;border-top:1px solid #e5e7eb;">${priceLabel}</td>
                 </tr>
                 <tr style="background-color:#f9fafb;">
                   <td style="padding:12px 16px;color:#6b7280;font-size:13px;font-weight:500;border-top:1px solid #e5e7eb;">${t("bookingId")}</td>
