@@ -5,6 +5,12 @@ export const EKONOMI_AVAILABLE_DATES = [
   "2026-08-15",
   "2026-09-01",
   "2026-10-01",
+  "2027-07-01",
+  "2027-07-15",
+  "2027-08-01",
+  "2027-08-15",
+  "2027-09-01",
+  "2027-10-01",
 ] as const;
 
 export const PLUS_AVAILABLE_DATES = [
@@ -14,6 +20,12 @@ export const PLUS_AVAILABLE_DATES = [
   "2026-08-20",
   "2026-09-05",
   "2026-10-12",
+  "2027-07-01",
+  "2027-07-20",
+  "2027-08-05",
+  "2027-08-20",
+  "2027-09-05",
+  "2027-10-12",
 ] as const;
 
 export type CalendarTarget = {
