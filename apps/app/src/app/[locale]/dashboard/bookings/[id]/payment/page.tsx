@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils/format";
 import { useParams, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -59,18 +60,6 @@ function intlLocale(locale: string): string {
   return "id-ID";
 }
 
-function formatPrice(amount: number | string | null | undefined, locale: string): string {
-  if (amount === null || amount === undefined) return "-";
-  const num = typeof amount === "string" ? parseFloat(amount) : amount;
-  if (isNaN(num)) return "-";
-  return new Intl.NumberFormat(intlLocale(locale), {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(num);
-}
-
 function formatDateTime(value: string | Date | null | undefined, locale: string): string {
   if (!value) return "-";
   try {
@@ -86,6 +75,13 @@ function formatDateTime(value: string | Date | null | undefined, locale: string)
   } catch {
     return "-";
   }
+}
+
+function formatPaymentAmount(amount: number | string | null | undefined, locale: string): string {
+  if (amount === null || amount === undefined) return "-";
+  const num = typeof amount === "string" ? parseFloat(amount) : amount;
+  if (isNaN(num)) return "-";
+  return formatPrice(num, "IDR", locale);
 }
 
 export default function PaymentStatusPage() {
@@ -259,7 +255,7 @@ export default function PaymentStatusPage() {
                     {t("bookings.payment.grossAmount")}
                   </p>
                   <p className="text-foreground font-medium" data-testid="payment-amount">
-                    {formatPrice(booking.grossAmount, locale)}
+                    {formatPaymentAmount(booking.grossAmount, locale)}
                   </p>
                 </div>
 
