@@ -51,6 +51,23 @@ export function formatDateForDisplay(date: Date, locale?: string): string {
   });
 }
 
+export function formatDateTime(value: string | Date | null | undefined, locale?: string): string {
+  if (!value) return "-";
+  try {
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return new Intl.DateTimeFormat(intlLocale(locale, "id"), {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  } catch {
+    return "-";
+  }
+}
+
 export function formatDateForStorage(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
