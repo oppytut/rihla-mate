@@ -244,6 +244,7 @@
       "package": "Package",
       "departureDate": "Departure Date",
       "travelers": "Travelers",
+      "travelersValue": "{count} travelers",
       "totalPrice": "Total Price",
       "bookingId": "Booking ID",
       "footerHelp": "If you have any questions, please contact us through our website or reply to this email.",
