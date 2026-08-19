@@ -5,7 +5,7 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatDateForDisplay, formatDateForStorage } from "@/lib/utils/format";
+import { formatDateForDisplay, formatDateForStorage, formatDateTime } from "@/lib/utils/format";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -477,6 +477,7 @@ function BookingFormContent({
 
 function EditBookingPage({ bookingId }: { bookingId: string }) {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const router = useRouter();
   const bookingQuery = useQuery(trpc.bookings.getById.queryOptions({ id: bookingId }));
@@ -675,7 +676,7 @@ function EditBookingPage({ bookingId }: { bookingId: string }) {
                     {t("bookings.payment.paidAt")}
                   </span>
                   <span className="text-sm font-medium text-foreground">
-                    {new Date(booking.paidAt).toLocaleString()}
+                    {formatDateTime(booking.paidAt, locale)}
                   </span>
                 </div>
               ) : null}
