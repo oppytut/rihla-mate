@@ -1,12 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay } from "@/lib/utils/format";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -37,6 +38,7 @@ function roleBadgeClass(role: string): string {
 
 export default function UsersPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
 
   const [search, setSearch] = useState("");
@@ -237,11 +239,7 @@ export default function UsersPage() {
   function formatDate(value: Date | string): string {
     const d = typeof value === "string" ? new Date(value) : value;
     if (Number.isNaN(d.getTime())) return "—";
-    return d.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    return formatDateForDisplay(d, locale);
   }
 
   return (

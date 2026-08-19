@@ -1,12 +1,13 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay } from "@/lib/utils/format";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -40,6 +41,7 @@ function getStatusBadgeClass(status: "revoked" | "expired" | "active"): string {
 
 export default function LicensePage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
 
   const [search, setSearch] = useState("");
@@ -329,11 +331,13 @@ export default function LicensePage() {
                           {license.seats}
                         </td>
                         <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
-                          {license.issuedAt ? new Date(license.issuedAt).toLocaleDateString() : "-"}
+                          {license.issuedAt
+                            ? formatDateForDisplay(new Date(license.issuedAt), locale)
+                            : "-"}
                         </td>
                         <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                           {license.expiresAt
-                            ? new Date(license.expiresAt).toLocaleDateString()
+                            ? formatDateForDisplay(new Date(license.expiresAt), locale)
                             : "-"}
                         </td>
                         <td className="px-4 py-3">
