@@ -1,11 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
+import { formatDateForDisplay } from "@/lib/utils/format";
 import { Link } from "@/i18n/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ const PAGE_SIZE = 20;
 
 export default function LandingPagesPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
 
   const [page, setPage] = useState(1);
@@ -237,7 +239,7 @@ export default function LandingPagesPage() {
                         )}
                       </td>
                       <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">
-                        {p.updatedAt ? new Date(p.updatedAt).toLocaleDateString() : "-"}
+                        {p.updatedAt ? formatDateForDisplay(new Date(p.updatedAt), locale) : "-"}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
