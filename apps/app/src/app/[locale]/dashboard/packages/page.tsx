@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ const PAGE_SIZE = 10;
 
 export default function PackagesPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
 
   const [search, setSearch] = useState("");
@@ -309,7 +310,7 @@ export default function PackagesPage() {
                         {pkg.durationDays} {t("packages.days")}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {formatPrice(pkg.price, pkg.currency)}
+                        {formatPrice(pkg.price, pkg.currency, locale)}
                       </td>
                       <td className="px-4 py-3">
                         <span

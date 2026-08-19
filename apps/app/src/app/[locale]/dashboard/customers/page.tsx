@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ const PAGE_SIZE = 20;
 
 export default function CustomersPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
 
   const [search, setSearch] = useState("");
@@ -276,11 +277,11 @@ export default function CustomersPage() {
                         {customer.totalBookings}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
-                        {formatPrice(customer.totalSpent ?? "0", "IDR")}
+                        {formatPrice(customer.totalSpent ?? "0", "IDR", locale)}
                       </td>
                       <td className="hidden px-4 py-3 text-muted-foreground lg:table-cell">
                         {customer.lastBookingDate
-                          ? formatDisplayDate(customer.lastBookingDate)
+                          ? formatDisplayDate(customer.lastBookingDate, locale)
                           : "-"}
                       </td>
                       <td className="px-4 py-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -57,6 +57,7 @@ function BookingFormContent({
   priceLocked?: boolean;
 }) {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const router = useRouter();
 
@@ -225,7 +226,7 @@ function BookingFormContent({
                     >
                       <span className={form.departureDate ? "" : "text-muted-foreground"}>
                         {form.departureDate
-                          ? formatDateForDisplay(new Date(form.departureDate + "T00:00:00"))
+                          ? formatDateForDisplay(new Date(form.departureDate + "T00:00:00"), locale)
                           : t("bookings.noDateSelected")}
                       </span>
                       <CalendarIcon className="size-4 text-muted-foreground" />

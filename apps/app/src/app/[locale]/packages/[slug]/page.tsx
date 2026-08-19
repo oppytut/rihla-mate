@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -99,6 +99,7 @@ function categoryLabel(
 
 export default function PublicPackageDetailPage() {
   const t = useTranslations();
+  const locale = useLocale();
   const trpc = useTRPC();
   const params = useParams();
   const slug = params.slug as string;
@@ -242,7 +243,7 @@ export default function PublicPackageDetailPage() {
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-sm font-semibold text-primary-foreground shadow-sm">
                 <span className="text-xs font-normal opacity-90">{t("packages.fromPrice")}</span>
-                {formatPrice(pkg.price)}
+                {formatPrice(pkg.price, "IDR", locale)}
                 <span className="text-xs font-normal opacity-90">{t("packages.perPerson")}</span>
               </span>
               {pkg.durationDays ? (
@@ -415,7 +416,7 @@ export default function PublicPackageDetailPage() {
                     key={date}
                     className="inline-flex rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-medium text-foreground"
                   >
-                    {formatDisplayDate(date)}
+                    {formatDisplayDate(date, locale)}
                   </span>
                 ))}
               </div>
@@ -429,7 +430,8 @@ export default function PublicPackageDetailPage() {
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground">{pkg.title}</p>
             <p className="text-xs text-muted-foreground">
-              {t("packages.fromPrice")} {formatPrice(pkg.price)} {t("packages.perPerson")}
+              {t("packages.fromPrice")} {formatPrice(pkg.price, "IDR", locale)}{" "}
+              {t("packages.perPerson")}
             </p>
           </div>
           <Button asChild data-testid="package-detail-book-sticky">
