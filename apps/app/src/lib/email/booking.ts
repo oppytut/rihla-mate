@@ -8,13 +8,8 @@
 import { getTranslations } from "next-intl/server";
 import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
-import { normalizeAppLocale, type AppLocale } from "@/lib/email/password-email-kind";
-
-const DATE_LOCALES: Record<AppLocale, string> = {
-  id: "id-ID",
-  en: "en-US",
-  ar: "ar-SA",
-};
+import { normalizeAppLocale } from "@/lib/email/password-email-kind";
+import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
 
 export interface SendBookingConfirmationParams {
   customerName: string;
@@ -24,21 +19,6 @@ export interface SendBookingConfirmationParams {
   travelers: number;
   totalPrice: string;
   bookingId: string;
-}
-
-function formatDate(dateStr: string, locale: AppLocale): string {
-  try {
-    const date = new Date(dateStr + "T00:00:00Z");
-    return date.toLocaleDateString(DATE_LOCALES[locale], {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      timeZone: "Asia/Jakarta",
-    });
-  } catch {
-    return dateStr;
-  }
 }
 
 /**
@@ -60,10 +40,10 @@ export async function sendBookingConfirmation(
     }
 
     const appLocale = normalizeAppLocale(locale);
-    const formattedDate = formatDate(params.departureDate, appLocale);
+    const formattedDate = formatDisplayDate(params.departureDate, appLocale);
     const t = await getTranslations({ locale: appLocale, namespace: "email.booking" });
     const travelersLabel = t("travelersValue", { count: params.travelers });
-    const priceLabel = `Rp ${Number(params.totalPrice).toLocaleString(DATE_LOCALES[appLocale])}`;
+    const priceLabel = formatPrice(params.totalPrice, "IDR", appLocale);
 
     const html = `
 <!DOCTYPE html>
