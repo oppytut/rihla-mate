@@ -24,20 +24,50 @@ export function BrandMark({
   abbr = "RM",
   wordmarkClassName,
 }: BrandMarkProps) {
+  const label = showWordmark ? wordmark : abbr;
+
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
       <span
-        aria-hidden={showWordmark ? true : undefined}
+        role="img"
+        aria-label={label}
         className={cn(
-          "relative flex shrink-0 items-center justify-center rounded-lg bg-primary font-bold text-primary-foreground shadow-sm ring-1 ring-primary/20",
+          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20",
           sizeMap[size],
         )}
       >
-        <span className="relative z-10 leading-none tracking-tight">{abbr}</span>
-        <span
-          className="absolute inset-x-0 bottom-0 h-[28%] rounded-b-lg bg-accent/90"
-          aria-hidden
-        />
+        <svg viewBox="0 0 32 32" className="h-[72%] w-[72%]" fill="none" aria-hidden>
+          <path
+            d="M8 22.5V12.2L16 7.5l8 4.7v10.3"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          <path
+            d="M12.2 22.5V14.8h7.6v7.7"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinejoin="round"
+          />
+          <rect
+            x="14.35"
+            y="17.4"
+            width="3.3"
+            height="5.1"
+            rx="0.4"
+            fill="currentColor"
+            className="text-accent"
+          />
+          <path
+            d="M23.2 9.2a4.4 4.4 0 1 1-6.2-6.2"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            className="text-accent"
+          />
+        </svg>
+        <span className="sr-only">{abbr}</span>
       </span>
       {showWordmark ? (
         <span
