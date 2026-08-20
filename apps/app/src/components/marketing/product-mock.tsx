@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 type ProductMockProps = {
@@ -9,6 +9,8 @@ type ProductMockProps = {
 
 export function ProductMock({ className }: ProductMockProps) {
   const t = useTranslations("marketing.hero.mock");
+  const locale = useLocale();
+  const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
     <div
@@ -17,7 +19,7 @@ export function ProductMock({ className }: ProductMockProps) {
         className,
       )}
       aria-hidden
-      dir="ltr"
+      dir={dir}
     >
       <div
         className="absolute -inset-4 -z-10 rounded-[2rem] bg-[radial-gradient(ellipse_at_center,oklch(0.42_0.09_165_/_0.12),transparent_70%)] blur-2xl"
