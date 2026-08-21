@@ -8,8 +8,8 @@ WORKDIR /app
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-# Copy lockfile first for pnpm fetch caching
-COPY pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
 RUN pnpm fetch
 
 # Copy workspace config and package manifests
@@ -58,16 +58,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy standalone output (bundles all needed node_modules)
 COPY --from=builder /app/apps/app/.next/standalone ./
-
-# Copy static assets required by the standalone server
+COPY --from=builder /app/node_modules/.pnpm ./node_modules/.pnpm
+COPY --from=builder /app/apps/app/node_modules ./apps/app/node_modules
 COPY --from=builder /app/apps/app/.next/static ./apps/app/.next/static
 COPY --from=builder /app/apps/app/public ./apps/app/public
 
-# Create directories for uploads and license state
 RUN mkdir -p /app/uploads /app/.rihla-mate && \
-    chown -R nextjs:nodejs /app
+    chown -R nextjs:nodejs /app/uploads /app/.rihla-mate
 
 USER nextjs
 
@@ -77,6 +75,6 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget -qO- http://localhost:3000/api/health || exit 1
+    CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
 
 CMD ["node", "apps/app/server.js"]

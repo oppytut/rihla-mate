@@ -1,8 +1,10 @@
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MarketingMobileNav } from "./marketing-mobile-nav";
 import { BrandMark } from "@/components/brand/brand-mark";
+import { hostnameFromHostHeader, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingHeaderProps = {
   crossPageAnchors?: boolean;
@@ -11,6 +13,9 @@ type MarketingHeaderProps = {
 export async function MarketingHeader({ crossPageAnchors = false }: MarketingHeaderProps = {}) {
   const t = await getTranslations("marketing");
   const tCommon = await getTranslations("common");
+  const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  const signInHref = staffSignInHrefForHost(hostname);
+  const signInExternal = signInHref.startsWith("http");
 
   const featuresHref = crossPageAnchors ? "/marketing#features" : "#features";
   const pricingHref = crossPageAnchors ? "/marketing#pricing" : "#pricing";
@@ -57,12 +62,21 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
 
         <div className="flex items-center gap-1.5 sm:gap-3">
           <LocaleSwitcher className="hidden sm:flex" />
-          <Link
-            href="/sign-in"
-            className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
-          >
-            {t("nav.signIn")}
-          </Link>
+          {signInExternal ? (
+            <a
+              href={signInHref}
+              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
+            >
+              {t("nav.tryDemo")}
+            </a>
+          ) : (
+            <Link
+              href="/sign-in"
+              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
+            >
+              {t("nav.signIn")}
+            </Link>
+          )}
           <Link
             href="/activate"
             className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-4"
@@ -80,7 +94,8 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
               pricing: t("nav.pricing"),
               faq: t("nav.faq"),
               guide: t("nav.guide"),
-              signIn: t("nav.signIn"),
+              signIn: signInExternal ? t("nav.tryDemo") : t("nav.signIn"),
+              signInHref,
             }}
           />
         </div>

@@ -18,6 +18,7 @@ type MarketingMobileNavProps = {
     faq: string;
     guide: string;
     signIn: string;
+    signInHref?: string;
   };
 };
 
@@ -118,13 +119,23 @@ export function MarketingMobileNav({
 
               <div className="flex flex-col gap-3 px-1 py-1">
                 <LocaleSwitcher className="w-fit" />
-                <Link
-                  href="/sign-in"
-                  onClick={close}
-                  className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:hidden"
-                >
-                  {labels.signIn}
-                </Link>
+                {labels.signInHref?.startsWith("http") ? (
+                  <a
+                    href={labels.signInHref}
+                    onClick={close}
+                    className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:hidden"
+                  >
+                    {labels.signIn}
+                  </a>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    onClick={close}
+                    className="rounded-md px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:hidden"
+                  >
+                    {labels.signIn}
+                  </Link>
+                )}
               </div>
             </div>
           </div>

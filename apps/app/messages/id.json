@@ -671,6 +671,8 @@
     "signOut": "Keluar",
     "email": "Email",
     "password": "Kata Sandi",
+    "productHostHint": "Ini situs produk Rihla Mate, bukan login staf biro. Uji coba operator ada di lab.",
+    "openLabDemo": "Buka demo.rihla.my.id",
     "orContinueWith": "atau lanjutkan dengan",
     "signInHelp": "Hubungi administrator untuk mendapatkan akses",
     "emailPlaceholder": "email@example.com",
@@ -728,6 +730,7 @@
       "faq": "FAQ",
       "signIn": "Masuk",
       "getStarted": "Mulai Sekarang",
+      "tryDemo": "Coba demo",
       "menu": "Menu",
       "close": "Tutup",
       "guide": "Panduan"

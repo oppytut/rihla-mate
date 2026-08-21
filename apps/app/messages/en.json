@@ -676,6 +676,8 @@
     "signOut": "Sign Out",
     "email": "Email",
     "password": "Password",
+    "productHostHint": "This is the Rihla Mate product site, not a bureau staff login. Operator trial lives on the lab.",
+    "openLabDemo": "Open demo.rihla.my.id",
     "orContinueWith": "or continue with",
     "signInHelp": "Contact your administrator for access",
     "emailPlaceholder": "email@example.com",
@@ -733,6 +735,7 @@
       "faq": "FAQ",
       "signIn": "Sign In",
       "getStarted": "Get Started",
+      "tryDemo": "Try demo",
       "menu": "Menu",
       "close": "Close",
       "guide": "Guide"

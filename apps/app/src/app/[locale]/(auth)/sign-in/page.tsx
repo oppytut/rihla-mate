@@ -1,13 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Link, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { isProductHostname, LAB_DEMO_ORIGIN } from "@/lib/site-mode";
 
 export default function SignInPage() {
   const t = useTranslations();
@@ -17,6 +18,11 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const productHost = useSyncExternalStore(
+    () => () => {},
+    () => isProductHostname(window.location.hostname),
+    () => false,
+  );
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +74,17 @@ export default function SignInPage() {
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">{t("auth.signInToAccount")}</p>
         <p className="mt-2 text-xs text-muted-foreground/90">{t("auth.secureNote")}</p>
+        {productHost ? (
+          <p className="mt-3 text-sm text-muted-foreground">
+            {t("auth.productHostHint")}{" "}
+            <a
+              href={`${LAB_DEMO_ORIGIN}/sign-in`}
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
+              {t("auth.openLabDemo")}
+            </a>
+          </p>
+        ) : null}
       </div>
 
       <form onSubmit={handleEmailSignIn} className="space-y-4">
