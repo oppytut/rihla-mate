@@ -729,7 +729,8 @@
       "signIn": "Masuk",
       "getStarted": "Mulai Sekarang",
       "menu": "Menu",
-      "close": "Tutup"
+      "close": "Tutup",
+      "guide": "Panduan"
     },
     "hero": {
       "badge": "Untuk Travel Agent",
@@ -1035,5 +1036,170 @@
     "priceRequired": "Harga wajib diisi",
     "durationMinOneDay": "Durasi minimal 1 hari",
     "invalidJsonFormat": "Format JSON tidak valid"
+  },
+  "guide": {
+    "eyebrow": "Panduan biro Umrah",
+    "title": "Cara memakai Rihla Mate untuk operasional biro",
+    "lead": "Halaman ini untuk staf biro travel Umrah: instalasi, login, paket, pemesanan, pembayaran, jamaah, konten situs, lisensi, dan pengaturan. Tidak ada pendaftaran publik — akun dibuat lewat installer atau menu Users.",
+    "tocLabel": "Daftar isi",
+    "cta": {
+      "title": "Siap mulai?",
+      "body": "Kalau instalasi belum selesai, buka wizard installer. Kalau akun sudah ada, masuk ke dashboard.",
+      "installer": "Buka installer",
+      "signIn": "Masuk ke dashboard"
+    },
+    "sections": {
+      "who": {
+        "nav": "Untuk siapa",
+        "title": "Untuk siapa panduan ini",
+        "body": "Dashboard Rihla Mate adalah panel staf biro Anda (admin, CS, operasional). Bukan panel operator platform. Jamaah melihat katalog dan booking di situs publik; staf mengelola data di /dashboard.",
+        "steps": [],
+        "notes": ["Satu instalasi = satu biro.", "Jamaah tidak login ke dashboard."]
+      },
+      "start": {
+        "nav": "Instalasi",
+        "title": "Instalasi pertama (admin biro)",
+        "body": "Setelah aplikasi jalan (Docker atau cloud), buka wizard installer. Langkah ini hanya sekali: cek sistem, buat akun admin, lalu aktivasi lisensi atau uji coba 14 hari.",
+        "steps": [
+          "Buka /installer (contoh: https://rihla.my.id/id/installer).",
+          "Pastikan database terhubung.",
+          "Isi nama, email, dan kata sandi admin (minimal 8 karakter).",
+          "Aktifkan kunci lisensi atau mulai uji coba.",
+          "Selesai — login dengan email admin yang baru dibuat."
+        ],
+        "notes": [
+          "Tanpa langkah ini, halaman Masuk akan gagal karena belum ada pengguna.",
+          "Aktivasi lisensi juga tersedia di /activate."
+        ]
+      },
+      "login": {
+        "nav": "Masuk harian",
+        "title": "Masuk setiap hari",
+        "body": "Staf yang sudah punya akun masuk lewat /sign-in. Tidak ada tombol Daftar di situs publik.",
+        "steps": [
+          "Buka /sign-in.",
+          "Masukkan email dan kata sandi, atau Google jika OAuth sudah dikonfigurasi.",
+          "Anda diarahkan ke dashboard."
+        ],
+        "notes": [
+          "Lupa kata sandi: /forgot-password (butuh email Resend terpasang).",
+          "Google OAuth hanya muncul jika GOOGLE_CLIENT_ID dan secret sudah di-set."
+        ]
+      },
+      "staff": {
+        "nav": "Staf & peran",
+        "title": "Mengundang staf biro",
+        "body": "Admin membuat akun tambahan di Users. Jamaah tidak mendaftar sendiri ke dashboard.",
+        "steps": [
+          "Masuk sebagai admin.",
+          "Buka Users di sidebar.",
+          "Buat pengguna baru dan pilih peran (admin atau staf sesuai opsi di form).",
+          "Berikan email dan kata sandi kepada staf secara aman (di luar aplikasi)."
+        ],
+        "notes": ["Jangan bagikan akun admin ke semua orang — buat akun terpisah."]
+      },
+      "packages": {
+        "nav": "Paket Umrah",
+        "title": "Kelola paket perjalanan",
+        "body": "Paket adalah produk yang dilihat jamaah. Isi judul, slug URL, harga, durasi, jadwal keberangkatan, dan deskripsi.",
+        "steps": [
+          "Dashboard → Paket → buat paket baru.",
+          "Isi judul, slug (huruf kecil, tanpa spasi), harga, durasi hari.",
+          "Tambah tanggal keberangkatan dan kuota bila tersedia.",
+          "Simpan. Paket tampil di /packages/[slug] untuk jamaah."
+        ],
+        "notes": ["Slug harus unik dan hanya huruf, angka, dan tanda hubung."]
+      },
+      "bookings": {
+        "nav": "Pemesanan",
+        "title": "Pemesanan dari dashboard dan dari situs",
+        "body": "Jamaah bisa booking dari halaman paket. Staf juga bisa membuat pemesanan manual (walk-in / WhatsApp).",
+        "steps": [
+          "Dashboard → Pemesanan untuk daftar semua booking.",
+          "Pemesanan baru: pilih paket, jamaah, tanggal, jumlah peserta, total harga.",
+          "Buka detail booking untuk status, pembayaran, dan catatan."
+        ],
+        "notes": [
+          "Status mengikuti alur: menunggu, DP, lunas, atau dibatalkan sesuai data di sistem."
+        ]
+      },
+      "customers": {
+        "nav": "Jamaah",
+        "title": "Data jamaah / pelanggan",
+        "body": "Menu Pelanggan menyimpan nama, kontak, dan riwayat pemesanan. Gunakan untuk follow-up dan hindari data duplikat.",
+        "steps": [
+          "Buka Pelanggan di sidebar.",
+          "Cari nama, lalu buka profil untuk riwayat booking."
+        ],
+        "notes": []
+      },
+      "payments": {
+        "nav": "Pembayaran",
+        "title": "Pembayaran Midtrans",
+        "body": "Jika Midtrans dikonfigurasi, jamaah bisa bayar via GoPay, OVO, Dana, atau QRIS dari alur booking. Staf melihat status di detail pemesanan.",
+        "steps": [
+          "Pastikan kunci Midtrans ada di environment.",
+          "Dari detail booking, buka pembayaran jika jamaah belum bayar.",
+          "Setelah notifikasi Midtrans, status booking diperbarui otomatis."
+        ],
+        "notes": [
+          "Tanpa Midtrans, catat pembayaran manual di operasional biro dan sesuaikan status di dashboard."
+        ]
+      },
+      "catalog": {
+        "nav": "Media",
+        "title": "Foto dan media paket",
+        "body": "Unggah gambar untuk katalog (lokal atau S3 sesuai STORAGE_DRIVER).",
+        "steps": ["Dashboard → Media.", "Unggah foto, lalu pasang di paket atau halaman CMS."],
+        "notes": []
+      },
+      "cms": {
+        "nav": "Halaman situs",
+        "title": "Halaman konten (CMS)",
+        "body": "Buat halaman informasi: syarat, itinerary, tentang biro. Jamaah membacanya di situs publik.",
+        "steps": [
+          "Dashboard → Halaman → baru.",
+          "Isi judul, slug, dan isi.",
+          "Publikasikan agar tampil di situs."
+        ],
+        "notes": []
+      },
+      "analytics": {
+        "nav": "Analitik",
+        "title": "Analitik dan ringkasan",
+        "body": "Lihat tren pemesanan dan pendapatan di Analitik serta kartu ringkasan di beranda dashboard.",
+        "steps": ["Buka Dashboard untuk angka harian.", "Buka Analitik untuk tren."],
+        "notes": []
+      },
+      "license": {
+        "nav": "Lisensi",
+        "title": "Lisensi dan uji coba",
+        "body": "Uji coba 14 hari, lalu kunci lisensi. Aplikasi check-in berkala ke server lisensi. Jika kedaluwarsa, ada masa tenggang lalu fitur menurun.",
+        "steps": [
+          "Dashboard → Lisensi untuk status, paket, dan tanggal habis.",
+          "Masukkan kunci baru di /activate bila memperpanjang."
+        ],
+        "notes": ["Jangan bagikan kunci lisensi di chat publik."]
+      },
+      "settings": {
+        "nav": "Pengaturan",
+        "title": "Pengaturan biro",
+        "body": "Sesuaikan identitas biro, locale, dan opsi yang tersedia di Pengaturan. Branding lanjutan mengikuti paket lisensi.",
+        "steps": ["Dashboard → Pengaturan.", "Simpan perubahan sebelum keluar."],
+        "notes": []
+      },
+      "tips": {
+        "nav": "Praktik baik",
+        "title": "Praktik operasional",
+        "body": "Gunakan Rihla Mate sebagai sumber data utama, bukan spreadsheet terpisah yang tidak tersinkron.",
+        "steps": [
+          "Satu orang admin untuk installer dan Users.",
+          "CS mengurus pemesanan dan jamaah.",
+          "Operasional mengurus paket, media, dan halaman.",
+          "Cek lisensi sebelum musim ramai (Ramadan / akhir tahun)."
+        ],
+        "notes": ["Butuh bantuan setup: email hello@rihla-mate.com."]
+      }
+    }
   }
 }
