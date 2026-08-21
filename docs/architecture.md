@@ -79,25 +79,25 @@ Rihla Mate adalah platform white-label travel Umrah dengan model self-hosted. Se
 
 Aplikasi utama yang di-deploy di server travel agent.
 
-| Komponen | Teknologi | Fungsi |
-|----------|-----------|--------|
-| Landing Page | Next.js SSR | Halaman publik untuk marketing |
-| Dashboard Admin | Next.js CSR | Interface untuk manage packages dan bookings |
-| Package Management | tRPC + Drizzle | CRUD paket Umrah |
-| Booking Engine | tRPC + Midtrans | Flow booking dan payment |
-| License Module | Ed25519 | Enforcement lisensi |
-| Auth | Better Auth | Autentikasi dan RBAC |
+| Komponen           | Teknologi       | Fungsi                                       |
+| ------------------ | --------------- | -------------------------------------------- |
+| Landing Page       | Next.js SSR     | Halaman publik untuk marketing               |
+| Dashboard Admin    | Next.js CSR     | Interface untuk manage packages dan bookings |
+| Package Management | tRPC + Drizzle  | CRUD paket Umrah                             |
+| Booking Engine     | tRPC + Midtrans | Flow booking dan payment                     |
+| License Module     | Ed25519         | Enforcement lisensi                          |
+| Auth               | Better Auth     | Autentikasi dan RBAC                         |
 
 ### License Server
 
 Server terpusat yang di-host oleh Rihla Mate.
 
-| Komponen | Teknologi | Fungsi |
-|----------|-----------|--------|
-| REST API | Hono | Endpoint untuk aktivasi dan check-in |
-| Database | PostgreSQL (Neon) | Menyimpan data lisensi |
-| Rate Limiter | Upstash Redis | Membatasi request per license |
-| Email | Resend | Notifikasi aktivasi dan expiry |
+| Komponen     | Teknologi         | Fungsi                               |
+| ------------ | ----------------- | ------------------------------------ |
+| REST API     | Hono              | Endpoint untuk aktivasi dan check-in |
+| Database     | PostgreSQL (Neon) | Menyimpan data lisensi               |
+| Rate Limiter | Upstash Redis     | Membatasi request per license        |
+| Email        | Resend            | Notifikasi aktivasi dan expiry       |
 
 ---
 
@@ -226,36 +226,36 @@ Server terpusat yang di-host oleh Rihla Mate.
 
 ### App Utama (Di Server Travel Agent)
 
-| Layer | Technology | Rationale |
-|-------|------------|-----------|
-| **Framework** | Next.js 16 (App Router) | SSR/ISR hybrid, SEO built-in, React untuk dashboard |
-| **Language** | TypeScript (strict) | Type safety untuk production |
-| **Styling** | Tailwind CSS v4 + shadcn/ui | CSS variables theming, copy-paste components |
-| **Database** | PostgreSQL (Docker container) | Zero external dependency, reliable |
-| **ORM** | Drizzle ORM | Type-safe, lightweight, SQL-first |
-| **Auth** | Better Auth | Email/password + Google OAuth, RBAC |
-| **API Layer** | tRPC v11 | End-to-end type safety |
-| **License Signing** | Ed25519 (`@noble/ed25519`) | Offline verification, same key pair as license server |
-| **Background Jobs** | Next.js `instrumentation.ts` | Check-in scheduler, no extra dependency |
-| **Email** | Resend | Booking confirmation, per-agent sender |
-| **Storage** | Local filesystem (default) / S3 (optional) | Self-hosted friendly, S3 for scale |
-| **Cache** | LRU cache (default) / Redis (optional) | Zero-dependency default, Redis for scale |
-| **CMS** | Payload CMS (embedded) | Content editing, admin UI built-in |
-| **Payments** | Midtrans (Indonesia) | GoPay, OVO, Dana, QRIS |
+| Layer               | Technology                                 | Rationale                                             |
+| ------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| **Framework**       | Next.js 16 (App Router)                    | SSR/ISR hybrid, SEO built-in, React untuk dashboard   |
+| **Language**        | TypeScript (strict)                        | Type safety untuk production                          |
+| **Styling**         | Tailwind CSS v4 + shadcn/ui                | CSS variables theming, copy-paste components          |
+| **Database**        | PostgreSQL (Docker container)              | Zero external dependency, reliable                    |
+| **ORM**             | Drizzle ORM                                | Type-safe, lightweight, SQL-first                     |
+| **Auth**            | Better Auth                                | Email/password + Google OAuth, RBAC                   |
+| **API Layer**       | tRPC v11                                   | End-to-end type safety                                |
+| **License Signing** | Ed25519 (`@noble/ed25519`)                 | Offline verification, same key pair as license server |
+| **Background Jobs** | Next.js `instrumentation.ts`               | Check-in scheduler, no extra dependency               |
+| **Email**           | Resend                                     | Booking confirmation, per-agent sender                |
+| **Storage**         | Local filesystem (default) / S3 (optional) | Self-hosted friendly, S3 for scale                    |
+| **Cache**           | LRU cache (default) / Redis (optional)     | Zero-dependency default, Redis for scale              |
+| **CMS**             | Payload CMS (embedded)                     | Content editing, admin UI built-in                    |
+| **Payments**        | Midtrans (Indonesia)                       | GoPay, OVO, Dana, QRIS                                |
 
 ### License Server (Hosted oleh Rihla Mate)
 
-| Layer | Technology | Rationale |
-|-------|------------|-----------|
-| **Framework** | Hono | Ringan (14KB), REST API, edge-native |
-| **Runtime** | Node.js 22 | Production stability |
-| **Database** | PostgreSQL (Neon serverless) | Relational integrity, low traffic |
-| **ORM** | Drizzle ORM | Shared types with app, same ecosystem |
-| **Signing** | Ed25519 (`@noble/ed25519`) | Same library as app, shared key pair |
-| **Rate Limit** | Upstash Redis | Per-license rate limiting |
-| **Email** | Resend | Activation confirmation, expiry warning |
-| **Hosting** | Vercel ($0 hobby) or Railway ($5/mo) | Low traffic, check-in 1x/hari per tenant |
-| **Monitoring** | BetterStack ($0 tier) | Uptime monitoring, alert |
+| Layer          | Technology                           | Rationale                                |
+| -------------- | ------------------------------------ | ---------------------------------------- |
+| **Framework**  | Hono                                 | Ringan (14KB), REST API, edge-native     |
+| **Runtime**    | Node.js 22                           | Production stability                     |
+| **Database**   | PostgreSQL (Neon serverless)         | Relational integrity, low traffic        |
+| **ORM**        | Drizzle ORM                          | Shared types with app, same ecosystem    |
+| **Signing**    | Ed25519 (`@noble/ed25519`)           | Same library as app, shared key pair     |
+| **Rate Limit** | Upstash Redis                        | Per-license rate limiting                |
+| **Email**      | Resend                               | Activation confirmation, expiry warning  |
+| **Hosting**    | Vercel ($0 hobby) or Railway ($5/mo) | Low traffic, check-in 1x/hari per tenant |
+| **Monitoring** | BetterStack ($0 tier)                | Uptime monitoring, alert                 |
 
 ---
 
@@ -677,11 +677,11 @@ services:
 
 ### Volume Structure
 
-| Volume | Path | Purpose |
-|--------|------|---------|
-| `pgdata` | `/var/lib/postgresql/data` | Database persistence |
-| `uploads` | `/app/uploads` | Uploaded media files |
-| `license-state` | `/app/.rihla-mate` | License state file |
+| Volume          | Path                       | Purpose              |
+| --------------- | -------------------------- | -------------------- |
+| `pgdata`        | `/var/lib/postgresql/data` | Database persistence |
+| `uploads`       | `/app/uploads`             | Uploaded media files |
+| `license-state` | `/app/.rihla-mate`         | License state file   |
 
 ---
 
@@ -695,15 +695,15 @@ License enforcement dilakukan via middleware:
 // middleware.ts
 export function middleware(request: NextRequest) {
   const licenseState = getLicenseState();
-  
+
   if (!licenseState.isValid) {
-    return NextResponse.redirect(new URL('/activate', request.url));
+    return NextResponse.redirect(new URL("/activate", request.url));
   }
-  
+
   // Feature gating
   const requiredFeature = getRequiredFeature(request.nextUrl.pathname);
   if (requiredFeature && !licenseState.features.includes(requiredFeature)) {
-    return NextResponse.redirect(new URL('/upgrade', request.url));
+    return NextResponse.redirect(new URL("/upgrade", request.url));
   }
 }
 ```
@@ -720,10 +720,10 @@ License server menggunakan API key untuk internal authentication:
 
 ```typescript
 // middleware/auth.ts
-app.use('*', async (c, next) => {
-  const apiKey = c.req.header('X-API-Key');
+app.use("*", async (c, next) => {
+  const apiKey = c.req.header("X-API-Key");
   if (apiKey !== process.env.INTERNAL_API_KEY) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    return c.json({ error: "Unauthorized" }, 401);
   }
   await next();
 });
@@ -737,13 +737,13 @@ Menggunakan Upstash Redis:
 // middleware/rate-limit.ts
 const ratelimit = new Ratelimit({
   redis: redis,
-  limiter: Ratelimit.slidingWindow(100, '1 h'),
+  limiter: Ratelimit.slidingWindow(100, "1 h"),
 });
 
-app.use('/api/v1/*', async (c, next) => {
-  const { success } = await ratelimit.limit(c.req.header('X-License-Id'));
+app.use("/api/v1/*", async (c, next) => {
+  const { success } = await ratelimit.limit(c.req.header("X-License-Id"));
   if (!success) {
-    return c.json({ error: 'Rate limit exceeded' }, 429);
+    return c.json({ error: "Rate limit exceeded" }, 429);
   }
   await next();
 });
@@ -769,12 +769,12 @@ https://travelanda.com/agent-b/   → Tenant: agent-b (multi-tenant)
 // lib/tenant/resolver.ts
 export function resolveTenant(request: Request): Tenant | null {
   const url = new URL(request.url);
-  const pathSegments = url.pathname.split('/').filter(Boolean);
-  
+  const pathSegments = url.pathname.split("/").filter(Boolean);
+
   if (pathSegments.length === 0) {
     return getDefaultTenant();
   }
-  
+
   const tenantSlug = pathSegments[0];
   return getTenantBySlug(tenantSlug);
 }
@@ -787,9 +787,7 @@ Setiap query database menyertakan filter tenant:
 ```typescript
 // lib/db/queries/packages.ts
 export async function getPackages(tenantId: string) {
-  return db.select()
-    .from(packages)
-    .where(eq(packages.tenantId, tenantId));
+  return db.select().from(packages).where(eq(packages.tenantId, tenantId));
 }
 ```
 
@@ -807,7 +805,7 @@ export const revalidate = 3600; // 1 hour
 
 export async function generateStaticParams() {
   const tenants = await getAllTenants();
-  return tenants.map(t => ({ tenant: t.slug }));
+  return tenants.map((t) => ({ tenant: t.slug }));
 }
 ```
 
@@ -816,23 +814,17 @@ export async function generateStaticParams() {
 Next.js Image component dengan WebP/AVIF:
 
 ```tsx
-<Image
-  src="/hero.jpg"
-  alt="Umrah Package"
-  width={1200}
-  height={600}
-  priority
-/>
+<Image src="/hero.jpg" alt="Umrah Package" width={1200} height={600} priority />
 ```
 
 ### Caching Strategy
 
-| Layer | Strategy | TTL |
-|-------|----------|-----|
-| Landing pages | ISR | 1 hour |
-| Package list | LRU Cache | 5 minutes |
+| Layer          | Strategy  | TTL       |
+| -------------- | --------- | --------- |
+| Landing pages  | ISR       | 1 hour    |
+| Package list   | LRU Cache | 5 minutes |
 | Package detail | LRU Cache | 5 minutes |
-| Booking data | No cache | Real-time |
+| Booking data   | No cache  | Real-time |
 
 ### Bundle Optimization
 
@@ -856,7 +848,7 @@ Docker Compose health checks:
 
 ```yaml
 healthcheck:
-  test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+  test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/api/health"]
   interval: 30s
   timeout: 10s
   retries: 3
@@ -965,4 +957,4 @@ pnpm run keygen
 
 ---
 
-*Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate.*
+_Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate._
