@@ -86,6 +86,12 @@ export async function MarketingFooter({
             >
               {t("footer.faq")}
             </Link>
+            <Link
+              href="/guide"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("nav.guide")}
+            </Link>
             <a
               href="mailto:hello@rihla-mate.com"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"

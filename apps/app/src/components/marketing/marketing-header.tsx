@@ -47,6 +47,12 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
           >
             {t("nav.faq")}
           </Link>
+          <Link
+            href="/guide"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {t("nav.guide")}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-3">
@@ -73,6 +79,7 @@ export async function MarketingHeader({ crossPageAnchors = false }: MarketingHea
               features: t("nav.features"),
               pricing: t("nav.pricing"),
               faq: t("nav.faq"),
+              guide: t("nav.guide"),
               signIn: t("nav.signIn"),
             }}
           />

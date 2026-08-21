@@ -734,7 +734,8 @@
       "signIn": "Sign In",
       "getStarted": "Get Started",
       "menu": "Menu",
-      "close": "Close"
+      "close": "Close",
+      "guide": "Guide"
     },
     "hero": {
       "badge": "For Travel Agents",
@@ -1035,5 +1036,224 @@
     "priceRequired": "Price is required",
     "durationMinOneDay": "Duration must be at least 1 day",
     "invalidJsonFormat": "Invalid JSON format"
+  },
+  "guide": {
+    "eyebrow": "Umrah agency guide",
+    "title": "How to run your bureau with Rihla Mate",
+    "lead": "This guide is for Umrah travel-agency staff: install, sign-in, packages, bookings, payments, pilgrims, site content, license, and settings. There is no public self-registration — accounts are created in the installer or Users.",
+    "tocLabel": "Contents",
+    "cta": {
+      "title": "Ready to start?",
+      "body": "If setup is not finished, open the installer. If you already have an account, sign in to the dashboard.",
+      "installer": "Open installer",
+      "signIn": "Sign in"
+    },
+    "sections": {
+      "who": {
+        "nav": "Audience",
+        "title": "Who this is for",
+        "body": "The Rihla Mate dashboard is your bureau staff panel (admin, CS, operations). It is not a platform-operator console. Pilgrims use the public catalog and booking flow; staff work in /dashboard.",
+        "steps": [],
+        "notes": ["One install equals one bureau.", "Pilgrims do not log in to the dashboard."]
+      },
+      "server": {
+        "nav": "Server / VPS",
+        "title": "Minimum VPS / server specs",
+        "body": "For self-host (Docker Compose: app + PostgreSQL + Watchtower). PostgreSQL 16 and Node.js 22 ship in the image — no manual install. A reverse proxy (Nginx/Caddy) is recommended for SSL.",
+        "steps": [
+          "Provision a VPS with a public IP or domain.",
+          "Install Docker 24+ and Compose v2.",
+          "Fetch docker-compose.yml, fill .env, then docker compose up -d.",
+          "Expose port 3000 (or 443 via reverse proxy), then open the installer."
+        ],
+        "notes": [
+          "Storage covers OS, Docker images, the database, and uploads. Use SSD.",
+          "2 GB RAM is enough for one quiet bureau; add RAM if concurrent users grow.",
+          "The central license server is not deployed on the bureau VPS."
+        ],
+        "specs": [
+          {
+            "item": "CPU",
+            "min": "2 vCPU",
+            "rec": "4 vCPU"
+          },
+          {
+            "item": "RAM",
+            "min": "2 GB",
+            "rec": "4 GB"
+          },
+          {
+            "item": "Storage",
+            "min": "20 GB SSD",
+            "rec": "50 GB SSD"
+          },
+          {
+            "item": "OS",
+            "min": "Ubuntu 22.04 / Debian 12",
+            "rec": "Ubuntu 24.04"
+          },
+          {
+            "item": "Docker",
+            "min": "Docker 24+ + Compose v2",
+            "rec": "Docker 27+"
+          },
+          {
+            "item": "Network",
+            "min": "Static IP or domain",
+            "rec": "Domain + SSL (reverse proxy)"
+          }
+        ]
+      },
+      "start": {
+        "nav": "Setup",
+        "title": "First-time setup (bureau admin)",
+        "body": "After the app is running, open the installer once: system check, admin account, then license or 14-day trial.",
+        "steps": [
+          "Open /installer (for example https://rihla.my.id/id/installer).",
+          "Confirm the database is connected.",
+          "Enter admin name, email, and password (min. 8 characters).",
+          "Activate a license key or start a trial.",
+          "Sign in with the admin email you just created."
+        ],
+        "notes": [
+          "Without this step, Sign in fails because no user exists yet.",
+          "License activation is also available at /activate."
+        ]
+      },
+      "login": {
+        "nav": "Daily sign-in",
+        "title": "Daily sign-in",
+        "body": "Staff with accounts use /sign-in. There is no public Sign up button.",
+        "steps": [
+          "Open /sign-in.",
+          "Use email and password, or Google if OAuth is configured.",
+          "You land on the dashboard."
+        ],
+        "notes": [
+          "Forgot password: /forgot-password (requires Resend).",
+          "Google OAuth only appears when GOOGLE_CLIENT_ID and secret are set."
+        ]
+      },
+      "staff": {
+        "nav": "Staff roles",
+        "title": "Inviting bureau staff",
+        "body": "Admins create extra accounts in Users. Pilgrims never self-register for the dashboard.",
+        "steps": [
+          "Sign in as admin.",
+          "Open Users in the sidebar.",
+          "Create a user and choose the role available in the form.",
+          "Share email and password with staff out of band."
+        ],
+        "notes": ["Do not share the admin account with everyone — create separate users."]
+      },
+      "packages": {
+        "nav": "Packages",
+        "title": "Manage Umrah packages",
+        "body": "Packages are what pilgrims see. Fill title, URL slug, price, duration, departures, and description.",
+        "steps": [
+          "Dashboard → Packages → new package.",
+          "Fill title, slug (lowercase, no spaces), price, duration in days.",
+          "Add departure dates and quota when available.",
+          "Save. The package appears at /packages/[slug]."
+        ],
+        "notes": ["Slugs must be unique and use letters, numbers, and hyphens only."]
+      },
+      "bookings": {
+        "nav": "Bookings",
+        "title": "Bookings from the site and the desk",
+        "body": "Pilgrims can book from a package page. Staff can also create walk-in or WhatsApp bookings.",
+        "steps": [
+          "Dashboard → Bookings for the full list.",
+          "New booking: package, customer, date, travelers, total price.",
+          "Open booking detail for status, payment, and notes."
+        ],
+        "notes": ["Status follows the system flow: pending, down payment, paid, or cancelled."]
+      },
+      "customers": {
+        "nav": "Pilgrims",
+        "title": "Customer / pilgrim records",
+        "body": "Customers stores names, contacts, and booking history. Use it for follow-up and to avoid duplicates.",
+        "steps": [
+          "Open Customers in the sidebar.",
+          "Search a name, then open the profile for booking history."
+        ],
+        "notes": []
+      },
+      "payments": {
+        "nav": "Payments",
+        "title": "Midtrans payments",
+        "body": "With Midtrans configured, pilgrims can pay via GoPay, OVO, Dana, or QRIS. Staff see status on the booking.",
+        "steps": [
+          "Ensure Midtrans keys are in the environment.",
+          "From booking detail, open payment if unpaid.",
+          "After Midtrans notifies the app, booking status updates."
+        ],
+        "notes": [
+          "Without Midtrans, record payments operationally and update status in the dashboard."
+        ]
+      },
+      "catalog": {
+        "nav": "Media",
+        "title": "Photos and media",
+        "body": "Upload images for the catalog (local or S3 via STORAGE_DRIVER).",
+        "steps": [
+          "Dashboard → Media.",
+          "Upload photos, then attach them to packages or CMS pages."
+        ],
+        "notes": []
+      },
+      "cms": {
+        "nav": "Pages",
+        "title": "Content pages (CMS)",
+        "body": "Create info pages: terms, itinerary, about the bureau. Pilgrims read them on the public site.",
+        "steps": [
+          "Dashboard → Pages → new.",
+          "Fill title, slug, and body.",
+          "Publish so they appear on the site."
+        ],
+        "notes": []
+      },
+      "analytics": {
+        "nav": "Analytics",
+        "title": "Analytics and overview",
+        "body": "See booking and revenue trends in Analytics and summary cards on the dashboard home.",
+        "steps": ["Open Dashboard for daily figures.", "Open Analytics for trends."],
+        "notes": []
+      },
+      "license": {
+        "nav": "License",
+        "title": "License and trial",
+        "body": "Start with a 14-day trial, then a license key. The app checks in periodically. After expiry, a grace period applies before features degrade.",
+        "steps": [
+          "Dashboard → License for plan and expiry.",
+          "Enter a new key at /activate when renewing."
+        ],
+        "notes": ["Do not share license keys in public chats."]
+      },
+      "settings": {
+        "nav": "Settings",
+        "title": "Bureau settings",
+        "body": "Adjust bureau identity, locale, and options in Settings. Advanced branding follows the license plan.",
+        "steps": ["Dashboard → Settings.", "Save before leaving."],
+        "notes": []
+      },
+      "tips": {
+        "nav": "Good practice",
+        "title": "Operational practice",
+        "body": "Treat Rihla Mate as the source of truth, not a disconnected spreadsheet.",
+        "steps": [
+          "One admin owns installer and Users.",
+          "CS owns bookings and pilgrims.",
+          "Operations owns packages, media, and pages.",
+          "Check the license before peak season (Ramadan / year-end)."
+        ],
+        "notes": ["Need setup help: hello@rihla-mate.com."]
+      }
+    },
+    "specCols": {
+      "item": "Component",
+      "min": "Minimum",
+      "rec": "Recommended"
+    }
   }
 }

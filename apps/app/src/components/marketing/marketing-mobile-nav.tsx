@@ -16,6 +16,7 @@ type MarketingMobileNavProps = {
     features: string;
     pricing: string;
     faq: string;
+    guide: string;
     signIn: string;
   };
 };
@@ -103,6 +104,13 @@ export function MarketingMobileNav({
                   className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   {labels.faq}
+                </Link>
+                <Link
+                  href="/guide"
+                  onClick={close}
+                  className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                >
+                  {labels.guide}
                 </Link>
               </nav>
 
