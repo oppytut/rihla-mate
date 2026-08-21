@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +18,11 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [productHost, setProductHost] = useState(false);
-
-  useEffect(() => {
-    setProductHost(isProductHostname(window.location.hostname));
-  }, []);
+  const productHost = useSyncExternalStore(
+    () => () => {},
+    () => isProductHostname(window.location.hostname),
+    () => false,
+  );
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
