@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { readGuideSection } from "./guide-section";
 
 const SECTIONS = [
   "who",
@@ -23,6 +24,7 @@ const SECTIONS = [
 
 export default async function GuidePage() {
   const t = await getTranslations("guide");
+  const sectionBag = t.raw("sections");
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -59,11 +61,7 @@ export default async function GuidePage() {
 
           <div className="min-w-0 space-y-14">
             {SECTIONS.map((id) => {
-              const steps = t.raw(`sections.${id}.steps`) as string[] | undefined;
-              const notes = t.raw(`sections.${id}.notes`) as string[] | undefined;
-              const specs = t.raw(`sections.${id}.specs`) as
-                | { item: string; min: string; rec: string }[]
-                | undefined;
+              const { steps, notes, specs } = readGuideSection(sectionBag, id);
               return (
                 <section key={id} id={id} className="scroll-mt-24">
                   <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
