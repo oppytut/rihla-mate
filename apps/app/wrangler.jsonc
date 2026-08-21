@@ -37,10 +37,9 @@
     "production": {
       // Pin name so --env production deploys to rihla-mate (not rihla-mate-production).
       "name": "rihla-mate",
-      "routes": [
-        { "pattern": "rihla.my.id", "custom_domain": true },
-        { "pattern": "www.rihla.my.id", "custom_domain": true }
-      ],
+      // Custom domains (rihla.my.id / www) are bound in the Cloudflare dashboard.
+      // Wrangler custom_domain routes need Zone Workers Routes on the API token;
+      // GitHub CLOUDFLARE_API_TOKEN lacks that and fails deploy with code 10000.
       "vars": {
         "NODE_ENV": "production",
         "STORAGE_DRIVER": "s3",
