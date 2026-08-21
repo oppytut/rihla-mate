@@ -1056,6 +1056,54 @@
         "steps": [],
         "notes": ["Satu instalasi = satu biro.", "Jamaah tidak login ke dashboard."]
       },
+      "server": {
+        "nav": "Server / VPS",
+        "title": "Spesifikasi minimal server (VPS)",
+        "body": "Untuk self-host (Docker Compose: app + PostgreSQL + Watchtower). PostgreSQL 16 dan Node.js 22 sudah di dalam image — tidak perlu install manual. Reverse proxy (Nginx/Caddy) disarankan untuk SSL.",
+        "steps": [
+          "Siapkan VPS dengan IP publik atau domain.",
+          "Install Docker 24+ dan Compose v2.",
+          "Tarik docker-compose.yml, isi .env, lalu docker compose up -d.",
+          "Buka port 3000 (atau 443 lewat reverse proxy) lalu lanjut ke installer."
+        ],
+        "notes": [
+          "Storage dihitung untuk OS, image Docker, database, dan unggahan. Pakai SSD.",
+          "RAM 2 GB cukup untuk 1 biro dengan traffic rendah; naikkan jika user bersamaan banyak.",
+          "License server terpusat tidak di-deploy di VPS biro."
+        ],
+        "specs": [
+          {
+            "item": "CPU",
+            "min": "2 vCPU",
+            "rec": "4 vCPU"
+          },
+          {
+            "item": "RAM",
+            "min": "2 GB",
+            "rec": "4 GB"
+          },
+          {
+            "item": "Penyimpanan",
+            "min": "20 GB SSD",
+            "rec": "50 GB SSD"
+          },
+          {
+            "item": "OS",
+            "min": "Ubuntu 22.04 / Debian 12",
+            "rec": "Ubuntu 24.04"
+          },
+          {
+            "item": "Docker",
+            "min": "Docker 24+ + Compose v2",
+            "rec": "Docker 27+"
+          },
+          {
+            "item": "Jaringan",
+            "min": "IP statis atau domain",
+            "rec": "Domain + SSL (reverse proxy)"
+          }
+        ]
+      },
       "start": {
         "nav": "Instalasi",
         "title": "Instalasi pertama (admin biro)",
@@ -1200,6 +1248,11 @@
         ],
         "notes": ["Butuh bantuan setup: email hello@rihla-mate.com."]
       }
+    },
+    "specCols": {
+      "item": "Komponen",
+      "min": "Minimum",
+      "rec": "Rekomendasi"
     }
   }
 }

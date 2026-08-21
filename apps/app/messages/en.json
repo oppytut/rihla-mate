@@ -1056,6 +1056,54 @@
         "steps": [],
         "notes": ["One install equals one bureau.", "Pilgrims do not log in to the dashboard."]
       },
+      "server": {
+        "nav": "Server / VPS",
+        "title": "Minimum VPS / server specs",
+        "body": "For self-host (Docker Compose: app + PostgreSQL + Watchtower). PostgreSQL 16 and Node.js 22 ship in the image — no manual install. A reverse proxy (Nginx/Caddy) is recommended for SSL.",
+        "steps": [
+          "Provision a VPS with a public IP or domain.",
+          "Install Docker 24+ and Compose v2.",
+          "Fetch docker-compose.yml, fill .env, then docker compose up -d.",
+          "Expose port 3000 (or 443 via reverse proxy), then open the installer."
+        ],
+        "notes": [
+          "Storage covers OS, Docker images, the database, and uploads. Use SSD.",
+          "2 GB RAM is enough for one quiet bureau; add RAM if concurrent users grow.",
+          "The central license server is not deployed on the bureau VPS."
+        ],
+        "specs": [
+          {
+            "item": "CPU",
+            "min": "2 vCPU",
+            "rec": "4 vCPU"
+          },
+          {
+            "item": "RAM",
+            "min": "2 GB",
+            "rec": "4 GB"
+          },
+          {
+            "item": "Storage",
+            "min": "20 GB SSD",
+            "rec": "50 GB SSD"
+          },
+          {
+            "item": "OS",
+            "min": "Ubuntu 22.04 / Debian 12",
+            "rec": "Ubuntu 24.04"
+          },
+          {
+            "item": "Docker",
+            "min": "Docker 24+ + Compose v2",
+            "rec": "Docker 27+"
+          },
+          {
+            "item": "Network",
+            "min": "Static IP or domain",
+            "rec": "Domain + SSL (reverse proxy)"
+          }
+        ]
+      },
       "start": {
         "nav": "Setup",
         "title": "First-time setup (bureau admin)",
@@ -1201,6 +1249,11 @@
         ],
         "notes": ["Need setup help: hello@rihla-mate.com."]
       }
+    },
+    "specCols": {
+      "item": "Component",
+      "min": "Minimum",
+      "rec": "Recommended"
     }
   }
 }
