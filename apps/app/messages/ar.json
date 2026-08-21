@@ -676,6 +676,8 @@
     "signOut": "تسجيل الخروج",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
+    "productHostHint": "هذا موقع منتج رحلة ميت وليس دخول موظفي المكتب. التجربة على المختبر.",
+    "openLabDemo": "افتح demo.rihla.my.id",
     "orContinueWith": "أو المتابعة باستخدام",
     "signInHelp": "تواصل مع مدير النظام للحصول على صلاحية الوصول",
     "emailPlaceholder": "email@example.com",
@@ -733,6 +735,7 @@
       "faq": "الأسئلة الشائعة",
       "signIn": "تسجيل الدخول",
       "getStarted": "ابدأ الآن",
+      "tryDemo": "جرّب العرض",
       "menu": "القائمة",
       "close": "إغلاق",
       "guide": "الدليل"

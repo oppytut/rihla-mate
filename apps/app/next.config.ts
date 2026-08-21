@@ -4,6 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -12,7 +13,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ["pg", "drizzle-orm", "@neondatabase/serverless"],
+  serverExternalPackages: ["@neondatabase/serverless"],
 };
 
 export default withNextIntl(nextConfig);

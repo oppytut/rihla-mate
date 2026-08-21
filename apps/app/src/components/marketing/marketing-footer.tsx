@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "@/components/brand/brand-mark";
+import { hostnameFromHostHeader, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingFooterProps = {
   crossPageAnchors?: boolean;
@@ -15,6 +17,9 @@ export async function MarketingFooter({
   const t = await getTranslations("marketing");
   const tCommon = await getTranslations("common");
   const year = new Date().getFullYear();
+  const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  const signInHref = staffSignInHrefForHost(hostname);
+  const signInExternal = signInHref.startsWith("http");
 
   const featuresHref = crossPageAnchors ? "/marketing#features" : "#features";
   const pricingHref = crossPageAnchors ? "/marketing#pricing" : "#pricing";
@@ -39,12 +44,21 @@ export async function MarketingFooter({
               >
                 {t("nav.features")}
               </Link>
-              <Link
-                href="/sign-in"
-                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {t("nav.signIn")}
-              </Link>
+              {signInExternal ? (
+                <a
+                  href={signInHref}
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t("nav.tryDemo")}
+                </a>
+              ) : (
+                <Link
+                  href="/sign-in"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t("nav.signIn")}
+                </Link>
+              )}
             </div>
           </div>
         </div>
