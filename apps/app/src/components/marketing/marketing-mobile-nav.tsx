@@ -10,6 +10,8 @@ type MarketingMobileNavProps = {
   featuresHref: string;
   pricingHref: string;
   faqHref: string;
+  extraLinks?: Array<{ href: string; label: string }>;
+  hideProductAnchors?: boolean;
   labels: {
     menu: string;
     close: string;
@@ -26,6 +28,8 @@ export function MarketingMobileNav({
   featuresHref,
   pricingHref,
   faqHref,
+  extraLinks,
+  hideProductAnchors = false,
   labels,
 }: MarketingMobileNavProps) {
   const [open, setOpen] = useState(false);
@@ -85,34 +89,48 @@ export function MarketingMobileNav({
           >
             <div className="container mx-auto flex flex-col gap-1 px-4 py-4">
               <nav className="flex flex-col gap-0.5" aria-label="Primary mobile">
-                <Link
-                  href={featuresHref}
-                  onClick={close}
-                  className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                >
-                  {labels.features}
-                </Link>
-                <Link
-                  href={pricingHref}
-                  onClick={close}
-                  className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                >
-                  {labels.pricing}
-                </Link>
-                <Link
-                  href={faqHref}
-                  onClick={close}
-                  className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                >
-                  {labels.faq}
-                </Link>
-                <Link
-                  href="/guide"
-                  onClick={close}
-                  className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                >
-                  {labels.guide}
-                </Link>
+                {extraLinks?.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={close}
+                    className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                {hideProductAnchors ? null : (
+                  <>
+                    <Link
+                      href={featuresHref}
+                      onClick={close}
+                      className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      {labels.features}
+                    </Link>
+                    <Link
+                      href={pricingHref}
+                      onClick={close}
+                      className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      {labels.pricing}
+                    </Link>
+                    <Link
+                      href={faqHref}
+                      onClick={close}
+                      className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      {labels.faq}
+                    </Link>
+                    <Link
+                      href="/guide"
+                      onClick={close}
+                      className="rounded-md px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      {labels.guide}
+                    </Link>
+                  </>
+                )}
               </nav>
 
               <div className="my-2 h-px bg-border/50" aria-hidden />
