@@ -19,11 +19,11 @@
 
 ## Status git
 
-| Item         | Nilai                                                                      |
-| ------------ | -------------------------------------------------------------------------- |
-| `main`       | `a57c55f` — `test: smoke public /guide and reject locale junk 500s (#109)` |
-| Branch kerja | `feat/product-vs-bureau-surfaces`                                          |
-| PR           | buat setelah commit (satu concern: surface produk vs biro)                 |
+| Item         | Nilai                                                                 |
+| ------------ | --------------------------------------------------------------------- |
+| `main`       | `680f117` — `feat: split product vs bureau marketing surfaces (#110)` |
+| Branch kerja | `feat/bureau-metadata-and-copy`                                       |
+| Lab          | image `rihla-mate:lab` @ #110, healthy; **belum** PR copy/metadata    |
 
 **Session start**: `gh pr list --state open` → merge jika CI hijau; jangan nunggu CI setelah push.
 
@@ -31,71 +31,46 @@
 
 ## Lab (VPS)
 
-|            |                                                                                                                        |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
-| SSH        | `ubuntu@43.133.215.193`                                                                                                |
-| Tree       | `~/rihla-mate` **tanpa `.git`** — deploy = rsync dari host + `docker compose build/up`                                 |
-| Image      | override lokal `rihla-mate:lab` (bukan GHCR; pull `ghcr.io/rihlamate/rihla-mate:latest` = **401**)                     |
-| URL        | `https://demo.rihla.my.id` (CF Proxied A → VPS)                                                                        |
-| Apex       | `https://rihla.my.id` = Cloudflare Workers (CI `push` `main`)                                                          |
-| Login staf | `admin@demo.rihla.my.id` / lihat `~/rihla-mate/.lab-admin` di VPS — **jangan print secret di chat kecuali user minta** |
-| User id    | `4a0bc586-a699-461a-b17a-67df027f51df`                                                                                 |
-| Trial      | `RM-83CC-5C63-EEA6-BF82`                                                                                               |
+|            |                                                                                        |
+| ---------- | -------------------------------------------------------------------------------------- |
+| SSH        | `ubuntu@43.133.215.193`                                                                |
+| Tree       | `~/rihla-mate` **tanpa `.git`** — deploy = rsync dari host + `docker compose build/up` |
+| Image      | override lokal `rihla-mate:lab`                                                        |
+| URL        | `https://demo.rihla.my.id`                                                             |
+| Apex       | `https://rihla.my.id` = Cloudflare Workers                                             |
+| Login staf | `admin@demo.rihla.my.id` / `~/rihla-mate/.lab-admin` — **jangan print secret**         |
 
-Watchtower: **opt-in** `profiles: ["watchtower"]` — jangan nyalakan di lab.
-
-**Deploy lab hanya jika user minta** (rsync + rebuild). Kode surface belum di VPS sampai itu.
+Deploy lab: rsync **kecuali** `.env`, `.lab-admin`, `docker-compose.override.yml`.
 
 ---
 
-## Yang sudah di `main` (relevan)
+## Sesi ini (PR copy/metadata)
 
-- **#104–#109** guide, auth origin, Docker lab, locale allowlist, smoke `/guide`
+- Root `generateMetadata` bureau: tanpa deskripsi “Platform white-label…”
+- Header mobile: jangan serialize label Harga/Pricing di bureau
+- `/guide` di host biro → `PRODUCT_ORIGIN/guide`
+- Empty packages: tautan ke `#contact`
+- `surfaceRedirectUrl` + tes; Playwright localhost tetap copy SaaS
 
-**Produk vs demo:** satu install = satu biro. CTA staf di apex → `https://demo.rihla.my.id/sign-in`.
-
----
-
-## Fitur sesi ini (belum di `main` sampai PR merge)
-
-Pisah landing/nav/surface:
-
-- Localhost = produk/CI; `demo.rihla.my.id` + custom domain = biro
-- Apex instance paths → `LAB_DEMO_ORIGIN`; demo `/marketing` → `PRODUCT_ORIGIN`
-- Home biro: paket `published` + CMS `pages` (`isHomepage` atau slug `home`); gagal DB → empty
-- Non-biro `/packages` redirect `PRODUCT_ORIGIN/`
-- Header/mobile: `extraLinks` / `hideProductAnchors`; footer `variant: "bureau"`
-- i18n `marketing.bureau` (id/en/ar)
-
-**Verifikasi host:** `site-mode.test.ts` 4 tes lulus; `pnpm --filter @rihla-mate/app check` OK.
+**Verifikasi host:** `site-mode.test.ts` 5 tes; `tsc --noEmit` OK.
 
 ---
 
 ## File kunci
 
 - `apps/app/src/lib/site-mode.ts`, `site-mode.test.ts`, `middleware.ts`
-- `apps/app/src/app/[locale]/page.tsx`, `bureau-landing.tsx`, `packages/page.tsx`
-- `apps/app/src/components/marketing/marketing-{header,mobile-nav,footer}.tsx`
-- `apps/app/src/lib/trpc/routers/packages.ts`, `pages.ts`
-- `apps/app/messages/{id,en,ar}.json`
+- `apps/app/src/app/layout.tsx`
+- `apps/app/src/components/marketing/marketing-header.tsx`
+- `apps/app/src/app/[locale]/bureau-landing.tsx`
+- `scripts/bureau-surface.spec.ts`
 
 ---
 
 ## Blocked (manusia)
 
-1. Cloudflare **custom hostname** apex `rihla.my.id` — token error **10000**.
-2. **GHCR** org `rihlamate` — lab tidak auto-pull image dari CI.
-3. Pipeline auto-deploy VPS (opsional; sekarang rsync + rebuild dari host).
-
----
-
-## Langkah session berikutnya
-
-1. Cek PR surface → squash-merge jika CI hijau (jangan poll `gh run watch`).
-2. Kerja baru di `main` setelah pull; **satu concern = satu PR**.
-3. Verifikasi lab **hanya SSH/curl dari host ini** setelah user minta deploy.
-4. Jangan kerjakan CF/GHCR tanpa token/permission.
-5. `BETTER_AUTH_SECRET` jangan di log.
+1. Cloudflare custom hostname apex — token **10000**.
+2. GHCR org `rihlamate`.
+3. Auto-deploy VPS (lab = rsync).
 
 ---
 
@@ -104,11 +79,4 @@ Pisah landing/nav/surface:
 - "gunakan bahasa indonesia"
 - tes lab tetap dari host ini agar lebih aman
 - "Do not wait for CI after pushing"
-- "Start of Session: Check for existing PRs, git checkout main, git pull"
-- "kerjakan semua saran yang bisa dieksekusi oleh AI" (kecuali blocked manusia)
-
----
-
-## Catatan arsitektur
-
-Monorepo pnpm + Turbo; Next 16 :3000; license-server Hono :3001; Postgres 16; Better Auth; Midtrans Snap. `DEPLOYMENT_TARGET === "cloudflare"` = apex Workers. Home biro load DB langsung (`loadBureauHome`), bukan tRPC di RSC.
+- "lanjut kerjakan"

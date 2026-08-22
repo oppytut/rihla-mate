@@ -133,10 +133,10 @@ export async function MarketingHeader({
             labels={{
               menu: t("nav.menu"),
               close: t("nav.close"),
-              features: t("nav.features"),
-              pricing: t("nav.pricing"),
-              faq: t("nav.faq"),
-              guide: t("nav.guide"),
+              features: bureau ? "" : t("nav.features"),
+              pricing: bureau ? "" : t("nav.pricing"),
+              faq: bureau ? "" : t("nav.faq"),
+              guide: bureau ? "" : t("nav.guide"),
               signIn: bureau
                 ? t("nav.staffSignIn")
                 : signInExternal
