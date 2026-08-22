@@ -4,9 +4,12 @@ import {
   isBureauHostname,
   isLocalDevHostname,
   isMarketingPath,
+  isProductDocsPath,
   isProductHostname,
   isProductInstancePath,
+  surfaceRedirectUrl,
   LAB_DEMO_ORIGIN,
+  PRODUCT_ORIGIN,
   staffSignInHrefForHost,
   stripLocalePrefix,
 } from "./site-mode";
@@ -39,5 +42,21 @@ describe("site-mode", () => {
     expect(isProductInstancePath("/guide")).toBe(false);
     expect(isMarketingPath("/marketing")).toBe(true);
     expect(isMarketingPath("/packages")).toBe(false);
+    expect(isProductDocsPath("/guide")).toBe(true);
+    expect(isProductDocsPath("/packages")).toBe(false);
+  });
+
+  it("redirects surfaces between product and bureau origins", () => {
+    const locales = ["id", "en", "ar"] as const;
+    expect(surfaceRedirectUrl("rihla.my.id", "/sign-in", locales)).toBe(
+      `${LAB_DEMO_ORIGIN}/sign-in`,
+    );
+    expect(surfaceRedirectUrl("demo.rihla.my.id", "/marketing", locales)).toBe(
+      `${PRODUCT_ORIGIN}/`,
+    );
+    expect(surfaceRedirectUrl("demo.rihla.my.id", "/id/guide", locales)).toBe(
+      `${PRODUCT_ORIGIN}/guide`,
+    );
+    expect(surfaceRedirectUrl("localhost", "/", locales)).toBeNull();
   });
 });

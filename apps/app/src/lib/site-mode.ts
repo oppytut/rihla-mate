@@ -59,3 +59,25 @@ export function isProductInstancePath(pathname: string): boolean {
 export function isMarketingPath(pathname: string): boolean {
   return pathname === "/marketing" || pathname.startsWith("/marketing/");
 }
+
+export function isProductDocsPath(pathname: string): boolean {
+  return pathname === "/guide" || pathname.startsWith("/guide/");
+}
+
+export function surfaceRedirectUrl(
+  hostname: string,
+  pathname: string,
+  locales: readonly string[],
+): string | null {
+  const logicalPath = stripLocalePrefix(pathname, locales);
+  if (isProductHostname(hostname) && isProductInstancePath(logicalPath)) {
+    return new URL(logicalPath, LAB_DEMO_ORIGIN).toString();
+  }
+  if (isBureauHostname(hostname) && isMarketingPath(logicalPath)) {
+    return new URL("/", PRODUCT_ORIGIN).toString();
+  }
+  if (isBureauHostname(hostname) && isProductDocsPath(logicalPath)) {
+    return new URL(logicalPath, PRODUCT_ORIGIN).toString();
+  }
+  return null;
+}
