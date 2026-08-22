@@ -13,30 +13,15 @@
 import createMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
-import {
-  hostnameFromHostHeader,
-  isBureauHostname,
-  isMarketingPath,
-  isProductHostname,
-  isProductInstancePath,
-  LAB_DEMO_ORIGIN,
-  PRODUCT_ORIGIN,
-  stripLocalePrefix,
-} from "./lib/site-mode";
+import { hostnameFromHostHeader, surfaceRedirectUrl } from "./lib/site-mode";
 
 const intlMiddleware = createMiddleware(routing);
 
 export default function middleware(request: NextRequest) {
   const hostname = hostnameFromHostHeader(request.headers.get("host"));
-  const pathname = request.nextUrl.pathname;
-  const logicalPath = stripLocalePrefix(pathname, routing.locales);
-
-  if (isProductHostname(hostname) && isProductInstancePath(logicalPath)) {
-    return NextResponse.redirect(new URL(logicalPath, LAB_DEMO_ORIGIN));
-  }
-
-  if (isBureauHostname(hostname) && isMarketingPath(logicalPath)) {
-    return NextResponse.redirect(new URL("/", PRODUCT_ORIGIN));
+  const redirectTo = surfaceRedirectUrl(hostname, request.nextUrl.pathname, routing.locales);
+  if (redirectTo) {
+    return NextResponse.redirect(redirectTo);
   }
 
   return intlMiddleware(request);

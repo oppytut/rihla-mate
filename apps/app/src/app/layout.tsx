@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono, Cairo } from "next/font/google";
 import { cookies, headers } from "next/headers";
+import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -20,15 +21,28 @@ const cairo = Cairo({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Rihla Mate",
-    template: "%s · Rihla Mate",
-  },
-  description:
-    "Platform white-label travel Umrah self-hosted. Landing page branded, dashboard admin, dan booking engine untuk biro perjalanan.",
-  applicationName: "Rihla Mate",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  if (isBureauHostname(hostname)) {
+    return {
+      title: {
+        default: "Paket Umrah",
+        template: "%s",
+      },
+      description: "Pilih paket Umrah, lihat jadwal keberangkatan, dan daftar secara online.",
+      applicationName: "Paket Umrah",
+    };
+  }
+  return {
+    title: {
+      default: "Rihla Mate",
+      template: "%s · Rihla Mate",
+    },
+    description:
+      "Platform white-label travel Umrah self-hosted. Landing page branded, dashboard admin, dan booking engine untuk biro perjalanan.",
+    applicationName: "Rihla Mate",
+  };
+}
 
 export default async function RootLayout({
   children,
