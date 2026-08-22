@@ -733,7 +733,27 @@
       "tryDemo": "Coba demo",
       "menu": "Menu",
       "close": "Tutup",
-      "guide": "Panduan"
+      "guide": "Panduan",
+      "packages": "Paket",
+      "howToBook": "Cara daftar",
+      "contact": "Kontak",
+      "staffSignIn": "Masuk staf"
+    },
+    "bureau": {
+      "title": "Paket Umrah",
+      "description": "Pilih paket Umrah, lihat jadwal keberangkatan, dan daftar secara online.",
+      "heroEyebrow": "Biro perjalanan Umrah",
+      "heroTitle": "Berangkat Umrah bersama kami",
+      "heroLead": "Lihat paket, durasi, dan harga. Daftar online tanpa antri di kantor.",
+      "ctaPackages": "Lihat paket",
+      "emptyPackages": "Paket belum dipublikasikan. Silakan hubungi biro.",
+      "durationDays": "{days} hari",
+      "fromPrice": "Mulai",
+      "viewPackage": "Detail paket",
+      "howTitle": "Cara daftar",
+      "howLead": "Pilih paket, isi data jamaah, lalu bayar DP sesuai instruksi.",
+      "contactLead": "Ada pertanyaan? Hubungi staf biro.",
+      "poweredHint": "Situs biro"
     },
     "hero": {
       "badge": "Untuk Travel Agent",
