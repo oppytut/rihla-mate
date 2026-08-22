@@ -130,6 +130,25 @@ export const packagesRouter = createTRPCRouter({
       return result[0];
     }),
 
+  listPublished: publicProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select({
+        id: packages.id,
+        title: packages.title,
+        slug: packages.slug,
+        description: packages.description,
+        durationDays: packages.durationDays,
+        price: packages.price,
+        currency: packages.currency,
+        departureCity: packages.departureCity,
+        featuredImage: packages.featuredImage,
+        category: packages.category,
+      })
+      .from(packages)
+      .where(eq(packages.status, "published"))
+      .orderBy(desc(packages.createdAt));
+  }),
+
   getBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ ctx, input }) => {
     const result = await ctx.db
       .select()

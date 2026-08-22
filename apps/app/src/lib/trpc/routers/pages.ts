@@ -102,6 +102,22 @@ export const pagesRouter = createTRPCRouter({
       return result[0];
     }),
 
+  getPublishedHomepage: publicProcedure.query(async ({ ctx }) => {
+    const byFlag = await ctx.db
+      .select()
+      .from(pages)
+      .where(and(eq(pages.isHomepage, true), eq(pages.isPublished, true)))
+      .limit(1);
+    if (byFlag[0]) return byFlag[0];
+
+    const bySlug = await ctx.db
+      .select()
+      .from(pages)
+      .where(and(eq(pages.slug, "home"), eq(pages.isPublished, true)))
+      .limit(1);
+    return bySlug[0] ?? null;
+  }),
+
   getBySlug: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ ctx, input }) => {
     const result = await ctx.db
       .select()
