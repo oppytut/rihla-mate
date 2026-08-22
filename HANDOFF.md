@@ -1,133 +1,114 @@
-# Handoff — Rihla Mate
+# Handoff — Rihla Mate (session berikutnya)
 
-**Tanggal**: 2026-06-30
-**Status**: Batch 3 selesai, Midtrans payment integration done
-
----
-
-## Ringkasan Batch 1
-
-### Yang Sudah Jadi
-
-| #   | Komponen                                                                                                         | Status               |
-| --- | ---------------------------------------------------------------------------------------------------------------- | -------------------- |
-| 1   | `packages/shared/` — shared types (LicensePayload, API types, plan features)                                     | `tsc --noEmit` clean |
-| 2   | `Dockerfile` + `docker-compose.yml` + `docker-compose.dev.yml` + `.env.example` + `install.sh`                   | Siap                 |
-| 3   | `license-server/` — Hono REST API, Drizzle + Ed25519 signing, 6 tabel DB, keygen CLI, middleware auth/rate-limit | `tsc --noEmit` clean |
-| 4   | Monorepo scaffold — pnpm workspaces + Turborepo + Next.js 16 (`apps/app/`), 7 skema DB, `env.ts`                 | `tsc --noEmit` clean |
-| 5   | Dokumentasi — `install.md` (610 baris), `license.md` (629 baris), `architecture.md` (968 baris)                  | Bahasa Indonesia     |
-
-### Fix Verifikasi (sudah selesai)
-
-- `license-server/` sekarang import dari `@rihla-mate/shared` (workspace dependency), duplikat `LicensePayload` dihapus
-- `turbo.json`: `pipeline` → `tasks` (Turborepo v2)
-- `docker-compose.yml` & `docker-compose.dev.yml`: hapus `version: "3.8"` (obsolete)
-
-### Verifikasi Final
-
-```
-pnpm run check  →  2 successful (shared, app), 0 failures
-```
+**Tanggal**: 2026-08-22  
+**Bahasa ke user**: Indonesia  
+**Repo**: `oppytut/rihla-mate`  
+**Workspace host**: `/home/ubuntu/bench/rihla-mate`
 
 ---
 
-## Arsitektur Kunci
+## Keputusan operasional (wajib)
 
-- **Monorepo**: pnpm workspaces + Turborepo
-- **App**: Next.js 16 (standalone output), port 3000
-- **License Server**: Hono, port 3001
-- **DB**: PostgreSQL 16 (Drizzle ORM)
-- **Auth**: Better Auth (belum setup)
-- **Payment**: Midtrans Snap (terintegrasi, lihat Batch 3)
-- **Storage**: S3-compatible / local
+**Tes lab hanya dari host ini** (SSH `ubuntu@43.133.215.193`, curl ke `https://demo.rihla.my.id`).
 
-### Format License Key
-
-```
-RML1.<base64url(payload)>.<base64url(Ed25519 signature)>
-```
-
-### ID Prefixes
-
-`lic_`, `cust_`, `act_`, `chk_`
+- Jangan tambah GitHub Actions / Playwright CI yang memukul VPS lab.
+- Jangan expose IP lab, kredensial admin, atau `BETTER_AUTH_SECRET` di log CI/PR.
+- Jangan nunggu CI setelah push.
 
 ---
 
-## File Penting
+## Status git
 
-| File                                   | Isi                                                                                                         |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `packages/shared/src/license-types.ts` | Semua tipe shared: LicensePayload, LicenseState, TrialState, PLAN_FEATURES, PLAN_LIMITS, API response types |
-| `packages/shared/src/index.ts`         | Barrel export                                                                                               |
-| `license-server/src/lib/signing.ts`    | Ed25519 sign/verify, import LicensePayload dari shared                                                      |
-| `license-server/src/lib/keygen.ts`     | Generate license key, terima LicensePayload langsung                                                        |
-| `license-server/src/routes/`           | activate, checkin, health, revoke — semua pakai tipe dari shared                                            |
-| `turbo.json`                           | Tasks: build, dev, lint, check, db:generate, db:migrate                                                     |
-| `docker-compose.yml`                   | 3 service: app (3000), db (postgres:16-alpine), watchtower                                                  |
+| Item         | Nilai                                                                      |
+| ------------ | -------------------------------------------------------------------------- |
+| `main`       | `a57c55f` — `test: smoke public /guide and reject locale junk 500s (#109)` |
+| Branch kerja | `feat/product-vs-bureau-surfaces`                                          |
+| PR           | buat setelah commit (satu concern: surface produk vs biro)                 |
+
+**Session start**: `gh pr list --state open` → merge jika CI hijau; jangan nunggu CI setelah push.
 
 ---
 
-## Batch 3 — Midtrans Payment Integration
+## Lab (VPS)
 
-### Yang Sudah Jadi
+|            |                                                                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------- |
+| SSH        | `ubuntu@43.133.215.193`                                                                                                |
+| Tree       | `~/rihla-mate` **tanpa `.git`** — deploy = rsync dari host + `docker compose build/up`                                 |
+| Image      | override lokal `rihla-mate:lab` (bukan GHCR; pull `ghcr.io/rihlamate/rihla-mate:latest` = **401**)                     |
+| URL        | `https://demo.rihla.my.id` (CF Proxied A → VPS)                                                                        |
+| Apex       | `https://rihla.my.id` = Cloudflare Workers (CI `push` `main`)                                                          |
+| Login staf | `admin@demo.rihla.my.id` / lihat `~/rihla-mate/.lab-admin` di VPS — **jangan print secret di chat kecuali user minta** |
+| User id    | `4a0bc586-a699-461a-b17a-67df027f51df`                                                                                 |
+| Trial      | `RM-83CC-5C63-EEA6-BF82`                                                                                               |
 
-| #   | Komponen                                                                                                                                                                               | Status                                           |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| 1   | `apps/app/src/lib/payment/midtrans.ts` — `createSnapTransaction`, `verifyWebhookSignature`, `getTransactionStatus`, `isMidtransConfigured`                                             | `tsc --noEmit` clean, 40 unit tests pass         |
-| 2   | `apps/app/src/app/api/midtrans/webhook/route.ts` — POST handler: baca raw body, verifikasi SHA512, update booking status                                                               | Terintegrasi                                     |
-| 3   | `apps/app/src/lib/trpc/routers/midtrans.ts` — `createTransaction` mutation (protectedProcedure)                                                                                        | Terintegrasi                                     |
-| 4   | `apps/app/src/types/midtrans-client.d.ts` — Type declarations untuk package CommonJS                                                                                                   | `tsc --noEmit` clean                             |
-| 5   | DB schema `bookings.ts` — 6 kolom Midtrans: `midtrans_order_id`, `midtrans_transaction_id`, `payment_method`, `payment_channel`, `gross_amount`, `transaction_status` (semua nullable) | Migrasi: `drizzle/0004_wooden_quentin_quire.sql` |
-| 6   | Middleware `apps/app/src/middleware.ts` — `/api/midtrans` ditambah ke `PUBLIC_PREFIXES`                                                                                                | Webhook bisa diakses tanpa auth                  |
-| 7   | Layout `apps/app/src/app/layout.tsx` — Midtrans Snap script (auto-detect sandbox/production)                                                                                           | Client-side Snap popup siap                      |
-| 8   | `apps/app/src/lib/__tests__/midtrans.test.ts` — 40 unit tests, semua pass                                                                                                              | ✅                                               |
+Watchtower: **opt-in** `profiles: ["watchtower"]` — jangan nyalakan di lab.
 
-### Alur Pembayaran
-
-```
-Client minta Snap token via tRPC
-  → Server generate pakai midtrans-client Snap API
-    → Client buka Snap popup
-      → Midtrans panggil webhook
-        → Server verifikasi SHA512 signature + update booking status
-```
-
-### Konfigurasi Env
-
-| Variabel                          | Scope  | Wajib?                                  |
-| --------------------------------- | ------ | --------------------------------------- |
-| `MIDTRANS_SERVER_KEY`             | Server | Optional (return error kalau tidak ada) |
-| `MIDTRANS_CLIENT_KEY`             | Server | Optional                                |
-| `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | Client | Optional                                |
-
-### Catatan Teknis
-
-- **midtrans-client**: CommonJS package, type manual di `src/types/midtrans-client.d.ts`
-- **Webhook signature**: `SHA512(order_id + status_code + gross_amount + ServerKey)` — raw body dibaca via `req.text()`, diverifikasi pakai `crypto.timingSafeEqual`
-- **Snap script**: Auto-deteksi sandbox/production dari prefix client key (`Mid-server-`)
-
-### Test Coverage
-
-- 40 unit tests — `createSnapTransaction` (success, error, not configured), `verifyWebhookSignature` (valid, invalid, missing key), `getTransactionStatus` (success, error), `isMidtransConfigured`, `midtransRouter.createTransaction` (success, error, not configured), webhook handler (valid signature, invalid signature, missing server key)
-- Full suite: 391 tests pass, 0 failures
+**Deploy lab hanya jika user minta** (rsync + rebuild). Kode surface belum di VPS sampai itu.
 
 ---
 
-## Batch 2 — Rencana
+## Yang sudah di `main` (relevan)
 
-1. **License module di app** — `store.ts`, `checkin.ts`, `trial.ts`, `guard.ts`, `middleware.ts`
-2. **Better Auth setup** — `auth.ts`, schema user/session/account, middleware integrasi
-3. **Tailwind + shadcn/ui** — `tailwind.config.ts`, `globals.css`, `components.json`, theme
-4. **tRPC router scaffold** — `trpc/` directory, root router, context
+- **#104–#109** guide, auth origin, Docker lab, locale allowlist, smoke `/guide`
+
+**Produk vs demo:** satu install = satu biro. CTA staf di apex → `https://demo.rihla.my.id/sign-in`.
 
 ---
 
-## Perintah Cepat
+## Fitur sesi ini (belum di `main` sampai PR merge)
 
-```bash
-pnpm install          # Install semua deps
-pnpm dev              # Jalankan dev (app + license-server)
-pnpm run check        # tsc --noEmit semua package
-pnpm run db:generate  # Generate Drizzle migrations
-pnpm run db:migrate   # Jalankan migrasi
-```
+Pisah landing/nav/surface:
+
+- Localhost = produk/CI; `demo.rihla.my.id` + custom domain = biro
+- Apex instance paths → `LAB_DEMO_ORIGIN`; demo `/marketing` → `PRODUCT_ORIGIN`
+- Home biro: paket `published` + CMS `pages` (`isHomepage` atau slug `home`); gagal DB → empty
+- Non-biro `/packages` redirect `PRODUCT_ORIGIN/`
+- Header/mobile: `extraLinks` / `hideProductAnchors`; footer `variant: "bureau"`
+- i18n `marketing.bureau` (id/en/ar)
+
+**Verifikasi host:** `site-mode.test.ts` 4 tes lulus; `pnpm --filter @rihla-mate/app check` OK.
+
+---
+
+## File kunci
+
+- `apps/app/src/lib/site-mode.ts`, `site-mode.test.ts`, `middleware.ts`
+- `apps/app/src/app/[locale]/page.tsx`, `bureau-landing.tsx`, `packages/page.tsx`
+- `apps/app/src/components/marketing/marketing-{header,mobile-nav,footer}.tsx`
+- `apps/app/src/lib/trpc/routers/packages.ts`, `pages.ts`
+- `apps/app/messages/{id,en,ar}.json`
+
+---
+
+## Blocked (manusia)
+
+1. Cloudflare **custom hostname** apex `rihla.my.id` — token error **10000**.
+2. **GHCR** org `rihlamate` — lab tidak auto-pull image dari CI.
+3. Pipeline auto-deploy VPS (opsional; sekarang rsync + rebuild dari host).
+
+---
+
+## Langkah session berikutnya
+
+1. Cek PR surface → squash-merge jika CI hijau (jangan poll `gh run watch`).
+2. Kerja baru di `main` setelah pull; **satu concern = satu PR**.
+3. Verifikasi lab **hanya SSH/curl dari host ini** setelah user minta deploy.
+4. Jangan kerjakan CF/GHCR tanpa token/permission.
+5. `BETTER_AUTH_SECRET` jangan di log.
+
+---
+
+## Constraint user (verbatim)
+
+- "gunakan bahasa indonesia"
+- tes lab tetap dari host ini agar lebih aman
+- "Do not wait for CI after pushing"
+- "Start of Session: Check for existing PRs, git checkout main, git pull"
+- "kerjakan semua saran yang bisa dieksekusi oleh AI" (kecuali blocked manusia)
+
+---
+
+## Catatan arsitektur
+
+Monorepo pnpm + Turbo; Next 16 :3000; license-server Hono :3001; Postgres 16; Better Auth; Midtrans Snap. `DEPLOYMENT_TARGET === "cloudflare"` = apex Workers. Home biro load DB langsung (`loadBureauHome`), bukan tRPC di RSC.

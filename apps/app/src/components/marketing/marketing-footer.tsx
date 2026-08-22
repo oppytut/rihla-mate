@@ -3,11 +3,11 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "@/components/brand/brand-mark";
-import { hostnameFromHostHeader, staffSignInHrefForHost } from "@/lib/site-mode";
+import { hostnameFromHostHeader, isBureauHostname, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingFooterProps = {
   crossPageAnchors?: boolean;
-  variant?: "full" | "simple";
+  variant?: "full" | "simple" | "bureau";
 };
 
 export async function MarketingFooter({
@@ -18,6 +18,7 @@ export async function MarketingFooter({
   const tCommon = await getTranslations("common");
   const year = new Date().getFullYear();
   const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  const bureau = variant === "bureau" || (variant !== "simple" && isBureauHostname(hostname));
   const signInHref = staffSignInHrefForHost(hostname);
   const signInExternal = signInHref.startsWith("http");
 
@@ -39,10 +40,10 @@ export async function MarketingFooter({
             <div className="flex items-center gap-4 sm:gap-6">
               <LocaleSwitcher />
               <Link
-                href="/marketing"
+                href={bureau ? "/packages" : "/marketing"}
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
-                {t("nav.features")}
+                {bureau ? t("nav.packages") : t("nav.features")}
               </Link>
               {signInExternal ? (
                 <a
@@ -60,6 +61,45 @@ export async function MarketingFooter({
                 </Link>
               )}
             </div>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  if (bureau) {
+    return (
+      <footer className="border-t border-border/40 py-8">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
+            <div className="flex flex-col items-center gap-2 sm:items-start">
+              <BrandMark
+                size="sm"
+                showWordmark
+                abbr={tCommon("appNameAbbr")}
+                wordmark={tCommon("appName")}
+                wordmarkClassName="text-base"
+              />
+              <p className="text-xs text-muted-foreground">{t("bureau.poweredHint")}</p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+              <LocaleSwitcher />
+              <Link
+                href="/packages"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("nav.packages")}
+              </Link>
+              <Link
+                href="/sign-in"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("nav.staffSignIn")}
+              </Link>
+            </div>
+          </div>
+          <div className="mt-6 border-t border-border/40 pt-6 text-center">
+            <p className="text-xs text-muted-foreground">{t("footer.copyright", { year })}</p>
           </div>
         </div>
       </footer>

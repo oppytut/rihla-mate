@@ -738,7 +738,27 @@
       "tryDemo": "Try demo",
       "menu": "Menu",
       "close": "Close",
-      "guide": "Guide"
+      "guide": "Guide",
+      "packages": "Packages",
+      "howToBook": "How to book",
+      "contact": "Contact",
+      "staffSignIn": "Staff sign-in"
+    },
+    "bureau": {
+      "title": "Umrah packages",
+      "description": "Browse Umrah packages, departure dates, and book online.",
+      "heroEyebrow": "Umrah travel agency",
+      "heroTitle": "Travel for Umrah with us",
+      "heroLead": "See packages, duration, and prices. Register online — no office queue.",
+      "ctaPackages": "View packages",
+      "emptyPackages": "No published packages yet. Please contact the agency.",
+      "durationDays": "{days} days",
+      "fromPrice": "From",
+      "viewPackage": "View package",
+      "howTitle": "How to book",
+      "howLead": "Choose a package, enter pilgrim details, then pay the deposit as instructed.",
+      "contactLead": "Questions? Contact agency staff.",
+      "poweredHint": "Agency site"
     },
     "hero": {
       "badge": "For Travel Agents",

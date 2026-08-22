@@ -11,13 +11,37 @@
  * next-intl's createMiddleware is fully Edge-compatible (Web APIs only).
  */
 import createMiddleware from "next-intl/middleware";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
+import {
+  hostnameFromHostHeader,
+  isBureauHostname,
+  isMarketingPath,
+  isProductHostname,
+  isProductInstancePath,
+  LAB_DEMO_ORIGIN,
+  PRODUCT_ORIGIN,
+  stripLocalePrefix,
+} from "./lib/site-mode";
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
+
+export default function middleware(request: NextRequest) {
+  const hostname = hostnameFromHostHeader(request.headers.get("host"));
+  const pathname = request.nextUrl.pathname;
+  const logicalPath = stripLocalePrefix(pathname, routing.locales);
+
+  if (isProductHostname(hostname) && isProductInstancePath(logicalPath)) {
+    return NextResponse.redirect(new URL(logicalPath, LAB_DEMO_ORIGIN));
+  }
+
+  if (isBureauHostname(hostname) && isMarketingPath(logicalPath)) {
+    return NextResponse.redirect(new URL("/", PRODUCT_ORIGIN));
+  }
+
+  return intlMiddleware(request);
+}
 
 export const config = {
-  // Match all pathnames except:
-  // - /api, /trpc, /_next, /_vercel (internal routes)
-  // - files with extensions (static assets)
   matcher: "/((?!api|trpc|_next|_vercel|.*\\..*).*)",
 };
