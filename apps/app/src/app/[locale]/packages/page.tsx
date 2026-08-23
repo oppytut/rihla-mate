@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BureauLanding } from "../bureau-landing";
+import { getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
@@ -10,9 +11,12 @@ import { desc, eq } from "drizzle-orm";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("marketing.bureau");
+  const name = (await getBureauDisplayName()) ?? t("title");
   return {
-    title: t("title"),
+    title: name,
     description: t("description"),
+    applicationName: name,
+    openGraph: { siteName: name, title: name },
   };
 }
 

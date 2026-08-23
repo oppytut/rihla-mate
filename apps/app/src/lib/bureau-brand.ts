@@ -20,3 +20,14 @@ export async function getBureauDisplayName(): Promise<string | null> {
     return null;
   }
 }
+
+export function bureauAbbr(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0] ?? "";
+  const second = parts[1];
+  if (second) {
+    return `${first.charAt(0)}${second.charAt(0)}`.toUpperCase();
+  }
+  const compact = name.replace(/\s+/g, "");
+  return compact.slice(0, 2).toUpperCase() || "UM";
+}

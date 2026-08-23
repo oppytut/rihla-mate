@@ -46,8 +46,9 @@ describe("site-mode", () => {
     expect(isMarketingPath("/packages")).toBe(false);
     expect(isProductDocsPath("/guide")).toBe(true);
     expect(isProductDocsPath("/packages")).toBe(false);
-    expect(isBureauCatalogPath("/packages")).toBe(false);
+    expect(isBureauCatalogPath("/packages")).toBe(true);
     expect(isBureauCatalogPath("/packages/umrah-plus")).toBe(true);
+    expect(isBureauCatalogPath("/")).toBe(false);
   });
 
   it("redirects surfaces between product and bureau origins", () => {
@@ -83,9 +84,13 @@ describe("site-mode", () => {
           menu: "Menu",
           close: "Tutup",
         },
-        bureau: { heroTitle: "Umrah" },
+        bureau: {
+          heroTitle: "Umrah",
+          copyright: "© {year} {name}",
+          poweredHint: "Situs biro",
+        },
         footer: {
-          copyright: "c",
+          copyright: "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
           tagline: "Platform travel Umrah white-label",
           pricing: "Harga",
         },
@@ -110,10 +115,11 @@ describe("site-mode", () => {
         menu: "Menu",
         close: "Tutup",
       },
-      bureau: { heroTitle: "Umrah" },
-      footer: { copyright: "c" },
+      bureau: { heroTitle: "Umrah", copyright: "© {year} {name}" },
     });
-    expect(JSON.stringify(slim)).not.toMatch(/Harga|White-label|white-label|Rihla/);
+    expect(JSON.stringify(slim)).not.toMatch(
+      /Harga|White-label|white-label|Rihla Mate|poweredHint/,
+    );
 
     const catalog = pickBureauClientMessages(messages, { catalog: true });
     expect(catalog.packages).toEqual({ title: "Paket" });

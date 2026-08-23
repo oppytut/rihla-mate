@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "@/components/brand/brand-mark";
-import { getBureauDisplayName } from "@/lib/bureau-brand";
+import { bureauAbbr, getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingFooterProps = {
@@ -36,9 +36,14 @@ export async function MarketingFooter({
         <div className="container mx-auto px-4 lg:px-8">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-2">
-              <BrandMark size="sm" abbr={tCommon("appNameAbbr")} />
+              <BrandMark
+                size="sm"
+                abbr={bureau ? bureauAbbr(bureauName) : tCommon("appNameAbbr")}
+              />
               <span className="text-sm text-muted-foreground">
-                {t("footer.copyright", { year })}
+                {bureau
+                  ? t("bureau.copyright", { year, name: bureauName })
+                  : t("footer.copyright", { year })}
               </span>
             </div>
             <div className="flex items-center gap-4 sm:gap-6">
@@ -80,7 +85,7 @@ export async function MarketingFooter({
               <BrandMark
                 size="sm"
                 showWordmark
-                abbr={tCommon("appNameAbbr")}
+                abbr={bureauAbbr(bureauName)}
                 wordmark={bureauName}
                 wordmarkClassName="text-base"
               />

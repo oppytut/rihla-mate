@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono, Cairo } from "next/font/google";
 import { cookies, headers } from "next/headers";
+import { getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import "./globals.css";
 
@@ -24,13 +25,18 @@ const cairo = Cairo({
 export async function generateMetadata(): Promise<Metadata> {
   const hostname = hostnameFromHostHeader((await headers()).get("host"));
   if (isBureauHostname(hostname)) {
+    const name = (await getBureauDisplayName()) ?? "Paket Umrah";
     return {
       title: {
-        default: "Paket Umrah",
+        default: name,
         template: "%s",
       },
       description: "Pilih paket Umrah, lihat jadwal keberangkatan, dan daftar secara online.",
-      applicationName: "Paket Umrah",
+      applicationName: name,
+      openGraph: {
+        siteName: name,
+        title: name,
+      },
     };
   }
   return {
