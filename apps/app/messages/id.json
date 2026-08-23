@@ -753,7 +753,8 @@
       "howTitle": "Cara daftar",
       "howLead": "Pilih paket, isi data jamaah, lalu bayar DP sesuai instruksi.",
       "contactLead": "Ada pertanyaan? Hubungi staf biro.",
-      "poweredHint": "Situs biro"
+      "poweredHint": "Situs biro",
+      "copyright": "© {year} {name}. Seluruh hak cipta dilindungi."
     },
     "hero": {
       "badge": "Untuk Travel Agent",
