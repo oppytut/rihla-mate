@@ -1,5 +1,7 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import type { Metadata } from "next";
 import { getDb } from "@/lib/db/client";
+import { packages } from "@/lib/db/schema/packages";
 import { settings } from "@/lib/db/schema/settings";
 
 function settingText(value: unknown): string | null {
@@ -19,6 +21,37 @@ export async function getBureauDisplayName(): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+export async function getPublishedPackageTitleBySlug(slug: string): Promise<string | null> {
+  const trimmed = slug.trim();
+  if (!trimmed) return null;
+  try {
+    const db = await getDb();
+    const [row] = await db
+      .select({ title: packages.title })
+      .from(packages)
+      .where(and(eq(packages.slug, trimmed), eq(packages.status, "published")))
+      .limit(1);
+    const title = row?.title?.trim();
+    return title || null;
+  } catch {
+    return null;
+  }
+}
+
+export function bureauCatalogMetadata(opts: {
+  bureauName: string;
+  pageTitle: string;
+  description?: string;
+}): Metadata {
+  const { bureauName, pageTitle, description } = opts;
+  return {
+    title: pageTitle,
+    description,
+    applicationName: bureauName,
+    openGraph: { siteName: bureauName, title: pageTitle },
+  };
 }
 
 export function bureauAbbr(name: string): string {

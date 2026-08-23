@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { BrandMark } from "@/components/brand/brand-mark";
 import { LocaleSwitcher } from "@/components/marketing/locale-switcher";
+import { useAuthBrand } from "@/components/auth/auth-brand-context";
 import { cn } from "@/lib/utils";
 
 type AuthShellProps = {
@@ -12,6 +13,8 @@ type AuthShellProps = {
   maxWidth?: "sm" | "md" | "lg";
   showBackHome?: boolean;
   footer?: React.ReactNode;
+  brandWordmark?: string;
+  brandAbbr?: string;
 };
 
 const maxWidthClass = {
@@ -26,8 +29,13 @@ export function AuthShell({
   maxWidth = "sm",
   showBackHome = true,
   footer,
+  brandWordmark,
+  brandAbbr,
 }: AuthShellProps) {
   const t = useTranslations();
+  const fromLayout = useAuthBrand();
+  const wordmark = brandWordmark?.trim() || fromLayout.wordmark?.trim() || t("common.appName");
+  const abbr = brandAbbr?.trim() || fromLayout.abbr?.trim() || t("common.appNameAbbr");
 
   return (
     <div
@@ -56,8 +64,8 @@ export function AuthShell({
             <BrandMark
               size="md"
               showWordmark
-              abbr={t("common.appNameAbbr")}
-              wordmark={t("common.appName")}
+              abbr={abbr}
+              wordmark={wordmark}
               wordmarkClassName="text-base sm:text-lg"
             />
           </Link>
