@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "@/components/brand/brand-mark";
+import { getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingFooterProps = {
@@ -19,6 +20,9 @@ export async function MarketingFooter({
   const year = new Date().getFullYear();
   const hostname = hostnameFromHostHeader((await headers()).get("host"));
   const bureau = variant === "bureau" || (variant !== "simple" && isBureauHostname(hostname));
+  const bureauName = bureau
+    ? ((await getBureauDisplayName()) ?? t("bureau.title"))
+    : tCommon("appName");
   const signInHref = staffSignInHrefForHost(hostname);
   const signInExternal = signInHref.startsWith("http");
 
@@ -77,10 +81,9 @@ export async function MarketingFooter({
                 size="sm"
                 showWordmark
                 abbr={tCommon("appNameAbbr")}
-                wordmark={t("bureau.title")}
+                wordmark={bureauName}
                 wordmarkClassName="text-base"
               />
-              <p className="text-xs text-muted-foreground">{t("bureau.poweredHint")}</p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <LocaleSwitcher />
@@ -99,7 +102,9 @@ export async function MarketingFooter({
             </div>
           </div>
           <div className="mt-6 border-t border-border/40 pt-6 text-center">
-            <p className="text-xs text-muted-foreground">{t("footer.copyright", { year })}</p>
+            <p className="text-xs text-muted-foreground">
+              {t("bureau.copyright", { year, name: bureauName })}
+            </p>
           </div>
         </div>
       </footer>
