@@ -1,9 +1,14 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Script from "next/script";
 import { TRPCReactProvider } from "@/lib/trpc/react";
 import { Toaster } from "@/components/ui/sonner";
+import {
+  hostnameFromHostHeader,
+  isBureauHostname,
+  pickBureauClientMessages,
+} from "@/lib/site-mode";
 
 function MidtransSnapScript() {
   const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
@@ -34,7 +39,9 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const cookieLocale = (await cookies()).get("locale")?.value;
   const resolvedLocale = locale || cookieLocale || "id";
-  const messages = await getMessages({ locale: resolvedLocale });
+  const allMessages = await getMessages({ locale: resolvedLocale });
+  const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  const messages = isBureauHostname(hostname) ? pickBureauClientMessages(allMessages) : allMessages;
 
   return (
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>
