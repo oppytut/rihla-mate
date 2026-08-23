@@ -19,7 +19,7 @@ export function HowItWorksSection() {
       className="relative overflow-hidden bg-primary text-primary-foreground"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground/80">
             <ListOrdered className="h-3.5 w-3.5 text-accent" aria-hidden />
             {t("howItWorks.badge")}
@@ -32,7 +32,7 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <ol className="mx-auto mt-12 grid max-w-6xl list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+        <ol className="mx-auto mt-12 grid w-full list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {stepKeys.map((key, i) => {
             const Icon = stepIcons[i];
             const isLast = i === stepKeys.length - 1;

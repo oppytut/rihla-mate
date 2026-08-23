@@ -33,10 +33,10 @@ export default async function GuidePage() {
         <div className="border-b border-border/40 border-s-8 border-s-primary bg-muted/30">
           <div className="mx-auto w-full max-w-[1680px] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 xl:px-10">
             <p className="mb-3 text-sm font-medium text-primary">{t("eyebrow")}</p>
-            <h1 className="max-w-3xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
+            <h1 className="max-w-5xl text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
               {t("title")}
             </h1>
-            <p className="mt-4 max-w-2xl text-base text-muted-foreground sm:text-lg">{t("lead")}</p>
+            <p className="mt-4 max-w-4xl text-base text-muted-foreground sm:text-lg">{t("lead")}</p>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ export default async function GuidePage() {
             </ol>
           </nav>
 
-          <div className="min-w-0 max-w-prose space-y-14 text-base leading-relaxed xl:max-w-none">
+          <div className="min-w-0 w-full space-y-14 text-base leading-relaxed">
             {SECTIONS.map((id) => {
               const { steps, notes, specs } = readGuideSection(sectionBag, id);
               return (
@@ -134,13 +134,20 @@ export default async function GuidePage() {
           </div>
 
           <aside className="hidden xl:sticky xl:top-20 xl:block xl:self-start">
-            <div className="rounded-xl border border-border/60 bg-card p-4 shadow-sm">
+            <div className="rounded-xl border border-border/60 bg-card p-5 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {t("sections.start.nav")}
               </p>
-              <pre className="mt-3 overflow-x-auto rounded-lg bg-[oklch(0.22_0.03_165)] p-3 font-mono text-[11px] leading-relaxed text-[oklch(0.93_0.02_85)]">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t("lead")}</p>
+              <pre className="mt-4 overflow-x-auto rounded-lg bg-[oklch(0.22_0.03_165)] p-3 font-mono text-[11px] leading-relaxed text-[oklch(0.93_0.02_85)]">
                 {`docker compose up -d`}
               </pre>
+              <Link
+                href="/activate"
+                className="mt-4 inline-flex h-10 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              >
+                {t("cta.installer")}
+              </Link>
             </div>
           </aside>
         </div>
