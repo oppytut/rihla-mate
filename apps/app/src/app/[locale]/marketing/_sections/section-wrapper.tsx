@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 
+export const marketingShellClass = "mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10";
+
 interface SectionWrapperProps {
   children: React.ReactNode;
   className?: string;
@@ -16,7 +18,7 @@ export function SectionWrapper({
   return (
     <section
       id={id}
-      className={cn("py-20 lg:py-28", borderTop && "border-t border-border/40", className)}
+      className={cn("py-16 lg:py-20", borderTop && "border-t border-border/40", className)}
     >
       {children}
     </section>

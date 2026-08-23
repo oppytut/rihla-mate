@@ -11,7 +11,7 @@ const featureIcons = [
   { Icon: CalendarCheck, key: "bookingEngine", span: "" },
   { Icon: CreditCard, key: "payments", span: "" },
   { Icon: Key, key: "license", span: "sm:col-span-2 lg:col-span-1" },
-  { Icon: BarChart3, key: "analytics", span: "sm:col-span-2 lg:col-span-2" },
+  { Icon: BarChart3, key: "analytics", span: "sm:col-span-2 lg:col-span-3" },
 ] as const;
 
 export function FeaturesSection() {
@@ -19,15 +19,15 @@ export function FeaturesSection() {
 
   return (
     <SectionWrapper id="features" borderTop className="bg-muted/20">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
             {t("features.sectionTitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">{t("features.sectionDescription")}</p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-5xl gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+        <div className="mt-12 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
           {featureIcons.map(({ Icon, key, span }, index) => {
             const featured = index === 0 || index === 5;
             return (

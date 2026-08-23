@@ -13,27 +13,26 @@ export function HowItWorksSection() {
   const t = useTranslations("marketing");
 
   return (
-    <SectionWrapper id="how-it-works" borderTop className="relative overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,oklch(0.42_0.09_165_/_0.08),transparent)]"
-        aria-hidden
-      />
-
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
-            <ListOrdered className="h-3.5 w-3.5 text-primary" aria-hidden />
+    <SectionWrapper
+      id="how-it-works"
+      borderTop
+      className="relative overflow-hidden bg-primary text-primary-foreground"
+    >
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs font-medium text-primary-foreground/80">
+            <ListOrdered className="h-3.5 w-3.5 text-accent" aria-hidden />
             {t("howItWorks.badge")}
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl xl:text-5xl">
             {t("howItWorks.sectionTitle")}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-primary-foreground/80 sm:text-lg">
             {t("howItWorks.sectionDescription")}
           </p>
         </div>
 
-        <ol className="mx-auto mt-12 grid max-w-6xl list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+        <ol className="mt-12 grid list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {stepKeys.map((key, i) => {
             const Icon = stepIcons[i];
             const isLast = i === stepKeys.length - 1;
@@ -42,7 +41,7 @@ export function HowItWorksSection() {
               <li key={key} className="relative">
                 {!isLast ? (
                   <div
-                    className="pointer-events-none absolute start-[calc(50%+2rem)] top-10 z-0 hidden h-px w-[calc(100%-1rem)] bg-gradient-to-r from-border via-primary/25 to-border lg:block rtl:bg-gradient-to-l"
+                    className="pointer-events-none absolute start-[calc(50%+2rem)] top-10 z-0 hidden h-px w-[calc(100%-1rem)] bg-gradient-to-r from-primary-foreground/10 via-accent/50 to-primary-foreground/10 lg:block rtl:bg-gradient-to-l"
                     aria-hidden
                   />
                 ) : null}
@@ -75,10 +74,10 @@ export function HowItWorksSection() {
         </ol>
 
         <div className="mx-auto mt-10 flex max-w-xl flex-col items-center gap-3 text-center sm:mt-12 sm:flex-row sm:justify-center sm:gap-4">
-          <p className="text-sm text-muted-foreground">{t("howItWorks.ctaHint")}</p>
+          <p className="text-sm text-primary-foreground/75">{t("howItWorks.ctaHint")}</p>
           <Link
             href="/activate"
-            className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md shadow-primary/20 transition-all hover:bg-primary/90"
+            className="group inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-background px-6 text-sm font-semibold text-foreground shadow-md transition-all hover:bg-background/90"
           >
             {t("howItWorks.cta")}
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />

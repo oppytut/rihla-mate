@@ -22,13 +22,13 @@ export function PricingSection() {
         aria-hidden
       />
 
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto max-w-3xl text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
             <Tag className="h-3.5 w-3.5 text-primary" aria-hidden />
             {t("pricing.badge")}
           </div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
             {t("pricing.sectionTitle")}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -36,7 +36,7 @@ export function PricingSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-6xl items-stretch gap-5 sm:mt-16 lg:grid-cols-3 lg:gap-6 lg:items-center">
+        <div className="mt-12 grid items-stretch gap-5 sm:mt-16 lg:grid-cols-3 lg:gap-8">
           {planKeys.map((key) => {
             const isPopular = key === "pro";
             const featureCount = (t.raw(`pricing.${key}.features`) as string[]).length;

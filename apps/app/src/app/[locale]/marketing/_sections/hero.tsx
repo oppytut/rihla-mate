@@ -7,9 +7,6 @@ import { ProductMock } from "@/components/marketing/product-mock";
 
 export function HeroSection() {
   const t = useTranslations("marketing");
-  const stats = t.raw("proof.stats") as Array<{ value: string; label: string }>;
-  const chips = stats.slice(0, 3);
-
   return (
     <section className="relative overflow-hidden pb-10 pt-12 sm:pb-14 sm:pt-16 lg:pb-20 lg:pt-24">
       <div
@@ -37,9 +34,9 @@ export function HeroSection() {
         aria-hidden
       />
 
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-14">
-          <div className="mx-auto max-w-xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start xl:col-span-5">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-16">
+          <div className="mx-auto max-w-xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start xl:col-span-4">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/90 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur sm:mb-6 sm:text-sm">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Building2 className="h-3.5 w-3.5" aria-hidden />
@@ -52,14 +49,14 @@ export function HeroSection() {
               </span>
             </div>
 
-            <h1 className="text-balance text-[1.85rem] font-bold leading-[1.15] tracking-tight text-foreground sm:text-4xl sm:leading-[1.12] lg:text-[2.75rem] xl:text-[3.15rem] xl:leading-[1.08]">
+            <h1 className="text-balance text-[1.85rem] font-bold leading-[1.15] tracking-tight text-foreground sm:text-4xl sm:leading-[1.12] lg:text-[2.75rem] xl:text-6xl xl:leading-[1.08]">
               {t("hero.headline")}{" "}
               <span className="bg-gradient-to-br from-primary via-primary to-[oklch(0.45_0.1_145)] bg-clip-text text-transparent">
                 {t("hero.headlineHighlight")}
               </span>
             </h1>
 
-            <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">
+            <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg xl:text-xl">
               {t("hero.subtitle")}
             </p>
 
@@ -83,25 +80,9 @@ export function HeroSection() {
               <Check className="h-3.5 w-3.5 shrink-0 text-success" aria-hidden />
               {t("hero.trialNote")}
             </p>
-
-            <ul className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:mt-10 lg:justify-start">
-              {chips.map((chip) => (
-                <li
-                  key={chip.label}
-                  className="inline-flex items-center gap-2 rounded-xl border border-border/50 bg-card/80 py-2 pe-3.5 ps-2.5 text-start shadow-sm backdrop-blur"
-                >
-                  <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-primary/10 px-1.5 text-xs font-bold tabular-nums text-primary">
-                    {chip.value}
-                  </span>
-                  <span className="max-w-[7.5rem] text-[11px] font-medium leading-tight text-muted-foreground sm:max-w-[9rem] sm:text-xs">
-                    {chip.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
           </div>
 
-          <div className="relative lg:col-span-7 xl:col-span-7">
+          <div className="relative lg:col-span-7 xl:col-span-8">
             <div
               className="pointer-events-none absolute -inset-3 rounded-[1.75rem] bg-gradient-to-br from-primary/15 via-transparent to-accent/20 opacity-80 blur-2xl sm:-inset-5"
               aria-hidden
