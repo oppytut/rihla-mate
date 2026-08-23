@@ -10,6 +10,7 @@ import {
   surfaceRedirectUrl,
   LAB_DEMO_ORIGIN,
   PRODUCT_ORIGIN,
+  isBureauAuthPath,
   isBureauCatalogPath,
   pickBureauClientMessages,
   staffSignInHrefForHost,
@@ -49,6 +50,10 @@ describe("site-mode", () => {
     expect(isBureauCatalogPath("/packages")).toBe(true);
     expect(isBureauCatalogPath("/packages/umrah-plus")).toBe(true);
     expect(isBureauCatalogPath("/")).toBe(false);
+    expect(isBureauAuthPath("/sign-in")).toBe(true);
+    expect(isBureauAuthPath("/forgot-password")).toBe(true);
+    expect(isBureauAuthPath("/reset-password")).toBe(true);
+    expect(isBureauAuthPath("/dashboard")).toBe(false);
   });
 
   it("redirects surfaces between product and bureau origins", () => {
@@ -126,5 +131,20 @@ describe("site-mode", () => {
     expect(catalog.validation).toEqual({ required: "Wajib" });
     expect(catalog.bookings).toEqual({ title: "Booking" });
     expect(catalog.common).toEqual({ loading: "Memuat", error: "Error" });
+
+    const auth = pickBureauClientMessages(
+      {
+        ...messages,
+        auth: {
+          signIn: "Masuk",
+          productHostHint: "Ini situs produk Rihla Mate",
+          openLabDemo: "Lab",
+        },
+      },
+      { auth: true },
+    );
+    expect(auth.auth).toEqual({ signIn: "Masuk" });
+    expect(auth.dashboard).toBeUndefined();
+    expect(JSON.stringify(auth)).not.toMatch(/Rihla Mate|productHostHint/);
   });
 });
