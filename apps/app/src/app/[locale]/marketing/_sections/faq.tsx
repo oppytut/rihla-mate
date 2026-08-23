@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, CircleHelp, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionWrapper } from "./section-wrapper";
@@ -25,7 +25,10 @@ function FaqItem({
   panelId: string;
   buttonId: string;
 }) {
-  const n = String(index + 1).padStart(2, "0");
+  const locale = useLocale();
+  const n = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : locale === "id" ? "id-ID" : "en-US", {
+    minimumIntegerDigits: 2,
+  }).format(index + 1);
 
   return (
     <div
@@ -84,7 +87,7 @@ function FaqItem({
         )}
       >
         <div className="overflow-hidden">
-          <p className="border-t border-border/40 px-4 pb-4 ps-[3.25rem] pt-3 text-sm leading-relaxed text-muted-foreground sm:px-5 sm:pb-5 sm:ps-[4.25rem] sm:pt-3.5">
+          <p className="border-t border-border/40 px-4 pb-4 ps-[3.25rem] pt-3 text-sm leading-relaxed text-foreground/70 sm:px-5 sm:pb-5 sm:ps-[4.25rem] sm:pt-3.5">
             {answer}
           </p>
         </div>
@@ -106,7 +109,7 @@ export function FaqSection() {
       />
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
-          <div className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
+          <div className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
             <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
               <CircleHelp className="h-3.5 w-3.5 text-primary" aria-hidden />
               {t("faq.badge")}
@@ -133,7 +136,7 @@ export function FaqSection() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 lg:col-span-8">
+          <div className="flex flex-col gap-3 lg:col-span-7">
             {Array.from({ length: FAQ_COUNT }, (_, i) => (
               <FaqItem
                 key={i}

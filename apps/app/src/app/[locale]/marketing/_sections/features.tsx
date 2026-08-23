@@ -24,7 +24,7 @@ export function FeaturesSection() {
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
             {t("features.sectionTitle")}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">{t("features.sectionDescription")}</p>
+          <p className="mt-4 text-lg text-foreground/75">{t("features.sectionDescription")}</p>
         </div>
 
         <div className="mt-12 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
@@ -45,12 +45,29 @@ export function FeaturesSection() {
                 <h3 className="mb-2 font-semibold text-foreground">{t(`features.${key}.title`)}</h3>
                 <p
                   className={cn(
-                    "text-sm leading-relaxed text-muted-foreground",
+                    "text-sm leading-relaxed text-foreground/70",
                     featured && "max-w-prose",
                   )}
                 >
                   {t(`features.${key}.description`)}
                 </p>
+                {key === "analytics" ? (
+                  <div
+                    className="mt-5 flex h-16 items-end gap-1.5 rounded-lg border border-border/40 bg-muted/30 px-3 py-2"
+                    aria-hidden
+                  >
+                    {[32, 48, 40, 62, 55, 70, 78].map((h, i) => (
+                      <span
+                        key={i}
+                        className={cn(
+                          "flex-1 rounded-sm",
+                          i === 6 ? "bg-primary/80" : "bg-primary/25",
+                        )}
+                        style={{ height: `${h}%` }}
+                      />
+                    ))}
+                  </div>
+                ) : null}
               </div>
             );
           })}

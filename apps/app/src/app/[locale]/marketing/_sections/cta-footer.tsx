@@ -12,13 +12,13 @@ export function CtaBand() {
     <section className="border-t border-border/40 bg-primary text-primary-foreground">
       <div className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
         <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-          <div className="mx-auto max-w-3xl text-center">
+          <div className="mx-auto max-w-5xl text-center">
             <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl xl:text-5xl">
               {t("marketing.cta.headline")}
             </h2>
-            <p className="mt-4 text-lg text-primary-foreground/80">{t("marketing.cta.subtitle")}</p>
+            <p className="mt-4 text-lg text-primary-foreground/90">{t("marketing.cta.subtitle")}</p>
 
-            <ul className="mx-auto mt-6 flex max-w-lg flex-col gap-2 text-start sm:mt-8">
+            <ul className="mx-auto mt-6 grid max-w-4xl gap-2 text-start sm:mt-8 sm:grid-cols-3">
               {checklist.map((item) => (
                 <li
                   key={item}
@@ -44,7 +44,7 @@ export function CtaBand() {
                 {t("marketing.cta.secondary")}
               </Link>
             </div>
-            <p className="mt-4 text-sm text-primary-foreground/75">
+            <p className="mt-5 text-base text-primary-foreground/90">
               {t("marketing.cta.contact")}{" "}
               <a
                 href="mailto:hello@rihla-mate.com"
