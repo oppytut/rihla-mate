@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MarketingMobileNav } from "./marketing-mobile-nav";
 import { BrandMark } from "@/components/brand/brand-mark";
-import { getBureauDisplayName } from "@/lib/bureau-brand";
+import { bureauAbbr, getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname, staffSignInHrefForHost } from "@/lib/site-mode";
 
 type MarketingHeaderProps = {
@@ -40,7 +40,12 @@ export async function MarketingHeader({
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="relative container mx-auto flex h-14 items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center">
-          <BrandMark size="md" showWordmark abbr={tCommon("appNameAbbr")} wordmark={bureauName} />
+          <BrandMark
+            size="md"
+            showWordmark
+            abbr={bureau ? bureauAbbr(bureauName) : tCommon("appNameAbbr")}
+            wordmark={bureauName}
+          />
         </Link>
 
         {bureau ? (
