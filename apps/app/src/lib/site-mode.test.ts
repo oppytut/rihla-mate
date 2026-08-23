@@ -10,6 +10,7 @@ import {
   surfaceRedirectUrl,
   LAB_DEMO_ORIGIN,
   PRODUCT_ORIGIN,
+  pickBureauClientMessages,
   staffSignInHrefForHost,
   stripLocalePrefix,
 } from "./site-mode";
@@ -58,5 +59,47 @@ describe("site-mode", () => {
       `${PRODUCT_ORIGIN}/guide`,
     );
     expect(surfaceRedirectUrl("localhost", "/", locales)).toBeNull();
+  });
+
+  it("strips SaaS marketing keys from bureau client messages", () => {
+    const slim = pickBureauClientMessages({
+      common: { appName: "Rihla" },
+      dashboard: { title: "Dash" },
+      guide: { title: "Guide" },
+      landing: { title: "SaaS" },
+      marketing: {
+        nav: {
+          packages: "Paket",
+          pricing: "Harga",
+          features: "Fitur",
+          staffSignIn: "Masuk staf",
+          menu: "Menu",
+          close: "Tutup",
+        },
+        bureau: { heroTitle: "Umrah" },
+        footer: {
+          copyright: "c",
+          tagline: "Platform travel Umrah white-label",
+          pricing: "Harga",
+        },
+        pricing: { sectionTitle: "Harga Sederhana dan Transparan" },
+        hero: { subtitle: "White-label" },
+        faq: { items: [] },
+      },
+    });
+    expect(slim.guide).toBeUndefined();
+    expect(slim.landing).toBeUndefined();
+    expect(slim.dashboard).toEqual({ title: "Dash" });
+    expect(slim.marketing).toEqual({
+      nav: {
+        packages: "Paket",
+        staffSignIn: "Masuk staf",
+        menu: "Menu",
+        close: "Tutup",
+      },
+      bureau: { heroTitle: "Umrah" },
+      footer: { copyright: "c" },
+    });
+    expect(JSON.stringify(slim)).not.toMatch(/Harga|White-label|white-label/);
   });
 });

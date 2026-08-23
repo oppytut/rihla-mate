@@ -81,3 +81,49 @@ export function surfaceRedirectUrl(
   }
   return null;
 }
+
+const BUREAU_NAV_KEYS = [
+  "packages",
+  "howToBook",
+  "contact",
+  "staffSignIn",
+  "menu",
+  "close",
+] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function pickKeys(
+  source: Record<string, unknown>,
+  keys: readonly string[],
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const key of keys) {
+    if (key in source) out[key] = source[key];
+  }
+  return out;
+}
+
+export function pickBureauClientMessages(
+  messages: Record<string, unknown>,
+): Record<string, unknown> {
+  const next: Record<string, unknown> = { ...messages };
+  delete next.guide;
+  delete next.landing;
+  const marketing = messages.marketing;
+  if (!isRecord(marketing)) {
+    delete next.marketing;
+    return next;
+  }
+  const nav = isRecord(marketing.nav) ? pickKeys(marketing.nav, BUREAU_NAV_KEYS) : {};
+  const footerSource = isRecord(marketing.footer) ? marketing.footer : {};
+  const footer = "copyright" in footerSource ? { copyright: footerSource.copyright } : {};
+  next.marketing = {
+    nav,
+    bureau: marketing.bureau,
+    footer,
+  };
+  return next;
+}
