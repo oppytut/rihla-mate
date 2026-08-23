@@ -758,7 +758,8 @@
       "howTitle": "How to book",
       "howLead": "Choose a package, enter pilgrim details, then pay the deposit as instructed.",
       "contactLead": "Questions? Contact agency staff.",
-      "poweredHint": "Agency site"
+      "poweredHint": "Agency site",
+      "copyright": "© {year} {name}. All rights reserved."
     },
     "hero": {
       "badge": "For Travel Agents",

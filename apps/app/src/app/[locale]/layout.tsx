@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { routing } from "@/i18n/routing";
 import {
   hostnameFromHostHeader,
+  isBureauCatalogPath,
   isBureauHostname,
   isProductInstancePath,
   pickBureauClientMessages,
@@ -47,7 +48,9 @@ export default async function LocaleLayout({
   const hostname = hostnameFromHostHeader(headerList.get("host"));
   const logicalPath = stripLocalePrefix(headerList.get("x-pathname") ?? "/", routing.locales);
   const slimBureauPublic = isBureauHostname(hostname) && !isProductInstancePath(logicalPath);
-  const messages = slimBureauPublic ? pickBureauClientMessages(allMessages) : allMessages;
+  const messages = slimBureauPublic
+    ? pickBureauClientMessages(allMessages, { catalog: isBureauCatalogPath(logicalPath) })
+    : allMessages;
 
   return (
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>

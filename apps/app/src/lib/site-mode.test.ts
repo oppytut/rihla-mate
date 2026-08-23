@@ -10,6 +10,7 @@ import {
   surfaceRedirectUrl,
   LAB_DEMO_ORIGIN,
   PRODUCT_ORIGIN,
+  isBureauCatalogPath,
   pickBureauClientMessages,
   staffSignInHrefForHost,
   stripLocalePrefix,
@@ -45,6 +46,8 @@ describe("site-mode", () => {
     expect(isMarketingPath("/packages")).toBe(false);
     expect(isProductDocsPath("/guide")).toBe(true);
     expect(isProductDocsPath("/packages")).toBe(false);
+    expect(isBureauCatalogPath("/packages")).toBe(false);
+    expect(isBureauCatalogPath("/packages/umrah-plus")).toBe(true);
   });
 
   it("redirects surfaces between product and bureau origins", () => {
@@ -61,13 +64,16 @@ describe("site-mode", () => {
     expect(surfaceRedirectUrl("localhost", "/", locales)).toBeNull();
   });
 
-  it("strips SaaS marketing keys from bureau client messages", () => {
-    const slim = pickBureauClientMessages({
-      common: { appName: "Rihla" },
+  it("strips SaaS marketing keys and staff namespaces from bureau client messages", () => {
+    const messages = {
+      common: { appName: "Rihla", loading: "Memuat", error: "Error" },
       dashboard: { title: "Dash", sidebar: { packages: "Harga" } },
       auth: { signIn: "Masuk" },
       guide: { title: "Guide" },
       landing: { title: "SaaS" },
+      packages: { title: "Paket" },
+      validation: { required: "Wajib" },
+      bookings: { title: "Booking" },
       marketing: {
         nav: {
           packages: "Paket",
@@ -87,12 +93,16 @@ describe("site-mode", () => {
         hero: { subtitle: "White-label" },
         faq: { items: [] },
       },
-    });
+    };
+    const slim = pickBureauClientMessages(messages);
     expect(slim.guide).toBeUndefined();
     expect(slim.landing).toBeUndefined();
     expect(slim.dashboard).toBeUndefined();
     expect(slim.auth).toBeUndefined();
-    expect(slim.common).toEqual({ appName: "Rihla" });
+    expect(slim.packages).toBeUndefined();
+    expect(slim.validation).toBeUndefined();
+    expect(slim.bookings).toBeUndefined();
+    expect(slim.common).toEqual({ loading: "Memuat", error: "Error" });
     expect(slim.marketing).toEqual({
       nav: {
         packages: "Paket",
@@ -103,6 +113,12 @@ describe("site-mode", () => {
       bureau: { heroTitle: "Umrah" },
       footer: { copyright: "c" },
     });
-    expect(JSON.stringify(slim)).not.toMatch(/Harga|White-label|white-label/);
+    expect(JSON.stringify(slim)).not.toMatch(/Harga|White-label|white-label|Rihla/);
+
+    const catalog = pickBureauClientMessages(messages, { catalog: true });
+    expect(catalog.packages).toEqual({ title: "Paket" });
+    expect(catalog.validation).toEqual({ required: "Wajib" });
+    expect(catalog.bookings).toEqual({ title: "Booking" });
+    expect(catalog.common).toEqual({ loading: "Memuat", error: "Error" });
   });
 });
