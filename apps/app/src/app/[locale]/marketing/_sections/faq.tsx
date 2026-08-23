@@ -121,16 +121,18 @@ export function FaqSection() {
               {t("faq.sectionDescription")}
             </p>
 
-            <div className="mt-8 hidden rounded-xl border border-border/50 bg-card p-5 shadow-sm lg:block">
-              <p className="text-sm font-semibold text-foreground">{t("faq.stillHaveQuestions")}</p>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+            <div className="mt-8 hidden rounded-xl border border-border/50 bg-card p-6 shadow-sm lg:block">
+              <p className="text-base font-semibold text-foreground">
+                {t("faq.stillHaveQuestions")}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {t("faq.contactHint")}
               </p>
               <a
                 href="mailto:hello@rihla-mate.com"
-                className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-input bg-background px-4 text-sm font-medium text-foreground shadow-sm transition-colors hover:border-primary/30 hover:bg-secondary"
+                className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               >
-                <Mail className="h-4 w-4 text-primary" aria-hidden />
+                <Mail className="h-4 w-4" aria-hidden />
                 {t("faq.contactCta")}
               </a>
             </div>

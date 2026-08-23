@@ -12,17 +12,17 @@ export function CtaBand() {
     <section className="border-t border-border/40 bg-primary text-primary-foreground">
       <div className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
         <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-          <div className="mx-auto max-w-5xl text-center">
+          <div className="mx-auto w-full text-center">
             <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl xl:text-5xl">
               {t("marketing.cta.headline")}
             </h2>
             <p className="mt-4 text-lg text-primary-foreground/90">{t("marketing.cta.subtitle")}</p>
 
-            <ul className="mx-auto mt-6 grid max-w-4xl gap-2 text-start sm:mt-8 sm:grid-cols-3">
+            <ul className="mx-auto mt-6 grid w-full max-w-5xl gap-3 text-start sm:mt-8 sm:grid-cols-3">
               {checklist.map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-2.5 rounded-lg border border-primary-foreground/15 bg-primary-foreground/10 px-3.5 py-2.5 text-sm text-primary-foreground/90"
+                  className="flex items-start gap-2.5 rounded-lg border border-primary-foreground/25 bg-primary-foreground/15 px-4 py-3 text-sm font-medium text-primary-foreground"
                 >
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
                   <span>{item}</span>
