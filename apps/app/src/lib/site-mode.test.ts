@@ -64,7 +64,8 @@ describe("site-mode", () => {
   it("strips SaaS marketing keys from bureau client messages", () => {
     const slim = pickBureauClientMessages({
       common: { appName: "Rihla" },
-      dashboard: { title: "Dash" },
+      dashboard: { title: "Dash", sidebar: { packages: "Harga" } },
+      auth: { signIn: "Masuk" },
       guide: { title: "Guide" },
       landing: { title: "SaaS" },
       marketing: {
@@ -89,7 +90,9 @@ describe("site-mode", () => {
     });
     expect(slim.guide).toBeUndefined();
     expect(slim.landing).toBeUndefined();
-    expect(slim.dashboard).toEqual({ title: "Dash" });
+    expect(slim.dashboard).toBeUndefined();
+    expect(slim.auth).toBeUndefined();
+    expect(slim.common).toEqual({ appName: "Rihla" });
     expect(slim.marketing).toEqual({
       nav: {
         packages: "Paket",

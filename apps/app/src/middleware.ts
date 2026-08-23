@@ -24,7 +24,9 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(redirectTo);
   }
 
-  return intlMiddleware(request);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  return intlMiddleware(new NextRequest(request, { headers: requestHeaders }));
 }
 
 export const config = {

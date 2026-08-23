@@ -77,7 +77,7 @@ export async function MarketingFooter({
                 size="sm"
                 showWordmark
                 abbr={tCommon("appNameAbbr")}
-                wordmark={tCommon("appName")}
+                wordmark={t("bureau.title")}
                 wordmarkClassName="text-base"
               />
               <p className="text-xs text-muted-foreground">{t("bureau.poweredHint")}</p>
