@@ -40,7 +40,7 @@ export async function MarketingHeader({
             size="md"
             showWordmark
             abbr={tCommon("appNameAbbr")}
-            wordmark={tCommon("appName")}
+            wordmark={bureau ? t("bureau.title") : tCommon("appName")}
           />
         </Link>
 

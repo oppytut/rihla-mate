@@ -4,10 +4,13 @@ import { cookies, headers } from "next/headers";
 import Script from "next/script";
 import { TRPCReactProvider } from "@/lib/trpc/react";
 import { Toaster } from "@/components/ui/sonner";
+import { routing } from "@/i18n/routing";
 import {
   hostnameFromHostHeader,
   isBureauHostname,
+  isProductInstancePath,
   pickBureauClientMessages,
+  stripLocalePrefix,
 } from "@/lib/site-mode";
 
 function MidtransSnapScript() {
@@ -40,8 +43,11 @@ export default async function LocaleLayout({
   const cookieLocale = (await cookies()).get("locale")?.value;
   const resolvedLocale = locale || cookieLocale || "id";
   const allMessages = await getMessages({ locale: resolvedLocale });
-  const hostname = hostnameFromHostHeader((await headers()).get("host"));
-  const messages = isBureauHostname(hostname) ? pickBureauClientMessages(allMessages) : allMessages;
+  const headerList = await headers();
+  const hostname = hostnameFromHostHeader(headerList.get("host"));
+  const logicalPath = stripLocalePrefix(headerList.get("x-pathname") ?? "/", routing.locales);
+  const slimBureauPublic = isBureauHostname(hostname) && !isProductInstancePath(logicalPath);
+  const messages = slimBureauPublic ? pickBureauClientMessages(allMessages) : allMessages;
 
   return (
     <NextIntlClientProvider locale={resolvedLocale} messages={messages}>

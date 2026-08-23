@@ -106,12 +106,34 @@ function pickKeys(
   return out;
 }
 
+const BUREAU_PUBLIC_DROP_NAMESPACES = [
+  "installer",
+  "dashboard",
+  "activate",
+  "email",
+  "bookings",
+  "customers",
+  "media",
+  "license",
+  "landingPages",
+  "pages",
+  "analytics",
+  "settings",
+  "users",
+  "auth",
+  "notifications",
+  "landing",
+  "guide",
+] as const;
+
 export function pickBureauClientMessages(
   messages: Record<string, unknown>,
 ): Record<string, unknown> {
-  const next: Record<string, unknown> = { ...messages };
-  delete next.guide;
-  delete next.landing;
+  const drop = new Set<string>(BUREAU_PUBLIC_DROP_NAMESPACES);
+  const next: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(messages)) {
+    if (!drop.has(key)) next[key] = value;
+  }
   const marketing = messages.marketing;
   if (!isRecord(marketing)) {
     delete next.marketing;
