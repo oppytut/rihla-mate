@@ -25,9 +25,9 @@ export function TestimonialsSection() {
 
   return (
     <SectionWrapper id="testimonials" borderTop>
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
             {t("testimonials.sectionTitle")}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
@@ -35,7 +35,7 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="mx-auto mt-12 grid max-w-5xl gap-6 sm:mt-16 md:grid-cols-3 md:gap-8">
+        <div className="mt-12 grid gap-6 sm:mt-16 md:grid-cols-3 md:gap-8">
           {[0, 1, 2].map((i) => {
             const author = t(`testimonials.items.${i}.author`);
             const role = t(`testimonials.items.${i}.role`);
@@ -67,7 +67,7 @@ export function TestimonialsSection() {
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-foreground">{author}</p>
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="text-xs leading-snug text-muted-foreground">
                       {role} &middot; {city}
                     </p>
                   </div>

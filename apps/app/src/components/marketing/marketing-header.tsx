@@ -38,7 +38,7 @@ export async function MarketingHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="relative container mx-auto flex h-14 items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 lg:px-8">
+      <div className="relative mx-auto flex h-14 w-full max-w-[1680px] items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6 lg:px-8 xl:px-10">
         <Link href="/" className="flex shrink-0 items-center">
           <BrandMark
             size="md"
@@ -116,14 +116,14 @@ export async function MarketingHeader({
           {bureau ? (
             <Link
               href="/packages"
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-4"
+              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
             >
               {t("nav.packages")}
             </Link>
           ) : (
             <Link
               href="/activate"
-              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-4"
+              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
             >
               {t("nav.getStarted")}
             </Link>

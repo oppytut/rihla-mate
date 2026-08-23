@@ -104,14 +104,14 @@ export function FaqSection() {
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_50%_40%_at_20%_0%,oklch(0.78_0.09_85_/_0.08),transparent)]"
         aria-hidden
       />
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
           <div className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
             <div className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
               <CircleHelp className="h-3.5 w-3.5 text-primary" aria-hidden />
               {t("faq.badge")}
             </div>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
               {t("faq.sectionTitle")}
             </h2>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">

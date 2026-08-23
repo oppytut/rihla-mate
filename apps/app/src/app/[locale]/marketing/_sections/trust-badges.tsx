@@ -20,12 +20,12 @@ export function TrustBadgesSection() {
       className="border-y border-border/40 bg-card/60 py-8 sm:py-10 lg:py-12"
       aria-label={t("proof.sectionLabel")}
     >
-      <div className="container mx-auto px-4 lg:px-8">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
         <p className="mb-6 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground sm:mb-8">
           {t("proof.sectionLabel")}
         </p>
 
-        <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-border/50 bg-background/90 shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-border/50 bg-background/90 shadow-sm">
           <ul className="grid divide-y divide-border/40 sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
             {stats.map((stat, i) => (
               <li
@@ -47,7 +47,7 @@ export function TrustBadgesSection() {
           </ul>
         </div>
 
-        <div className="mx-auto mt-8 max-w-4xl sm:mt-10">
+        <div className="mt-8 sm:mt-10">
           <p className="mb-4 text-center text-xs font-medium text-muted-foreground">
             {t("proof.agenciesLabel")}
           </p>

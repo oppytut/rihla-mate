@@ -14,10 +14,7 @@ export function ProductMock({ className }: ProductMockProps) {
 
   return (
     <div
-      className={cn(
-        "relative mx-auto w-full max-w-lg scale-[0.96] sm:scale-100 lg:max-w-none",
-        className,
-      )}
+      className={cn("relative mx-auto w-full max-w-none scale-100", className)}
       aria-hidden
       dir={dir}
     >
@@ -37,8 +34,8 @@ export function ProductMock({ className }: ProductMockProps) {
           </div>
         </div>
 
-        <div className="flex min-h-[300px] sm:min-h-[360px]">
-          <aside className="hidden w-[92px] shrink-0 flex-col gap-1 border-e border-border/40 bg-primary/[0.04] p-2.5 sm:flex">
+        <div className="flex min-h-[320px] sm:min-h-[420px] xl:min-h-[480px]">
+          <aside className="hidden w-[108px] shrink-0 flex-col gap-1 border-e border-border/40 bg-primary/[0.04] p-2.5 sm:flex xl:w-[128px]">
             <div className="mb-2 truncate px-1.5 text-[10px] font-semibold tracking-tight text-primary">
               {t("sidebarBrand")}
             </div>

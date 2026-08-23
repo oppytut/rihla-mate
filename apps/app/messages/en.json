@@ -764,9 +764,9 @@
     "hero": {
       "badge": "For Travel Agents",
       "badgeAccent": "Self-hosted",
-      "headline": "Your Own Branded Umrah Travel Platform",
-      "headlineHighlight": "In Minutes.",
-      "subtitle": "White-label, self-hosted, and ready to deploy. Give your travel agency a modern digital presence with one command — no coding required.",
+      "headline": "Your branded Umrah platform",
+      "headlineHighlight": "in minutes.",
+      "subtitle": "White-label and self-hosted. Launch a modern agency site with one command — no coding required.",
       "ctaTrial": "Start Free Trial",
       "ctaLearn": "Learn More",
       "trialNote": "14-day trial. No credit card required.",
@@ -788,18 +788,18 @@
         "statusPaid": "Paid",
         "statusPending": "Deposit",
         "row1Guest": "Siti Aminah",
-        "row1Package": "Ramadan Umrah 12D",
+        "row1Package": "Ramadan 12D",
         "row2Guest": "Budi Santoso",
-        "row2Package": "Umrah Plus Turkey",
+        "row2Package": "Plus Turkey",
         "row3Guest": "Fatimah Zahra",
-        "row3Package": "Regular Umrah 9D",
+        "row3Package": "Regular 9D",
         "statBookingsValue": "128",
-        "statRevenueValue": "Rp 482M",
+        "statRevenueValue": "Rp 482jt",
         "statPendingValue": "7",
         "navSettings": "Settings",
         "statTrend": "+18%",
         "row4Guest": "Siti Aminah",
-        "row4Package": "Umrah Economy 9D",
+        "row4Package": "Economy 9D",
         "statusConfirmed": "Confirmed",
         "chartLabel": "This week"
       }
@@ -812,8 +812,8 @@
       "license": "Ed25519 license security"
     },
     "features": {
-      "sectionTitle": "Everything You Need to Go Digital",
-      "sectionDescription": "A complete platform designed for Indonesian travel agents who want full control over their business.",
+      "sectionTitle": "Everything you need to go digital",
+      "sectionDescription": "A complete platform for Indonesian travel agents who want full control of their business.",
       "whiteLabel": {
         "title": "White-Label Branding",
         "description": "Your logo, your colors, your domain. The platform looks and feels entirely yours — no 'powered by' watermarks."
@@ -840,8 +840,8 @@
       }
     },
     "howItWorks": {
-      "sectionTitle": "From Zero to Live in 4 Steps",
-      "sectionDescription": "No complex setup. No technical team needed. You're up and running before your next coffee.",
+      "sectionTitle": "From zero to live in four steps",
+      "sectionDescription": "No complex setup. No technical team. Live before your next coffee.",
       "badge": "How it works",
       "ctaHint": "Ready to try the flow?",
       "cta": "Start trial deploy",
