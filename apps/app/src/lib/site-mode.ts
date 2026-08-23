@@ -65,7 +65,7 @@ export function isProductDocsPath(pathname: string): boolean {
 }
 
 export function isBureauCatalogPath(pathname: string): boolean {
-  return pathname.startsWith("/packages/");
+  return pathname === "/packages" || pathname.startsWith("/packages/");
 }
 
 export function surfaceRedirectUrl(
@@ -142,6 +142,23 @@ const BUREAU_PUBLIC_COMMON_KEYS = [
   "unexpectedError",
 ] as const;
 
+const BUREAU_PUBLIC_BUREAU_KEYS = [
+  "title",
+  "description",
+  "heroEyebrow",
+  "heroTitle",
+  "heroLead",
+  "ctaPackages",
+  "emptyPackages",
+  "durationDays",
+  "fromPrice",
+  "viewPackage",
+  "howTitle",
+  "howLead",
+  "contactLead",
+  "copyright",
+] as const;
+
 export function pickBureauClientMessages(
   messages: Record<string, unknown>,
   options: { catalog?: boolean } = {},
@@ -162,12 +179,10 @@ export function pickBureauClientMessages(
     return next;
   }
   const nav = isRecord(marketing.nav) ? pickKeys(marketing.nav, BUREAU_NAV_KEYS) : {};
-  const footerSource = isRecord(marketing.footer) ? marketing.footer : {};
-  const footer = "copyright" in footerSource ? { copyright: footerSource.copyright } : {};
+  const bureauSource = isRecord(marketing.bureau) ? marketing.bureau : {};
   next.marketing = {
     nav,
-    bureau: marketing.bureau,
-    footer,
+    bureau: pickKeys(bureauSource, BUREAU_PUBLIC_BUREAU_KEYS),
   };
   return next;
 }
