@@ -68,6 +68,12 @@ export function isBureauCatalogPath(pathname: string): boolean {
   return pathname === "/packages" || pathname.startsWith("/packages/");
 }
 
+const BUREAU_AUTH_PATHS = ["/sign-in", "/forgot-password", "/reset-password"] as const;
+
+export function isBureauAuthPath(pathname: string): boolean {
+  return BUREAU_AUTH_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 export function surfaceRedirectUrl(
   hostname: string,
   pathname: string,
@@ -131,6 +137,36 @@ const BUREAU_PUBLIC_DROP_NAMESPACES = [
 
 const BUREAU_CATALOG_NAMESPACES = ["packages", "validation", "bookings"] as const;
 
+const BUREAU_AUTH_KEYS = [
+  "signIn",
+  "signInToAccount",
+  "signInFailed",
+  "signInWithGoogle",
+  "email",
+  "password",
+  "orContinueWith",
+  "signInHelp",
+  "emailPlaceholder",
+  "passwordPlaceholder",
+  "backToHome",
+  "secureNote",
+  "trialOrActivate",
+  "forgotPassword",
+  "forgotPasswordTitle",
+  "forgotPasswordHelp",
+  "sendResetLink",
+  "resetEmailSent",
+  "resetPasswordTitle",
+  "resetPasswordHelp",
+  "newPassword",
+  "confirmPassword",
+  "passwordMismatch",
+  "resetSuccess",
+  "resetFailed",
+  "invalidResetToken",
+  "backToSignIn",
+] as const;
+
 const BUREAU_PUBLIC_COMMON_KEYS = [
   "loading",
   "error",
@@ -161,9 +197,10 @@ const BUREAU_PUBLIC_BUREAU_KEYS = [
 
 export function pickBureauClientMessages(
   messages: Record<string, unknown>,
-  options: { catalog?: boolean } = {},
+  options: { catalog?: boolean; auth?: boolean } = {},
 ): Record<string, unknown> {
   const drop = new Set<string>(BUREAU_PUBLIC_DROP_NAMESPACES);
+  if (options.auth) drop.delete("auth");
   if (!options.catalog) {
     for (const key of BUREAU_CATALOG_NAMESPACES) drop.add(key);
   }
@@ -173,6 +210,10 @@ export function pickBureauClientMessages(
   }
   const common = messages.common;
   next.common = isRecord(common) ? pickKeys(common, BUREAU_PUBLIC_COMMON_KEYS) : {};
+  if (options.auth) {
+    const auth = messages.auth;
+    next.auth = isRecord(auth) ? pickKeys(auth, BUREAU_AUTH_KEYS) : {};
+  }
   const marketing = messages.marketing;
   if (!isRecord(marketing)) {
     delete next.marketing;
