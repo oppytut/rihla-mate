@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const LOCALE_LABELS: Record<string, string> = {
   id: "ID",
   en: "EN",
-  ar: "AR",
+  ar: "عر",
 };
 
 export function LocaleSwitcher({ className }: { className?: string }) {
@@ -24,6 +24,7 @@ export function LocaleSwitcher({ className }: { className?: string }) {
       role="navigation"
       aria-label="Language"
       data-testid="locale-switcher"
+      dir={locale === "ar" ? "rtl" : "ltr"}
     >
       {routing.locales.map((l) => {
         const isActive = l === locale;

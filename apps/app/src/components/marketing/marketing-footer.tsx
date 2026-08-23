@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./locale-switcher";
 import { BrandMark } from "@/components/brand/brand-mark";
@@ -17,7 +17,10 @@ export async function MarketingFooter({
 }: MarketingFooterProps = {}) {
   const t = await getTranslations("marketing");
   const tCommon = await getTranslations("common");
-  const year = new Date().getFullYear();
+  const locale = await getLocale();
+  const year = new Intl.NumberFormat(locale === "ar" ? "ar-SA" : "en-US", {
+    useGrouping: false,
+  }).format(new Date().getFullYear());
   const hostname = hostnameFromHostHeader((await headers()).get("host"));
   const bureau = variant === "bureau" || (variant !== "simple" && isBureauHostname(hostname));
   const bureauName = bureau

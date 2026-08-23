@@ -23,7 +23,7 @@ export function PricingSection() {
       />
 
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border/50 bg-card/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm backdrop-blur">
             <Tag className="h-3.5 w-3.5 text-primary" aria-hidden />
             {t("pricing.badge")}
@@ -108,7 +108,7 @@ export function PricingSection() {
                 {key === "enterprise" ? (
                   <a
                     href="mailto:hello@rihla-mate.com"
-                    className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-input bg-background text-sm font-semibold text-foreground shadow-sm transition-all hover:border-primary/30 hover:bg-secondary"
+                    className="inline-flex h-11 w-full items-center justify-center rounded-xl border-2 border-primary/40 bg-primary/10 text-sm font-semibold text-primary shadow-sm transition-all hover:border-primary hover:bg-primary/15"
                   >
                     {t(`pricing.${key}.cta`)}
                   </a>
@@ -119,7 +119,7 @@ export function PricingSection() {
                       "group inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all",
                       isPopular
                         ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 hover:bg-primary/90 hover:shadow-lg"
-                        : "border border-input bg-background text-foreground shadow-sm hover:border-primary/30 hover:bg-secondary",
+                        : "border-2 border-primary/40 bg-primary/10 text-primary shadow-sm hover:border-primary hover:bg-primary/15",
                     )}
                   >
                     {t(`pricing.${key}.cta`)}

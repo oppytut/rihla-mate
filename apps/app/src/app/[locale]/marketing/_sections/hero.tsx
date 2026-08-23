@@ -36,7 +36,7 @@ export function HeroSection() {
 
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
         <div className="grid items-start gap-8 sm:gap-10 lg:grid-cols-12 lg:items-center lg:gap-8 xl:gap-10">
-          <div className="mx-auto max-w-xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start">
+          <div className="mx-auto max-w-2xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/90 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur sm:mb-6 sm:text-sm">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Building2 className="h-3.5 w-3.5" aria-hidden />
