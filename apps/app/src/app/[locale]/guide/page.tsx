@@ -41,7 +41,10 @@ export default async function GuidePage() {
         </div>
 
         <div className="mx-auto grid w-full max-w-[1680px] gap-10 px-4 py-10 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8 lg:py-14 xl:grid-cols-[280px_minmax(0,1fr)_320px] xl:px-10">
-          <nav className="lg:sticky lg:top-20 lg:self-start" aria-label={t("tocLabel")}>
+          <nav
+            className="lg:sticky lg:top-20 lg:self-start lg:border-s-2 lg:border-s-primary/40 lg:ps-4"
+            aria-label={t("tocLabel")}
+          >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-foreground">
               {t("tocLabel")}
             </p>

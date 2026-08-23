@@ -32,7 +32,7 @@ export function HowItWorksSection() {
           </p>
         </div>
 
-        <ol className="mt-12 grid list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+        <ol className="mx-auto mt-12 grid max-w-6xl list-none gap-4 p-0 sm:mt-16 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
           {stepKeys.map((key, i) => {
             const Icon = stepIcons[i];
             const isLast = i === stepKeys.length - 1;
@@ -49,7 +49,7 @@ export function HowItWorksSection() {
                 <div
                   className={cn(
                     "relative z-10 flex h-full flex-col rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-all duration-200 hover:border-primary/25 hover:shadow-md sm:p-6",
-                    i === 0 && "bg-gradient-to-br from-card via-card to-primary/[0.04]",
+                    i === 0 && "ring-1 ring-primary/20",
                   )}
                 >
                   <div className="mb-4 flex items-center justify-between gap-3">

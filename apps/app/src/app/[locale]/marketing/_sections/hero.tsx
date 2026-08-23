@@ -35,8 +35,8 @@ export function HeroSection() {
       />
 
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-16">
-          <div className="mx-auto max-w-xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start xl:col-span-4">
+        <div className="grid items-start gap-8 sm:gap-10 lg:grid-cols-12 lg:items-center lg:gap-8 xl:gap-10">
+          <div className="mx-auto max-w-xl text-center lg:col-span-5 lg:mx-0 lg:max-w-none lg:text-start">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/90 px-3.5 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur sm:mb-6 sm:text-sm">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Building2 className="h-3.5 w-3.5" aria-hidden />
@@ -56,7 +56,7 @@ export function HeroSection() {
               </span>
             </h1>
 
-            <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg xl:text-xl">
+            <p className="mt-4 text-pretty text-base leading-relaxed text-foreground/75 sm:mt-5 sm:text-lg xl:text-xl">
               {t("hero.subtitle")}
             </p>
 
@@ -82,7 +82,7 @@ export function HeroSection() {
             </p>
           </div>
 
-          <div className="relative lg:col-span-7 xl:col-span-8">
+          <div className="relative lg:col-span-7">
             <div
               className="pointer-events-none absolute -inset-3 rounded-[1.75rem] bg-gradient-to-br from-primary/15 via-transparent to-accent/20 opacity-80 blur-2xl sm:-inset-5"
               aria-hidden
@@ -96,10 +96,10 @@ export function HeroSection() {
                 {t("hero.liveBadge")}
               </div>
               <div
-                className="absolute -bottom-3 end-4 z-10 hidden max-w-[11rem] rounded-xl border border-border/60 bg-card px-3 py-2 shadow-lg sm:block"
+                className="absolute top-10 end-5 z-10 hidden max-w-[12rem] rounded-xl border border-border/60 bg-card/95 px-3 py-2 shadow-lg backdrop-blur sm:block"
                 aria-hidden
               >
-                <p className="text-[10px] font-medium text-muted-foreground">
+                <p className="text-[10px] font-medium text-foreground/70">
                   {t("hero.floatCaption")}
                 </p>
                 <p className="mt-0.5 text-xs font-bold text-primary">{t("hero.floatValue")}</p>

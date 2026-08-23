@@ -34,8 +34,8 @@ export function ProductMock({ className }: ProductMockProps) {
           </div>
         </div>
 
-        <div className="flex min-h-[320px] sm:min-h-[420px] xl:min-h-[480px]">
-          <aside className="hidden w-[108px] shrink-0 flex-col gap-1 border-e border-border/40 bg-primary/[0.04] p-2.5 sm:flex xl:w-[128px]">
+        <div className="flex min-h-[320px] sm:min-h-[440px] xl:min-h-[520px]">
+          <aside className="hidden w-[108px] shrink-0 flex-col gap-1 border-e border-border/40 bg-primary/[0.04] p-2.5 sm:flex xl:w-[140px]">
             <div className="mb-2 truncate px-1.5 text-[10px] font-semibold tracking-tight text-primary">
               {t("sidebarBrand")}
             </div>
@@ -81,7 +81,7 @@ export function ProductMock({ className }: ProductMockProps) {
             </div>
 
             <div className="flex-1 overflow-hidden rounded-lg border border-border/50 bg-background/60">
-              <div className="grid grid-cols-[1.2fr_1.4fr_0.7fr] gap-2 border-b border-border/40 bg-muted/30 px-2.5 py-1.5 text-[9px] font-medium uppercase tracking-wide text-muted-foreground sm:text-[10px]">
+              <div className="grid grid-cols-[1.2fr_minmax(0,1.6fr)_0.8fr] gap-2 border-b border-border/40 bg-muted/30 px-2.5 py-1.5 text-[10px] font-medium uppercase tracking-wide text-foreground/65 sm:text-[11px]">
                 <span>{t("tableGuest")}</span>
                 <span>{t("tablePackage")}</span>
                 <span>{t("tableStatus")}</span>
@@ -129,7 +129,7 @@ function MockNavItem({
   return (
     <div
       className={cn(
-        "truncate rounded-md px-1.5 py-1 text-[9px] font-medium leading-tight",
+        "truncate rounded-md px-1.5 py-1 text-[10px] font-medium leading-tight",
         active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground",
       )}
     >
@@ -151,10 +151,10 @@ function MockStat({
 }) {
   return (
     <div className="rounded-lg border border-border/50 bg-card px-1.5 py-1.5 shadow-sm sm:px-2.5 sm:py-2">
-      <p className="truncate text-[9px] text-muted-foreground sm:text-[10px]">{label}</p>
+      <p className="truncate text-[10px] text-foreground/65 sm:text-[11px]">{label}</p>
       <p
         className={cn(
-          "mt-0.5 truncate text-xs font-bold tracking-tight sm:text-sm",
+          "mt-0.5 truncate text-sm font-bold tracking-tight sm:text-base",
           accent ? "text-accent-foreground" : "text-foreground",
         )}
       >
@@ -187,7 +187,7 @@ function MockRow({
   return (
     <div
       className={cn(
-        "grid grid-cols-[1.2fr_1.4fr_0.7fr] items-center gap-2 px-2.5 py-1.5 text-[10px] sm:py-2 sm:text-xs",
+        "grid grid-cols-[1.2fr_minmax(0,1.6fr)_0.8fr] items-center gap-2 px-2.5 py-1.5 text-[11px] sm:py-2 sm:text-xs",
         !last && "border-b border-border/30",
       )}
     >
