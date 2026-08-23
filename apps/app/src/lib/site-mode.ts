@@ -64,6 +64,10 @@ export function isProductDocsPath(pathname: string): boolean {
   return pathname === "/guide" || pathname.startsWith("/guide/");
 }
 
+export function isBureauCatalogPath(pathname: string): boolean {
+  return pathname.startsWith("/packages/");
+}
+
 export function surfaceRedirectUrl(
   hostname: string,
   pathname: string,
@@ -111,7 +115,6 @@ const BUREAU_PUBLIC_DROP_NAMESPACES = [
   "dashboard",
   "activate",
   "email",
-  "bookings",
   "customers",
   "media",
   "license",
@@ -126,14 +129,33 @@ const BUREAU_PUBLIC_DROP_NAMESPACES = [
   "guide",
 ] as const;
 
+const BUREAU_CATALOG_NAMESPACES = ["packages", "validation", "bookings"] as const;
+
+const BUREAU_PUBLIC_COMMON_KEYS = [
+  "loading",
+  "error",
+  "success",
+  "previous",
+  "next",
+  "tryAgain",
+  "somethingWentWrong",
+  "unexpectedError",
+] as const;
+
 export function pickBureauClientMessages(
   messages: Record<string, unknown>,
+  options: { catalog?: boolean } = {},
 ): Record<string, unknown> {
   const drop = new Set<string>(BUREAU_PUBLIC_DROP_NAMESPACES);
+  if (!options.catalog) {
+    for (const key of BUREAU_CATALOG_NAMESPACES) drop.add(key);
+  }
   const next: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(messages)) {
     if (!drop.has(key)) next[key] = value;
   }
+  const common = messages.common;
+  next.common = isRecord(common) ? pickKeys(common, BUREAU_PUBLIC_COMMON_KEYS) : {};
   const marketing = messages.marketing;
   if (!isRecord(marketing)) {
     delete next.marketing;
