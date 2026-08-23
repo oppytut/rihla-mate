@@ -20,7 +20,7 @@ export function FeaturesSection() {
   return (
     <SectionWrapper id="features" borderTop className="bg-muted/20">
       <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl xl:text-5xl">
             {t("features.sectionTitle")}
           </h2>
@@ -46,22 +46,26 @@ export function FeaturesSection() {
                 <p
                   className={cn(
                     "text-sm leading-relaxed text-foreground/70",
-                    featured && "max-w-prose",
+                    featured && "max-w-none",
                   )}
                 >
                   {t(`features.${key}.description`)}
                 </p>
                 {key === "analytics" ? (
                   <div
-                    className="mt-5 flex h-16 items-end gap-1.5 rounded-lg border border-border/40 bg-muted/30 px-3 py-2"
+                    className="mt-5 flex h-28 items-end gap-1 rounded-lg border border-border/40 bg-muted/30 px-3 py-2.5 sm:h-32"
                     aria-hidden
                   >
-                    {[32, 48, 40, 62, 55, 70, 78].map((h, i) => (
+                    {[28, 42, 36, 55, 48, 62, 58, 70, 64, 78, 72, 88].map((h, i) => (
                       <span
                         key={i}
                         className={cn(
                           "flex-1 rounded-sm",
-                          i === 6 ? "bg-primary/80" : "bg-primary/25",
+                          i === 11
+                            ? "bg-primary/85"
+                            : i % 3 === 2
+                              ? "bg-primary/45"
+                              : "bg-primary/25",
                         )}
                         style={{ height: `${h}%` }}
                       />
