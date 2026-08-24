@@ -52,7 +52,7 @@ export function BureauPackageGrid({ packages }: { packages: BureauPackageCard[] 
             id="catalog-category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">{t("filterAll")}</option>
             {categories.map((cat) => (
@@ -88,7 +88,7 @@ export function BureauPackageGrid({ packages }: { packages: BureauPackageCard[] 
                 </p>
                 <Link
                   href={`/packages/${pkg.slug}`}
-                  className="mt-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
+                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
                 >
                   {t("viewPackage")}
                 </Link>

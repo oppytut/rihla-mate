@@ -41,7 +41,7 @@ export async function BureauLanding({ packages, cmsTitle, cmsBody }: BureauLandi
             </p>
             <Link
               href="/packages"
-              className="mt-6 inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+              className="mt-6 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
             >
               {t("ctaPackages")}
             </Link>
