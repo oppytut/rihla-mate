@@ -1,6 +1,6 @@
 {
-  "id": "0005_booking_paid_at",
-  "prevId": "7d6325e8-446a-4d8b-8ac3-467a55801350",
+  "id": "a1b2c3d4-e5f6-4789-a012-3456789abcde",
+  "prevId": "4f6ff8a8-c097-44f3-a0d8-cb7dc7a8f286",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
