@@ -73,20 +73,32 @@ export default async function GuidePage() {
                   <p className="mt-3 text-muted-foreground">{t(`sections.${id}.body`)}</p>
                   {specs && specs.length > 0 ? (
                     <div className="mt-4 overflow-x-auto rounded-lg border border-border/60">
-                      <table className="w-full min-w-[28rem] text-left text-sm">
+                      <table className="w-full table-fixed text-left text-sm">
                         <thead className="border-b border-border/60 bg-muted/50">
                           <tr>
-                            <th className="px-3 py-2 font-medium">{t("specCols.item")}</th>
-                            <th className="px-3 py-2 font-medium">{t("specCols.min")}</th>
-                            <th className="px-3 py-2 font-medium">{t("specCols.rec")}</th>
+                            <th className="w-[32%] px-2 py-2 font-medium sm:px-3">
+                              {t("specCols.item")}
+                            </th>
+                            <th className="w-[34%] px-2 py-2 font-medium sm:px-3">
+                              {t("specCols.min")}
+                            </th>
+                            <th className="w-[34%] px-2 py-2 font-medium sm:px-3">
+                              {t("specCols.rec")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
                           {specs.map((row) => (
                             <tr key={row.item} className="border-b border-border/40 last:border-0">
-                              <td className="px-3 py-2 font-medium text-foreground">{row.item}</td>
-                              <td className="px-3 py-2 text-muted-foreground">{row.min}</td>
-                              <td className="px-3 py-2 text-muted-foreground">{row.rec}</td>
+                              <td className="px-2 py-2 font-medium break-words text-foreground sm:px-3">
+                                {row.item}
+                              </td>
+                              <td className="px-2 py-2 break-words text-muted-foreground sm:px-3">
+                                {row.min}
+                              </td>
+                              <td className="px-2 py-2 break-words text-muted-foreground sm:px-3">
+                                {row.rec}
+                              </td>
                             </tr>
                           ))}
                         </tbody>

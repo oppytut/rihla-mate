@@ -21,6 +21,7 @@ type MarketingMobileNavProps = {
     guide: string;
     signIn: string;
     signInHref?: string;
+    getStarted?: string;
   };
 };
 
@@ -154,6 +155,15 @@ export function MarketingMobileNav({
                     {labels.signIn}
                   </Link>
                 )}
+                {labels.getStarted ? (
+                  <Link
+                    href="/activate"
+                    onClick={close}
+                    className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-primary-foreground shadow sm:hidden"
+                  >
+                    {labels.getStarted}
+                  </Link>
+                ) : null}
               </div>
             </div>
           </div>

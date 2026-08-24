@@ -34,7 +34,7 @@ export function ProductMock({ className }: ProductMockProps) {
           </div>
         </div>
 
-        <div className="flex min-h-[360px] sm:min-h-[480px] xl:min-h-[560px]">
+        <div className="flex min-h-0 sm:min-h-[480px] xl:min-h-[560px]">
           <aside className="hidden w-[120px] shrink-0 flex-col gap-1 border-e border-border/40 bg-primary/[0.04] p-2.5 sm:flex xl:w-[168px]">
             <div className="mb-2 truncate px-1.5 text-[10px] font-semibold tracking-tight text-primary">
               {t("sidebarBrand")}
@@ -67,12 +67,13 @@ export function ProductMock({ className }: ProductMockProps) {
               <MockStat label={t("statPending")} value={t("statPendingValue")} />
             </div>
 
-            <div className="flex min-h-[4.5rem] items-end gap-1 rounded-lg border border-border/40 bg-muted/20 px-2.5 py-2 sm:min-h-[5.5rem]">
+            <div className="flex min-h-[3.25rem] items-end gap-1 rounded-lg border border-border/40 bg-muted/20 px-2.5 py-2 sm:min-h-[5.5rem]">
               {[40, 55, 48, 70, 62, 78, 52, 85, 68, 90, 74, 96].map((h, i) => (
                 <span
                   key={i}
                   className={cn(
                     "flex-1 rounded-sm",
+                    i < 6 && "max-sm:hidden",
                     i === 11 ? "bg-primary/85" : i % 4 === 3 ? "bg-primary/50" : "bg-primary/25",
                   )}
                   style={{ height: `${h * 0.42}px` }}
@@ -101,6 +102,7 @@ export function ProductMock({ className }: ProductMockProps) {
                 pkg={t("row3Package")}
                 status={t("statusPaid")}
                 paid
+                className="max-sm:hidden"
               />
               <MockRow
                 guest={t("row4Guest")}
@@ -108,6 +110,7 @@ export function ProductMock({ className }: ProductMockProps) {
                 status={t("statusConfirmed")}
                 confirmed
                 last
+                className="max-sm:hidden"
               />
             </div>
           </div>
@@ -179,6 +182,7 @@ function MockRow({
   paid = false,
   confirmed = false,
   last = false,
+  className,
 }: {
   guest: string;
   pkg: string;
@@ -186,12 +190,14 @@ function MockRow({
   paid?: boolean;
   confirmed?: boolean;
   last?: boolean;
+  className?: string;
 }) {
   return (
     <div
       className={cn(
         "grid grid-cols-[1.2fr_minmax(0,1.6fr)_0.8fr] items-center gap-2 px-2.5 py-1.5 text-[11px] sm:py-2 sm:text-xs",
         !last && "border-b border-border/30",
+        className,
       )}
     >
       <span className="truncate font-medium text-foreground">{guest}</span>
