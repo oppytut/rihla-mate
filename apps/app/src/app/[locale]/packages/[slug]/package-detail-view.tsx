@@ -316,7 +316,7 @@ export function PublicPackageDetailView() {
         </div>
       </header>
 
-      <div className={`${marketingShellClass} space-y-6 py-8`}>
+      <div className={`${marketingShellClass} space-y-6 py-8 pb-28 md:pb-8`}>
         {pkg.description ? (
           <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
             <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
@@ -442,7 +442,7 @@ export function PublicPackageDetailView() {
               {t("packages.perPerson")}
             </p>
           </div>
-          <Button asChild data-testid="package-detail-book-sticky">
+          <Button asChild className="min-h-11 shrink-0" data-testid="package-detail-book-sticky">
             <Link href={bookHref}>{t("packages.detail.bookCta")}</Link>
           </Button>
         </div>
