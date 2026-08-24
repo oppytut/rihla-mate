@@ -31,7 +31,7 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SectionKey>("general");
 
   useEffect(() => {
-    document.title = `${t("settings.title")} - Rihla Mate`;
+    document.title = `${t("settings.title")}`;
   }, [t]);
 
   const settingsQuery = useQuery(trpc.settings.list.queryOptions());

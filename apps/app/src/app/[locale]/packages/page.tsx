@@ -35,6 +35,7 @@ export default async function PackagesIndexPage() {
     price: string;
     currency: string;
     departureCity: string | null;
+    category: string | null;
   }> = [];
   try {
     const db = await getDb();
@@ -48,6 +49,7 @@ export default async function PackagesIndexPage() {
         price: packages.price,
         currency: packages.currency,
         departureCity: packages.departureCity,
+        category: packages.category,
       })
       .from(packages)
       .where(eq(packages.status, "published"))

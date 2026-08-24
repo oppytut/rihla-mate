@@ -193,7 +193,8 @@
       "noDates": "Tanggal keberangkatan akan diumumkan segera.",
       "gallery": "Galeri",
       "about": "Tentang paket ini",
-      "dayLabel": "Hari {day}"
+      "dayLabel": "Hari {day}",
+      "galleryEmpty": "Belum ada foto galeri"
     },
     "description": "Kelola paket Umrah: cari, saring status, dan edit dari satu daftar.",
     "emptyHint": "Tambah paket pertama agar tampil di landing dan bisa dipesan.",
@@ -428,7 +429,8 @@
         "total": "Total",
         "status": "Status"
       }
-    }
+    },
+    "view": "Lihat"
   },
   "media": {
     "title": "Perpustakaan Media",
@@ -558,7 +560,8 @@
       "30d": "30 Hari Terakhir",
       "90d": "90 Hari Terakhir",
       "label": "Periode"
-    }
+    },
+    "chartTitle": "Ringkasan periode"
   },
   "settings": {
     "title": "Pengaturan",
@@ -754,7 +757,9 @@
       "howLead": "Pilih paket, isi data jamaah, lalu bayar DP sesuai instruksi.",
       "contactLead": "Ada pertanyaan? Hubungi staf biro.",
       "poweredHint": "Situs biro",
-      "copyright": "© {year} {name}. Seluruh hak cipta dilindungi."
+      "copyright": "© {year} {name}. Seluruh hak cipta dilindungi.",
+      "filterCategory": "Kategori",
+      "filterAll": "Semua kategori"
     },
     "hero": {
       "badge": "Untuk Travel Agent",

@@ -8,7 +8,7 @@ export default function NewPagePage() {
   const t = useTranslations();
 
   useEffect(() => {
-    document.title = `${t("pages.createTitle")} - Rihla Mate`;
+    document.title = `${t("pages.createTitle")}`;
   }, [t]);
 
   return <PageFormContent initialData={null} isEditMode={false} pageId={null} />;

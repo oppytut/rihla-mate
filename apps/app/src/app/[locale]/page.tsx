@@ -30,6 +30,7 @@ async function loadBureauHome() {
           price: packages.price,
           currency: packages.currency,
           departureCity: packages.departureCity,
+          category: packages.category,
         })
         .from(packages)
         .where(eq(packages.status, "published"))

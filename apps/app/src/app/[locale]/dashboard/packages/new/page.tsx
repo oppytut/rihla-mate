@@ -8,7 +8,7 @@ export default function NewPackagePage() {
   const t = useTranslations();
 
   useEffect(() => {
-    document.title = `${t("packages.createTitle")} - Rihla Mate`;
+    document.title = `${t("packages.createTitle")}`;
   }, [t]);
 
   return <PackageFormContent initialData={null} isEditMode={false} packageId="new" />;

@@ -28,7 +28,7 @@ export default function PackagesPage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    document.title = `${t("packages.title")} - Rihla Mate`;
+    document.title = `${t("packages.title")}`;
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);

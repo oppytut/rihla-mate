@@ -51,7 +51,7 @@ export default function BookingCreatePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `${t("bookings.createTitle")} - Rihla Mate`;
+    document.title = `${t("bookings.createTitle")}`;
   }, [t]);
 
   const packagesQuery = useQuery(trpc.packages.list.queryOptions({ page: 1, limit: 100 }));

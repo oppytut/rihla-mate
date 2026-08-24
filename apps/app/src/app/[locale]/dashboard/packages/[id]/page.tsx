@@ -16,7 +16,7 @@ function EditPackagePage({ packageId }: { packageId: string }) {
   const initialized = useRef(false);
 
   useEffect(() => {
-    document.title = `${t("packages.editTitle")} - Rihla Mate`;
+    document.title = `${t("packages.editTitle")}`;
   }, [t]);
 
   useEffect(() => {

@@ -130,16 +130,36 @@ export default function AnalyticsPage() {
                     {t("analytics.packagesByCategory")}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-4 py-2 sm:px-6">
-                  <div className="divide-y divide-border">
-                    {data.packagesByCategory.map((item) => (
-                      <div key={item.category} className="flex items-center justify-between py-3">
-                        <span className="text-sm capitalize text-foreground">{item.category}</span>
-                        <span className="text-sm font-medium text-muted-foreground">
-                          {item.count}
-                        </span>
-                      </div>
-                    ))}
+                <CardContent className="px-4 py-4 sm:px-6">
+                  <p className="mb-4 text-sm text-muted-foreground">{t("analytics.chartTitle")}</p>
+                  <div
+                    className="space-y-3"
+                    role="img"
+                    aria-label={t("analytics.packagesByCategory")}
+                  >
+                    {data.packagesByCategory.map((item) => {
+                      const max = Math.max(...data.packagesByCategory.map((c) => c.count), 1);
+                      const pct = Math.round((item.count / max) * 100);
+                      return (
+                        <div
+                          key={item.category}
+                          className="grid grid-cols-[8rem_1fr_3rem] items-center gap-3"
+                        >
+                          <span className="truncate text-sm capitalize text-foreground">
+                            {item.category}
+                          </span>
+                          <div className="h-3 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-primary"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-right text-sm font-medium tabular-nums text-muted-foreground">
+                            {item.count}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

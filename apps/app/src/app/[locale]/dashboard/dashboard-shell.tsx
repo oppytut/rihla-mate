@@ -64,7 +64,7 @@ function NavLinks({
             data-testid={`sidebar-link-${item.key}`}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+              "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm transition-colors",
               active
                 ? "bg-primary/10 font-medium text-primary"
                 : "text-muted-foreground hover:bg-primary/10 hover:text-foreground",
@@ -153,8 +153,20 @@ function UserFooter({
   );
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+export function DashboardShell({
+  children,
+  brandWordmark,
+  brandAbbr,
+  bureau = false,
+}: {
+  children: React.ReactNode;
+  brandWordmark?: string;
+  brandAbbr?: string;
+  bureau?: boolean;
+}) {
   const t = useTranslations();
+  const wordmark = brandWordmark?.trim() || t("common.appName");
+  const abbr = brandAbbr?.trim() || t("common.appNameAbbr");
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const pathname = usePathname();
@@ -201,12 +213,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          <BrandMark
-            size="sm"
-            showWordmark
-            abbr={t("common.appNameAbbr")}
-            wordmark={t("common.appName")}
-          />
+          <BrandMark size="sm" showWordmark abbr={abbr} wordmark={wordmark} />
         </div>
         <LocaleSwitcher />
       </div>
@@ -225,12 +232,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           />
           <aside className="absolute inset-y-0 start-0 flex w-[min(18rem,85vw)] flex-col border-e border-border bg-card shadow-lg">
             <div className="flex items-center justify-between border-b border-border px-4 py-4">
-              <BrandMark
-                size="sm"
-                showWordmark
-                abbr={t("common.appNameAbbr")}
-                wordmark={t("common.appName")}
-              />
+              <BrandMark size="sm" showWordmark abbr={abbr} wordmark={wordmark} />
               <Button
                 type="button"
                 variant="ghost"
@@ -263,24 +265,23 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
       <div className="flex">
         <aside className="hidden bg-card border-r border-border lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-5">
-            <BrandMark
-              size="md"
-              showWordmark
-              abbr={t("common.appNameAbbr")}
-              wordmark={t("common.appName")}
-            />
+          <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+            <BrandMark size="md" showWordmark abbr={abbr} wordmark={wordmark} />
             <LocaleSwitcher className="shrink-0" />
           </div>
 
-          <div className="border-b border-border px-4 py-3">
-            <p className="text-xs font-medium text-foreground">{t("dashboard.layout.brandName")}</p>
-            <p className="text-[11px] text-muted-foreground">
-              {t("dashboard.layout.brandSubtitle")}
-            </p>
-          </div>
+          {bureau ? null : (
+            <div className="border-b border-border px-4 py-3">
+              <p className="text-xs font-medium text-foreground">
+                {t("dashboard.layout.brandName")}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                {t("dashboard.layout.brandSubtitle")}
+              </p>
+            </div>
+          )}
 
-          <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" data-testid="sidebar-nav">
+          <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3" data-testid="sidebar-nav">
             <NavLinks isActive={isActive} t={t} />
           </nav>
 

@@ -21,7 +21,7 @@ export default function LandingPagesPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    document.title = `${t("landingPages.title")} - Rihla Mate`;
+    document.title = `${t("landingPages.title")}`;
   }, [t]);
 
   const pagesQuery = useQuery(

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
+import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
 
 const TERMINAL_TXN = ["settlement", "capture", "cancel", "deny", "expire", "failure", "error"];
 
@@ -59,7 +60,7 @@ export function BookingSuccessView() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_100%_0%,oklch(0.48_0.12_155_/_0.14),transparent)]"
           aria-hidden
         />
-        <div className="container mx-auto px-4 py-6 lg:px-8">
+        <div className={`${marketingShellClass} py-6`}>
           <Link
             href="/"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -69,7 +70,7 @@ export function BookingSuccessView() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-10 lg:px-8">
+      <div className={`${marketingShellClass} py-10`}>
         <div className="mx-auto max-w-lg space-y-6">
           <Card className="overflow-hidden border-border/80 shadow-sm">
             <div className={isPending ? "h-1.5 bg-accent" : "h-1.5 bg-success"} aria-hidden />

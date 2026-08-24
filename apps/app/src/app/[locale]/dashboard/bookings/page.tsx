@@ -42,7 +42,7 @@ export default function BookingsPage() {
   const [payingBookingId, setPayingBookingId] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `${t("bookings.title")} - Rihla Mate`;
+    document.title = `${t("bookings.title")}`;
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
