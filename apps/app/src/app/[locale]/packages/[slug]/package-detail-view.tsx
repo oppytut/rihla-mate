@@ -11,7 +11,8 @@ import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
 import { useParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
-import { Check, X, MapPin, CalendarDays } from "lucide-react";
+import { Check, X, MapPin, CalendarDays, ImageOff } from "lucide-react";
+import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
 
 function collectGalleryUrls(featuredImage: unknown, gallery: unknown, limit = 8): string[] {
   const urls: string[] = [];
@@ -110,12 +111,12 @@ export function PublicPackageDetailView() {
     return (
       <div className="min-h-screen bg-background" data-testid="package-detail-loading">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 py-6 lg:px-8">
+          <div className={`${marketingShellClass} py-6`}>
             <div className="h-5 w-32 animate-pulse rounded bg-muted" />
             <div className="mt-2 h-8 w-64 animate-pulse rounded bg-muted" />
           </div>
         </header>
-        <div className="container mx-auto max-w-4xl space-y-4 px-4 py-8 lg:px-8">
+        <div className={`${marketingShellClass} max-w-4xl space-y-4 py-8`}>
           <div className="h-48 animate-pulse rounded-xl bg-muted" />
           <div className="h-32 animate-pulse rounded-xl bg-muted" />
           <div className="h-40 animate-pulse rounded-xl bg-muted" />
@@ -132,7 +133,7 @@ export function PublicPackageDetailView() {
     return (
       <div className="min-h-screen bg-background" data-testid="package-detail-error">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 py-6 lg:px-8">
+          <div className={`${marketingShellClass} py-6`}>
             <Link
               href="/"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -144,7 +145,7 @@ export function PublicPackageDetailView() {
             </h1>
           </div>
         </header>
-        <div className="container mx-auto px-4 py-8 lg:px-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl space-y-3 rounded-lg border border-border bg-card p-8 text-center">
             <p className="font-medium text-foreground">
               {isNotFound ? t("packages.notFound") : t("packages.temporaryUnavailable")}
@@ -173,7 +174,7 @@ export function PublicPackageDetailView() {
     return (
       <div className="min-h-screen bg-background" data-testid="package-detail-empty">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 py-6 lg:px-8">
+          <div className={`${marketingShellClass} py-6`}>
             <Link
               href="/"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -185,7 +186,7 @@ export function PublicPackageDetailView() {
             </h1>
           </div>
         </header>
-        <div className="container mx-auto px-4 py-8 lg:px-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl space-y-3 rounded-lg border border-border bg-card p-8 text-center">
             <p className="font-medium text-foreground">{t("packages.notFound")}</p>
             <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
@@ -217,7 +218,7 @@ export function PublicPackageDetailView() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,oklch(0.42_0.09_165_/_0.12),transparent)]"
           aria-hidden
         />
-        <div className="container mx-auto px-4 py-8 lg:px-8">
+        <div className={`${marketingShellClass} py-8`}>
           <Link
             href="/"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -265,11 +266,11 @@ export function PublicPackageDetailView() {
             </div>
           </div>
 
-          {galleryUrls.length > 0 ? (
-            <div className="mt-8 max-w-4xl" data-testid="package-detail-gallery">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {t("packages.detail.gallery")}
-              </p>
+          <div className="mt-8 max-w-4xl" data-testid="package-detail-gallery">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              {t("packages.detail.gallery")}
+            </p>
+            {galleryUrls.length > 0 ? (
               <div
                 className={cn(
                   "grid gap-2",
@@ -303,12 +304,19 @@ export function PublicPackageDetailView() {
                   </div>
                 ))}
               </div>
-            </div>
-          ) : null}
+            ) : (
+              <div className="flex aspect-[16/7] max-h-64 items-center justify-center rounded-xl border border-dashed border-border bg-muted/40 text-muted-foreground">
+                <div className="flex flex-col items-center gap-2 px-4 text-center">
+                  <ImageOff className="size-8 opacity-70" aria-hidden />
+                  <p className="text-sm">{t("packages.detail.galleryEmpty")}</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      <div className="container mx-auto max-w-4xl space-y-6 px-4 py-8 lg:px-8">
+      <div className={`${marketingShellClass} max-w-4xl space-y-6 py-8`}>
         {pkg.description ? (
           <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
             <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
@@ -425,8 +433,10 @@ export function PublicPackageDetailView() {
         </Card>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="container mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 lg:px-8">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div
+          className={`${marketingShellClass} flex max-w-4xl items-center justify-between gap-3 py-3`}
+        >
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground">{pkg.title}</p>
             <p className="text-xs text-muted-foreground">

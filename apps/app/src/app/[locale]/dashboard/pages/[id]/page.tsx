@@ -16,7 +16,7 @@ function EditPagePage({ pageId }: { pageId: string }) {
   const initialized = useRef(false);
 
   useEffect(() => {
-    document.title = `${t("pages.editTitle")} - Rihla Mate`;
+    document.title = `${t("pages.editTitle")}`;
   }, [t]);
 
   useEffect(() => {

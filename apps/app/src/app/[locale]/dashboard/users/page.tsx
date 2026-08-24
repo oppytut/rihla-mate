@@ -55,7 +55,7 @@ export default function UsersPage() {
   const [formRole, setFormRole] = useState<UserRole>("staff");
 
   useEffect(() => {
-    document.title = `${t("users.title")} - Rihla Mate`;
+    document.title = `${t("users.title")}`;
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);

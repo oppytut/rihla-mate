@@ -50,7 +50,7 @@ export default function LicensePage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    document.title = `${t("license.title")} - Rihla Mate`;
+    document.title = `${t("license.title")}`;
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
@@ -310,13 +310,11 @@ export default function LicensePage() {
                 <tbody className="divide-y divide-border">
                   {licenses.map((license) => {
                     const status = getStatus(license.revokedAt, license.expiresAt);
-                    const shortKey =
-                      license.key.length > 16 ? `${license.key.slice(0, 16)}...` : license.key;
                     return (
                       <tr key={license.id} className="hover:bg-muted/30 transition-colors">
                         <td className="px-4 py-3 font-medium text-foreground">
-                          <span className="block max-w-[180px] truncate font-mono text-xs">
-                            {shortKey}
+                          <span className="block max-w-xl break-all font-mono text-xs leading-relaxed">
+                            {license.key}
                           </span>
                         </td>
                         <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">

@@ -24,7 +24,7 @@ export default function CustomersPage() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    document.title = `${t("customers.title")} - Rihla Mate`;
+    document.title = `${t("customers.title")}`;
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);

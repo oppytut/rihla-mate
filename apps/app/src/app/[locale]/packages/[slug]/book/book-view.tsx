@@ -17,6 +17,7 @@ import { useSnapPayment } from "@/components/payment/snap-payment";
 import { Link, useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
+import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
 
 interface BookingForm {
   customerName: string;
@@ -248,12 +249,12 @@ export function PublicBookingView() {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 lg:px-8 py-6">
+          <div className={`${marketingShellClass} py-6`}>
             <div className="h-5 w-32 animate-pulse rounded bg-muted" />
             <div className="mt-2 h-8 w-64 animate-pulse rounded bg-muted" />
           </div>
         </header>
-        <div className="container mx-auto px-4 lg:px-8 py-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl space-y-6">
             <div className="rounded-lg border border-border bg-card p-6">
               <div className="space-y-4">
@@ -291,7 +292,7 @@ export function PublicBookingView() {
       return (
         <div className="min-h-screen bg-background">
           <header className="border-b border-border/40 bg-card">
-            <div className="container mx-auto px-4 lg:px-8 py-6">
+            <div className={`${marketingShellClass} py-6`}>
               <Link
                 href="/"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -303,7 +304,7 @@ export function PublicBookingView() {
               </h1>
             </div>
           </header>
-          <div className="container mx-auto px-4 lg:px-8 py-8">
+          <div className={`${marketingShellClass} py-8`}>
             <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
               <p className="text-foreground font-medium">{t("packages.notFound")}</p>
               <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
@@ -327,7 +328,7 @@ export function PublicBookingView() {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 lg:px-8 py-6">
+          <div className={`${marketingShellClass} py-6`}>
             <Link
               href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -337,7 +338,7 @@ export function PublicBookingView() {
             <h1 className="text-2xl font-semibold text-foreground mt-2">{t("common.error")}</h1>
           </div>
         </header>
-        <div className="container mx-auto px-4 lg:px-8 py-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
             <p className="text-foreground font-medium">{t("packages.temporaryUnavailable")}</p>
             <p className="text-sm text-muted-foreground">{t("common.unexpectedError")}</p>
@@ -357,7 +358,7 @@ export function PublicBookingView() {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 lg:px-8 py-6">
+          <div className={`${marketingShellClass} py-6`}>
             <Link
               href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -369,7 +370,7 @@ export function PublicBookingView() {
             </h1>
           </div>
         </header>
-        <div className="container mx-auto px-4 lg:px-8 py-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center space-y-3">
             <p className="text-foreground font-medium">{t("packages.notFound")}</p>
             <p className="text-sm text-muted-foreground">{t("packages.notFoundHint")}</p>
@@ -417,7 +418,7 @@ export function PublicBookingView() {
     return (
       <div className="min-h-screen bg-background">
         <header className="border-b border-border/40 bg-card">
-          <div className="container mx-auto px-4 lg:px-8 py-6">
+          <div className={`${marketingShellClass} py-6`}>
             <Link
               href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -427,7 +428,7 @@ export function PublicBookingView() {
             <h1 className="text-2xl font-semibold text-foreground mt-2">{pkg.title}</h1>
           </div>
         </header>
-        <div className="container mx-auto px-4 lg:px-8 py-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-8 text-center">
             <p className="text-muted-foreground">{t("bookings.noAvailableDates")}</p>
             <Link
@@ -452,7 +453,7 @@ export function PublicBookingView() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,oklch(0.42_0.09_165_/_0.12),transparent)]"
           aria-hidden
         />
-        <div className="container mx-auto px-4 lg:px-8 py-8">
+        <div className={`${marketingShellClass} py-8`}>
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <Link
               href="/"
@@ -545,7 +546,7 @@ export function PublicBookingView() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 lg:px-8 py-8">
+      <div className={`${marketingShellClass} py-8`}>
         <div className="mx-auto max-w-2xl">
           <form onSubmit={handleSubmit} noValidate id="public-booking-form">
             <div className="rounded-xl border border-border bg-card p-6 space-y-8 shadow-sm">
@@ -759,7 +760,7 @@ export function PublicBookingView() {
       </div>
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-card/95 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur supports-[backdrop-filter]:bg-card/85">
-        <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-3 lg:px-8">
+        <div className={`${marketingShellClass} flex items-center justify-between gap-4 py-3`}>
           <div className="min-w-0">
             <p className="truncate text-xs text-muted-foreground">{pkg.title}</p>
             <p className="text-lg font-semibold tabular-nums text-foreground">

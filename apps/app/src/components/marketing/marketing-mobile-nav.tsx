@@ -88,7 +88,7 @@ export function MarketingMobileNav({
               "bg-background/98 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/95",
             )}
           >
-            <div className="container mx-auto flex flex-col gap-1 px-4 py-4">
+            <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-1 px-4 py-4 sm:px-6 lg:px-8 xl:px-10">
               <nav className="flex flex-col gap-0.5" aria-label="Primary mobile">
                 {extraLinks?.map((item) => (
                   <Link

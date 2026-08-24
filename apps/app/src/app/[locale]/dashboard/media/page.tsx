@@ -18,7 +18,7 @@ export default function MediaPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    document.title = `${t("media.title")} - Rihla Mate`;
+    document.title = `${t("media.title")}`;
   }, [t]);
 
   const mediaQuery = useQuery(

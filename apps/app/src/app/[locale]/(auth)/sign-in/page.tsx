@@ -67,7 +67,7 @@ export default function SignInPage() {
   };
 
   return (
-    <AuthShell maxWidth="sm">
+    <AuthShell maxWidth="md">
       <div className="mb-6 text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
           {t("auth.signIn")}

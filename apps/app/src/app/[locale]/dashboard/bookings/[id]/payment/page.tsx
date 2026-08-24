@@ -87,7 +87,7 @@ export default function PaymentStatusPage() {
   });
 
   useEffect(() => {
-    document.title = `${t("bookings.paymentStatus.title")} - Rihla Mate`;
+    document.title = `${t("bookings.paymentStatus.title")}`;
   }, [t]);
 
   useEffect(() => {
