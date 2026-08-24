@@ -95,7 +95,7 @@ export default function PackagesPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -104,7 +104,7 @@ export default function PackagesPage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("packages.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
           <select
             value={status}
@@ -114,7 +114,7 @@ export default function PackagesPage() {
             }}
             data-testid="packages-status-filter"
             aria-label={t("packages.allStatus")}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">{t("packages.allStatus")}</option>
             <option value="draft">{t("packages.status.draft")}</option>
@@ -245,8 +245,39 @@ export default function PackagesPage() {
         )}
 
         {!packagesQuery.isLoading && !packagesQuery.isError && packages.length > 0 && (
-          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+            <ul className="space-y-3 p-3 md:hidden" data-testid="packages-cards">
+              {packages.map((pkg) => (
+                <li key={pkg.id} className="rounded-lg border border-border bg-background p-4">
+                  <p className="font-medium text-foreground">{pkg.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {formatPrice(pkg.price, pkg.currency, locale)}
+                  </p>
+                  <span
+                    className={cn(
+                      "mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                      getStatusBadgeClass(pkg.status),
+                    )}
+                  >
+                    {t(`packages.status.${pkg.status}`)}
+                  </span>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <Button variant="outline" className="min-h-11 w-full" asChild>
+                      <Link href={`/dashboard/packages/${pkg.id}`}>{t("packages.edit")}</Link>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="min-h-11 w-full"
+                      onClick={() => handleDelete(pkg.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      {t("packages.delete")}
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm" data-testid="packages-table">
                 <thead className="bg-muted/50">
                   <tr>

@@ -258,7 +258,7 @@ export default function UsersPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -267,7 +267,7 @@ export default function UsersPage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("users.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
           <select
             value={roleFilter}
@@ -277,7 +277,7 @@ export default function UsersPage() {
             }}
             data-testid="users-role-filter"
             aria-label={t("users.columns.role")}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">{t("users.allRoles")}</option>
             <option value="owner">{t("users.roles.owner")}</option>
@@ -471,7 +471,58 @@ export default function UsersPage() {
         {!usersQuery.isLoading && !usersQuery.isError && items.length > 0 && (
           <>
             <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
-              <div className="overflow-x-auto">
+              <ul className="space-y-3 p-3 md:hidden" data-testid="users-cards">
+                {items.map((user) => (
+                  <li key={user.id} className="rounded-lg border border-border bg-background p-4">
+                    <p className="font-medium text-foreground">{user.name}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+                    <span
+                      className={cn(
+                        "mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                        roleBadgeClass(user.role),
+                      )}
+                    >
+                      {roleLabel(user.role)}
+                    </span>
+                    <div className="mt-3 flex flex-col gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="min-h-11 w-full"
+                        onClick={() =>
+                          openEdit({
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            role: user.role,
+                          })
+                        }
+                      >
+                        {t("users.edit")}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="min-h-11 w-full"
+                        disabled={resendInviteMutation.isPending}
+                        onClick={() => handleResendInvite(user.id)}
+                      >
+                        {t("users.resendInvite")}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="min-h-11 w-full text-destructive"
+                        disabled={deleteMutation.isPending}
+                        onClick={() => handleDelete(user.id)}
+                      >
+                        {t("users.delete")}
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="hidden overflow-x-auto md:block">
                 <table className="w-full text-sm" data-testid="users-table">
                   <thead className="bg-muted/50">
                     <tr>
@@ -526,7 +577,7 @@ export default function UsersPage() {
                           {formatDate(user.createdAt)}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-2">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                             <Button
                               type="button"
                               variant="outline"

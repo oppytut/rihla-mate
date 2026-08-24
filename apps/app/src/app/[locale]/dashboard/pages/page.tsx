@@ -69,7 +69,7 @@ export default function LandingPagesPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         {pagesQuery.isError && (
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
             <p className="text-sm text-destructive">
@@ -152,7 +152,7 @@ export default function LandingPagesPage() {
         )}
 
         {!pagesQuery.isLoading && !pagesQuery.isError && pages.length === 0 && (
-          <div className="flex min-h-[min(28rem,calc(100dvh-12rem))] flex-1 flex-col items-center justify-center rounded-lg border border-border bg-card p-10 text-center sm:p-12">
+          <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card p-10 text-center sm:p-12">
             <p className="text-base font-medium text-foreground">{t("landingPages.empty")}</p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
               {t("landingPages.emptyHint")}
@@ -164,8 +164,29 @@ export default function LandingPagesPage() {
         )}
 
         {!pagesQuery.isLoading && !pagesQuery.isError && pages.length > 0 && (
-          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+            <ul className="space-y-3 p-3 md:hidden" data-testid="pages-cards">
+              {pages.map((p) => (
+                <li key={p.id} className="rounded-lg border border-border bg-background p-4">
+                  <p className="font-medium text-foreground">{p.title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{p.slug}</p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <Button variant="outline" className="min-h-11 w-full" asChild>
+                      <Link href={`/dashboard/pages/${p.id}`}>{t("landingPages.edit")}</Link>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="min-h-11 w-full"
+                      onClick={() => handleDelete(p.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      {t("landingPages.delete")}
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm" data-testid="pages-table">
                 <thead className="bg-muted/50">
                   <tr>
