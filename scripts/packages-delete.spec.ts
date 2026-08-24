@@ -123,6 +123,12 @@ test.describe("package delete flow", () => {
 
     await page.locator('[data-testid^="package-delete-"]').first().click();
 
-    await expect(page.getByText("Playwright Test Delete")).not.toBeVisible({ timeout: 10000 });
+    await page.waitForResponse(
+      (resp) => resp.url().includes("/api/trpc/packages.delete") && resp.ok(),
+      { timeout: 15000 },
+    );
+
+    const table = page.locator('[data-testid="packages-table"]');
+    await expect(table.getByText("Playwright Test Delete")).toHaveCount(0, { timeout: 10000 });
   });
 });

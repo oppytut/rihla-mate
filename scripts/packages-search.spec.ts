@@ -32,6 +32,10 @@ interface PackagesPage {
   waitForFunction(fn: () => boolean, options?: Record<string, unknown>): Promise<unknown>;
   waitForTimeout(ms: number): Promise<void>;
   waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
+  waitForResponse(
+    predicate: (resp: { url: () => string; status: () => number }) => boolean,
+    options?: Record<string, unknown>,
+  ): Promise<unknown>;
   fill(selector: string, value: string): Promise<void>;
   click(selector: string): Promise<void>;
   locator(selector: string): {
@@ -97,6 +101,11 @@ async function createPackageViaForm(
   );
 
   await page.click(SEL.submit);
+
+  await page.waitForResponse(
+    (resp) => resp.url().includes("/api/trpc/packages.create") && resp.status() === 200,
+    { timeout: 15000 },
+  );
 
   // Navigate directly via page.goto to force full SSR — client-side router.push
   // sends undefined to packages.list tRPC input, crashing the React 19 tree
@@ -196,11 +205,9 @@ test.describe("packages search and filter", () => {
     await searchInput.fill("Alpha");
 
     // Wait for debounced search: Beta should disappear when searching "Alpha"
-    await expect(page.getByText("Beta Search Pkg").first()).not.toBeVisible({
-      timeout: 15000,
-    });
-
-    await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
+    const table = page.locator('[data-testid="packages-table"]');
+    await expect(table.getByText("Beta Search Pkg")).toHaveCount(0, { timeout: 15000 });
+    await expect(table.getByText("Alpha Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -209,12 +216,9 @@ test.describe("packages search and filter", () => {
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
 
-    // Wait for filtered results: Alpha (draft) should disappear
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
-      timeout: 15000,
-    });
-
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    const table = page.locator('[data-testid="packages-table"]');
+    await expect(table.getByText("Alpha Search Pkg")).toHaveCount(0, { timeout: 15000 });
+    await expect(table.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -228,10 +232,11 @@ test.describe("packages search and filter", () => {
 
     await clearBtn.click();
 
-    await expect(page.getByText("Alpha Search Pkg").first()).toBeVisible({
+    const table = page.locator('[data-testid="packages-table"]');
+    await expect(table.getByText("Alpha Search Pkg").first()).toBeVisible({
       timeout: 15000,
     });
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    await expect(table.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
@@ -266,24 +271,17 @@ test.describe("packages search and filter", () => {
     const searchInput = page.locator(SEL.search);
     await searchInput.fill("Beta");
 
-    // Wait for debounced search: Alpha should disappear when searching "Beta"
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
-      timeout: 15000,
-    });
-
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    const table = page.locator('[data-testid="packages-table"]');
+    await expect(table.getByText("Alpha Search Pkg")).toHaveCount(0, { timeout: 15000 });
+    await expect(table.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
 
     const statusFilter = page.locator(SEL.statusFilter);
     await statusFilter.selectOption("published");
 
-    // Wait for filtered results: Alpha (draft) should disappear
-    await expect(page.getByText("Alpha Search Pkg").first()).not.toBeVisible({
-      timeout: 15000,
-    });
-
-    await expect(page.getByText("Beta Search Pkg").first()).toBeVisible({
+    await expect(table.getByText("Alpha Search Pkg")).toHaveCount(0, { timeout: 15000 });
+    await expect(table.getByText("Beta Search Pkg").first()).toBeVisible({
       timeout: 5000,
     });
   });
