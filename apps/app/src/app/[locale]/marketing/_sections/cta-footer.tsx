@@ -22,10 +22,10 @@ export function CtaBand() {
               {checklist.map((item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-2.5 rounded-lg border border-primary-foreground/25 bg-primary-foreground/15 px-4 py-3 text-sm font-medium text-primary-foreground"
+                  className="flex items-start gap-2.5 rounded-lg border border-primary-foreground/25 bg-primary-foreground/15 px-3 py-3 text-sm font-medium leading-snug text-primary-foreground sm:px-4"
                 >
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
-                  <span>{item}</span>
+                  <span className="min-w-0 text-pretty break-words">{item}</span>
                 </li>
               ))}
             </ul>
