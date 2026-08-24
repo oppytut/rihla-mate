@@ -72,7 +72,7 @@ describe("site-mode", () => {
 
   it("strips SaaS marketing keys and staff namespaces from bureau client messages", () => {
     const messages = {
-      common: { appName: "Rihla", loading: "Memuat", error: "Error" },
+      common: { appName: "Rihla", appNameAbbr: "RM", loading: "Memuat", error: "Error" },
       dashboard: { title: "Dash", sidebar: { packages: "Harga" } },
       auth: { signIn: "Masuk" },
       guide: { title: "Guide" },
@@ -112,7 +112,12 @@ describe("site-mode", () => {
     expect(slim.packages).toBeUndefined();
     expect(slim.validation).toBeUndefined();
     expect(slim.bookings).toBeUndefined();
-    expect(slim.common).toEqual({ loading: "Memuat", error: "Error" });
+    expect(slim.common).toEqual({
+      appName: "Rihla",
+      appNameAbbr: "RM",
+      loading: "Memuat",
+      error: "Error",
+    });
     expect(slim.marketing).toEqual({
       nav: {
         packages: "Paket",
@@ -130,7 +135,12 @@ describe("site-mode", () => {
     expect(catalog.packages).toEqual({ title: "Paket" });
     expect(catalog.validation).toEqual({ required: "Wajib" });
     expect(catalog.bookings).toEqual({ title: "Booking" });
-    expect(catalog.common).toEqual({ loading: "Memuat", error: "Error" });
+    expect(catalog.common).toEqual({
+      appName: "Rihla",
+      appNameAbbr: "RM",
+      loading: "Memuat",
+      error: "Error",
+    });
 
     const auth = pickBureauClientMessages(
       {

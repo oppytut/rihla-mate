@@ -127,7 +127,7 @@ export default function SettingsPage() {
           value={strValue}
           onChange={(e) => updateField(key, e.target.value)}
           disabled={saveMutation.isPending}
-          className="bg-background"
+          className="min-h-11 bg-card"
         />
       </div>
     );
@@ -138,7 +138,7 @@ export default function SettingsPage() {
       <PageHeader title={t("settings.title")} titleTestId="dashboard-heading" />
 
       <div className="px-4 py-6 lg:px-8">
-        <div className="flex min-h-[calc(100dvh-8rem)] flex-col gap-6 lg:flex-row">
+        <div className="flex flex-col gap-6 lg:flex-row">
           {/* Section sidebar */}
           <nav className="flex shrink-0 flex-wrap gap-1 lg:w-48 lg:flex-col lg:space-y-1">
             {sections.map((section) => (
@@ -147,7 +147,7 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setActiveSection(section.key)}
                 className={cn(
-                  "w-full text-left px-3 py-2 text-sm rounded-md transition-colors",
+                  "min-h-11 w-full rounded-md px-3 py-2 text-left text-sm transition-colors",
                   activeSection === section.key
                     ? "bg-primary/10 text-primary font-medium"
                     : "text-muted-foreground hover:bg-primary/20 hover:text-foreground",
@@ -187,6 +187,7 @@ export default function SettingsPage() {
                 <div className="flex items-center gap-4 pt-4 border-t border-border">
                   <Button
                     type="button"
+                    className="min-h-11 w-full md:w-auto"
                     onClick={handleSave}
                     disabled={saveMutation.isPending}
                     data-testid="settings-save"

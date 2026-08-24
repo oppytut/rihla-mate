@@ -101,6 +101,7 @@ export default function SignInPage() {
             required
             autoComplete="email"
             data-testid="sign-in-email"
+            className="min-h-11 bg-muted/40"
           />
         </div>
 
@@ -126,6 +127,7 @@ export default function SignInPage() {
             required
             autoComplete="current-password"
             data-testid="sign-in-password"
+            className="min-h-11 bg-muted/40"
           />
         </div>
 
@@ -166,15 +168,17 @@ export default function SignInPage() {
       </Button>
 
       <p className="mt-6 text-center text-xs text-muted-foreground">{t("auth.signInHelp")}</p>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        <Link
-          href="/activate"
-          className="font-medium text-primary underline-offset-4 hover:underline"
-          data-testid="sign-in-activate-link"
-        >
-          {t("auth.trialOrActivate")}
-        </Link>
-      </p>
+      {productHost ? (
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          <Link
+            href="/activate"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+            data-testid="sign-in-activate-link"
+          >
+            {t("auth.trialOrActivate")}
+          </Link>
+        </p>
+      ) : null}
     </AuthShell>
   );
 }

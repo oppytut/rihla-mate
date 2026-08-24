@@ -67,7 +67,7 @@ export default function CustomersPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -76,7 +76,7 @@ export default function CustomersPage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("customers.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
         </div>
 
@@ -200,8 +200,31 @@ export default function CustomersPage() {
         )}
 
         {!customersQuery.isLoading && !customersQuery.isError && customers.length > 0 && (
-          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="rounded-lg border border-border bg-card">
+            <ul className="space-y-3 p-3 md:hidden" data-testid="customers-cards">
+              {customers.map((customer) => (
+                <li
+                  key={`${customer.customerName}-${customer.customerEmail}`}
+                  className="rounded-lg border border-border bg-background p-4"
+                >
+                  <p className="font-medium text-foreground">{customer.customerName ?? "-"}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {customer.customerEmail ?? "-"}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {formatPrice(customer.totalSpent ?? "0", "IDR", locale)}
+                  </p>
+                  <Button variant="outline" className="mt-3 min-h-11 w-full" asChild>
+                    <Link
+                      href={`/dashboard/customers/${encodeURIComponent(customer.customerName ?? "")}?email=${encodeURIComponent(customer.customerEmail ?? "")}`}
+                    >
+                      {t("customers.view")}
+                    </Link>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm" data-testid="customers-table">
                 <thead className="bg-muted/50">
                   <tr>

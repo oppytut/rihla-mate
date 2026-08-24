@@ -212,7 +212,7 @@ export function PublicPackageDetailView() {
   const bookHref = `/packages/${slug}/book`;
 
   return (
-    <div className="min-h-screen bg-background pb-28 md:pb-10" data-testid="package-detail">
+    <div className="min-h-0 bg-background pb-28 md:pb-10" data-testid="package-detail">
       <header className="relative overflow-hidden border-b border-border/40 bg-card">
         <div
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,oklch(0.42_0.09_165_/_0.12),transparent)]"
@@ -260,7 +260,7 @@ export function PublicPackageDetailView() {
               ) : null}
             </div>
             <div className="mt-6">
-              <Button asChild size="lg" data-testid="package-detail-book-cta">
+              <Button asChild size="lg" className="min-h-11" data-testid="package-detail-book-cta">
                 <Link href={bookHref}>{t("packages.detail.bookCta")}</Link>
               </Button>
             </div>
@@ -316,7 +316,7 @@ export function PublicPackageDetailView() {
         </div>
       </header>
 
-      <div className={`${marketingShellClass} space-y-6 py-8`}>
+      <div className={`${marketingShellClass} space-y-6 py-8 pb-28 md:pb-8`}>
         {pkg.description ? (
           <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
             <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
@@ -442,7 +442,7 @@ export function PublicPackageDetailView() {
               {t("packages.perPerson")}
             </p>
           </div>
-          <Button asChild data-testid="package-detail-book-sticky">
+          <Button asChild className="min-h-11 shrink-0" data-testid="package-detail-book-sticky">
             <Link href={bookHref}>{t("packages.detail.bookCta")}</Link>
           </Button>
         </div>

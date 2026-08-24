@@ -178,10 +178,11 @@ test.describe("bookings search and filter", () => {
     await searchInput.fill("Alice");
 
     // Wait for debounce (300ms) + TRPC query + React render
-    await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({
+    const table = page.locator('[data-testid="bookings-table"]');
+    await expect(table.locator("td").filter({ hasText: "Alice Search Test" })).toBeVisible({
       timeout: 5000,
     });
-    await expect(page.getByText("Bob Search Test")).not.toBeVisible({ timeout: 5000 });
+    await expect(table.getByText("Bob Search Test")).toHaveCount(0);
   });
 
   test("filter by status shows only matching bookings", async ({ page }) => {
@@ -203,8 +204,13 @@ test.describe("bookings search and filter", () => {
 
     await clearBtn.click();
 
-    await expect(page.getByText("Alice Search Test")).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText("Bob Search Test")).toBeVisible({ timeout: 5000 });
+    const table = page.locator('[data-testid="bookings-table"]');
+    await expect(table.locator("td").filter({ hasText: "Alice Search Test" })).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(table.locator("td").filter({ hasText: "Bob Search Test" })).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test("pagination is hidden on a single page, else previous is disabled on page 1", async ({

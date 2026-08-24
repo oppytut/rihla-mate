@@ -27,9 +27,9 @@ export async function BureauLanding({ packages, cmsTitle, cmsBody }: BureauLandi
   const t = await getTranslations("marketing.bureau");
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-0 flex-col bg-background">
       <MarketingHeader variant="bureau" />
-      <main className="flex-1">
+      <main>
         <section className="border-b border-border/40 bg-muted/30">
           <div className={`${marketingShellClass} py-12 lg:py-16`}>
             <p className="mb-3 text-sm font-medium text-primary">{t("heroEyebrow")}</p>
@@ -41,7 +41,7 @@ export async function BureauLanding({ packages, cmsTitle, cmsBody }: BureauLandi
             </p>
             <Link
               href="/packages"
-              className="mt-6 inline-flex h-10 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+              className="mt-6 inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
             >
               {t("ctaPackages")}
             </Link>

@@ -168,6 +168,8 @@ const BUREAU_AUTH_KEYS = [
 ] as const;
 
 const BUREAU_PUBLIC_COMMON_KEYS = [
+  "appName",
+  "appNameAbbr",
   "loading",
   "error",
   "success",
@@ -189,6 +191,8 @@ const BUREAU_PUBLIC_BUREAU_KEYS = [
   "durationDays",
   "fromPrice",
   "viewPackage",
+  "filterCategory",
+  "filterAll",
   "howTitle",
   "howLead",
   "contactLead",

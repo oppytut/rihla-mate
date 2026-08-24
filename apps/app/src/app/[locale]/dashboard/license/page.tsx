@@ -125,7 +125,7 @@ export default function LicensePage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -134,7 +134,7 @@ export default function LicensePage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("license.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
         </div>
 
@@ -258,8 +258,43 @@ export default function LicensePage() {
         )}
 
         {!licenseQuery.isLoading && !licenseQuery.isError && licenses.length > 0 && (
-          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <ul className="space-y-3 p-3 md:hidden" data-testid="license-cards">
+              {licenses.map((license) => {
+                const status = getStatus(license.revokedAt, license.expiresAt);
+                return (
+                  <li
+                    key={license.id}
+                    className="rounded-lg border border-border bg-background p-4"
+                  >
+                    <p className="break-all font-mono text-xs leading-relaxed text-foreground">
+                      {license.key}
+                    </p>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                      <span
+                        className={cn(
+                          "inline-flex min-h-11 items-center rounded-full px-3 text-xs font-medium",
+                          getStatusBadgeClass(status),
+                        )}
+                      >
+                        {t(`license.status.${status}`)}
+                      </span>
+                      <Button
+                        variant="destructive"
+                        className="min-h-11"
+                        onClick={() => handleRevoke(license.key)}
+                        disabled={revokeMutation.isPending || status === "revoked"}
+                        data-testid={`license-revoke-mobile-${license.key.slice(0, 8)}`}
+                        aria-label={t("license.revoke")}
+                      >
+                        {t("license.revoke")}
+                      </Button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm" data-testid="license-table">
                 <thead className="bg-muted/50">
                   <tr>
