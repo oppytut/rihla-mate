@@ -123,7 +123,7 @@ export async function MarketingHeader({
           ) : (
             <Link
               href="/activate"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
+              className="hidden h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:inline-flex sm:px-5"
             >
               {t("nav.getStarted")}
             </Link>
@@ -147,6 +147,7 @@ export async function MarketingHeader({
                   ? t("nav.tryDemo")
                   : t("nav.signIn"),
               signInHref: bureau ? "/sign-in" : signInHref,
+              getStarted: bureau ? undefined : t("nav.getStarted"),
             }}
           />
         </div>

@@ -48,7 +48,8 @@ export function CtaBand() {
               {t("marketing.cta.contact")}{" "}
               <a
                 href="mailto:hello@rihla-mate.com"
-                className="underline hover:text-primary-foreground"
+                className="inline-block whitespace-nowrap underline hover:text-primary-foreground"
+                dir="ltr"
               >
                 hello@rihla-mate.com
               </a>
