@@ -200,7 +200,7 @@ export default function CustomersPage() {
         )}
 
         {!customersQuery.isLoading && !customersQuery.isError && customers.length > 0 && (
-          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="rounded-lg border border-border bg-card">
             <ul className="space-y-3 p-3 md:hidden" data-testid="customers-cards">
               {customers.map((customer) => (
                 <li

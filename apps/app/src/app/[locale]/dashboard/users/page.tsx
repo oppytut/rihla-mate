@@ -402,7 +402,7 @@ export default function UsersPage() {
         )}
 
         {usersQuery.isLoading && (
-          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="rounded-lg border border-border bg-card">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
@@ -470,7 +470,7 @@ export default function UsersPage() {
 
         {!usersQuery.isLoading && !usersQuery.isError && items.length > 0 && (
           <>
-            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+            <div className="rounded-lg border border-border bg-card">
               <ul className="space-y-3 p-3 md:hidden" data-testid="users-cards">
                 {items.map((user) => (
                   <li key={user.id} className="rounded-lg border border-border bg-background p-4">

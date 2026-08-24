@@ -245,7 +245,7 @@ export default function PackagesPage() {
         )}
 
         {!packagesQuery.isLoading && !packagesQuery.isError && packages.length > 0 && (
-          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="rounded-lg border border-border bg-card">
             <ul className="space-y-3 p-3 md:hidden" data-testid="packages-cards">
               {packages.map((pkg) => (
                 <li key={pkg.id} className="rounded-lg border border-border bg-background p-4">

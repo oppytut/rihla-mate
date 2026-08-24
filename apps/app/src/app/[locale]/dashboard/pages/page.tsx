@@ -164,7 +164,7 @@ export default function LandingPagesPage() {
         )}
 
         {!pagesQuery.isLoading && !pagesQuery.isError && pages.length > 0 && (
-          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="rounded-lg border border-border bg-card">
             <ul className="space-y-3 p-3 md:hidden" data-testid="pages-cards">
               {pages.map((p) => (
                 <li key={p.id} className="rounded-lg border border-border bg-background p-4">
