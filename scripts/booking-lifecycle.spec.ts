@@ -207,6 +207,7 @@ test.describe("booking lifecycle", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Verify the booking is no longer visible
-    await expect(page.getByText("Playwright Test Lifecycle")).not.toBeVisible({ timeout: 10000 });
+    const table = page.locator('[data-testid="bookings-table"]');
+    await expect(table.getByText("Playwright Test Lifecycle")).toHaveCount(0, { timeout: 10000 });
   });
 });

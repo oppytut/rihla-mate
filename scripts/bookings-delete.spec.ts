@@ -182,7 +182,8 @@ test.describe("booking delete flow", () => {
     page.once("dialog", (dialog) => dialog.accept());
 
     // Verify the booking is no longer visible
-    await expect(page.getByText("Playwright Test Customer Delete")).not.toBeVisible({
+    const table = page.locator('[data-testid="bookings-table"]');
+    await expect(table.getByText("Playwright Test Customer Delete")).toHaveCount(0, {
       timeout: 10000,
     });
   });
