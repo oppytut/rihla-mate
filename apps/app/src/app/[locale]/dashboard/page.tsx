@@ -119,7 +119,7 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col space-y-6 px-4 py-6 lg:px-8">
+      <div className="flex flex-col space-y-6 px-4 py-6 lg:px-8">
         {userQuery.isError ? (
           <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
             <p className="text-sm text-destructive">

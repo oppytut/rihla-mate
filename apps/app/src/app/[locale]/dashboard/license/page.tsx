@@ -125,7 +125,7 @@ export default function LicensePage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -134,7 +134,7 @@ export default function LicensePage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("license.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
         </div>
 

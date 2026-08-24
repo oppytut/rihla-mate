@@ -57,9 +57,14 @@ export default function MediaPage() {
         description={
           mediaQuery.isSuccess ? t("media.listCount", { count: total }) : t("media.description")
         }
+        actions={
+          <Button type="button" data-testid="media-upload">
+            {t("media.upload")}
+          </Button>
+        }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         {mediaQuery.isError && (
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
             <p className="text-sm text-destructive">
@@ -78,7 +83,7 @@ export default function MediaPage() {
 
         {!mediaQuery.isLoading && !mediaQuery.isError && mediaItems.length === 0 && (
           <div
-            className="flex min-h-[min(28rem,calc(100dvh-12rem))] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-10 text-center sm:p-12"
+            className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-10 text-center sm:p-12"
             data-testid="media-empty"
           >
             <p className="text-base font-medium text-foreground">{t("media.empty")}</p>
