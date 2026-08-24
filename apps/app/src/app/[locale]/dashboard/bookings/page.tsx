@@ -156,7 +156,7 @@ export default function BookingsPage() {
         }
       />
 
-      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
+      <div className="flex flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -165,14 +165,14 @@ export default function BookingsPage() {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             aria-label={t("bookings.search")}
-            className="flex-1 bg-background"
+            className="min-h-11 flex-1 bg-card"
           />
           <select
             value={status}
             onChange={(e) => handleStatusChange(e.target.value)}
             data-testid="bookings-status-filter"
             aria-label={t("bookings.allStatus")}
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           >
             <option value="">{t("bookings.allStatus")}</option>
             <option value="pending">{t("bookings.status.pending")}</option>
@@ -303,8 +303,58 @@ export default function BookingsPage() {
         )}
 
         {!bookingsQuery.isLoading && !bookingsQuery.isError && bookings.length > 0 && (
-          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
+            <ul className="space-y-3 p-3 md:hidden" data-testid="bookings-cards">
+              {bookings.map((booking) => (
+                <li key={booking.id} className="rounded-lg border border-border bg-background p-4">
+                  <p className="font-medium text-foreground">{booking.customerName}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {booking.packageTitle || "-"}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {formatDisplayDate(booking.departureDate, locale)} · {booking.travelers} ·{" "}
+                    {formatPrice(booking.totalPrice, "IDR", locale)}
+                  </p>
+                  <span
+                    className={cn(
+                      "mt-2 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium",
+                      getStatusBadgeClass(booking.status),
+                    )}
+                  >
+                    {t(`bookings.status.${booking.status}`)}
+                  </span>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {booking.status === "pending" && (
+                      <Button
+                        variant="default"
+                        className="min-h-11 w-full"
+                        onClick={() => {
+                          setPayingBookingId(booking.id);
+                          payMutation.mutate({ bookingId: booking.id });
+                        }}
+                        disabled={payMutation.isPending && payingBookingId === booking.id}
+                      >
+                        {payMutation.isPending && payingBookingId === booking.id
+                          ? t("bookings.paying")
+                          : t("bookings.payNow")}
+                      </Button>
+                    )}
+                    <Button variant="outline" className="min-h-11 w-full" asChild>
+                      <Link href={`/dashboard/bookings/${booking.id}`}>{t("bookings.edit")}</Link>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="min-h-11 w-full"
+                      onClick={() => handleDelete(booking.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      {t("bookings.delete")}
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-sm" data-testid="bookings-table">
                 <thead className="bg-muted/50">
                   <tr>
