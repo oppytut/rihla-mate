@@ -137,10 +137,10 @@ export default function SettingsPage() {
     <>
       <PageHeader title={t("settings.title")} titleTestId="dashboard-heading" />
 
-      <div className="px-4 lg:px-8 py-6">
-        <div className="flex gap-6">
+      <div className="px-4 py-6 lg:px-8">
+        <div className="flex min-h-[calc(100dvh-8rem)] flex-col gap-6 lg:flex-row">
           {/* Section sidebar */}
-          <nav className="w-48 shrink-0 space-y-1">
+          <nav className="flex shrink-0 flex-wrap gap-1 lg:w-48 lg:flex-col lg:space-y-1">
             {sections.map((section) => (
               <button
                 key={section.key}
@@ -159,7 +159,7 @@ export default function SettingsPage() {
           </nav>
 
           {/* Settings form */}
-          <div className="flex-1 max-w-2xl">
+          <div className="min-w-0 flex-1">
             {settingsQuery.isLoading ? (
               <div className="bg-card border border-border rounded-lg p-6">
                 <div className="animate-pulse space-y-4">
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                   {sections.find((s) => s.key === activeSection)?.label}
                 </h2>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {SETTING_KEYS[activeSection].map((key) => renderField(key))}
                 </div>
 

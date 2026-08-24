@@ -26,7 +26,13 @@ export function BureauPackageGrid({ packages }: { packages: BureauPackageCard[] 
 
   const categoryLabel = (value: string) => {
     const key = value.toLowerCase();
-    if (key === "standard" || key === "premium" || key === "vip" || key === "economy") {
+    if (
+      key === "standard" ||
+      key === "premium" ||
+      key === "vip" ||
+      key === "economy" ||
+      key === "plus"
+    ) {
       return tPkg(`category.${key}`);
     }
     return value;

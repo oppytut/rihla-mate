@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
         }
       />
 
-      <div className="space-y-6 px-4 py-6 lg:px-8">
+      <div className="flex min-h-[calc(100dvh-8rem)] flex-col space-y-6 px-4 py-6 lg:px-8">
         {summaryQuery.isError ? (
           <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-6">
             <p className="text-sm text-destructive">
@@ -145,8 +145,20 @@ export default function AnalyticsPage() {
                           key={item.category}
                           className="grid grid-cols-[8rem_1fr_3rem] items-center gap-3"
                         >
-                          <span className="truncate text-sm capitalize text-foreground">
-                            {item.category}
+                          <span className="truncate text-sm text-foreground">
+                            {(() => {
+                              const key = item.category.toLowerCase();
+                              if (
+                                key === "standard" ||
+                                key === "premium" ||
+                                key === "vip" ||
+                                key === "economy" ||
+                                key === "plus"
+                              ) {
+                                return t(`packages.category.${key}`);
+                              }
+                              return item.category;
+                            })()}
                           </span>
                           <div className="h-3 overflow-hidden rounded-full bg-muted">
                             <div
@@ -165,7 +177,7 @@ export default function AnalyticsPage() {
               </Card>
             )}
 
-            <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+            <Card className="flex-1 gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
               <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
                 <CardTitle className="text-base font-semibold">
                   {t("analytics.recentBookings")}

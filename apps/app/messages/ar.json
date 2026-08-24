@@ -169,7 +169,8 @@
       "standard": "قياسية",
       "premium": "مميزة",
       "vip": "VIP",
-      "economy": "اقتصادية"
+      "economy": "اقتصادية",
+      "plus": "بلس"
     },
     "validation": {
       "titleRequired": "العنوان مطلوب",
@@ -210,7 +211,9 @@
     "next": "التالي",
     "tryAgain": "حاول مرة أخرى",
     "somethingWentWrong": "حدث خطأ ما",
-    "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+    "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    "edit": "تعديل",
+    "loadError": "فشل تحميل البيانات"
   },
   "activate": {
     "title": "تفعيل الترخيص",
@@ -441,7 +444,9 @@
     "delete": "حذف",
     "deleteConfirm": "هل أنت متأكد من حذف عنصر الوسائط هذا؟",
     "deleteSuccess": "تم حذف عنصر الوسائط بنجاح",
-    "pageInfo": "صفحة {page} من {total}"
+    "pageInfo": "صفحة {page} من {total}",
+    "upload": "رفع ملفات",
+    "dropHint": "اسحب الملفات هنا أو ارفعها."
   },
   "landingPages": {
     "title": "الصفحات التعريفية",

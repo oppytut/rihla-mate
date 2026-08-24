@@ -258,7 +258,7 @@ export default function UsersPage() {
         }
       />
 
-      <div className="px-4 lg:px-8 py-6">
+      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -402,7 +402,7 @@ export default function UsersPage() {
         )}
 
         {usersQuery.isLoading && (
-          <div className="overflow-hidden rounded-lg border border-border bg-card">
+          <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
@@ -470,7 +470,7 @@ export default function UsersPage() {
 
         {!usersQuery.isLoading && !usersQuery.isError && items.length > 0 && (
           <>
-            <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="flex-1 overflow-hidden rounded-lg border border-border bg-card">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" data-testid="users-table">
                   <thead className="bg-muted/50">

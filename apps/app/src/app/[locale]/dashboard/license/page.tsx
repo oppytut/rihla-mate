@@ -125,7 +125,7 @@ export default function LicensePage() {
         }
       />
 
-      <div className="px-4 lg:px-8 py-6">
+      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row">
           <Input
             type="search"
@@ -147,7 +147,7 @@ export default function LicensePage() {
         )}
 
         {licenseQuery.isLoading && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
@@ -258,7 +258,7 @@ export default function LicensePage() {
         )}
 
         {!licenseQuery.isLoading && !licenseQuery.isError && licenses.length > 0 && (
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="flex-1 bg-card border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" data-testid="license-table">
                 <thead className="bg-muted/50">

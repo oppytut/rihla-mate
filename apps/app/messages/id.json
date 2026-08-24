@@ -81,7 +81,7 @@
       "signOut": "Keluar"
     },
     "overview": {
-      "totalBookings": "Total Booking",
+      "totalBookings": "Total Pemesanan",
       "activePackages": "Paket Aktif",
       "totalCustomers": "Total Pelanggan",
       "revenue": "Pendapatan",
@@ -99,21 +99,21 @@
         "viewBookings": "Semua pemesanan",
         "viewPackages": "Kelola paket",
         "viewAnalytics": "Buka analitik",
-        "viewPending": "Tinjau pending"
+        "viewPending": "Tinjau tertunda"
       }
     }
   },
   "packages": {
     "title": "Paket",
     "createTitle": "Tambah Paket Baru",
-    "editTitle": "Edit Paket",
+    "editTitle": "Ubah Paket",
     "backToList": "← Kembali ke Daftar",
     "addPackage": "Tambah Paket",
     "search": "Cari paket...",
     "allStatus": "Semua Status",
     "status": {
-      "draft": "Draft",
-      "published": "Published",
+      "draft": "Draf",
+      "published": "Terbit",
       "archived": "Diarsipkan"
     },
     "fields": {
@@ -154,7 +154,7 @@
     "invalidJson": "Format JSON tidak valid",
     "createSuccess": "Paket berhasil dibuat",
     "updateSuccess": "Paket berhasil diperbarui",
-    "edit": "Edit",
+    "edit": "Ubah",
     "delete": "Hapus",
     "deleteSuccess": "Paket berhasil dihapus",
     "noResults": "Tidak ada paket yang sesuai dengan kriteria pencarian.",
@@ -169,7 +169,8 @@
       "standard": "Standar",
       "premium": "Premium",
       "vip": "VIP",
-      "economy": "Ekonomi"
+      "economy": "Ekonomi",
+      "plus": "Plus"
     },
     "validation": {
       "titleRequired": "Judul wajib diisi",
@@ -196,7 +197,7 @@
       "dayLabel": "Hari {day}",
       "galleryEmpty": "Belum ada foto galeri"
     },
-    "description": "Kelola paket Umrah: cari, saring status, dan edit dari satu daftar.",
+    "description": "Kelola paket Umrah: cari, saring status, dan ubah dari satu daftar.",
     "emptyHint": "Tambah paket pertama agar tampil di landing dan bisa dipesan.",
     "listCount": "{count} paket"
   },
@@ -210,7 +211,9 @@
     "next": "Berikutnya",
     "tryAgain": "Coba lagi",
     "somethingWentWrong": "Ada yang tidak beres",
-    "unexpectedError": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi."
+    "unexpectedError": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi.",
+    "edit": "Ubah",
+    "loadError": "Gagal memuat data"
   },
   "activate": {
     "title": "Aktivasi Lisensi",
@@ -274,10 +277,10 @@
   "bookings": {
     "title": "Pemesanan",
     "createTitle": "Pemesanan Baru",
-    "editTitle": "Edit Pemesanan",
+    "editTitle": "Ubah Pemesanan",
     "backToList": "Kembali ke Daftar",
     "addBooking": "Tambah Pemesanan",
-    "description": "Kelola pemesanan: cari, saring status, dan edit dari satu daftar.",
+    "description": "Kelola pemesanan: cari, saring status, dan ubah dari satu daftar.",
     "listCount": "{count} pemesanan",
     "emptyHint": "Tambah pemesanan pertama agar tampil di daftar ini dan bisa dibayar.",
     "search": "Cari pemesanan...",
@@ -354,7 +357,7 @@
     "createSuccess": "Pemesanan berhasil dibuat",
     "updateSuccess": "Pemesanan berhasil diperbarui",
     "deleteSuccess": "Pemesanan berhasil dihapus",
-    "edit": "Edit",
+    "edit": "Ubah",
     "delete": "Hapus",
     "noResults": "Tidak ada pemesanan yang sesuai dengan kriteria pencarian.",
     "clearFilters": "Hapus Filter",
@@ -405,7 +408,7 @@
     "search": "Cari pelanggan...",
     "columns": {
       "name": "Nama",
-      "email": "Email",
+      "email": "Surel",
       "phone": "Telepon",
       "bookings": "Pemesanan",
       "totalSpent": "Total Pengeluaran",
@@ -437,11 +440,13 @@
     "description": "Berkas yang diunggah untuk paket dan halaman.",
     "listCount": "{count} berkas",
     "emptyHint": "Berkas muncul di sini setelah diunggah.",
-    "empty": "Belum ada item media.",
+    "empty": "Belum ada berkas media.",
     "delete": "Hapus",
-    "deleteConfirm": "Apakah Anda yakin ingin menghapus item media ini?",
-    "deleteSuccess": "Item media berhasil dihapus",
-    "pageInfo": "Halaman {page} dari {total}"
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus berkas media ini?",
+    "deleteSuccess": "Berkas media berhasil dihapus",
+    "pageInfo": "Halaman {page} dari {total}",
+    "upload": "Unggah berkas",
+    "dropHint": "Seret berkas ke sini atau unggah."
   },
   "license": {
     "title": "Lisensi",
@@ -452,7 +457,7 @@
     "columns": {
       "key": "Kunci Lisensi",
       "type": "Tipe",
-      "seats": "Seat",
+      "seats": "Kursi",
       "issued": "Diterbitkan",
       "expires": "Kedaluwarsa",
       "status": "Status",
@@ -479,12 +484,12 @@
     "pageInfo": "Halaman {page} dari {total}"
   },
   "landingPages": {
-    "title": "Landing Pages",
+    "title": "Halaman landing",
     "addPage": "Tambah Halaman",
-    "description": "Kelola landing page: buat, terbitkan, dan edit dari satu daftar.",
+    "description": "Kelola halaman landing: buat, terbitkan, dan ubah dari satu daftar.",
     "listCount": "{count} halaman",
-    "empty": "Belum ada landing page.",
-    "emptyHint": "Tambah landing page pertama agar pengunjung melihat paket Umrah Anda.",
+    "empty": "Belum ada halaman landing.",
+    "emptyHint": "Tambah halaman landing pertama agar pengunjung melihat paket Umrah Anda.",
     "columns": {
       "title": "Judul",
       "slug": "Slug",
@@ -498,15 +503,15 @@
       "draft": "Draft"
     },
     "homepage": "Halaman Utama",
-    "edit": "Edit",
+    "edit": "Ubah",
     "delete": "Hapus",
-    "deleteConfirm": "Apakah Anda yakin ingin menghapus landing page ini?",
-    "deleteSuccess": "Landing page berhasil dihapus",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus halaman landing ini?",
+    "deleteSuccess": "Halaman landing berhasil dihapus",
     "pageInfo": "Halaman {page} dari {total}"
   },
   "pages": {
-    "createTitle": "Buat Landing Page",
-    "editTitle": "Edit Landing Page",
+    "createTitle": "Buat halaman landing",
+    "editTitle": "Ubah halaman landing",
     "backToList": "← Kembali ke Halaman",
     "save": "Simpan",
     "saving": "Menyimpan...",
@@ -627,7 +632,7 @@
     "search": "Cari pengguna...",
     "columns": {
       "name": "Nama",
-      "email": "Email",
+      "email": "Surel",
       "role": "Peran",
       "created": "Dibuat",
       "actions": "Aksi"
@@ -637,7 +642,7 @@
       "admin": "Admin",
       "staff": "Staf"
     },
-    "edit": "Edit",
+    "edit": "Ubah",
     "delete": "Hapus",
     "deleteConfirm": "Apakah Anda yakin ingin menghapus pengguna ini?",
     "deleteSuccess": "Pengguna berhasil dihapus",
