@@ -179,54 +179,83 @@ export default function DashboardPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="py-2 text-left font-medium text-muted-foreground">
-                          {t("bookings.fields.customerName")}
-                        </th>
-                        <th className="py-2 text-left font-medium text-muted-foreground">
-                          {t("dashboard.overview.package")}
-                        </th>
-                        <th className="py-2 text-left font-medium text-muted-foreground">
-                          {t("bookings.fields.totalPrice")}
-                        </th>
-                        <th className="py-2 text-left font-medium text-muted-foreground">
-                          {t("bookings.fields.status")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stats.recentBookings.map((booking) => (
-                        <tr key={booking.id} className="border-b border-border last:border-0">
-                          <td className="py-2.5">
-                            <Link
-                              href={`/dashboard/bookings/${booking.id}`}
-                              className="font-medium text-foreground hover:underline"
-                            >
-                              {booking.customerName}
-                            </Link>
-                          </td>
-                          <td className="py-2.5 text-muted-foreground">
-                            {booking.packageTitle ?? "—"}
-                          </td>
-                          <td className="py-2.5 text-foreground">
-                            {formatPrice(booking.totalPrice, "IDR", locale)}
-                          </td>
-                          <td className="py-2.5">
-                            <Badge
-                              variant="outline"
-                              className={cn("font-medium", statusVariant(booking.status))}
-                            >
-                              {t(`bookings.status.${booking.status}`)}
-                            </Badge>
-                          </td>
+                <>
+                  <ul className="space-y-3 md:hidden">
+                    {stats.recentBookings.map((booking) => (
+                      <li
+                        key={booking.id}
+                        className="rounded-lg border border-border bg-background p-4"
+                      >
+                        <Link
+                          href={`/dashboard/bookings/${booking.id}`}
+                          className="font-medium text-foreground hover:underline"
+                        >
+                          {booking.customerName}
+                        </Link>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {booking.packageTitle ?? "—"}
+                        </p>
+                        <p className="mt-1 text-sm text-foreground">
+                          {formatPrice(booking.totalPrice, "IDR", locale)}
+                        </p>
+                        <Badge
+                          variant="outline"
+                          className={cn("mt-2 font-medium", statusVariant(booking.status))}
+                        >
+                          {t(`bookings.status.${booking.status}`)}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.customerName")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("dashboard.overview.package")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.totalPrice")}
+                          </th>
+                          <th className="py-2 text-left font-medium text-muted-foreground">
+                            {t("bookings.fields.status")}
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {stats.recentBookings.map((booking) => (
+                          <tr key={booking.id} className="border-b border-border last:border-0">
+                            <td className="py-2.5">
+                              <Link
+                                href={`/dashboard/bookings/${booking.id}`}
+                                className="font-medium text-foreground hover:underline"
+                              >
+                                {booking.customerName}
+                              </Link>
+                            </td>
+                            <td className="py-2.5 text-muted-foreground">
+                              {booking.packageTitle ?? "—"}
+                            </td>
+                            <td className="py-2.5 text-foreground">
+                              {formatPrice(booking.totalPrice, "IDR", locale)}
+                            </td>
+                            <td className="py-2.5">
+                              <Badge
+                                variant="outline"
+                                className={cn("font-medium", statusVariant(booking.status))}
+                              >
+                                {t(`bookings.status.${booking.status}`)}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
             </CardContent>
           </Card>

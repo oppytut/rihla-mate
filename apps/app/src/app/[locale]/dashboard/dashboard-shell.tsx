@@ -193,7 +193,7 @@ export function DashboardShell({
   const closeMobile = () => setMobileOpen(false);
 
   return (
-    <div className="min-h-screen bg-background antialiased" data-testid="dashboard-shell">
+    <div className="min-h-0 bg-background antialiased" data-testid="dashboard-shell">
       <NotificationBanner currentVersion={APP_VERSION} />
 
       <div className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 lg:hidden">
@@ -202,7 +202,7 @@ export function DashboardShell({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-9 w-9 shrink-0 p-0"
+            className="h-11 w-11 shrink-0 p-0"
             aria-expanded={mobileOpen}
             aria-controls="dashboard-mobile-nav"
             aria-label={
@@ -296,7 +296,7 @@ export function DashboardShell({
           </div>
         </aside>
 
-        <main className="flex min-h-screen min-w-0 flex-1 flex-col lg:ml-64">{children}</main>
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col pb-8 lg:ml-64">{children}</main>
       </div>
     </div>
   );

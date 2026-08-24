@@ -101,7 +101,7 @@ export default function SignInPage() {
             required
             autoComplete="email"
             data-testid="sign-in-email"
-            className="min-h-11 bg-card"
+            className="min-h-11 bg-muted/40"
           />
         </div>
 
@@ -127,7 +127,7 @@ export default function SignInPage() {
             required
             autoComplete="current-password"
             data-testid="sign-in-password"
-            className="min-h-11 bg-card"
+            className="min-h-11 bg-muted/40"
           />
         </div>
 

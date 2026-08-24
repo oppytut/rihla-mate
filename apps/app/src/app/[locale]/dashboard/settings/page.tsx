@@ -187,6 +187,7 @@ export default function SettingsPage() {
                 <div className="flex items-center gap-4 pt-4 border-t border-border">
                   <Button
                     type="button"
+                    className="min-h-11 w-full md:w-auto"
                     onClick={handleSave}
                     disabled={saveMutation.isPending}
                     data-testid="settings-save"

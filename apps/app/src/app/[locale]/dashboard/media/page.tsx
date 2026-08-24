@@ -58,7 +58,7 @@ export default function MediaPage() {
           mediaQuery.isSuccess ? t("media.listCount", { count: total }) : t("media.description")
         }
         actions={
-          <Button type="button" data-testid="media-upload">
+          <Button type="button" className="min-h-11 w-full sm:w-auto" data-testid="media-upload">
             {t("media.upload")}
           </Button>
         }
@@ -90,7 +90,7 @@ export default function MediaPage() {
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
               {t("media.emptyHint")}
             </p>
-            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+            <p className="mx-auto mt-1 hidden max-w-sm text-sm text-muted-foreground md:block">
               {t("media.dropHint")}
             </p>
           </div>
