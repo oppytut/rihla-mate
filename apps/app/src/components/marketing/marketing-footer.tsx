@@ -133,42 +133,47 @@ export async function MarketingFooter({
             />
             <p className="text-xs text-muted-foreground">{t("footer.tagline")}</p>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end sm:gap-6">
             <LocaleSwitcher />
-            <Link
-              href={featuresHref}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            <nav
+              className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2"
+              aria-label="Footer"
             >
-              {t("footer.features")}
-            </Link>
-            <Link
-              href={pricingHref}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("footer.pricing")}
-            </Link>
-            <Link
-              href={faqHref}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("footer.faq")}
-            </Link>
-            <Link
-              href="/guide"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("nav.guide")}
-            </Link>
-            <a
-              href="mailto:hello@rihla-mate.com"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("footer.contact")}
-            </a>
+              <Link
+                href={featuresHref}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.features")}
+              </Link>
+              <Link
+                href={pricingHref}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.pricing")}
+              </Link>
+              <Link
+                href={faqHref}
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.faq")}
+              </Link>
+              <Link
+                href="/guide"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("nav.guide")}
+              </Link>
+              <a
+                href="mailto:hello@rihla-mate.com"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.contact")}
+              </a>
+            </nav>
           </div>
         </div>
         <div className="mt-6 border-t border-border/40 pt-6 text-center">
-          <p className="text-xs text-muted-foreground">{t("footer.copyright", { year })}</p>
+          <p className="text-sm text-foreground/70">{t("footer.copyright", { year })}</p>
         </div>
       </div>
     </footer>
