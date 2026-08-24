@@ -59,7 +59,7 @@ export default function MediaPage() {
         }
       />
 
-      <div className="px-4 lg:px-8 py-6">
+      <div className="flex min-h-[calc(100dvh-8rem)] flex-col px-4 py-6 lg:px-8">
         {mediaQuery.isError && (
           <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6">
             <p className="text-sm text-destructive">
@@ -78,12 +78,15 @@ export default function MediaPage() {
 
         {!mediaQuery.isLoading && !mediaQuery.isError && mediaItems.length === 0 && (
           <div
-            className="rounded-lg border border-border bg-card p-10 text-center sm:p-12"
+            className="flex min-h-[min(28rem,calc(100dvh-12rem))] flex-col items-center justify-center rounded-lg border border-dashed border-border bg-card p-10 text-center sm:p-12"
             data-testid="media-empty"
           >
             <p className="text-base font-medium text-foreground">{t("media.empty")}</p>
             <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
               {t("media.emptyHint")}
+            </p>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+              {t("media.dropHint")}
             </p>
           </div>
         )}
@@ -91,7 +94,7 @@ export default function MediaPage() {
         {!mediaQuery.isLoading && !mediaQuery.isError && mediaItems.length > 0 && (
           <>
             <div
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+              className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8"
               data-testid="media-grid"
             >
               {mediaItems.map((item) => (

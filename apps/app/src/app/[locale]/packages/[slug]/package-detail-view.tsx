@@ -212,7 +212,7 @@ export function PublicPackageDetailView() {
   const bookHref = `/packages/${slug}/book`;
 
   return (
-    <div className="min-h-screen bg-background pb-28" data-testid="package-detail">
+    <div className="min-h-screen bg-background pb-28 md:pb-10" data-testid="package-detail">
       <header className="relative overflow-hidden border-b border-border/40 bg-card">
         <div
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_80%_at_0%_0%,oklch(0.42_0.09_165_/_0.12),transparent)]"
@@ -225,7 +225,7 @@ export function PublicPackageDetailView() {
           >
             {t("bookings.backHome")}
           </Link>
-          <div className="mt-4 max-w-3xl">
+          <div className="mt-4">
             <div className="flex flex-wrap items-center gap-2">
               {catLabel ? (
                 <Badge variant="outline" className="font-medium">
@@ -266,7 +266,7 @@ export function PublicPackageDetailView() {
             </div>
           </div>
 
-          <div className="mt-8 max-w-4xl" data-testid="package-detail-gallery">
+          <div className="mt-8" data-testid="package-detail-gallery">
             <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {t("packages.detail.gallery")}
             </p>
@@ -316,7 +316,7 @@ export function PublicPackageDetailView() {
         </div>
       </header>
 
-      <div className={`${marketingShellClass} max-w-4xl space-y-6 py-8`}>
+      <div className={`${marketingShellClass} space-y-6 py-8`}>
         {pkg.description ? (
           <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
             <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
@@ -433,10 +433,8 @@ export function PublicPackageDetailView() {
         </Card>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div
-          className={`${marketingShellClass} flex max-w-4xl items-center justify-between gap-3 py-3`}
-        >
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
+        <div className={`${marketingShellClass} flex items-center justify-between gap-3 py-3`}>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground">{pkg.title}</p>
             <p className="text-xs text-muted-foreground">

@@ -18,7 +18,7 @@ export function PageHeader({
   titleTestId = "page-heading",
 }: PageHeaderProps) {
   return (
-    <header className={cn("border-b border-border bg-card px-4 py-6 lg:px-8", className)}>
+    <header className={cn("border-b border-border bg-card px-4 py-4 lg:px-8", className)}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           {leading ? <div className="mb-2">{leading}</div> : null}

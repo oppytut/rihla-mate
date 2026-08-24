@@ -18,9 +18,9 @@ type AuthShellProps = {
 };
 
 const maxWidthClass = {
-  sm: "max-w-sm sm:max-w-md xl:max-w-lg",
-  md: "max-w-md xl:max-w-xl",
-  lg: "max-w-lg xl:max-w-2xl",
+  sm: "max-w-md sm:max-w-lg xl:max-w-xl 2xl:max-w-2xl",
+  md: "max-w-lg xl:max-w-2xl 2xl:max-w-3xl",
+  lg: "max-w-xl xl:max-w-3xl 2xl:max-w-4xl",
 } as const;
 
 export function AuthShell({
