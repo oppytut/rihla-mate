@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { MarketingLanding } from "./marketing/marketing-landing";
 import { BureauLanding } from "./bureau-landing";
@@ -12,10 +12,16 @@ import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { pages } from "@/lib/db/schema/pages";
-import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField, cmsText } from "@/lib/cms-content";
+import {
+  cmsAbsoluteHttpUrl,
+  cmsPackageCopy,
+  cmsPageBody,
+  cmsPageTitle,
+  cmsSeoField,
+} from "@/lib/cms-content";
 import { and, desc, eq } from "drizzle-orm";
 
-async function loadBureauHome() {
+async function loadBureauHome(locale: string) {
   try {
     const db = await getDb();
     const [pkgRows, homepageFlag, homepageSlug] = await Promise.all([
@@ -30,6 +36,7 @@ async function loadBureauHome() {
           currency: packages.currency,
           departureCity: packages.departureCity,
           category: packages.category,
+          i18n: packages.i18n,
         })
         .from(packages)
         .where(eq(packages.status, "published"))
@@ -47,9 +54,22 @@ async function loadBureauHome() {
     ]);
     const cms = homepageFlag[0] ?? homepageSlug[0];
     return {
-      packages: pkgRows,
-      cmsTitle: cms?.title ?? cmsText(cms?.content, "title"),
-      cmsBody: cmsPageBody(cms?.content),
+      packages: pkgRows.map((row) => {
+        const copy = cmsPackageCopy(row.title, row.description, row.i18n, locale);
+        return {
+          id: row.id,
+          title: copy.title,
+          slug: row.slug,
+          description: copy.description,
+          durationDays: row.durationDays,
+          price: row.price,
+          currency: row.currency,
+          departureCity: row.departureCity,
+          category: row.category,
+        };
+      }),
+      cmsTitle: cmsPageTitle(cms?.title, cms?.content, locale),
+      cmsBody: cmsPageBody(cms?.content, locale),
       cmsSeo: cms?.seo ?? null,
     };
   } catch {
@@ -63,10 +83,11 @@ export async function generateMetadata(): Promise<Metadata> {
     return {};
   }
   const t = await getTranslations("marketing.bureau");
+  const locale = await getLocale();
   const name = (await getBureauDisplayName()) ?? t("title");
-  const home = await loadBureauHome();
-  const seoTitle = cmsSeoField(home.cmsSeo, "title");
-  const seoDescription = cmsSeoField(home.cmsSeo, "description");
+  const home = await loadBureauHome(locale);
+  const seoTitle = cmsSeoField(home.cmsSeo, "title", locale);
+  const seoDescription = cmsSeoField(home.cmsSeo, "description", locale);
   return bureauCatalogMetadata({
     bureauName: name,
     pageTitle: seoTitle ?? name,
@@ -80,7 +101,8 @@ export default async function HomePage() {
   if (!isBureauHostname(hostname)) {
     return <MarketingLanding />;
   }
-  const [data, contact] = await Promise.all([loadBureauHome(), getBureauPublicContact()]);
+  const locale = await getLocale();
+  const [data, contact] = await Promise.all([loadBureauHome(locale), getBureauPublicContact()]);
   return (
     <BureauLanding
       packages={data.packages}

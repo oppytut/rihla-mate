@@ -1,13 +1,14 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { getLocale } from "next-intl/server";
 import { BureauCmsPage } from "../bureau-cms-page";
 import {
   bureauCatalogMetadata,
   getBureauDisplayName,
   getBureauPublicContact,
 } from "@/lib/bureau-brand";
-import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField } from "@/lib/cms-content";
+import { cmsAbsoluteHttpUrl, cmsPageBody, cmsPageTitle, cmsSeoField } from "@/lib/cms-content";
 import { getPublishedPageBySlug, isReservedPublicSlug } from "@/lib/cms-pages";
 import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
 
@@ -21,12 +22,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
   const page = await getPublishedPageBySlug(slug);
   if (!page) return {};
+  const locale = await getLocale();
   const bureauName = (await getBureauDisplayName()) ?? page.title;
   return bureauCatalogMetadata({
     bureauName,
-    pageTitle: cmsSeoField(page.seo, "title") ?? page.title,
-    description: cmsSeoField(page.seo, "description") ?? cmsPageBody(page.content) ?? undefined,
-    ogImage: cmsAbsoluteHttpUrl(cmsSeoField(page.seo, "ogImage")),
+    pageTitle:
+      cmsSeoField(page.seo, "title", locale) ??
+      cmsPageTitle(page.title, page.content, locale) ??
+      page.title,
+    description:
+      cmsSeoField(page.seo, "description", locale) ??
+      cmsPageBody(page.content, locale) ??
+      undefined,
+    ogImage: cmsAbsoluteHttpUrl(cmsSeoField(page.seo, "ogImage", locale)),
   });
 }
 
@@ -51,5 +59,12 @@ export default async function PublicCmsPage({ params }: Props) {
     redirect("/");
   }
 
-  return <BureauCmsPage title={page.title} body={cmsPageBody(page.content)} contact={contact} />;
+  const locale = await getLocale();
+  return (
+    <BureauCmsPage
+      title={cmsPageTitle(page.title, page.content, locale) ?? page.title}
+      body={cmsPageBody(page.content, locale)}
+      contact={contact}
+    />
+  );
 }
