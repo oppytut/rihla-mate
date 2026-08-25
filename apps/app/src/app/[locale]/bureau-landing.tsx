@@ -2,7 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
-import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
+import { bureauShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
+import Image from "next/image";
 import { BureauPackageGrid } from "@/app/[locale]/bureau-package-grid";
 import { BureauWhatsAppFab } from "@/components/marketing/bureau-whatsapp-fab";
 import { whatsappHref, type BureauPublicContact } from "@/lib/bureau-contact";
@@ -67,7 +68,7 @@ export async function BureauLanding({
       <main>
         {catalog ? (
           <section className="border-b border-border/40 bg-muted/20">
-            <div className={`${marketingShellClass} py-10 lg:py-12`}>
+            <div className={`${bureauShellClass} py-10 lg:py-12`}>
               <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {t("catalogTitle")}
               </h1>
@@ -75,35 +76,42 @@ export async function BureauLanding({
             </div>
           </section>
         ) : (
-          <section className="relative overflow-hidden border-b border-border/40">
+          <section className="relative min-h-[28rem] overflow-hidden border-b border-border/40 lg:min-h-[36rem]">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2000&q=80)",
+                  "url(https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=2400&q=80)",
               }}
               aria-hidden
             />
-            <div className="absolute inset-0 bg-background/85" aria-hidden />
-            <div className={`relative ${marketingShellClass} py-14 lg:py-20`}>
-              <p className="mb-3 text-sm font-medium text-primary">{t("heroEyebrow")}</p>
-              <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/25"
+              aria-hidden
+            />
+            <div
+              className={`relative ${bureauShellClass} flex min-h-[28rem] flex-col justify-end py-16 lg:min-h-[36rem] lg:py-24`}
+            >
+              <p className="mb-3 text-sm font-medium tracking-wide text-amber-200/90">
+                {t("heroEyebrow")}
+              </p>
+              <h1 className="max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl lg:text-6xl">
                 {cmsTitle?.trim() || t("heroTitle")}
               </h1>
-              <p className="mt-4 max-w-2xl whitespace-pre-wrap text-base text-muted-foreground sm:text-lg">
+              <p className="mt-4 max-w-2xl whitespace-pre-wrap text-base text-white/85 sm:text-lg">
                 {cmsBody?.trim() || t("heroLead")}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/packages"
-                  className="inline-flex min-h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
+                  className="inline-flex min-h-11 items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
                 >
                   {t("ctaPackages")}
                 </Link>
                 {wa ? (
                   <a
                     href={wa}
-                    className="inline-flex min-h-11 items-center rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-muted"
+                    className="inline-flex min-h-11 items-center rounded-md border border-white/40 bg-white/10 px-5 text-sm font-medium text-white backdrop-blur hover:bg-white/20"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -111,12 +119,12 @@ export async function BureauLanding({
                   </a>
                 ) : null}
               </div>
-              <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {(["trustPpiu", "trustHotel", "trustMutawwif", "trustQuota"] as const).map(
                   (key) => (
                     <li
                       key={key}
-                      className="rounded-md border border-border/60 bg-background/80 px-3 py-2 text-sm text-foreground"
+                      className="rounded-md border border-white/15 bg-black/35 px-3 py-2 text-sm text-white/90 backdrop-blur-sm"
                     >
                       {t(key)}
                     </li>
@@ -127,7 +135,7 @@ export async function BureauLanding({
           </section>
         )}
 
-        <section id="packages" className={`${marketingShellClass} py-12`}>
+        <section id="packages" className={`${bureauShellClass} py-12`}>
           {packages.length === 0 ? (
             <div className="max-w-xl">
               <p className="text-sm text-muted-foreground">{t("emptyPackages")}</p>
@@ -146,7 +154,7 @@ export async function BureauLanding({
         {catalog ? null : (
           <>
             <section id="why" className="border-t border-border/40 bg-muted/20">
-              <div className={`${marketingShellClass} py-12`}>
+              <div className={`${bureauShellClass} py-12`}>
                 <h2 className="text-xl font-semibold text-foreground">{t("whyTitle")}</h2>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t("whyLead")}</p>
                 <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -163,7 +171,7 @@ export async function BureauLanding({
             </section>
 
             <section id="how" className="border-t border-border/40">
-              <div className={`${marketingShellClass} py-12`}>
+              <div className={`${bureauShellClass} py-12`}>
                 <h2 className="text-xl font-semibold text-foreground">{t("howTitle")}</h2>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t("howLead")}</p>
                 <ol className="mt-8 grid gap-6 sm:grid-cols-3">
@@ -183,7 +191,7 @@ export async function BureauLanding({
             </section>
 
             <section id="gallery" className="border-t border-border/40 bg-muted/20">
-              <div className={`${marketingShellClass} py-12`}>
+              <div className={`${bureauShellClass} py-12`}>
                 <h2 className="text-xl font-semibold text-foreground">{t("galleryTitle")}</h2>
                 <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   {GALLERY.map((item) => (
@@ -191,7 +199,13 @@ export async function BureauLanding({
                       key={item.src}
                       className="overflow-hidden rounded-lg border border-border/60"
                     >
-                      <img src={item.src} alt={item.alt} className="h-40 w-full object-cover" />
+                      <Image
+                        src={item.src}
+                        alt={item.alt}
+                        width={600}
+                        height={400}
+                        className="h-48 w-full object-cover"
+                      />
                     </li>
                   ))}
                 </ul>
@@ -199,7 +213,7 @@ export async function BureauLanding({
             </section>
 
             <section id="testimonials" className="border-t border-border/40">
-              <div className={`${marketingShellClass} py-12`}>
+              <div className={`${bureauShellClass} py-12`}>
                 <h2 className="text-xl font-semibold text-foreground">{t("testimonialsTitle")}</h2>
                 <ul className="mt-6 grid gap-6 sm:grid-cols-2">
                   {TESTIMONIAL_KEYS.map((key) => (
@@ -216,7 +230,7 @@ export async function BureauLanding({
           </>
         )}
 
-        <section id="contact" className={`${marketingShellClass} py-12`}>
+        <section id="contact" className={`${bureauShellClass} py-12`}>
           <p className="text-sm text-muted-foreground">{t("contactLead")}</p>
           {contact?.address ? (
             <p className="mt-3 text-sm text-foreground">{contact.address}</p>

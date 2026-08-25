@@ -82,7 +82,7 @@ export async function MarketingFooter({
   if (bureau) {
     return (
       <footer className="border-t border-border/40 py-8">
-        <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-10 xl:px-16">
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:justify-between">
             <div className="flex flex-col items-center gap-2 sm:items-start">
               <BrandMark
