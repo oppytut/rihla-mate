@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField, cmsText } from "./cms-content";
+import {
+  buildCmsContent,
+  buildCmsSeo,
+  buildPackageI18n,
+  cmsAbsoluteHttpUrl,
+  cmsLocaleCopies,
+  cmsLocalizedText,
+  cmsPackageCopy,
+  cmsPageBody,
+  cmsPageTitle,
+  cmsSeoField,
+  cmsText,
+} from "./cms-content";
 
 describe("cmsText", () => {
   it("returns trimmed string fields and ignores empty values", () => {
@@ -25,6 +37,60 @@ describe("cmsSeoField", () => {
     expect(cmsSeoField({ ogImage: " https://cdn.example/og.jpg " }, "ogImage")).toBe(
       "https://cdn.example/og.jpg",
     );
+  });
+});
+
+describe("cmsLocalizedText / cmsPageBody locale", () => {
+  const content = {
+    body: "ID body",
+    title: "ID title",
+    locales: {
+      en: { body: "EN body", title: "EN title" },
+      ar: { body: "AR body" },
+    },
+  };
+
+  it("returns locale copy and falls back to ID", () => {
+    expect(cmsPageBody(content, "en")).toBe("EN body");
+    expect(cmsPageBody(content, "ar")).toBe("AR body");
+    expect(cmsPageBody(content, "id")).toBe("ID body");
+    expect(cmsPageBody(content, "en")).not.toBe("ID body");
+    expect(cmsPageTitle("row", content, "en")).toBe("EN title");
+    expect(cmsPageTitle("row", content, "ar")).toBe("ID title");
+    expect(cmsLocalizedText(content, "missing", "en")).toBeNull();
+  });
+
+  it("does not inherit ID body into empty EN/AR editor copies", () => {
+    const copies = cmsLocaleCopies(content);
+    expect(copies.id.body).toBe("ID body");
+    expect(copies.en.body).toBe("EN body");
+    expect(cmsLocaleCopies({ body: "only-id" }).en.body).toBe("");
+    expect(cmsLocaleCopies({ body: "only-id" }).ar.body).toBe("");
+  });
+});
+
+describe("buildCmsContent / buildCmsSeo / package i18n", () => {
+  it("omits empty locale buckets", () => {
+    expect(buildCmsContent("Hello", { en: { title: "", body: "  " } })).toEqual({ body: "Hello" });
+    expect(buildCmsContent("Hello", { en: { title: "Hi", body: "EN" } }).locales).toEqual({
+      en: { title: "Hi", body: "EN" },
+    });
+    expect(
+      buildCmsSeo({
+        title: "T",
+        description: "D",
+        ogImage: "",
+        locales: { en: { title: "ET", description: "" } },
+      }).locales,
+    ).toEqual({ en: { title: "ET" } });
+    expect(cmsSeoField({ title: "T", locales: { en: { title: "ET" } } }, "title", "en")).toBe("ET");
+    expect(cmsPackageCopy("ID", "desc", { en: { title: "EN" } }, "en")).toEqual({
+      title: "EN",
+      description: "desc",
+    });
+    expect(buildPackageI18n({ en: { title: "EN", description: "" } })).toEqual({
+      en: { title: "EN" },
+    });
   });
 });
 
