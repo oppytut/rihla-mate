@@ -204,7 +204,7 @@ export function pickBureauClientMessages(
   options: { catalog?: boolean; auth?: boolean } = {},
 ): Record<string, unknown> {
   const drop = new Set<string>(BUREAU_PUBLIC_DROP_NAMESPACES);
-  if (options.auth) drop.delete("auth");
+  drop.delete("auth");
   if (!options.catalog) {
     for (const key of BUREAU_CATALOG_NAMESPACES) drop.add(key);
   }
@@ -214,10 +214,8 @@ export function pickBureauClientMessages(
   }
   const common = messages.common;
   next.common = isRecord(common) ? pickKeys(common, BUREAU_PUBLIC_COMMON_KEYS) : {};
-  if (options.auth) {
-    const auth = messages.auth;
-    next.auth = isRecord(auth) ? pickKeys(auth, BUREAU_AUTH_KEYS) : {};
-  }
+  const auth = messages.auth;
+  next.auth = isRecord(auth) ? pickKeys(auth, BUREAU_AUTH_KEYS) : {};
   const marketing = messages.marketing;
   if (!isRecord(marketing)) {
     delete next.marketing;
