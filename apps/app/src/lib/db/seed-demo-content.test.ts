@@ -10,7 +10,9 @@ describe("assertDemoPagesSafe", () => {
   it("accepts the shipped demo pages", () => {
     expect(() => assertDemoPagesSafe()).not.toThrow();
     expect(DEMO_PAGES.filter((p) => p.isHomepage)).toHaveLength(1);
-    expect(DEMO_PAGES.every((p) => p.slug && p.body.trim())).toBe(true);
+    expect(
+      DEMO_PAGES.every((p) => p.slug && p.body.trim() && p.ogImage.startsWith("https://")),
+    ).toBe(true);
   });
 
   it("rejects reserved slugs, duplicates, and missing homepage", () => {

@@ -1,3 +1,4 @@
+import { cmsAbsoluteHttpUrl } from "@/lib/cms-content";
 import { isReservedPublicSlug } from "@/lib/cms-pages";
 
 export type DemoPageSeed = {
@@ -6,9 +7,13 @@ export type DemoPageSeed = {
   body: string;
   seoTitle: string;
   seoDescription: string;
+  ogImage: string;
   isPublished: boolean;
   isHomepage: boolean;
 };
+
+export const DEMO_OG_IMAGE =
+  "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=80";
 
 export const DEMO_SETTINGS: Record<string, string> = {
   appName: "Biro Demo",
@@ -35,6 +40,7 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     seoTitle: "Biro Demo — Paket Umrah",
     seoDescription:
       "Paket Umrah ekonomi, plus, dan VIP dari Biro Demo. Mutawwif Indonesia, hotel dekat Haram.",
+    ogImage: DEMO_OG_IMAGE,
     isPublished: true,
     isHomepage: true,
   },
@@ -48,6 +54,7 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ].join("\n"),
     seoTitle: "Tentang Biro Demo",
     seoDescription: "Profil singkat Biro Demo, travel Umrah white-label.",
+    ogImage: DEMO_OG_IMAGE,
     isPublished: true,
     isHomepage: false,
   },
@@ -63,6 +70,7 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ].join("\n"),
     seoTitle: "Kontak Biro Demo",
     seoDescription: "Kontak Biro Demo untuk informasi paket Umrah.",
+    ogImage: DEMO_OG_IMAGE,
     isPublished: true,
     isHomepage: false,
   },
@@ -78,6 +86,7 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ].join("\n"),
     seoTitle: "FAQ Umrah — Biro Demo",
     seoDescription: "Jawaban singkat seputar paket, visa, dan booking Umrah Biro Demo.",
+    ogImage: DEMO_OG_IMAGE,
     isPublished: true,
     isHomepage: false,
   },
@@ -98,6 +107,9 @@ export function assertDemoPagesSafe(pages: DemoPageSeed[] = DEMO_PAGES): void {
       throw new Error(`Duplicate demo CMS slug "${slug}"`);
     }
     slugs.add(slug);
+    if (!cmsAbsoluteHttpUrl(page.ogImage)) {
+      throw new Error(`Demo CMS slug "${slug}" has invalid ogImage URL`);
+    }
     if (page.isHomepage) homepages += 1;
   }
   if (homepages !== 1) {
