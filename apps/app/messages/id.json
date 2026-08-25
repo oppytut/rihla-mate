@@ -747,6 +747,7 @@
       "packages": "Paket",
       "howToBook": "Cara daftar",
       "contact": "Kontak",
+      "about": "Tentang",
       "staffSignIn": "Masuk staf"
     },
     "bureau": {
@@ -761,8 +762,66 @@
       "fromPrice": "Mulai",
       "viewPackage": "Detail paket",
       "howTitle": "Cara daftar",
-      "howLead": "Pilih paket, isi data jamaah, lalu bayar DP sesuai instruksi.",
-      "contactLead": "Ada pertanyaan? Hubungi staf biro.",
+      "howLead": "Tiga langkah dari katalog sampai DP. Staf kami menghubungi Anda setelah data jamaah masuk.",
+      "howSteps": {
+        "choose": {
+          "title": "Pilih paket",
+          "body": "Bandingkan durasi, embarkasi, dan harga. Buka detail untuk itinerary dan kuota."
+        },
+        "details": {
+          "title": "Isi data jamaah",
+          "body": "Nama sesuai paspor, kontak, dan dokumen. Paspor berlaku minimal delapan bulan."
+        },
+        "deposit": {
+          "title": "Bayar DP",
+          "body": "Ikuti instruksi pembayaran. Kursi dikunci setelah DP terverifikasi."
+        }
+      },
+      "contactLead": "Ada pertanyaan? Hubungi kantor kami.",
+      "contactHours": "Senin–Jumat 09.00–17.00 WIB · Sabtu 09.00–13.00 WIB",
+      "whatsappCta": "Konsultasi WhatsApp",
+      "trustPpiu": "PPIU (demo) — izin perjalanan ibadah",
+      "trustHotel": "Hotel walking distance ke Haram",
+      "trustMutawwif": "Mutawwif berbahasa Indonesia",
+      "trustQuota": "Kuota keberangkatan diumumkan jauh-jauh hari",
+      "whyTitle": "Mengapa berangkat bersama kami",
+      "whyLead": "Fokus pada ibadah yang tidak terburu-buru, bukan paket wisata umum.",
+      "whyItems": {
+        "hotel": {
+          "title": "Dekat masjid",
+          "body": "Hotel yang kami pilih walking distance ke Masjidil Haram atau Nabawi."
+        },
+        "guide": {
+          "title": "Pendampingan manasik",
+          "body": "Briefing di Jakarta dan mutawwif di Tanah Suci, termasuk untuk jamaah lansia."
+        },
+        "schedule": {
+          "title": "Jadwal jelas",
+          "body": "Tanggal take-off dan sisa kuota kami sampaikan sebelum Anda bayar DP."
+        },
+        "office": {
+          "title": "Kantor bisa dikunjungi",
+          "body": "Datang ke Senen untuk konsultasi kamar, cicilan, dan perbedaan paket."
+        }
+      },
+      "galleryTitle": "Suasana perjalanan",
+      "testimonialsTitle": "Kata jamaah",
+      "testimonials": {
+        "one": {
+          "quote": "Manasik di Jakarta jelas, di Makkah hotelnya dekat. Orang tua kami tidak kelelahan jalan kaki.",
+          "name": "Ibu Sari, kloter Juli"
+        },
+        "two": {
+          "quote": "Mutawwif sabar menjelaskan thawaf. Kuota Raudhah di paket plus sesuai yang dijanjikan staf Senen.",
+          "name": "Bapak Andi, embarkasi Surabaya"
+        }
+      },
+      "catalogTitle": "Paket Umrah",
+      "catalogLead": "Filter kategori, embarkasi, dan durasi. Buka detail untuk jadwal keberangkatan.",
+      "filterCity": "Embarkasi",
+      "filterAllCities": "Semua kota",
+      "filterDuration": "Durasi",
+      "filterAllDurations": "Semua durasi",
       "poweredHint": "Situs biro",
       "copyright": "© {year} {name}. Seluruh hak cipta dilindungi.",
       "filterCategory": "Kategori",
