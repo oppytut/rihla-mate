@@ -108,7 +108,7 @@ describe("site-mode", () => {
     expect(slim.guide).toBeUndefined();
     expect(slim.landing).toBeUndefined();
     expect(slim.dashboard).toBeUndefined();
-    expect(slim.auth).toBeUndefined();
+    expect(slim.auth).toEqual({ signIn: "Masuk" });
     expect(slim.packages).toBeUndefined();
     expect(slim.validation).toBeUndefined();
     expect(slim.bookings).toBeUndefined();
