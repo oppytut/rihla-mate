@@ -5,6 +5,7 @@ import { and, count, eq, ne } from "drizzle-orm";
 import { Pool } from "pg";
 import { packages, bookings, pages, settings } from "./schema";
 import { logger } from "@/lib/utils/logger";
+import { buildCmsContent, buildCmsSeo, buildPackageI18n } from "@/lib/cms-content";
 import { assertDemoPagesSafe, DEMO_PAGES, DEMO_SETTINGS } from "./seed-demo-content";
 
 type PackageInsert = typeof packages.$inferInsert;
@@ -125,6 +126,18 @@ const PACKAGE_DATA: PackageInsert[] = [
     gallery: [...MEDIA.ekonomi.gallery],
     category: "economy",
     status: "published",
+    i18n: buildPackageI18n({
+      en: {
+        title: "Economy Umrah 9 Days",
+        description:
+          "A 9-day value Umrah package for Indonesian pilgrims. Jakarta–Jeddah flights, walking-distance Haram hotel, Indonesian-speaking mutawwif, and pre-departure manasik.",
+      },
+      ar: {
+        title: "عمرة اقتصادية 9 أيام",
+        description:
+          "باقة عمرة اقتصادية 9 أيام للحجاج الإندونيسيين. رحلات جاكرتا–جدة، فندق قرب الحرم سيراً، مطوف ناطق بالإندونيسية، ومناسك قبل المغادرة.",
+      },
+    }),
   },
   {
     title: "Umrah Plus 12 Hari",
@@ -230,6 +243,18 @@ const PACKAGE_DATA: PackageInsert[] = [
     gallery: [...MEDIA.plus.gallery],
     category: "premium",
     status: "published",
+    i18n: buildPackageI18n({
+      en: {
+        title: "Plus Umrah 12 Days",
+        description:
+          "A 12-day Umrah package with closer hotels, Taif & Jeddah city tours, and facilitated Raudhah quota. Suited for families who want unhurried worship.",
+      },
+      ar: {
+        title: "عمرة بلس 12 يوماً",
+        description:
+          "باقة عمرة 12 يوماً بفنادق أقرب وجولة الطائف وجدة وحصة روضة ميسّرة. مناسبة للعائلات التي تريد عبادة دون عجلة.",
+      },
+    }),
   },
   {
     title: "Umrah VIP Ramadhan",
@@ -343,6 +368,18 @@ const PACKAGE_DATA: PackageInsert[] = [
     gallery: [...MEDIA.vip.gallery],
     category: "vip",
     status: "published",
+    i18n: buildPackageI18n({
+      en: {
+        title: "VIP Ramadan Umrah",
+        description:
+          "A 14-day VIP package in Ramadan: 5-star walking-distance hotels, private handling, premium worship quota, and concierge. Limited seats per group.",
+      },
+      ar: {
+        title: "عمرة VIP رمضان",
+        description:
+          "باقة VIP 14 يوماً في رمضان: فنادق خمس نجوم قرب الحرم، استقبال خاص، حصة عبادة مميزة، وخدمة كونسيرج. مقاعد محدودة لكل فوج.",
+      },
+    }),
   },
 ];
 
@@ -473,6 +510,7 @@ async function runSeed(
           featuredImage: pkg.featuredImage,
           gallery: pkg.gallery,
           category: pkg.category,
+          i18n: pkg.i18n,
           status: pkg.status,
           updatedAt: new Date(),
         },
@@ -490,12 +528,13 @@ async function runSeed(
   logger.info("Upserting demo CMS pages...", { component: "seed" });
   const now = new Date();
   for (const page of DEMO_PAGES) {
-    const content = { body: page.body };
-    const seo = {
+    const content = buildCmsContent(page.body, page.locales);
+    const seo = buildCmsSeo({
       title: page.seoTitle,
       description: page.seoDescription,
       ogImage: page.ogImage,
-    };
+      locales: page.seoLocales,
+    });
     await db
       .insert(pages)
       .values({

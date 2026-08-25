@@ -21,6 +21,15 @@ describe("assertDemoPagesSafe", () => {
     expect(DEMO_PAGES.some((p) => /Biro Demo|white-label|availableDates/i.test(p.body))).toBe(
       false,
     );
+    expect(
+      DEMO_PAGES.every(
+        (p) =>
+          p.locales.en.body.trim() &&
+          p.locales.ar.body.trim() &&
+          p.seoLocales.en.title.trim() &&
+          p.seoLocales.ar.title.trim(),
+      ),
+    ).toBe(true);
   });
 
   it("rejects reserved slugs, duplicates, and missing homepage", () => {
