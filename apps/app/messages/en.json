@@ -138,6 +138,12 @@
         "pricing": "Pricing",
         "media": "Media",
         "content": "Content"
+      },
+      "localeTabs": "Content language",
+      "locale": {
+        "id": "Indonesian",
+        "en": "English",
+        "ar": "Arabic"
       }
     },
     "columns": {
@@ -499,6 +505,12 @@
         "title": "SEO Title",
         "description": "SEO Description",
         "ogImage": "OG Image URL"
+      },
+      "localeTabs": "Content language",
+      "locale": {
+        "id": "Indonesian",
+        "en": "English",
+        "ar": "Arabic"
       }
     },
     "templates": {

@@ -6,6 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { PackageFormContent, type PackageForm } from "@/components/forms/package-form";
+import { cmsText } from "@/lib/cms-content";
+
+function asI18n(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
 
 function EditPackagePage({ packageId }: { packageId: string }) {
   const t = useTranslations();
@@ -38,6 +45,10 @@ function EditPackagePage({ packageId }: { packageId: string }) {
         exclusions: pkg.exclusions ? JSON.stringify(pkg.exclusions) : "[]",
         availableDates: pkg.availableDates ? JSON.stringify(pkg.availableDates) : "[]",
         gallery: pkg.gallery ? JSON.stringify(pkg.gallery) : "[]",
+        titleEn: cmsText(asI18n(pkg.i18n)?.en, "title") ?? "",
+        descriptionEn: cmsText(asI18n(pkg.i18n)?.en, "description") ?? "",
+        titleAr: cmsText(asI18n(pkg.i18n)?.ar, "title") ?? "",
+        descriptionAr: cmsText(asI18n(pkg.i18n)?.ar, "description") ?? "",
       });
       initialized.current = true;
     }

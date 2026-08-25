@@ -10,6 +10,13 @@ import { useState, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { toast } from "sonner";
+import {
+  buildCmsContent,
+  buildCmsSeo,
+  cmsLocaleCopies,
+  type CmsLocaleCopy,
+  type CmsSeoLocaleCopy,
+} from "@/lib/cms-content";
 
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -24,11 +31,13 @@ export type PageFormData = {
   slug: string;
   title: string;
   content: string;
+  locales: { en: CmsLocaleCopy; ar: CmsLocaleCopy };
   seo: {
     title: string;
     description: string;
     ogImage: string;
   };
+  seoLocales: { en: CmsSeoLocaleCopy; ar: CmsSeoLocaleCopy };
   isPublished: boolean;
   isHomepage: boolean;
 };
@@ -52,8 +61,16 @@ export function pageContentToBody(content: unknown): string {
   return "";
 }
 
-export function bodyToPageContent(body: string): Record<string, unknown> {
-  return { body };
+export function bodyToPageContent(
+  body: string,
+  locales?: { en: CmsLocaleCopy; ar: CmsLocaleCopy },
+): Record<string, unknown> {
+  return buildCmsContent(body, locales ?? {});
+}
+
+export function pageContentToLocales(content: unknown): { en: CmsLocaleCopy; ar: CmsLocaleCopy } {
+  const copies = cmsLocaleCopies(content);
+  return { en: copies.en, ar: copies.ar };
 }
 
 export const initialPageForm: PageFormData = {
@@ -61,11 +78,13 @@ export const initialPageForm: PageFormData = {
   slug: "",
   title: "",
   content: "",
+  locales: { en: { title: "", body: "" }, ar: { title: "", body: "" } },
   seo: {
     title: "",
     description: "",
     ogImage: "",
   },
+  seoLocales: { en: { title: "", description: "" }, ar: { title: "", description: "" } },
   isPublished: false,
   isHomepage: false,
 };
@@ -86,6 +105,7 @@ export function PageFormContent({
   const [form, setForm] = useState<PageFormData>(initialData || initialPageForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [copyLocale, setCopyLocale] = useState<"id" | "en" | "ar">("id");
 
   useEffect(() => {
     document.title = `${isEditMode ? t("pages.editTitle") : t("pages.createTitle")} - ${t("common.appName")}`;
@@ -167,12 +187,13 @@ export function PageFormContent({
       title: form.title,
       slug: form.slug,
       templateId: form.templateId,
-      content: bodyToPageContent(form.content),
-      seo: {
-        title: form.seo.title || undefined,
-        description: form.seo.description || undefined,
-        ogImage: form.seo.ogImage || undefined,
-      },
+      content: bodyToPageContent(form.content, form.locales),
+      seo: buildCmsSeo({
+        title: form.seo.title,
+        description: form.seo.description,
+        ogImage: form.seo.ogImage,
+        locales: form.seoLocales,
+      }),
       isPublished: form.isPublished,
       isHomepage: form.isHomepage,
     };
@@ -242,6 +263,31 @@ export function PageFormContent({
                 )}
               </div>
 
+              <div
+                className="flex flex-wrap gap-2"
+                role="tablist"
+                aria-label={t("pages.fields.localeTabs")}
+              >
+                {(["id", "en", "ar"] as const).map((loc) => (
+                  <button
+                    key={loc}
+                    type="button"
+                    role="tab"
+                    aria-selected={copyLocale === loc}
+                    data-testid={`page-locale-${loc}`}
+                    onClick={() => setCopyLocale(loc)}
+                    className={cn(
+                      "rounded-md border px-3 py-1 text-sm",
+                      copyLocale === loc
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border text-muted-foreground",
+                    )}
+                  >
+                    {t(`pages.fields.locale.${loc}`)}
+                  </button>
+                ))}
+              </div>
+
               <div className="space-y-2">
                 <label htmlFor="title" className="block text-sm font-medium text-foreground">
                   {t("pages.fields.title")} *
@@ -249,8 +295,23 @@ export function PageFormContent({
                 <input
                   id="title"
                   type="text"
-                  value={form.title}
-                  onChange={(e) => updateField("title", e.target.value)}
+                  value={copyLocale === "id" ? form.title : form.locales[copyLocale].title}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") {
+                      updateField("title", value);
+                      return;
+                    }
+                    const loc = copyLocale;
+                    setForm((prev) => ({
+                      ...prev,
+                      locales: {
+                        ...prev.locales,
+                        [loc]: { ...prev.locales[loc], title: value },
+                      },
+                    }));
+                    setSubmitError(null);
+                  }}
                   required
                   disabled={isSubmitting}
                   data-testid="page-title"
@@ -308,8 +369,23 @@ export function PageFormContent({
                 </label>
                 <textarea
                   id="content"
-                  value={form.content}
-                  onChange={(e) => updateField("content", e.target.value)}
+                  value={copyLocale === "id" ? form.content : form.locales[copyLocale].body}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") {
+                      updateField("content", value);
+                      return;
+                    }
+                    const loc = copyLocale;
+                    setForm((prev) => ({
+                      ...prev,
+                      locales: {
+                        ...prev.locales,
+                        [loc]: { ...prev.locales[loc], body: value },
+                      },
+                    }));
+                    setSubmitError(null);
+                  }}
                   rows={10}
                   disabled={isSubmitting}
                   data-testid="page-content"
@@ -381,8 +457,23 @@ export function PageFormContent({
                 <input
                   id="seoTitle"
                   type="text"
-                  value={form.seo.title}
-                  onChange={(e) => updateSeoField("title", e.target.value)}
+                  value={copyLocale === "id" ? form.seo.title : form.seoLocales[copyLocale].title}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") {
+                      updateSeoField("title", value);
+                      return;
+                    }
+                    const loc = copyLocale;
+                    setForm((prev) => ({
+                      ...prev,
+                      seoLocales: {
+                        ...prev.seoLocales,
+                        [loc]: { ...prev.seoLocales[loc], title: value },
+                      },
+                    }));
+                    setSubmitError(null);
+                  }}
                   disabled={isSubmitting}
                   data-testid="page-seo-title"
                   aria-label={t("pages.fields.seo.title")}
@@ -399,8 +490,27 @@ export function PageFormContent({
                 </label>
                 <textarea
                   id="seoDescription"
-                  value={form.seo.description}
-                  onChange={(e) => updateSeoField("description", e.target.value)}
+                  value={
+                    copyLocale === "id"
+                      ? form.seo.description
+                      : form.seoLocales[copyLocale].description
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") {
+                      updateSeoField("description", value);
+                      return;
+                    }
+                    const loc = copyLocale;
+                    setForm((prev) => ({
+                      ...prev,
+                      seoLocales: {
+                        ...prev.seoLocales,
+                        [loc]: { ...prev.seoLocales[loc], description: value },
+                      },
+                    }));
+                    setSubmitError(null);
+                  }}
                   rows={3}
                   disabled={isSubmitting}
                   data-testid="page-seo-description"

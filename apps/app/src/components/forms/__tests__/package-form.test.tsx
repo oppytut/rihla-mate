@@ -205,6 +205,10 @@ const validFormData: PackageForm = {
   exclusions: '["Flight tickets"]',
   availableDates: '["2026-08-01","2026-08-15"]',
   gallery: '["https://example.com/g1.jpg"]',
+  titleEn: "",
+  descriptionEn: "",
+  titleAr: "",
+  descriptionAr: "",
 };
 
 function renderCreateMode() {

@@ -138,6 +138,12 @@
         "pricing": "Harga",
         "media": "Media",
         "content": "Konten"
+      },
+      "localeTabs": "Bahasa konten",
+      "locale": {
+        "id": "Indonesia",
+        "en": "English",
+        "ar": "العربية"
       }
     },
     "columns": {
@@ -534,6 +540,12 @@
         "title": "Judul SEO",
         "description": "Deskripsi SEO",
         "ogImage": "URL Gambar OG"
+      },
+      "localeTabs": "Bahasa konten",
+      "locale": {
+        "id": "Indonesia",
+        "en": "English",
+        "ar": "العربية"
       }
     },
     "templates": {
