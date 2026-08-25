@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   bureauCatalogMetadata,
   getBureauDisplayName,
@@ -13,7 +13,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const t = await getTranslations("bookings");
   const bureauName = (await getBureauDisplayName()) ?? "Paket Umrah";
-  const pkgTitle = await getPublishedPackageTitleBySlug(slug);
+  const locale = await getLocale();
+  const pkgTitle = await getPublishedPackageTitleBySlug(slug, locale);
   const pageTitle = pkgTitle ? `${t("createTitle")} · ${pkgTitle}` : t("createTitle");
   return bureauCatalogMetadata({
     bureauName,
