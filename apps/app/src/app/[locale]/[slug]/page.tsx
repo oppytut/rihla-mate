@@ -3,7 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { BureauCmsPage } from "../bureau-cms-page";
 import { bureauCatalogMetadata, getBureauDisplayName } from "@/lib/bureau-brand";
-import { cmsPageBody, cmsSeoField } from "@/lib/cms-content";
+import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField } from "@/lib/cms-content";
 import { getPublishedPageBySlug, isReservedPublicSlug } from "@/lib/cms-pages";
 import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
 
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     bureauName,
     pageTitle: cmsSeoField(page.seo, "title") ?? page.title,
     description: cmsSeoField(page.seo, "description") ?? cmsPageBody(page.content) ?? undefined,
+    ogImage: cmsAbsoluteHttpUrl(cmsSeoField(page.seo, "ogImage")),
   });
 }
 

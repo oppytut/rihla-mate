@@ -44,13 +44,21 @@ export function bureauCatalogMetadata(opts: {
   bureauName: string;
   pageTitle: string;
   description?: string;
+  ogImage?: string | null;
 }): Metadata {
-  const { bureauName, pageTitle, description } = opts;
+  const { bureauName, pageTitle, description, ogImage } = opts;
+  const imageUrl = ogImage?.trim() || null;
   return {
     title: pageTitle,
     description,
     applicationName: bureauName,
-    openGraph: { siteName: bureauName, title: pageTitle },
+    openGraph: {
+      siteName: bureauName,
+      title: pageTitle,
+      description,
+      ...(imageUrl ? { images: [{ url: imageUrl }] } : {}),
+    },
+    ...(imageUrl ? { twitter: { card: "summary_large_image" as const, images: [imageUrl] } } : {}),
   };
 }
 
