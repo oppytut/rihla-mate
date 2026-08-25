@@ -8,13 +8,8 @@ import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { pages } from "@/lib/db/schema/pages";
+import { cmsPageBody, cmsText } from "@/lib/cms-content";
 import { and, desc, eq } from "drizzle-orm";
-
-function cmsText(content: unknown, key: string): string | null {
-  if (!content || typeof content !== "object") return null;
-  const value = (content as Record<string, unknown>)[key];
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
 
 async function loadBureauHome() {
   try {
@@ -50,7 +45,7 @@ async function loadBureauHome() {
     return {
       packages: pkgRows,
       cmsTitle: cms?.title ?? cmsText(cms?.content, "title"),
-      cmsBody: cmsText(cms?.content, "body") ?? cmsText(cms?.content, "html"),
+      cmsBody: cmsPageBody(cms?.content),
     };
   } catch {
     return { packages: [], cmsTitle: null, cmsBody: null };
