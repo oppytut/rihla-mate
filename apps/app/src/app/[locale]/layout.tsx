@@ -8,7 +8,6 @@ import { routing } from "@/i18n/routing";
 import {
   hostnameFromHostHeader,
   isBureauAuthPath,
-  isBureauCatalogPath,
   isBureauHostname,
   isProductInstancePath,
   pickBureauClientMessages,
@@ -54,7 +53,7 @@ export default async function LocaleLayout({
   const messages =
     slimBureauPublic || slimBureauAuth
       ? pickBureauClientMessages(allMessages, {
-          catalog: isBureauCatalogPath(logicalPath),
+          catalog: true,
           auth: true,
         })
       : allMessages;
