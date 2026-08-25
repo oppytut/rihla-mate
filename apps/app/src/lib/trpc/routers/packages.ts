@@ -13,6 +13,16 @@ const JSONB_FIELDS = [
   "gallery",
 ] as const;
 
+const packageI18nSchema = z
+  .record(
+    z.string(),
+    z.object({
+      title: z.string().max(255).optional(),
+      description: z.string().optional(),
+    }),
+  )
+  .optional();
+
 const parseJsonField = (field: string, name: string) => {
   try {
     return JSON.parse(field);
@@ -49,6 +59,7 @@ const packagesUpdateSchema = z.object({
   gallery: z.string().optional(),
   category: z.string().max(50).optional(),
   status: z.string().max(50).optional(),
+  i18n: packageI18nSchema,
 });
 
 export const packagesRouter = createTRPCRouter({
@@ -143,6 +154,7 @@ export const packagesRouter = createTRPCRouter({
         departureCity: packages.departureCity,
         featuredImage: packages.featuredImage,
         category: packages.category,
+        i18n: packages.i18n,
       })
       .from(packages)
       .where(eq(packages.status, "published"))
@@ -188,6 +200,7 @@ export const packagesRouter = createTRPCRouter({
         gallery: z.string().default("[]"),
         category: z.string().max(50).default("standard"),
         status: z.string().max(50).default("draft"),
+        i18n: packageI18nSchema,
       }),
     )
     .mutation(async ({ ctx, input }) => {

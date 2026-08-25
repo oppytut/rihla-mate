@@ -8,8 +8,10 @@ import { useState, useEffect, useRef } from "react";
 import {
   PageFormContent,
   pageContentToBody,
+  pageContentToLocales,
   type PageFormData,
 } from "@/components/forms/page-form";
+import { cmsSeoCopies } from "@/lib/cms-content";
 
 function EditPagePage({ pageId }: { pageId: string }) {
   const t = useTranslations();
@@ -31,6 +33,7 @@ function EditPagePage({ pageId }: { pageId: string }) {
         slug: pg.slug ?? "",
         title: pg.title ?? "",
         content: pageContentToBody(pg.content),
+        locales: pageContentToLocales(pg.content),
         seo: {
           title:
             pg.seo && typeof pg.seo === "object" && "title" in pg.seo
@@ -45,6 +48,10 @@ function EditPagePage({ pageId }: { pageId: string }) {
               ? String((pg.seo as Record<string, unknown>).ogImage ?? "")
               : "",
         },
+        seoLocales: (() => {
+          const copies = cmsSeoCopies(pg.seo);
+          return { en: copies.en, ar: copies.ar };
+        })(),
         isPublished: pg.isPublished ?? false,
         isHomepage: pg.isHomepage ?? false,
       });

@@ -13,6 +13,7 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import { Check, X, MapPin, CalendarDays, ImageOff } from "lucide-react";
 import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
+import { cmsPackageCopy } from "@/lib/cms-content";
 
 function collectGalleryUrls(featuredImage: unknown, gallery: unknown, limit = 8): string[] {
   const urls: string[] = [];
@@ -203,6 +204,7 @@ export function PublicPackageDetailView() {
   }
 
   const pkg = packageQuery.data;
+  const localized = cmsPackageCopy(pkg.title, pkg.description, pkg.i18n, locale);
   const galleryUrls = collectGalleryUrls(pkg.featuredImage, pkg.gallery);
   const itinerary = parseItinerary(pkg.itinerary);
   const inclusions = parseStringList(pkg.inclusions);
@@ -234,11 +236,11 @@ export function PublicPackageDetailView() {
               ) : null}
             </div>
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              {pkg.title}
+              {localized.title}
             </h1>
-            {pkg.description ? (
+            {localized.description ? (
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                {pkg.description}
+                {localized.description}
               </p>
             ) : null}
             <div className="mt-5 flex flex-wrap items-center gap-2">

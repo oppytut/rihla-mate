@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { settings } from "@/lib/db/schema/settings";
 import { parseBureauSettingsMap, type BureauPublicContact } from "@/lib/bureau-contact";
+import { cmsPackageCopy } from "@/lib/cms-content";
 
 function settingText(value: unknown): string | null {
   if (typeof value === "string" && value.trim()) return value.trim();
@@ -35,18 +36,22 @@ export async function getBureauDisplayName(): Promise<string | null> {
   }
 }
 
-export async function getPublishedPackageTitleBySlug(slug: string): Promise<string | null> {
+export async function getPublishedPackageTitleBySlug(
+  slug: string,
+  locale: string = "id",
+): Promise<string | null> {
   const trimmed = slug.trim();
   if (!trimmed) return null;
   try {
     const db = await getDb();
     const [row] = await db
-      .select({ title: packages.title })
+      .select({ title: packages.title, description: packages.description, i18n: packages.i18n })
       .from(packages)
       .where(and(eq(packages.slug, trimmed), eq(packages.status, "published")))
       .limit(1);
-    const title = row?.title?.trim();
-    return title || null;
+    if (!row) return null;
+    const copy = cmsPackageCopy(row.title, row.description, row.i18n, locale);
+    return copy.title.trim() || null;
   } catch {
     return null;
   }

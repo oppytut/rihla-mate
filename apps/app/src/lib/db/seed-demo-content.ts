@@ -1,4 +1,4 @@
-import { cmsAbsoluteHttpUrl } from "@/lib/cms-content";
+import { cmsAbsoluteHttpUrl, type CmsLocaleCopy, type CmsSeoLocaleCopy } from "@/lib/cms-content";
 import { isReservedPublicSlug } from "@/lib/cms-pages";
 
 export type DemoPageSeed = {
@@ -10,6 +10,8 @@ export type DemoPageSeed = {
   ogImage: string;
   isPublished: boolean;
   isHomepage: boolean;
+  locales: Record<"en" | "ar", CmsLocaleCopy>;
+  seoLocales: Record<"en" | "ar", CmsSeoLocaleCopy>;
 };
 
 export const DEMO_OG_IMAGE =
@@ -53,6 +55,44 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ogImage: OG_MAKKAH,
     isPublished: true,
     isHomepage: true,
+    locales: {
+      en: {
+        title: "A calm Umrah, close accompaniment",
+        body: [
+          "Assalamu'alaikum warahmatullahi wabarakatuh.",
+          "",
+          "Safwah Haramain accompanies pilgrims from Jakarta to Makkah and Madinah. We design packages so worship is not rushed: walking-distance hotels, mutawwif who explain the rites in everyday language, and departure quotas announced well in advance.",
+          "",
+          "Choose the 9-day Economy Umrah if you want to save while staying comfortable, Plus 12 days for families who need a slower pace, or VIP Ramadan if you want worship in the blessed month with more personal service.",
+          "",
+          "Please browse the package catalog, or visit our office in Senen to discuss schedules and room quotas.",
+        ].join("\n"),
+      },
+      ar: {
+        title: "عمرة هادئة ومرافقة قريبة",
+        body: [
+          "السلام عليكم ورحمة الله وبركاته.",
+          "",
+          "ترافق صفوة الحرمين الحجاج من جاكرتا إلى مكة والمدينة. نصمم الباقات حتى لا تكون العبادة متعجلة: فنادق قريبة سيراً، ومطوفون يشرحون المناسك بلغة يومية، وحصص مغادرة نعلنها مسبقاً.",
+          "",
+          "اختاروا عمرة الاقتصاد 9 أيام للتوفير مع الراحة، أو بلس 12 يوماً للعائلات التي تحتاج وتيرة أهدأ، أو VIP رمضان للعبادة في الشهر المبارك بخدمة أكثر خصوصية.",
+          "",
+          "تصفحوا كتالوج الباقات، أو زوروا مكتبنا في سنين لمناقشة المواعيد وحصص الغرف.",
+        ].join("\n"),
+      },
+    },
+    seoLocales: {
+      en: {
+        title: "Safwah Haramain — Jakarta Umrah packages",
+        description:
+          "Jakarta Umrah bureau with Indonesian-speaking mutawwif, hotels near the Haram, and scheduled departures. Economy, plus, and VIP Ramadan.",
+      },
+      ar: {
+        title: "صفوة الحرمين — باقات عمرة جاكرتا",
+        description:
+          "مكتب عمرة في جاكرتا مع مطوفين إندونيسيين، فنادق قرب الحرم، ومغادرات مجدولة. اقتصاد وبلس وVIP رمضان.",
+      },
+    },
   },
   {
     slug: "about",
@@ -70,6 +110,40 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ogImage: OG_MADINAH,
     isPublished: true,
     isHomepage: false,
+    locales: {
+      en: {
+        title: "About Safwah Haramain",
+        body: [
+          "Safwah Haramain is a worship travel bureau focused on Indonesian pilgrims. We are not a general tour agency: every departure includes manasik in Jakarta, airport briefing, and accompaniment in the Holy Land until return.",
+          "",
+          "Our team includes embarkation staff, mutawwif, and hotel officers used to helping elderly pilgrims, families with children, and first-time Umrah travelers.",
+          "",
+          "Our office is on Jl. Kramat Raya, Senen, Central Jakarta. Visit or call to ask about remaining quotas, hotel differences, and what each package includes.",
+        ].join("\n"),
+      },
+      ar: {
+        title: "عن صفوة الحرمين",
+        body: [
+          "صفوة الحرمين مكتب سفر للعبادة يركز على الحجاج الإندونيسيين. لسنا وكالة سياحة عامة: كل مغادرة تشمل مناسك في جاكرتا، وإحاطة في المطار، ومرافقة في الأرض المقدسة حتى العودة.",
+          "",
+          "فريقنا يشمل موظفي الإركاب والمطوفين ومسؤولي الفندق المعتادين على مساعدة كبار السن والعائلات وأول مرة يعتمرون.",
+          "",
+          "مكتبنا في شارع كرامات رايا، سنين، جاكرتا الوسطى. زورونا أو اتصلوا لسؤال الحصص المتبقية وفروق الفنادق وما يشمله كل باقة.",
+        ].join("\n"),
+      },
+    },
+    seoLocales: {
+      en: {
+        title: "About Safwah Haramain",
+        description:
+          "Profile of Safwah Haramain Umrah bureau in Central Jakarta: manasik, mutawwif, and pilgrim accompaniment to the Holy Land.",
+      },
+      ar: {
+        title: "عن صفوة الحرمين",
+        description:
+          "نبذة عن مكتب عمرة صفوة الحرمين في جاكرتا الوسطى: المناسك والمطوف ومرافقة الحجاج إلى الأرض المقدسة.",
+      },
+    },
   },
   {
     slug: "contact",
@@ -89,6 +163,43 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ogImage: OG_HOTEL,
     isPublished: true,
     isHomepage: false,
+    locales: {
+      en: {
+        title: "Contact our office",
+        body: [
+          "Office: Jl. Kramat Raya No. 45, Senen, Central Jakarta 10450",
+          "Phone / WhatsApp: +62 21 3891 2200",
+          "Email: halo@demo.rihla.my.id",
+          "",
+          "Hours: Monday–Friday 09.00–17.00 WIB, Saturday 09.00–13.00 WIB. Closed Sundays and national holidays, except two days before departure (embarkation team on standby).",
+          "",
+          "For room quota or installment questions, mention the package name and preferred departure month so staff can check remaining seats.",
+        ].join("\n"),
+      },
+      ar: {
+        title: "تواصلوا مع مكتبنا",
+        body: [
+          "المكتب: شارع كرامات رايا رقم 45، سنين، جاكرتا الوسطى 10450",
+          "هاتف / واتساب: +62 21 3891 2200",
+          "البريد: halo@demo.rihla.my.id",
+          "",
+          "ساعات العمل: الإثنين–الجمعة 09.00–17.00 بتوقيت جاكرتا، السبت 09.00–13.00. مغلق الأحد والعطل الرسمية، إلا قبل المغادرة بيومين (فريق الإركاب في الاستعداد).",
+          "",
+          "لسؤال حصص الغرف أو الأقساط، اذكروا اسم الباقة وشهر المغادرة المطلوب حتى يتحقق الموظفون من المقاعد المتبقية.",
+        ].join("\n"),
+      },
+    },
+    seoLocales: {
+      en: {
+        title: "Contact Safwah Haramain Jakarta",
+        description:
+          "Senen office address, phone, and hours for Safwah Haramain Umrah package consultation.",
+      },
+      ar: {
+        title: "اتصال صفوة الحرمين جاكرتا",
+        description: "عنوان مكتب سنين والهاتف وساعات العمل لاستشارة باقات العمرة.",
+      },
+    },
   },
   {
     slug: "faq",
@@ -108,6 +219,43 @@ export const DEMO_PAGES: DemoPageSeed[] = [
     ogImage: OG_NABAWI,
     isPublished: true,
     isHomepage: false,
+    locales: {
+      en: {
+        title: "Frequently asked questions",
+        body: [
+          "Does the price include visa and airfare? Yes. All packages include Umrah visa, return flights from Jakarta, hotel, AC bus, mutawwif, and manasik. Usually not included: insurance, personal spending, and single rooms.",
+          "",
+          "Can I change the departure date? Yes, if the replacement month still has quota and payment is not yet locked to the airline. Contact the office at least 21 days before take-off.",
+          "",
+          "How do I register? Choose a package on the Packages page, fill pilgrim data (passport valid at least 8 months), then upload a photo. Staff will contact you for the deposit and manasik schedule.",
+          "",
+          "Is there a female mutawwif? Yes, especially on departures with many women. Ask during consultation so we can match the team.",
+        ].join("\n"),
+      },
+      ar: {
+        title: "أسئلة شائعة",
+        body: [
+          "هل السعر يشمل التأشيرة وتذكرة الطيران؟ نعم. كل الباقات تشمل تأشيرة العمرة ورحلة ذهاب وعودة من جاكرتا والفندق والحافلة والمطوف والمناسك. عادة لا يشمل التأمين والمصروف الشخصي والغرفة المفردة.",
+          "",
+          "هل يمكن تغيير تاريخ المغادرة؟ نعم إذا بقيت حصة في الشهر البديل ولم يُقفل السداد مع شركة الطيران. اتصلوا بالمكتب قبل الإقلاع بـ 21 يوماً على الأقل.",
+          "",
+          "كيف أسجّل؟ اختاروا باقة من صفحة الباقات، املؤوا بيانات الحاج (جواز صالح 8 أشهر على الأقل)، ثم ارفعوا صورة. سيتواصل الموظفون للدفع المقدم وموعد المناسك.",
+          "",
+          "هل يوجد مطوفة؟ نعم، خاصة في المغادرات التي يكثر فيها النساء. اطلبوا ذلك عند الاستشارة لنلائم الفريق.",
+        ].join("\n"),
+      },
+    },
+    seoLocales: {
+      en: {
+        title: "Umrah FAQ — Safwah Haramain",
+        description:
+          "Visa, schedule changes, how to register, and female mutawwif on Safwah Haramain Umrah packages.",
+      },
+      ar: {
+        title: "أسئلة العمرة — صفوة الحرمين",
+        description: "التأشيرة وتغيير الموعد وطريقة التسجيل والمطوفة في باقات صفوة الحرمين.",
+      },
+    },
   },
 ];
 
@@ -131,7 +279,13 @@ export function assertDemoPagesSafe(pages: DemoPageSeed[] = DEMO_PAGES): void {
     if (!cmsAbsoluteHttpUrl(page.ogImage)) {
       throw new Error(`Demo CMS slug "${slug}" has invalid ogImage URL`);
     }
-    const blob = `${page.title}\n${page.body}\n${page.seoTitle}\n${page.seoDescription}`;
+    const locBlob = ["en", "ar"]
+      .map(
+        (loc) =>
+          `${page.locales[loc as "en" | "ar"].title}\n${page.locales[loc as "en" | "ar"].body}\n${page.seoLocales[loc as "en" | "ar"].title}\n${page.seoLocales[loc as "en" | "ar"].description}`,
+      )
+      .join("\n");
+    const blob = `${page.title}\n${page.body}\n${page.seoTitle}\n${page.seoDescription}\n${locBlob}`;
     if (LAB_COPY.test(blob)) {
       throw new Error(`Demo CMS slug "${slug}" still contains lab/internal copy`);
     }

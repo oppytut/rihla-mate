@@ -229,6 +229,8 @@ describe("PageFormContent", () => {
         },
         isPublished: true,
         isHomepage: false,
+        locales: { en: { title: "", body: "" }, ar: { title: "", body: "" } },
+        seoLocales: { en: { title: "", description: "" }, ar: { title: "", description: "" } },
       };
 
       render(<PageFormContent initialData={data} isEditMode={true} pageId="page-1" />);
@@ -414,6 +416,8 @@ describe("PageFormContent", () => {
             seo: { title: "", description: "", ogImage: "" },
             isPublished: false,
             isHomepage: false,
+            locales: { en: { title: "", body: "" }, ar: { title: "", body: "" } },
+            seoLocales: { en: { title: "", description: "" }, ar: { title: "", description: "" } },
           }}
           isEditMode={true}
           pageId="page-uuid-1"
@@ -439,6 +443,8 @@ describe("PageFormContent", () => {
             seo: { title: "", description: "", ogImage: "" },
             isPublished: false,
             isHomepage: false,
+            locales: { en: { title: "", body: "" }, ar: { title: "", body: "" } },
+            seoLocales: { en: { title: "", description: "" }, ar: { title: "", description: "" } },
           }}
           isEditMode={true}
           pageId="page-uuid-1"

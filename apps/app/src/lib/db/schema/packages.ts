@@ -1,4 +1,13 @@
-import { pgTable, uuid, varchar, text, integer, numeric, jsonb, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  integer,
+  numeric,
+  jsonb,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const packages = pgTable("packages", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -16,7 +25,11 @@ export const packages = pgTable("packages", {
   featuredImage: text("featured_image"),
   gallery: jsonb("gallery").notNull().default("[]"),
   category: varchar("category", { length: 50 }).notNull().default("standard"),
+  i18n: jsonb("i18n").notNull().default("{}"),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });

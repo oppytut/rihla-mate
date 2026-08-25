@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BureauLanding } from "../bureau-landing";
@@ -8,6 +8,7 @@ import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { desc, eq } from "drizzle-orm";
+import { cmsPackageCopy } from "@/lib/cms-content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("marketing.bureau");
@@ -26,6 +27,7 @@ export default async function PackagesIndexPage() {
     redirect(`${PRODUCT_ORIGIN}/`);
   }
 
+  const locale = await getLocale();
   let rows: Array<{
     id: string;
     title: string;
@@ -39,7 +41,7 @@ export default async function PackagesIndexPage() {
   }> = [];
   try {
     const db = await getDb();
-    rows = await db
+    const raw = await db
       .select({
         id: packages.id,
         title: packages.title,
@@ -50,10 +52,25 @@ export default async function PackagesIndexPage() {
         currency: packages.currency,
         departureCity: packages.departureCity,
         category: packages.category,
+        i18n: packages.i18n,
       })
       .from(packages)
       .where(eq(packages.status, "published"))
       .orderBy(desc(packages.createdAt));
+    rows = raw.map((row) => {
+      const copy = cmsPackageCopy(row.title, row.description, row.i18n, locale);
+      return {
+        id: row.id,
+        title: copy.title,
+        slug: row.slug,
+        description: copy.description,
+        durationDays: row.durationDays,
+        price: row.price,
+        currency: row.currency,
+        departureCity: row.departureCity,
+        category: row.category,
+      };
+    });
   } catch {
     rows = [];
   }

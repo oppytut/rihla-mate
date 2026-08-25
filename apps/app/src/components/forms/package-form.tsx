@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { toast } from "sonner";
+import { buildPackageI18n } from "@/lib/cms-content";
 
 export type PackageForm = {
   title: string;
@@ -28,6 +29,10 @@ export type PackageForm = {
   exclusions: string;
   availableDates: string;
   gallery: string;
+  titleEn: string;
+  descriptionEn: string;
+  titleAr: string;
+  descriptionAr: string;
 };
 
 export const initialForm: PackageForm = {
@@ -46,6 +51,10 @@ export const initialForm: PackageForm = {
   exclusions: "[]",
   availableDates: "[]",
   gallery: "[]",
+  titleEn: "",
+  descriptionEn: "",
+  titleAr: "",
+  descriptionAr: "",
 };
 
 export function PackageFormContent({
@@ -64,6 +73,7 @@ export function PackageFormContent({
   const [form, setForm] = useState<PackageForm>(initialData || initialForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [copyLocale, setCopyLocale] = useState<"id" | "en" | "ar">("id");
 
   useEffect(() => {
     document.title = `${isEditMode ? t("packages.editTitle") : t("packages.createTitle")} - ${t("common.appName")}`;
@@ -162,6 +172,10 @@ export function PackageFormContent({
       exclusions: form.exclusions || "[]",
       availableDates: form.availableDates || "[]",
       gallery: form.gallery || "[]",
+      i18n: buildPackageI18n({
+        en: { title: form.titleEn, description: form.descriptionEn },
+        ar: { title: form.titleAr, description: form.descriptionAr },
+      }),
     };
 
     if (isEditMode) {
@@ -194,6 +208,31 @@ export function PackageFormContent({
                 {t("packages.fields.section.basic")}
               </h2>
 
+              <div
+                className="flex flex-wrap gap-2"
+                role="tablist"
+                aria-label={t("packages.fields.localeTabs")}
+              >
+                {(["id", "en", "ar"] as const).map((loc) => (
+                  <button
+                    key={loc}
+                    type="button"
+                    role="tab"
+                    aria-selected={copyLocale === loc}
+                    data-testid={`package-locale-${loc}`}
+                    onClick={() => setCopyLocale(loc)}
+                    className={cn(
+                      "rounded-md border px-3 py-1 text-sm",
+                      copyLocale === loc
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border text-muted-foreground",
+                    )}
+                  >
+                    {t(`packages.fields.locale.${loc}`)}
+                  </button>
+                ))}
+              </div>
+
               <div className="space-y-2">
                 <label htmlFor="title" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.title")} *
@@ -201,8 +240,19 @@ export function PackageFormContent({
                 <input
                   id="title"
                   type="text"
-                  value={form.title}
-                  onChange={(e) => updateField("title", e.target.value)}
+                  value={
+                    copyLocale === "id"
+                      ? form.title
+                      : copyLocale === "en"
+                        ? form.titleEn
+                        : form.titleAr
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") updateField("title", value);
+                    else if (copyLocale === "en") updateField("titleEn", value);
+                    else updateField("titleAr", value);
+                  }}
                   required
                   disabled={isSubmitting}
                   data-testid="package-title"
@@ -260,8 +310,19 @@ export function PackageFormContent({
                 </label>
                 <textarea
                   id="description"
-                  value={form.description}
-                  onChange={(e) => updateField("description", e.target.value)}
+                  value={
+                    copyLocale === "id"
+                      ? form.description
+                      : copyLocale === "en"
+                        ? form.descriptionEn
+                        : form.descriptionAr
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (copyLocale === "id") updateField("description", value);
+                    else if (copyLocale === "en") updateField("descriptionEn", value);
+                    else updateField("descriptionAr", value);
+                  }}
                   rows={4}
                   disabled={isSubmitting}
                   data-testid="package-description"
