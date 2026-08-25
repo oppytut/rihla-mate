@@ -486,7 +486,9 @@
       "templateId": "Template",
       "slug": "URL Slug",
       "title": "Page Title",
-      "content": "Content (JSON)",
+      "content": "Page body",
+      "contentPlaceholder": "Intro text shown on the bureau homepage…",
+      "contentHint": "Plain text. Saved as the homepage body.",
       "isPublished": "Published",
       "isHomepage": "Set as Homepage",
       "section": {
