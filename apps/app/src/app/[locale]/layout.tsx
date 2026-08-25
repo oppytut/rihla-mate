@@ -55,7 +55,7 @@ export default async function LocaleLayout({
     slimBureauPublic || slimBureauAuth
       ? pickBureauClientMessages(allMessages, {
           catalog: isBureauCatalogPath(logicalPath),
-          auth: slimBureauAuth,
+          auth: true,
         })
       : allMessages;
 
