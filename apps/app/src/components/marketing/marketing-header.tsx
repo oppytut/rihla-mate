@@ -41,7 +41,13 @@ export async function MarketingHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="relative mx-auto flex h-14 w-full max-w-[1680px] items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6 lg:px-8 xl:px-10">
+      <div
+        className={
+          bureau
+            ? "relative mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6 lg:px-10 xl:px-16"
+            : "relative mx-auto flex h-14 w-full max-w-[1680px] items-center justify-between gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6 lg:px-8 xl:px-10"
+        }
+      >
         <Link href="/" className="flex shrink-0 items-center">
           <BrandMark
             size="md"
@@ -97,7 +103,7 @@ export async function MarketingHeader({
           {bureau ? (
             <Link
               href="/sign-in"
-              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:inline"
+              className="hidden text-xs font-medium text-muted-foreground/80 transition-colors hover:text-muted-foreground sm:inline"
             >
               {t("nav.staffSignIn")}
             </Link>

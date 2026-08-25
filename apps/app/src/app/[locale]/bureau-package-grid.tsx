@@ -140,31 +140,41 @@ export function BureauPackageGrid({
       {filtered.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("emptyPackages")}</p>
       ) : (
-        <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul className="grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((pkg) => (
             <li key={pkg.id} className="h-full">
-              <article className="flex h-full flex-col rounded-lg border border-border/60 bg-card p-5 shadow-sm">
-                <h2 className="text-lg font-semibold text-foreground">{pkg.title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {t("durationDays", { days: pkg.durationDays })}
-                  {pkg.departureCity ? ` · ${pkg.departureCity}` : ""}
-                </p>
-                {pkg.description ? (
-                  <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted-foreground">
-                    {pkg.description}
+              <article className="flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-card shadow-sm">
+                <div
+                  className="h-40 w-full bg-cover bg-center"
+                  style={{
+                    backgroundImage:
+                      "url(https://images.unsplash.com/photo-1546412414-e1885259563a?auto=format&fit=crop&w=800&q=80)",
+                  }}
+                  aria-hidden
+                />
+                <div className="flex flex-1 flex-col p-5">
+                  <h2 className="text-lg font-semibold text-foreground">{pkg.title}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t("durationDays", { days: pkg.durationDays })}
+                    {pkg.departureCity ? ` · ${pkg.departureCity}` : ""}
                   </p>
-                ) : (
-                  <div className="flex-1" />
-                )}
-                <p className="mt-4 text-sm font-medium text-foreground">
-                  {t("fromPrice")} {formatPrice(pkg.price, pkg.currency)}
-                </p>
-                <Link
-                  href={`/packages/${pkg.slug}`}
-                  className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
-                >
-                  {t("viewPackage")}
-                </Link>
+                  {pkg.description ? (
+                    <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted-foreground">
+                      {pkg.description}
+                    </p>
+                  ) : (
+                    <div className="flex-1" />
+                  )}
+                  <p className="mt-4 text-lg font-semibold text-foreground">
+                    {t("fromPrice")} {formatPrice(pkg.price, pkg.currency)}
+                  </p>
+                  <Link
+                    href={`/packages/${pkg.slug}`}
+                    className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground"
+                  >
+                    {t("viewPackage")}
+                  </Link>
+                </div>
               </article>
             </li>
           ))}

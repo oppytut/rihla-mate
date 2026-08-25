@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 
 export const marketingShellClass = "mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8 xl:px-10";
 
+export const bureauShellClass = "mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-10 xl:px-16";
+
 interface SectionWrapperProps {
   children: React.ReactNode;
   className?: string;

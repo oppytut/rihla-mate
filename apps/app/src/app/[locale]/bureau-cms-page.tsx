@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import { BureauWhatsAppFab } from "@/components/marketing/bureau-whatsapp-fab";
-import { marketingShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
+import { bureauShellClass } from "@/app/[locale]/marketing/_sections/section-wrapper";
 import { whatsappHref, type BureauPublicContact } from "@/lib/bureau-contact";
 
 type BureauCmsPageProps = {
@@ -18,7 +18,7 @@ export async function BureauCmsPage({ title, body, contact }: BureauCmsPageProps
     <div className="flex min-h-0 flex-col bg-background">
       <MarketingHeader variant="bureau" whatsappHref={wa} />
       <main>
-        <article className={`${marketingShellClass} py-12 lg:py-16`}>
+        <article className={`${bureauShellClass} py-12 lg:py-16`}>
           <h1 className="max-w-3xl min-w-0 break-words text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {title}
           </h1>
