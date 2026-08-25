@@ -3,12 +3,12 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { MarketingLanding } from "./marketing/marketing-landing";
 import { BureauLanding } from "./bureau-landing";
-import { getBureauDisplayName } from "@/lib/bureau-brand";
+import { bureauCatalogMetadata, getBureauDisplayName } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { pages } from "@/lib/db/schema/pages";
-import { cmsPageBody, cmsText } from "@/lib/cms-content";
+import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField, cmsText } from "@/lib/cms-content";
 import { and, desc, eq } from "drizzle-orm";
 
 async function loadBureauHome() {
@@ -46,9 +46,10 @@ async function loadBureauHome() {
       packages: pkgRows,
       cmsTitle: cms?.title ?? cmsText(cms?.content, "title"),
       cmsBody: cmsPageBody(cms?.content),
+      cmsSeo: cms?.seo ?? null,
     };
   } catch {
-    return { packages: [], cmsTitle: null, cmsBody: null };
+    return { packages: [], cmsTitle: null, cmsBody: null, cmsSeo: null };
   }
 }
 
@@ -59,12 +60,15 @@ export async function generateMetadata(): Promise<Metadata> {
   }
   const t = await getTranslations("marketing.bureau");
   const name = (await getBureauDisplayName()) ?? t("title");
-  return {
-    title: name,
-    description: t("description"),
-    applicationName: name,
-    openGraph: { siteName: name, title: name },
-  };
+  const home = await loadBureauHome();
+  const seoTitle = cmsSeoField(home.cmsSeo, "title");
+  const seoDescription = cmsSeoField(home.cmsSeo, "description");
+  return bureauCatalogMetadata({
+    bureauName: name,
+    pageTitle: seoTitle ?? name,
+    description: seoDescription ?? t("description"),
+    ogImage: cmsAbsoluteHttpUrl(cmsSeoField(home.cmsSeo, "ogImage")),
+  });
 }
 
 export default async function HomePage() {

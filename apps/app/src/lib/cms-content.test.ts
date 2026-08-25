@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cmsPageBody, cmsSeoField, cmsText } from "./cms-content";
+import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField, cmsText } from "./cms-content";
 
 describe("cmsText", () => {
   it("returns trimmed string fields and ignores empty values", () => {
@@ -22,5 +22,19 @@ describe("cmsSeoField", () => {
   it("reads seo strings", () => {
     expect(cmsSeoField({ title: " T " }, "title")).toBe("T");
     expect(cmsSeoField({}, "description")).toBeNull();
+    expect(cmsSeoField({ ogImage: " https://cdn.example/og.jpg " }, "ogImage")).toBe(
+      "https://cdn.example/og.jpg",
+    );
+  });
+});
+
+describe("cmsAbsoluteHttpUrl", () => {
+  it("accepts http(s) and rejects relative or non-http schemes", () => {
+    expect(cmsAbsoluteHttpUrl("https://images.unsplash.com/photo.jpg")).toBe(
+      "https://images.unsplash.com/photo.jpg",
+    );
+    expect(cmsAbsoluteHttpUrl("/uploads/og.png")).toBeNull();
+    expect(cmsAbsoluteHttpUrl("javascript:alert(1)")).toBeNull();
+    expect(cmsAbsoluteHttpUrl("")).toBeNull();
   });
 });

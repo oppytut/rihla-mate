@@ -22,5 +22,16 @@ describe("bureauCatalogMetadata", () => {
     expect(meta.applicationName).toBe("Biro Demo");
     expect(meta.openGraph?.siteName).toBe("Biro Demo");
     expect(meta.openGraph?.title).toBe("Umrah 9 Hari");
+    expect(meta.openGraph?.images).toBeUndefined();
+  });
+
+  it("includes openGraph and twitter images when ogImage is set", () => {
+    const meta = bureauCatalogMetadata({
+      bureauName: "Biro Demo",
+      pageTitle: "Tentang kami",
+      ogImage: "https://images.unsplash.com/photo.jpg",
+    });
+    expect(meta.openGraph?.images).toEqual([{ url: "https://images.unsplash.com/photo.jpg" }]);
+    expect(meta.twitter?.images).toEqual(["https://images.unsplash.com/photo.jpg"]);
   });
 });

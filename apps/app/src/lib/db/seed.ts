@@ -491,7 +491,11 @@ async function runSeed(
   const now = new Date();
   for (const page of DEMO_PAGES) {
     const content = { body: page.body };
-    const seo = { title: page.seoTitle, description: page.seoDescription };
+    const seo = {
+      title: page.seoTitle,
+      description: page.seoDescription,
+      ogImage: page.ogImage,
+    };
     await db
       .insert(pages)
       .values({

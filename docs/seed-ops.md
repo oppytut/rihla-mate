@@ -77,7 +77,7 @@ DATABASE_URL=postgres://rihlamate:rihlamate_dev@localhost:5432/rihlamate_dev \
 Jalankan berulang kali aman:
 
 - Paket: `INSERT … ON CONFLICT (slug) DO UPDATE`.
-- Halaman CMS: `ON CONFLICT (slug) DO UPDATE` (title, `{ body }`, SEO, published/homepage). Homepage lain di-unset agar hanya `home` yang `isHomepage`.
+- Halaman CMS: `ON CONFLICT (slug) DO UPDATE` (title, `{ body }`, SEO title/description/`ogImage` http(s), published/homepage). Homepage lain di-unset agar hanya `home` yang `isHomepage`.
 - Settings: `ON CONFLICT (key) DO UPDATE` untuk kunci non-secret (`appName`, kontak, `currency`, `bookingPrefix`). **Tidak** menulis Midtrans/Resend/password.
 - Bookings: hanya insert jika `SEED_INCLUDE_BOOKINGS=1` **dan** tabel masih kosong.
 
