@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BureauLanding } from "../bureau-landing";
-import { getBureauDisplayName } from "@/lib/bureau-brand";
+import { getBureauDisplayName, getBureauPublicContact } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
@@ -58,5 +58,6 @@ export default async function PackagesIndexPage() {
     rows = [];
   }
 
-  return <BureauLanding packages={rows} />;
+  const contact = await getBureauPublicContact();
+  return <BureauLanding packages={rows} contact={contact} variant="catalog" />;
 }

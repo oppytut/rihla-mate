@@ -2,7 +2,11 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { BureauCmsPage } from "../bureau-cms-page";
-import { bureauCatalogMetadata, getBureauDisplayName } from "@/lib/bureau-brand";
+import {
+  bureauCatalogMetadata,
+  getBureauDisplayName,
+  getBureauPublicContact,
+} from "@/lib/bureau-brand";
 import { cmsAbsoluteHttpUrl, cmsPageBody, cmsSeoField } from "@/lib/cms-content";
 import { getPublishedPageBySlug, isReservedPublicSlug } from "@/lib/cms-pages";
 import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
@@ -36,7 +40,10 @@ export default async function PublicCmsPage({ params }: Props) {
     notFound();
   }
 
-  const page = await getPublishedPageBySlug(slug);
+  const [page, contact] = await Promise.all([
+    getPublishedPageBySlug(slug),
+    getBureauPublicContact(),
+  ]);
   if (!page) {
     notFound();
   }
@@ -44,5 +51,5 @@ export default async function PublicCmsPage({ params }: Props) {
     redirect("/");
   }
 
-  return <BureauCmsPage title={page.title} body={cmsPageBody(page.content)} />;
+  return <BureauCmsPage title={page.title} body={cmsPageBody(page.content)} contact={contact} />;
 }
