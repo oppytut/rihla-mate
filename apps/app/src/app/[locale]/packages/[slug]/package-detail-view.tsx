@@ -260,7 +260,12 @@ export function PublicPackageDetailView() {
               ) : null}
             </div>
             <div className="mt-6">
-              <Button asChild size="lg" className="min-h-11" data-testid="package-detail-book-cta">
+              <Button
+                asChild
+                size="lg"
+                className="min-h-11 w-full sm:w-auto"
+                data-testid="package-detail-book-cta"
+              >
                 <Link href={bookHref}>{t("packages.detail.bookCta")}</Link>
               </Button>
             </div>
@@ -318,13 +323,13 @@ export function PublicPackageDetailView() {
 
       <div className={`${marketingShellClass} space-y-6 py-8 pb-28 md:pb-8`}>
         {pkg.description ? (
-          <Card className="gap-0 py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
-            <CardHeader className="border-b border-border px-4 py-4 sm:px-6">
+          <Card className="min-w-0 gap-0 overflow-visible py-0 shadow-sm ring-1 ring-black/5 dark:ring-white/5">
+            <CardHeader className="grid-cols-1 border-b border-border px-4 py-4 sm:px-6">
               <CardTitle className="text-base font-semibold">
                 {t("packages.detail.about")}
               </CardTitle>
             </CardHeader>
-            <CardContent className="px-4 py-4 text-sm leading-relaxed text-muted-foreground sm:px-6">
+            <CardContent className="min-w-0 px-4 py-4 text-sm leading-relaxed break-words text-muted-foreground sm:px-6">
               {pkg.description}
             </CardContent>
           </Card>
@@ -435,9 +440,9 @@ export function PublicPackageDetailView() {
 
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/80 md:hidden">
         <div className={`${marketingShellClass} flex items-center justify-between gap-3 py-3`}>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">{pkg.title}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="truncate text-xs text-muted-foreground">
               {t("packages.fromPrice")} {formatPrice(pkg.price, "IDR", locale)}{" "}
               {t("packages.perPerson")}
             </p>
