@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { settings } from "@/lib/db/schema/settings";
+import { parseBureauSettingsMap, type BureauPublicContact } from "@/lib/bureau-contact";
 
 function settingText(value: unknown): string | null {
   if (typeof value === "string" && value.trim()) return value.trim();
@@ -11,6 +12,17 @@ function settingText(value: unknown): string | null {
     if (typeof inner === "string" && inner.trim()) return inner.trim();
   }
   return null;
+}
+
+export async function getBureauPublicContact(): Promise<BureauPublicContact> {
+  const empty = { email: null, phone: null, address: null };
+  try {
+    const db = await getDb();
+    const rows = await db.select({ key: settings.key, value: settings.value }).from(settings);
+    return parseBureauSettingsMap(rows);
+  } catch {
+    return empty;
+  }
 }
 
 export async function getBureauDisplayName(): Promise<string | null> {

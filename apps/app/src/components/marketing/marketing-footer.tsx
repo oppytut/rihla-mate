@@ -102,6 +102,18 @@ export async function MarketingFooter({
                 {t("nav.packages")}
               </Link>
               <Link
+                href="/about"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("nav.about")}
+              </Link>
+              <Link
+                href="/contact"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("nav.contact")}
+              </Link>
+              <Link
                 href="/sign-in"
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >

@@ -3,7 +3,11 @@ import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { MarketingLanding } from "./marketing/marketing-landing";
 import { BureauLanding } from "./bureau-landing";
-import { bureauCatalogMetadata, getBureauDisplayName } from "@/lib/bureau-brand";
+import {
+  bureauCatalogMetadata,
+  getBureauDisplayName,
+  getBureauPublicContact,
+} from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
 import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
@@ -76,6 +80,14 @@ export default async function HomePage() {
   if (!isBureauHostname(hostname)) {
     return <MarketingLanding />;
   }
-  const data = await loadBureauHome();
-  return <BureauLanding packages={data.packages} cmsTitle={data.cmsTitle} cmsBody={data.cmsBody} />;
+  const [data, contact] = await Promise.all([loadBureauHome(), getBureauPublicContact()]);
+  return (
+    <BureauLanding
+      packages={data.packages}
+      cmsTitle={data.cmsTitle}
+      cmsBody={data.cmsBody}
+      contact={contact}
+      variant="home"
+    />
+  );
 }

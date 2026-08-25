@@ -752,6 +752,7 @@
       "packages": "Packages",
       "howToBook": "How to book",
       "contact": "Contact",
+      "about": "About",
       "staffSignIn": "Staff sign-in"
     },
     "bureau": {
@@ -766,8 +767,66 @@
       "fromPrice": "From",
       "viewPackage": "View package",
       "howTitle": "How to book",
-      "howLead": "Choose a package, enter pilgrim details, then pay the deposit as instructed.",
-      "contactLead": "Questions? Contact agency staff.",
+      "howLead": "Three steps from the catalog to a deposit. Staff will contact you after pilgrim details are in.",
+      "howSteps": {
+        "choose": {
+          "title": "Choose a package",
+          "body": "Compare duration, departure city, and price. Open the detail page for itinerary and quota."
+        },
+        "details": {
+          "title": "Enter pilgrim details",
+          "body": "Names as in the passport, contact info, and documents. Passport valid at least eight months."
+        },
+        "deposit": {
+          "title": "Pay the deposit",
+          "body": "Follow the payment instructions. Seats lock after the deposit is verified."
+        }
+      },
+      "contactLead": "Questions? Contact our office.",
+      "contactHours": "Mon–Fri 09:00–17:00 WIB · Sat 09:00–13:00 WIB",
+      "whatsappCta": "WhatsApp consult",
+      "trustPpiu": "PPIU (demo) — licensed pilgrimage travel",
+      "trustHotel": "Hotels within walking distance of the Haram",
+      "trustMutawwif": "Indonesian-speaking mutawwif",
+      "trustQuota": "Departure quotas announced well in advance",
+      "whyTitle": "Why travel with us",
+      "whyLead": "We design unhurried worship, not a generic tour package.",
+      "whyItems": {
+        "hotel": {
+          "title": "Close to the mosque",
+          "body": "Hotels we pick are walking distance to Masjidil Haram or Nabawi."
+        },
+        "guide": {
+          "title": "Manasik support",
+          "body": "Briefing in Jakarta and guides in the Holy Land, including for elderly pilgrims."
+        },
+        "schedule": {
+          "title": "Clear dates",
+          "body": "Take-off dates and remaining quota are shared before you pay a deposit."
+        },
+        "office": {
+          "title": "Visit the office",
+          "body": "Come to Senen to discuss rooms, installments, and package differences."
+        }
+      },
+      "galleryTitle": "On the journey",
+      "testimonialsTitle": "From pilgrims",
+      "testimonials": {
+        "one": {
+          "quote": "The Jakarta briefing was clear and the Makkah hotel was close. Our parents were not exhausted walking.",
+          "name": "Ibu Sari, July group"
+        },
+        "two": {
+          "quote": "The mutawwif patiently explained tawaf. Raudhah quota on the plus package matched what Senen staff promised.",
+          "name": "Bapak Andi, Surabaya departure"
+        }
+      },
+      "catalogTitle": "Umrah packages",
+      "catalogLead": "Filter by category, departure city, and duration. Open a package for departure dates.",
+      "filterCity": "Departure city",
+      "filterAllCities": "All cities",
+      "filterDuration": "Duration",
+      "filterAllDurations": "All durations",
       "poweredHint": "Agency site",
       "copyright": "© {year} {name}. All rights reserved.",
       "filterCategory": "Category",

@@ -10,11 +10,13 @@ import { hostnameFromHostHeader, isBureauHostname, staffSignInHrefForHost } from
 type MarketingHeaderProps = {
   crossPageAnchors?: boolean;
   variant?: "product" | "bureau";
+  whatsappHref?: string | null;
 };
 
 export async function MarketingHeader({
   crossPageAnchors = false,
   variant,
+  whatsappHref,
 }: MarketingHeaderProps = {}) {
   const t = await getTranslations("marketing");
   const tCommon = await getTranslations("common");
@@ -32,6 +34,7 @@ export async function MarketingHeader({
 
   const bureauLinks = [
     { href: "/packages", label: t("nav.packages") },
+    { href: "/about", label: t("nav.about") },
     { href: "/#how", label: t("nav.howToBook") },
     { href: "/#contact", label: t("nav.contact") },
   ];
@@ -114,12 +117,23 @@ export async function MarketingHeader({
             </Link>
           )}
           {bureau ? (
-            <Link
-              href="/packages"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
-            >
-              {t("nav.packages")}
-            </Link>
+            whatsappHref ? (
+              <a
+                href={whatsappHref}
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {t("bureau.whatsappCta")}
+              </a>
+            ) : (
+              <Link
+                href="/packages"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 sm:px-5"
+              >
+                {t("nav.packages")}
+              </Link>
+            )
           ) : (
             <Link
               href="/activate"

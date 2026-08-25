@@ -85,6 +85,7 @@ describe("site-mode", () => {
           packages: "Paket",
           pricing: "Harga",
           features: "Fitur",
+          about: "Tentang",
           staffSignIn: "Masuk staf",
           menu: "Menu",
           close: "Tutup",
@@ -121,6 +122,7 @@ describe("site-mode", () => {
     expect(slim.marketing).toEqual({
       nav: {
         packages: "Paket",
+        about: "Tentang",
         staffSignIn: "Masuk staf",
         menu: "Menu",
         close: "Tutup",
