@@ -5,7 +5,11 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { PageFormContent, type PageFormData } from "@/components/forms/page-form";
+import {
+  PageFormContent,
+  pageContentToBody,
+  type PageFormData,
+} from "@/components/forms/page-form";
 
 function EditPagePage({ pageId }: { pageId: string }) {
   const t = useTranslations();
@@ -26,7 +30,7 @@ function EditPagePage({ pageId }: { pageId: string }) {
         templateId: pg.templateId ?? "default",
         slug: pg.slug ?? "",
         title: pg.title ?? "",
-        content: pg.content && typeof pg.content === "object" ? JSON.stringify(pg.content) : "{}",
+        content: pageContentToBody(pg.content),
         seo: {
           title:
             pg.seo && typeof pg.seo === "object" && "title" in pg.seo

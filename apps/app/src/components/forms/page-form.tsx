@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
-import { tryParseJson } from "@/lib/utils/slug";
 import { useState, useEffect } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -34,11 +33,34 @@ export type PageFormData = {
   isHomepage: boolean;
 };
 
+export function pageContentToBody(content: unknown): string {
+  if (content == null) return "";
+  if (typeof content === "string") {
+    const trimmed = content.trim();
+    if (!trimmed || trimmed === "{}") return "";
+    try {
+      return pageContentToBody(JSON.parse(trimmed) as unknown);
+    } catch {
+      return content;
+    }
+  }
+  if (typeof content === "object") {
+    const rec = content as Record<string, unknown>;
+    if (typeof rec.body === "string") return rec.body;
+    if (typeof rec.html === "string") return rec.html;
+  }
+  return "";
+}
+
+export function bodyToPageContent(body: string): Record<string, unknown> {
+  return { body };
+}
+
 export const initialPageForm: PageFormData = {
   templateId: "default",
   slug: "",
   title: "",
-  content: "{}",
+  content: "",
   seo: {
     title: "",
     description: "",
@@ -131,13 +153,6 @@ export function PageFormContent({
       errors.title = t("pages.validation.titleRequired");
     }
 
-    if (form.content.trim()) {
-      const parsed = tryParseJson(form.content);
-      if (!parsed.valid) {
-        errors.content = t("pages.validation.contentInvalid");
-      }
-    }
-
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -148,20 +163,11 @@ export function PageFormContent({
 
     if (!validateForm()) return;
 
-    let contentObj: Record<string, unknown> = {};
-    if (form.content.trim()) {
-      try {
-        contentObj = JSON.parse(form.content);
-      } catch {
-        // validation already caught this
-      }
-    }
-
     const payload = {
       title: form.title,
       slug: form.slug,
       templateId: form.templateId,
-      content: contentObj,
+      content: bodyToPageContent(form.content),
       seo: {
         title: form.seo.title || undefined,
         description: form.seo.description || undefined,
@@ -304,17 +310,20 @@ export function PageFormContent({
                   id="content"
                   value={form.content}
                   onChange={(e) => updateField("content", e.target.value)}
-                  rows={6}
+                  rows={10}
                   disabled={isSubmitting}
                   data-testid="page-content"
                   aria-label={t("pages.fields.content")}
-                  aria-describedby={fieldErrors.content ? "content-error" : undefined}
-                  placeholder='{"hero": {"headline": "..."}}'
+                  aria-describedby={fieldErrors.content ? "content-error" : "content-hint"}
+                  placeholder={t("pages.fields.contentPlaceholder")}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-y text-sm min-w-0 break-words",
                     fieldErrors.content ? "border-destructive" : "border-border",
                   )}
                 />
+                <p id="content-hint" className="text-xs text-muted-foreground">
+                  {t("pages.fields.contentHint")}
+                </p>
                 {fieldErrors.content && (
                   <p
                     id="content-error"

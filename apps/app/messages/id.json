@@ -521,7 +521,9 @@
       "templateId": "Template",
       "slug": "Slug URL",
       "title": "Judul Halaman",
-      "content": "Konten (JSON)",
+      "content": "Isi halaman",
+      "contentPlaceholder": "Teks pengantar di beranda biro…",
+      "contentHint": "Teks biasa. Disimpan sebagai isi beranda.",
       "isPublished": "Terpublikasi",
       "isHomepage": "Jadikan Halaman Utama",
       "section": {

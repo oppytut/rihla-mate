@@ -486,7 +486,9 @@
       "templateId": "القالب",
       "slug": "الرابط المختصر",
       "title": "عنوان الصفحة",
-      "content": "المحتوى (JSON)",
+      "content": "نص الصفحة",
+      "contentPlaceholder": "نص تمهيدي يظهر في الصفحة الرئيسية للمكتب…",
+      "contentHint": "نص عادي. يُحفظ كنص الصفحة الرئيسية.",
       "isPublished": "منشورة",
       "isHomepage": "تعيين كصفحة رئيسية",
       "section": {
