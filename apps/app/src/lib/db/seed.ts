@@ -1,10 +1,11 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
 import { drizzle as drizzlePg } from "drizzle-orm/node-postgres";
-import { count, eq } from "drizzle-orm";
+import { and, count, eq, ne } from "drizzle-orm";
 import { Pool } from "pg";
-import { packages, bookings } from "./schema";
+import { packages, bookings, pages, settings } from "./schema";
 import { logger } from "@/lib/utils/logger";
+import { assertDemoPagesSafe, DEMO_PAGES, DEMO_SETTINGS } from "./seed-demo-content";
 
 type PackageInsert = typeof packages.$inferInsert;
 type BookingInsert = typeof bookings.$inferInsert;
@@ -485,6 +486,60 @@ async function runSeed(
     logger.info(`  ${row.title} (${row.slug})`, { component: "seed" });
   }
 
+  assertDemoPagesSafe();
+  logger.info("Upserting demo CMS pages...", { component: "seed" });
+  const now = new Date();
+  for (const page of DEMO_PAGES) {
+    const content = { body: page.body };
+    const seo = { title: page.seoTitle, description: page.seoDescription };
+    await db
+      .insert(pages)
+      .values({
+        templateId: "default",
+        slug: page.slug,
+        title: page.title,
+        content,
+        seo,
+        isPublished: page.isPublished,
+        isHomepage: page.isHomepage,
+        publishedAt: page.isPublished ? now : null,
+      })
+      .onConflictDoUpdate({
+        target: pages.slug,
+        set: {
+          templateId: "default",
+          title: page.title,
+          content,
+          seo,
+          isPublished: page.isPublished,
+          isHomepage: page.isHomepage,
+          publishedAt: page.isPublished ? now : null,
+          updatedAt: now,
+        },
+      });
+    logger.info(`  page ${page.slug}`, { component: "seed" });
+  }
+
+  const homepageSlug = DEMO_PAGES.find((p) => p.isHomepage)?.slug;
+  if (homepageSlug) {
+    await db
+      .update(pages)
+      .set({ isHomepage: false, updatedAt: now })
+      .where(and(eq(pages.isHomepage, true), ne(pages.slug, homepageSlug)));
+  }
+
+  logger.info("Upserting demo settings (no secrets)...", { component: "seed" });
+  for (const [key, value] of Object.entries(DEMO_SETTINGS)) {
+    await db
+      .insert(settings)
+      .values({ key, value })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value, updatedAt: now },
+      });
+    logger.info(`  setting ${key}`, { component: "seed" });
+  }
+
   const includeBookings = process.env.SEED_INCLUDE_BOOKINGS === "1";
   if (!includeBookings) {
     logger.info("Skipping bookings (set SEED_INCLUDE_BOOKINGS=1 to include).", {
@@ -542,11 +597,11 @@ async function main(): Promise<void> {
 
   if (useNeon) {
     const client = neon(connectionUrl);
-    const db = drizzleNeon(client, { schema: { packages, bookings } });
+    const db = drizzleNeon(client, { schema: { packages, bookings, pages, settings } });
     await runSeed(db);
   } else {
     const pool = new Pool({ connectionString: connectionUrl });
-    const db = drizzlePg(pool, { schema: { packages, bookings } });
+    const db = drizzlePg(pool, { schema: { packages, bookings, pages, settings } });
     try {
       await runSeed(db);
     } finally {
