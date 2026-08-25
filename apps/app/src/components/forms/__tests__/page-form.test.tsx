@@ -124,23 +124,25 @@ let capturedCallbacks: Record<
   string,
   { onSuccess?: () => void; onError?: (error: Error) => void }
 > = {};
+let capturedMutate: Record<string, ReturnType<typeof vi.fn>> = {};
 
 function createUseMutationImpl() {
   let callCount = 0;
+  const createMutate = vi.fn((_payload: unknown) => undefined);
+  const updateMutate = vi.fn((_payload: unknown) => undefined);
+  capturedMutate.create = createMutate;
+  capturedMutate.update = updateMutate;
   return vi.fn(
     (options: {
       mutationFn: unknown;
       onSuccess?: () => void;
       onError?: (error: Error) => void;
     }) => {
-      const key = callCount === 0 ? "create" : "update";
+      const key = callCount % 2 === 0 ? "create" : "update";
       capturedCallbacks[key] = { onSuccess: options.onSuccess, onError: options.onError };
       callCount++;
       return {
-        mutate: vi.fn((_payload: unknown) => {
-          // Fire the mutation function for coverage but let tests control
-          // success/error via captured callbacks
-        }),
+        mutate: key === "create" ? createMutate : updateMutate,
         isPending: mutationState.isPending,
       };
     },
@@ -151,7 +153,7 @@ function createUseMutationImpl() {
 // Import the component *after* mocks are established
 // ---------------------------------------------------------------------------
 
-import { PageFormContent, initialPageForm } from "../page-form";
+import { PageFormContent, initialPageForm, pageContentToBody } from "../page-form";
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -162,6 +164,7 @@ describe("PageFormContent", () => {
     vi.clearAllMocks();
     mutationState = { isPending: false };
     capturedCallbacks = {};
+    capturedMutate = {};
     useMutation.mockImplementation(createUseMutationImpl());
   });
 
@@ -218,7 +221,7 @@ describe("PageFormContent", () => {
         templateId: "hero",
         slug: "about-us",
         title: "About Us",
-        content: '{"hero":{"headline":"Hello"}}',
+        content: "Hello from the bureau homepage",
         seo: {
           title: "SEO Title",
           description: "SEO Description",
@@ -233,7 +236,7 @@ describe("PageFormContent", () => {
       expect(screen.getByTestId("page-template-id")).toHaveValue("hero");
       expect(screen.getByTestId("page-title")).toHaveValue("About Us");
       expect(screen.getByTestId("page-slug")).toHaveValue("about-us");
-      expect(screen.getByTestId("page-content")).toHaveValue('{"hero":{"headline":"Hello"}}');
+      expect(screen.getByTestId("page-content")).toHaveValue("Hello from the bureau homepage");
       expect(screen.getByTestId("page-seo-title")).toHaveValue("SEO Title");
       expect(screen.getByTestId("page-seo-description")).toHaveValue("SEO Description");
       expect(screen.getByTestId("page-seo-og-image")).toHaveValue("https://example.com/og.png");
@@ -301,11 +304,11 @@ describe("PageFormContent", () => {
       expect(screen.queryByTestId("validation-error-title")).not.toBeInTheDocument();
     });
 
-    it("shows content validation error for invalid JSON", () => {
+    it("accepts plain-text body without JSON validation", () => {
       render(<PageFormContent initialData={null} isEditMode={false} pageId={null} />);
 
       fireEvent.change(screen.getByTestId("page-content"), {
-        target: { value: "{not valid json" },
+        target: { value: "{not valid json is fine as body" },
       });
       fireEvent.change(screen.getByTestId("page-title"), {
         target: { value: "Valid Title" },
@@ -315,8 +318,13 @@ describe("PageFormContent", () => {
       });
       fireEvent.click(screen.getByTestId("page-submit"));
 
-      expect(screen.getByTestId("validation-error-content")).toHaveTextContent(
-        "pages.validation.contentInvalid",
+      expect(screen.queryByTestId("validation-error-content")).not.toBeInTheDocument();
+      expect(capturedMutate.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Valid Title",
+          slug: "valid-slug",
+          content: { body: "{not valid json is fine as body" },
+        }),
       );
     });
 
@@ -353,7 +361,7 @@ describe("PageFormContent", () => {
         target: { value: "my-page" },
       });
       fireEvent.change(screen.getByTestId("page-content"), {
-        target: { value: '{"hero": {"headline": "Welcome"}}' },
+        target: { value: "Welcome to our bureau" },
       });
       fireEvent.change(screen.getByTestId("page-seo-title"), {
         target: { value: "SEO" },
@@ -362,9 +370,15 @@ describe("PageFormContent", () => {
 
       fireEvent.click(screen.getByTestId("page-submit"));
 
-      // The useMutation mock mutate function should have been called
-      const createCall = capturedCallbacks.create;
-      expect(createCall).toBeDefined();
+      expect(capturedMutate.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "My Page",
+          slug: "my-page",
+          content: { body: "Welcome to our bureau" },
+          seo: { title: "SEO", description: undefined, ogImage: undefined },
+          isPublished: true,
+        }),
+      );
     });
 
     it("shows success toast and navigates on create success", async () => {
@@ -396,7 +410,7 @@ describe("PageFormContent", () => {
             templateId: "default",
             slug: "existing",
             title: "Existing",
-            content: "{}",
+            content: "",
             seo: { title: "", description: "", ogImage: "" },
             isPublished: false,
             isHomepage: false,
@@ -421,7 +435,7 @@ describe("PageFormContent", () => {
             templateId: "default",
             slug: "existing",
             title: "Existing",
-            content: "{}",
+            content: "",
             seo: { title: "", description: "", ogImage: "" },
             isPublished: false,
             isHomepage: false,
@@ -526,6 +540,16 @@ describe("PageFormContent", () => {
       expect(options).toContain("default");
       expect(options).toContain("hero");
       expect(options).toContain("split");
+    });
+  });
+
+  describe("pageContentToBody", () => {
+    it("reads body, then html, and unwraps JSON strings", () => {
+      expect(pageContentToBody({ body: "A", html: "B" })).toBe("A");
+      expect(pageContentToBody({ html: "<p>Hi</p>" })).toBe("<p>Hi</p>");
+      expect(pageContentToBody('{"body":"From JSON"}')).toBe("From JSON");
+      expect(pageContentToBody("{}")).toBe("");
+      expect(pageContentToBody("plain leftover")).toBe("plain leftover");
     });
   });
 });
