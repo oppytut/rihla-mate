@@ -83,7 +83,7 @@ async function main() {
     gracePeriodDays: 7,
     isTrial: values.trial ?? false,
     trialDays: parseInt(values["trial-days"] ?? "14", 10),
-    apiUrl: values["api-url"] ?? "https://license.rihla-mate.com/api/v1",
+    apiUrl: values["api-url"] ?? "https://license.rihla.my.id/api/v1",
   });
 
   console.log(`License ID: ${licenseId}`);
