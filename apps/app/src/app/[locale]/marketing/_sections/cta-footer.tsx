@@ -47,11 +47,11 @@ export function CtaBand() {
             <p className="mt-5 text-base text-primary-foreground/90">
               {t("marketing.cta.contact")}{" "}
               <a
-                href="mailto:hello@rihla-mate.com"
+                href="mailto:mail@rihla.my.id"
                 className="inline-block whitespace-nowrap underline hover:text-primary-foreground"
                 dir="ltr"
               >
-                hello@rihla-mate.com
+                mail@rihla.my.id
               </a>
             </p>
           </div>

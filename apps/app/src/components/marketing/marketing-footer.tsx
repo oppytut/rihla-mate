@@ -188,7 +188,7 @@ export async function MarketingFooter({
                 {t("footer.terms")}
               </Link>
               <a
-                href="mailto:hello@rihla-mate.com"
+                href="mailto:mail@rihla.my.id"
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {t("footer.contact")}

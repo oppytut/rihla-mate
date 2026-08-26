@@ -1039,7 +1039,7 @@
       "badge": "FAQ",
       "stillHaveQuestions": "Still have questions?",
       "contactHint": "Our team can help with setup, licensing, and onboarding your travel agency.",
-      "contactCta": "Email hello@rihla-mate.com",
+      "contactCta": "Email mail@rihla.my.id",
       "items": [
         {
           "question": "What does 'self-hosted' mean?",
@@ -1356,7 +1356,7 @@
           "Operations owns packages, media, and pages.",
           "Check the license before peak season (Ramadan / year-end)."
         ],
-        "notes": ["Need setup help: hello@rihla-mate.com."]
+        "notes": ["Need setup help: mail@rihla.my.id."]
       }
     },
     "specCols": {
@@ -1394,11 +1394,11 @@
         },
         "retention": {
           "title": "Retention and your rights",
-          "body": "Technical logs are kept as needed for security and operations. For access, correction, or deletion of data we hold about a license account or contact, email hello@rihla-mate.com. Requests about pilgrim data must go to the bureau operating the install."
+          "body": "Technical logs are kept as needed for security and operations. For access, correction, or deletion of data we hold about a license account or contact, email mail@rihla.my.id. Requests about pilgrim data must go to the bureau operating the install."
         },
         "contact": {
           "title": "Contact",
-          "body": "Privacy questions: hello@rihla-mate.com. Product site: https://rihla.my.id."
+          "body": "Privacy questions: mail@rihla.my.id. Product site: https://rihla.my.id."
         }
       }
     },
@@ -1438,7 +1438,7 @@
         },
         "contact": {
           "title": "Contact",
-          "body": "hello@rihla-mate.com — https://rihla.my.id"
+          "body": "mail@rihla.my.id — https://rihla.my.id"
         }
       }
     }

@@ -1034,7 +1034,7 @@
       "badge": "FAQ",
       "stillHaveQuestions": "Masih ada pertanyaan?",
       "contactHint": "Tim kami siap membantu setup, lisensi, dan onboarding biro travel Anda.",
-      "contactCta": "Email hello@rihla-mate.com",
+      "contactCta": "Email mail@rihla.my.id",
       "items": [
         {
           "question": "Apa maksudnya 'self-hosted'?",
@@ -1355,7 +1355,7 @@
           "Operasional mengurus paket, media, dan halaman.",
           "Cek lisensi sebelum musim ramai (Ramadan / akhir tahun)."
         ],
-        "notes": ["Butuh bantuan setup: email hello@rihla-mate.com."]
+        "notes": ["Butuh bantuan setup: email mail@rihla.my.id."]
       }
     },
     "specCols": {
@@ -1393,11 +1393,11 @@
         },
         "retention": {
           "title": "Retensi dan hak Anda",
-          "body": "Log teknis disimpan seperlunya untuk keamanan dan operasi. Untuk akses, koreksi, atau penghapusan data yang kami pegang terkait akun lisensi atau kontak, kirim permintaan ke hello@rihla-mate.com. Permintaan terkait data jamaah harus diajukan ke biro yang mengoperasikan instalasi."
+          "body": "Log teknis disimpan seperlunya untuk keamanan dan operasi. Untuk akses, koreksi, atau penghapusan data yang kami pegang terkait akun lisensi atau kontak, kirim permintaan ke mail@rihla.my.id. Permintaan terkait data jamaah harus diajukan ke biro yang mengoperasikan instalasi."
         },
         "contact": {
           "title": "Kontak",
-          "body": "Pertanyaan privasi: hello@rihla-mate.com. Situs produk: https://rihla.my.id."
+          "body": "Pertanyaan privasi: mail@rihla.my.id. Situs produk: https://rihla.my.id."
         }
       }
     },
@@ -1437,7 +1437,7 @@
         },
         "contact": {
           "title": "Kontak",
-          "body": "hello@rihla-mate.com — https://rihla.my.id"
+          "body": "mail@rihla.my.id — https://rihla.my.id"
         }
       }
     }
