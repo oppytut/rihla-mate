@@ -26,18 +26,18 @@ Sebelum instalasi, pastikan server Anda memenuhi persyaratan berikut.
 ### Hardware Minimum
 
 | Komponen | Minimum | Direkomendasikan |
-|----------|---------|------------------|
-| RAM | 1 GB | 2 GB |
-| Disk | 10 GB | 20 GB |
-| CPU | 1 vCPU | 2 vCPU |
+| -------- | ------- | ---------------- |
+| RAM      | 1 GB    | 2 GB             |
+| Disk     | 10 GB   | 20 GB            |
+| CPU      | 1 vCPU  | 2 vCPU           |
 
 ### Software
 
-| Software | Versi Minimum |
-|----------|---------------|
-| Docker | 20.10+ |
-| Docker Compose | 2.0+ |
-| OS | Ubuntu 20.04+, Debian 11+, atau distribusi Linux lain dengan Docker support |
+| Software       | Versi Minimum                                                               |
+| -------------- | --------------------------------------------------------------------------- |
+| Docker         | 20.10+                                                                      |
+| Docker Compose | 2.0+                                                                        |
+| OS             | Ubuntu 20.04+, Debian 11+, atau distribusi Linux lain dengan Docker support |
 
 ### Jaringan
 
@@ -117,64 +117,64 @@ File `.env` berisi semua konfigurasi yang diperlukan oleh aplikasi. Berikut penj
 
 ### Database
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `DB_HOST` | Host database (default: `db`) | `db` |
-| `DB_PORT` | Port database (default: `5432`) | `5432` |
-| `DB_USER` | Username database (default: `rihla`) | `rihla` |
-| `DB_PASSWORD` | Password database. **Wajib diubah.** | `strong-password-here` |
-| `DB_NAME` | Nama database (default: `rihla_mate`) | `rihla_mate` |
+| Variabel      | Deskripsi                             | Contoh                 |
+| ------------- | ------------------------------------- | ---------------------- |
+| `DB_HOST`     | Host database (default: `db`)         | `db`                   |
+| `DB_PORT`     | Port database (default: `5432`)       | `5432`                 |
+| `DB_USER`     | Username database (default: `rihla`)  | `rihla`                |
+| `DB_PASSWORD` | Password database. **Wajib diubah.**  | `strong-password-here` |
+| `DB_NAME`     | Nama database (default: `rihla_mate`) | `rihla_mate`           |
 
 ### Aplikasi
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `NODE_ENV` | Environment aplikasi | `production` |
-| `PORT` | Port aplikasi (default: `3000`) | `3000` |
-| `APP_URL` | URL aplikasi Anda | `https://travelanda.com` |
+| Variabel   | Deskripsi                       | Contoh                   |
+| ---------- | ------------------------------- | ------------------------ |
+| `NODE_ENV` | Environment aplikasi            | `production`             |
+| `PORT`     | Port aplikasi (default: `3000`) | `3000`                   |
+| `APP_URL`  | URL aplikasi Anda               | `https://travelanda.com` |
 
 ### Lisensi
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
+| Variabel          | Deskripsi                     | Contoh                                  |
+| ----------------- | ----------------------------- | --------------------------------------- |
 | `LICENSE_API_URL` | URL license server Rihla Mate | `https://license.rihla-mate.com/api/v1` |
 
 ### Email (Opsional)
 
 Diperlukan untuk mengirim email konfirmasi booking dan notifikasi.
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `RESEND_API_KEY` | API key dari Resend | `re_xxxxx` |
-| `EMAIL_FROM` | Alamat pengirim email | `noreply@travelanda.com` |
+| Variabel         | Deskripsi             | Contoh                   |
+| ---------------- | --------------------- | ------------------------ |
+| `RESEND_API_KEY` | API key dari Resend   | `re_xxxxx`               |
+| `EMAIL_FROM`     | Alamat pengirim email | `noreply@travelanda.com` |
 
 ### Storage (Opsional)
 
 Default menggunakan local filesystem. Untuk scale, gunakan S3.
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `STORAGE_TYPE` | Tipe storage (`local` atau `s3`) | `local` |
-| `S3_ACCESS_KEY` | AWS S3 access key | `AKIAxxxx` |
-| `S3_SECRET_KEY` | AWS S3 secret key | `xxxx` |
-| `S3_BUCKET` | Nama bucket S3 | `rihla-mate-uploads` |
-| `S3_REGION` | Region S3 | `ap-southeast-1` |
+| Variabel        | Deskripsi                        | Contoh               |
+| --------------- | -------------------------------- | -------------------- |
+| `STORAGE_TYPE`  | Tipe storage (`local` atau `s3`) | `local`              |
+| `S3_ACCESS_KEY` | AWS S3 access key                | `AKIAxxxx`           |
+| `S3_SECRET_KEY` | AWS S3 secret key                | `xxxx`               |
+| `S3_BUCKET`     | Nama bucket S3                   | `rihla-mate-uploads` |
+| `S3_REGION`     | Region S3                        | `ap-southeast-1`     |
 
 ### Cache (Opsional)
 
 Default menggunakan LRU cache in-memory. Untuk multi-instance, gunakan Redis.
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
+| Variabel    | Deskripsi            | Contoh                   |
+| ----------- | -------------------- | ------------------------ |
 | `REDIS_URL` | URL Redis (opsional) | `redis://localhost:6379` |
 
 ### Payment Gateway
 
-| Variabel | Deskripsi | Contoh |
-|----------|-----------|--------|
-| `MIDTRANS_SERVER_KEY` | Server key Midtrans | `SB-Mid-server-xxxx` |
-| `MIDTRANS_CLIENT_KEY` | Client key Midtrans | `SB-Mid-client-xxxx` |
-| `MIDTRANS_IS_PRODUCTION` | Mode production atau sandbox | `false` |
+| Variabel                 | Deskripsi                    | Contoh               |
+| ------------------------ | ---------------------------- | -------------------- |
+| `MIDTRANS_SERVER_KEY`    | Server key Midtrans          | `SB-Mid-server-xxxx` |
+| `MIDTRANS_CLIENT_KEY`    | Client key Midtrans          | `SB-Mid-client-xxxx` |
+| `MIDTRANS_IS_PRODUCTION` | Mode production atau sandbox | `false`              |
 
 ### Contoh File .env Lengkap
 
@@ -226,6 +226,7 @@ Installer wizard akan memandu Anda melalui langkah-langkah berikut:
 #### Step 1: System Check
 
 Installer memeriksa:
+
 - Koneksi database
 - Ruang disk yang tersedia
 - Versi runtime
@@ -239,6 +240,7 @@ Installer menjalankan migrasi database untuk membuat tabel-tabel yang diperlukan
 #### Step 3: Admin Account
 
 Buat akun admin pertama:
+
 - Nama lengkap
 - Email
 - Password (minimal 8 karakter)
@@ -248,12 +250,14 @@ Simpan kredensial ini dengan aman.
 #### Step 4: License Activation
 
 Pilih salah satu:
+
 - **Mulai Trial**: 14 hari akses penuh tanpa license key
 - **Masukkan License Key**: Jika sudah membeli lisensi
 
 #### Step 5: Branding Awal
 
 Isi informasi awal travel agency Anda:
+
 - Nama agency
 - Logo (upload)
 - Warna brand (primary, secondary)
@@ -267,6 +271,7 @@ Setelah selesai, Anda akan diarahkan ke dashboard admin.
 ### Trial Mode
 
 Jika memilih trial, Anda mendapatkan:
+
 - 14 hari akses penuh ke semua fitur
 - Tidak perlu license key
 - Otomatis terikat ke instance ID server Anda
@@ -392,7 +397,7 @@ Hentikan proses atau ubah port di `docker-compose.yml`:
 
 ```yaml
 ports:
-  - "3001:3000"  # Ubah dari 3000 ke 3001
+  - "3001:3000" # Ubah dari 3000 ke 3001
 ```
 
 ### Database Connection Failed
@@ -402,11 +407,13 @@ ports:
 **Solusi**:
 
 1. Pastikan container database berjalan:
+
    ```bash
    docker compose ps
    ```
 
 2. Cek log database:
+
    ```bash
    docker compose logs db
    ```
@@ -447,6 +454,7 @@ docker compose logs app
 ```
 
 Error umum:
+
 - Environment variable tidak lengkap
 - Database belum siap saat app start
 - Memory tidak cukup
@@ -467,6 +475,7 @@ Error umum:
 **Solusi**:
 
 1. Cek resource server:
+
    ```bash
    docker stats
    ```
@@ -602,9 +611,9 @@ Jika mengalami masalah yang tidak tercover dalam dokumen ini:
 
 1. Cek log aplikasi: `docker compose logs app`
 2. Cek log database: `docker compose logs db`
-3. Hubungi support di support@rihla-mate.com
-4. Kunjungi dokumentasi online di docs.rihla-mate.com
+3. Hubungi support di mail@rihla.my.id
+4. Kunjungi dokumentasi online di https://rihla.my.id/guide
 
 ---
 
-*Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate.*
+_Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate._
