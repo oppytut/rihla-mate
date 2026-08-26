@@ -67,7 +67,8 @@
       "analytics": "التحليلات",
       "license": "التراخيص",
       "settings": "الإعدادات",
-      "users": "المستخدمون"
+      "users": "المستخدمون",
+      "homeSections": "أقسام الرئيسية"
     },
     "layout": {
       "brandName": "Rihla Mate",
@@ -1424,5 +1425,27 @@
         }
       }
     }
+  },
+  "homeSections": {
+    "title": "أقسام الصفحة الرئيسية",
+    "description": "حرّر الكتل الأربع في الصفحة الرئيسية للمكتب. اترك الحقول فارغة لاستخدام النص الافتراضي.",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "saved": "تم حفظ الأقسام.",
+    "error": "فشل الحفظ",
+    "whyHeading": "لماذا تسافر معنا",
+    "howHeading": "طريقة التسجيل",
+    "galleryHeading": "أجواء الرحلة",
+    "testimonialsHeading": "كلمات الحجاج",
+    "sectionTitle": "عنوان القسم",
+    "sectionLead": "مقدمة",
+    "itemTitle": "عنوان البطاقة {n}",
+    "itemBody": "نص البطاقة {n}",
+    "stepTitle": "عنوان الخطوة {n}",
+    "stepBody": "نص الخطوة {n}",
+    "imageUrl": "رابط الصورة {n}",
+    "imageAlt": "النص البديل {n}",
+    "quote": "اقتباس {n}",
+    "name": "الاسم {n}"
   }
 }

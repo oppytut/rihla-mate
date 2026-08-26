@@ -67,7 +67,8 @@
       "analytics": "Analytics",
       "license": "Licenses",
       "settings": "Settings",
-      "users": "Users"
+      "users": "Users",
+      "homeSections": "Home sections"
     },
     "layout": {
       "brandName": "Rihla Mate",
@@ -1442,5 +1443,27 @@
         }
       }
     }
+  },
+  "homeSections": {
+    "title": "Home sections",
+    "description": "Edit the four bureau home blocks: why us, how to book, gallery, and testimonials. Leave blank to use defaults.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Home sections saved.",
+    "error": "Failed to save",
+    "whyHeading": "Why travel with us",
+    "howHeading": "How to book",
+    "galleryHeading": "Journey gallery",
+    "testimonialsHeading": "Pilgrim quotes",
+    "sectionTitle": "Section title",
+    "sectionLead": "Lead",
+    "itemTitle": "Card title {n}",
+    "itemBody": "Card body {n}",
+    "stepTitle": "Step title {n}",
+    "stepBody": "Step body {n}",
+    "imageUrl": "Image URL {n}",
+    "imageAlt": "Alt text {n}",
+    "quote": "Quote {n}",
+    "name": "Name {n}"
   }
 }
