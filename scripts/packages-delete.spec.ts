@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 
 async function cleanupPlaywrightPackages(context: {
   request: {
@@ -67,12 +68,12 @@ test.describe("package delete flow", () => {
     await page
       .locator('[data-testid="package-description"]')
       .fill("Package created for delete test");
-    await page.selectOption('[data-testid="package-category"]', "premium");
+    await selectNative(page, "package-category", "premium");
     await page.locator('[data-testid="package-duration-days"]').fill("3");
     await page.locator('[data-testid="package-departure-city"]').fill("Surabaya");
-    await page.selectOption('[data-testid="package-status"]', "published");
+    await selectNative(page, "package-status", "published");
     await page.locator('[data-testid="package-price"]').fill("1000000");
-    await page.selectOption('[data-testid="package-currency"]', "IDR");
+    await selectNative(page, "package-currency", "IDR");
     await page
       .locator('[data-testid="package-featured-image"]')
       .fill("https://example.com/delete-test.jpg");

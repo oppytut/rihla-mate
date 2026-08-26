@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 
 const SEL = {
   search: '[data-testid="bookings-search"]',
@@ -36,7 +37,6 @@ interface PlaywrightPage {
   waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
   click(selector: string): Promise<void>;
   locator(selector: string): { fill: (value: string) => Promise<void> };
-  selectOption(selector: string, value: string): Promise<void>;
   getByRole(
     role: string,
     options?: Record<string, unknown>,
@@ -186,8 +186,7 @@ test.describe("bookings search and filter", () => {
   });
 
   test("filter by status shows only matching bookings", async ({ page }) => {
-    const statusFilter = page.locator(SEL.statusFilter);
-    await statusFilter.selectOption("confirmed");
+    await selectNative(page, "bookings-status-filter", "confirmed");
 
     const table = page.locator("table");
     const noResults = page.locator(SEL.clearFilters);
@@ -249,8 +248,7 @@ test.describe("bookings search and filter", () => {
       timeout: 5000,
     });
 
-    const statusFilter = page.locator(SEL.statusFilter);
-    await statusFilter.selectOption("pending");
+    await selectNative(page, "bookings-status-filter", "pending");
 
     // Bookings are created with default status "pending", so Alice should appear
     await expect(page.locator("td").filter({ hasText: "Alice Search Test" }).first()).toBeVisible({

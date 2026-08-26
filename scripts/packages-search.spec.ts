@@ -1,5 +1,6 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 
 const SEL = {
   title: '[data-testid="package-title"]',
@@ -26,25 +27,6 @@ const SEL = {
   pageInfo: '[data-testid="packages-page-info"]',
 } as const;
 
-interface PackagesPage {
-  goto(url: string, options?: Record<string, unknown>): Promise<unknown>;
-  waitForSelector(selector: string, options?: Record<string, unknown>): Promise<unknown>;
-  waitForFunction(fn: () => boolean, options?: Record<string, unknown>): Promise<unknown>;
-  waitForTimeout(ms: number): Promise<void>;
-  waitForURL(url: string, options?: Record<string, unknown>): Promise<void>;
-  waitForResponse(
-    predicate: (resp: { url: () => string; status: () => number }) => boolean,
-    options?: Record<string, unknown>,
-  ): Promise<unknown>;
-  fill(selector: string, value: string): Promise<void>;
-  click(selector: string): Promise<void>;
-  locator(selector: string): {
-    fill: (text: string) => Promise<void>;
-  };
-  selectOption(selector: string, value: string): Promise<void>;
-  on(event: string, handler: (dialog: { accept: () => Promise<void> }) => void): void;
-}
-
 interface PackagesContext {
   request: {
     get(url: string): Promise<{ ok: () => boolean; json: () => Promise<unknown> }>;
@@ -52,12 +34,7 @@ interface PackagesContext {
   };
 }
 
-async function createPackageViaForm(
-  page: PackagesPage,
-  title: string,
-  slug: string,
-  statusValue: string,
-) {
+async function createPackageViaForm(page: Page, title: string, slug: string, statusValue: string) {
   await page.goto(`${BASE_URL}/en/dashboard/packages/new`, {
     waitUntil: "domcontentloaded",
   });
@@ -76,12 +53,12 @@ async function createPackageViaForm(
   await page.locator(SEL.title).fill(title);
   await page.locator(SEL.slug).fill(slug);
   await page.locator(SEL.description).fill("Search test package");
-  await page.selectOption(SEL.category, "premium");
+  await selectNative(page, "package-category", "premium");
   await page.locator(SEL.durationDays).fill("3");
   await page.locator(SEL.departureCity).fill("Jakarta");
-  await page.selectOption(SEL.status, statusValue);
+  await selectNative(page, "package-status", statusValue);
   await page.locator(SEL.price).fill("2000000");
-  await page.selectOption(SEL.currency, "IDR");
+  await selectNative(page, "package-currency", "IDR");
   await page.locator(SEL.featuredImage).fill("https://example.com/search-test.jpg");
   await page.locator(SEL.gallery).fill('["https://example.com/gallery-search.jpg"]');
   await page.locator(SEL.itinerary).fill('[{"day": 1, "description": "Search test day"}]');
@@ -140,7 +117,7 @@ async function cleanupSearchPackages(context: PackagesContext) {
   }
 }
 
-async function ensureSeedPackages(page: PackagesPage, context: PackagesContext) {
+async function ensureSeedPackages(page: Page, context: PackagesContext) {
   // Check if seed packages already exist (idempotency guard)
   const api = context.request;
   const existingRes = await api.get(
@@ -213,8 +190,7 @@ test.describe("packages search and filter", () => {
   });
 
   test("filter by status shows only matching packages", async ({ page }) => {
-    const statusFilter = page.locator(SEL.statusFilter);
-    await statusFilter.selectOption("published");
+    await selectNative(page, "packages-status-filter", "published");
 
     const table = page.locator('[data-testid="packages-table"]');
     await expect(table.getByText("Alpha Search Pkg")).toHaveCount(0, { timeout: 15000 });
@@ -277,8 +253,7 @@ test.describe("packages search and filter", () => {
       timeout: 5000,
     });
 
-    const statusFilter = page.locator(SEL.statusFilter);
-    await statusFilter.selectOption("published");
+    await selectNative(page, "packages-status-filter", "published");
 
     await expect(table.getByText("Alpha Search Pkg")).toHaveCount(0, { timeout: 15000 });
     await expect(table.getByText("Beta Search Pkg").first()).toBeVisible({

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 import { pickFuturePlusDate } from "./helpers/seed-dates";
 
 const SEL = {
@@ -100,7 +101,7 @@ test.describe("booking lifecycle", () => {
       .filter({ hasText: "Umrah Plus 12 Hari" })
       .getAttribute("value");
     if (!plusOptionValue) throw new Error("Umrah Plus 12 Hari option not found");
-    await page.locator(SEL.packageId).selectOption(plusOptionValue);
+    await selectNative(page, "booking-package", plusOptionValue);
 
     // Wait for React to commit the state update — the controlled <select> value should match.
     await expect(page.locator(SEL.packageId)).toHaveValue(plusOptionValue, { timeout: 5000 });

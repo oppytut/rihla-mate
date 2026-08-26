@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 import { pickFutureEkonomiDate } from "./helpers/seed-dates";
 
 const SEL = {
@@ -68,7 +69,6 @@ test.describe("booking edit flow", () => {
 
     await page.locator(SEL.customerName).fill("Playwright Test Customer Edit");
 
-    const packageSelect = page.locator(SEL.packageId);
     await page.waitForFunction(
       (sel) => {
         const el = document.querySelector(sel) as HTMLSelectElement;
@@ -83,7 +83,7 @@ test.describe("booking edit flow", () => {
       .filter({ hasText: "Umrah Ekonomi 9 Hari" })
       .getAttribute("value");
     if (!ekonomiOptionValue) throw new Error("Umrah Ekonomi 9 Hari option not found");
-    await packageSelect.selectOption(ekonomiOptionValue);
+    await selectNative(page, "booking-package", ekonomiOptionValue);
     await expect(page.locator(SEL.packageId)).toHaveValue(ekonomiOptionValue, { timeout: 5000 });
 
     await page.locator(SEL.departureDateButton).click();

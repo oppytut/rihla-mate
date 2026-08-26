@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 
 const SEL = {
   title: '[data-testid="package-title"]',
@@ -89,12 +90,12 @@ test.describe("package creation flow", () => {
     await page.locator(SEL.slug).fill(`playwright-test-package-${Date.now()}`);
 
     await page.locator(SEL.description).fill("A test package created by Playwright");
-    await page.locator(SEL.category).selectOption("premium");
+    await selectNative(page, "package-category", "premium");
     await page.locator(SEL.durationDays).fill("5");
     await page.locator(SEL.departureCity).fill("Jakarta");
-    await page.locator(SEL.status).selectOption("published");
+    await selectNative(page, "package-status", "published");
     await page.locator(SEL.price).fill("2500000");
-    await page.locator(SEL.currency).selectOption("USD");
+    await selectNative(page, "package-currency", "USD");
     await page.locator(SEL.featuredImage).fill("https://example.com/test-image.jpg");
     await page.locator(SEL.gallery).fill('["https://example.com/gallery1.jpg"]');
     await page.locator(SEL.itinerary).fill('[{"day": 1, "description": "Arrival and check-in"}]');
