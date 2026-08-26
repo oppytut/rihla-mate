@@ -10,6 +10,8 @@ const RESERVED_PUBLIC_SLUGS = new Set([
   "activate",
   "marketing",
   "guide",
+  "privacy",
+  "terms",
   "forgot-password",
   "reset-password",
   "api",

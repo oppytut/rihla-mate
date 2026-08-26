@@ -61,7 +61,14 @@ export function isMarketingPath(pathname: string): boolean {
 }
 
 export function isProductDocsPath(pathname: string): boolean {
-  return pathname === "/guide" || pathname.startsWith("/guide/");
+  return (
+    pathname === "/guide" ||
+    pathname.startsWith("/guide/") ||
+    pathname === "/privacy" ||
+    pathname.startsWith("/privacy/") ||
+    pathname === "/terms" ||
+    pathname.startsWith("/terms/")
+  );
 }
 
 export function isBureauCatalogPath(pathname: string): boolean {
@@ -134,6 +141,7 @@ const BUREAU_PUBLIC_DROP_NAMESPACES = [
   "notifications",
   "landing",
   "guide",
+  "legal",
 ] as const;
 
 const BUREAU_CATALOG_NAMESPACES = ["packages", "validation", "bookings"] as const;
