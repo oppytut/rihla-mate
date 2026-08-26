@@ -67,7 +67,8 @@
       "analytics": "Analitik",
       "license": "Lisensi",
       "settings": "Pengaturan",
-      "users": "Pengguna"
+      "users": "Pengguna",
+      "homeSections": "Blok beranda"
     },
     "layout": {
       "brandName": "Rihla Mate",
@@ -1441,5 +1442,27 @@
         }
       }
     }
+  },
+  "homeSections": {
+    "title": "Blok beranda",
+    "description": "Ubah empat blok di beranda biro: mengapa, cara daftar, suasana, dan kata jamaah. Kosongkan untuk memakai teks bawaan.",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "saved": "Blok beranda disimpan.",
+    "error": "Gagal menyimpan",
+    "whyHeading": "Mengapa berangkat bersama kami",
+    "howHeading": "Cara daftar",
+    "galleryHeading": "Suasana perjalanan",
+    "testimonialsHeading": "Kata jamaah",
+    "sectionTitle": "Judul bagian",
+    "sectionLead": "Pengantar",
+    "itemTitle": "Judul kartu {n}",
+    "itemBody": "Isi kartu {n}",
+    "stepTitle": "Judul langkah {n}",
+    "stepBody": "Isi langkah {n}",
+    "imageUrl": "URL gambar {n}",
+    "imageAlt": "Teks alt {n}",
+    "quote": "Kutipan {n}",
+    "name": "Nama {n}"
   }
 }
