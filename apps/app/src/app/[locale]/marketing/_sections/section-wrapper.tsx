@@ -4,6 +4,8 @@ export const marketingShellClass = "mx-auto w-full max-w-[1680px] px-4 sm:px-6 l
 
 export const bureauShellClass = "mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-10 xl:px-16";
 
+export const bureauInnerClass = "mx-auto w-full max-w-6xl";
+
 interface SectionWrapperProps {
   children: React.ReactNode;
   className?: string;
