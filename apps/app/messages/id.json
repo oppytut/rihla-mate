@@ -1089,7 +1089,9 @@
       "faq": "FAQ",
       "contact": "Kontak",
       "copyright": "© {year} Rihla Mate. Seluruh hak cipta dilindungi.",
-      "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia."
+      "tagline": "Platform travel Umrah white-label untuk travel agent Indonesia.",
+      "privacy": "Kebijakan privasi",
+      "terms": "Syarat dan ketentuan"
     },
     "proof": {
       "sectionLabel": "Dipercaya biro travel Umrah di Indonesia",
@@ -1360,6 +1362,84 @@
       "item": "Komponen",
       "min": "Minimum",
       "rec": "Rekomendasi"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Kebijakan Privasi",
+      "eyebrow": "Rihla Mate",
+      "updated": "Terakhir diperbarui: 26 Agustus 2026",
+      "lead": "Kebijakan ini menjelaskan bagaimana Rihla Mate (rihla.my.id) mengumpulkan dan memakai data saat Anda mengunjungi situs produk, mencoba demo, atau memakai perangkat lunak berlisensi.",
+      "sections": {
+        "who": {
+          "title": "Siapa kami",
+          "body": "Rihla Mate adalah perangkat lunak white-label untuk biro perjalanan Umrah. Situs produk di rihla.my.id memasarkan lisensi dan dokumentasi. Instalasi pelanggan berjalan di server pelanggan sendiri (self-hosted), bukan di infrastruktur bersama kami."
+        },
+        "collect": {
+          "title": "Data yang kami kumpulkan",
+          "body": "Di situs produk kami dapat mencatat alamat IP, user-agent, halaman yang dikunjung, dan data formulir yang Anda kirim (misalnya email kontak). Jika Anda mengaktifkan lisensi, server pelanggan mengirim check-in berkala ke license server (identifikasi lisensi, status instance, bukan data jamaah). Pembayaran lisensi diproses penyedia pembayaran pihak ketiga. Kami tidak mengoperasikan database jamaah biro Anda."
+        },
+        "cookies": {
+          "title": "Cookie dan sesi",
+          "body": "Situs memakai cookie atau penyimpanan sesi yang diperlukan untuk bahasa, keamanan, dan (pada instance) autentikasi staf. Kami tidak memakai iklan pihak ketiga di situs produk."
+        },
+        "purpose": {
+          "title": "Tujuan pemakaian",
+          "body": "Data dipakai untuk menyediakan situs, menjawab permintaan, menegakkan lisensi, mencegah penyalahgunaan, dan memperbaiki produk. Kami tidak menjual data pribadi."
+        },
+        "share": {
+          "title": "Berbagi dengan pihak ketiga",
+          "body": "Kami dapat memakai penyedia infrastruktur, email transaksional, dan pembayaran. Mereka hanya menerima data yang diperlukan untuk layanan tersebut. Data jamaah di instalasi biro dikelola biro, bukan Rihla Mate, kecuali biro secara terpisah mengirimkannya kepada kami (misalnya tiket dukungan)."
+        },
+        "retention": {
+          "title": "Retensi dan hak Anda",
+          "body": "Log teknis disimpan seperlunya untuk keamanan dan operasi. Untuk akses, koreksi, atau penghapusan data yang kami pegang terkait akun lisensi atau kontak, kirim permintaan ke hello@rihla-mate.com. Permintaan terkait data jamaah harus diajukan ke biro yang mengoperasikan instalasi."
+        },
+        "contact": {
+          "title": "Kontak",
+          "body": "Pertanyaan privasi: hello@rihla-mate.com. Situs produk: https://rihla.my.id."
+        }
+      }
+    },
+    "terms": {
+      "title": "Syarat dan Ketentuan",
+      "eyebrow": "Rihla Mate",
+      "updated": "Terakhir diperbarui: 26 Agustus 2026",
+      "lead": "Dengan mengakses rihla.my.id atau memakai perangkat lunak Rihla Mate, Anda menyetujui syarat ini. Jika Anda tidak setuju, jangan gunakan layanan atau perangkat lunak.",
+      "sections": {
+        "product": {
+          "title": "Produk",
+          "body": "Rihla Mate adalah perangkat lunak self-hosted untuk operasional biro Umrah (katalog, pemesanan, dashboard). Situs rihla.my.id adalah permukaan produk SaaS, bukan situs pemesanan Umrah. Demo di domain terpisah menampilkan contoh merek biro dan bukan penawaran perjalanan dari Rihla Mate."
+        },
+        "license": {
+          "title": "Lisensi dan uji coba",
+          "body": "Pemakaian perangkat lunak tunduk pada lisensi yang diterbitkan (termasuk masa uji coba jika ada). Satu instalasi ditujukan untuk satu biro. Anda tidak boleh menyalin, mensublisensikan, atau mengelabui pemeriksaan lisensi. Fitur dapat dibatasi jika lisensi kedaluwarsa atau dicabut, sesuai ketentuan lisensi."
+        },
+        "account": {
+          "title": "Tanggung jawab pelanggan",
+          "body": "Anda bertanggung jawab atas server, cadangan, keamanan kredensial, konten CMS, data jamaah, kepatuhan peraturan perjalanan/visa, dan komunikasi dengan jamaah. Rihla Mate tidak menjadi biro perjalanan dan tidak menjual paket Umrah."
+        },
+        "acceptable": {
+          "title": "Penggunaan yang dilarang",
+          "body": "Dilarang memakai produk untuk penipuan, pelanggaran hukum, gangguan layanan, atau mengunggah konten yang melanggar hak pihak lain. Kami dapat menolak aktivasi atau mencabut lisensi jika terjadi pelanggaran material."
+        },
+        "ip": {
+          "title": "Hak kekayaan intelektual",
+          "body": "Merek, kode, dan materi pemasaran Rihla Mate tetap milik kami atau pemberi lisensi. Konten yang Anda masukkan di instalasi tetap milik Anda atau pemberi hak kepada Anda."
+        },
+        "liability": {
+          "title": "Penafian dan tanggung jawab",
+          "body": "Perangkat lunak disediakan sebagaimana adanya. Sejauh diizinkan hukum, kami tidak bertanggung jawab atas kerugian tidak langsung, kehilangan data, atau gangguan bisnis. Tanggung jawab agregat terkait lisensi dibatasi pada jumlah yang Anda bayar untuk lisensi pada periode 12 bulan sebelumnya, kecuali wajib lain menurut hukum yang berlaku."
+        },
+        "changes": {
+          "title": "Perubahan",
+          "body": "Kami dapat memperbarui syarat ini. Versi terbaru dipublikasikan di halaman ini. Pemakaian lanjutan setelah perubahan berarti Anda menerima syarat yang diperbarui."
+        },
+        "contact": {
+          "title": "Kontak",
+          "body": "hello@rihla-mate.com — https://rihla.my.id"
+        }
+      }
     }
   }
 }

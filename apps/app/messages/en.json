@@ -1094,7 +1094,9 @@
       "faq": "FAQ",
       "contact": "Contact",
       "copyright": "© {year} Rihla Mate. All rights reserved.",
-      "tagline": "White-label Umrah travel platform for Indonesian travel agents."
+      "tagline": "White-label Umrah travel platform for Indonesian travel agents.",
+      "privacy": "Privacy policy",
+      "terms": "Terms of service"
     },
     "proof": {
       "sectionLabel": "Trusted by Umrah travel agencies in Indonesia",
@@ -1361,6 +1363,84 @@
       "item": "Component",
       "min": "Minimum",
       "rec": "Recommended"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "eyebrow": "Rihla Mate",
+      "updated": "Last updated: 26 August 2026",
+      "lead": "This policy explains how Rihla Mate (rihla.my.id) collects and uses data when you visit the product site, try the demo, or use licensed software.",
+      "sections": {
+        "who": {
+          "title": "Who we are",
+          "body": "Rihla Mate is white-label software for Umrah travel bureaus. The product site at rihla.my.id markets licenses and documentation. Customer installs run on the customer’s own server (self-hosted), not on our shared infrastructure."
+        },
+        "collect": {
+          "title": "Data we collect",
+          "body": "On the product site we may log IP address, user-agent, pages visited, and information you submit (for example a contact email). If you activate a license, the customer server sends periodic check-ins to the license server (license identity and instance status, not pilgrim records). License payments are processed by a third-party payment provider. We do not operate your bureau’s pilgrim database."
+        },
+        "cookies": {
+          "title": "Cookies and sessions",
+          "body": "The site uses cookies or session storage required for language, security, and (on an instance) staff authentication. We do not run third-party advertising on the product site."
+        },
+        "purpose": {
+          "title": "How we use data",
+          "body": "We use data to operate the site, respond to requests, enforce licenses, prevent abuse, and improve the product. We do not sell personal data."
+        },
+        "share": {
+          "title": "Sharing",
+          "body": "We may use infrastructure, transactional email, and payment providers. They receive only what is needed for that service. Pilgrim data on a bureau install is controlled by the bureau, not Rihla Mate, unless the bureau separately sends it to us (for example a support ticket)."
+        },
+        "retention": {
+          "title": "Retention and your rights",
+          "body": "Technical logs are kept as needed for security and operations. For access, correction, or deletion of data we hold about a license account or contact, email hello@rihla-mate.com. Requests about pilgrim data must go to the bureau operating the install."
+        },
+        "contact": {
+          "title": "Contact",
+          "body": "Privacy questions: hello@rihla-mate.com. Product site: https://rihla.my.id."
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "eyebrow": "Rihla Mate",
+      "updated": "Last updated: 26 August 2026",
+      "lead": "By accessing rihla.my.id or using Rihla Mate software, you agree to these terms. If you do not agree, do not use the site or software.",
+      "sections": {
+        "product": {
+          "title": "The product",
+          "body": "Rihla Mate is self-hosted software for Umrah bureau operations (catalog, bookings, dashboard). rihla.my.id is the SaaS product surface, not an Umrah booking site. The demo on a separate domain shows a sample bureau brand and is not a travel offer from Rihla Mate."
+        },
+        "license": {
+          "title": "License and trial",
+          "body": "Use of the software is subject to the issued license (including any trial). One install is intended for one bureau. You may not copy, sublicense, or circumvent license checks. Features may be limited if a license expires or is revoked, as stated in the license."
+        },
+        "account": {
+          "title": "Your responsibilities",
+          "body": "You are responsible for your server, backups, credential security, CMS content, pilgrim data, travel/visa compliance, and communication with pilgrims. Rihla Mate is not a travel bureau and does not sell Umrah packages."
+        },
+        "acceptable": {
+          "title": "Unacceptable use",
+          "body": "You may not use the product for fraud, unlawful activity, service disruption, or content that infringes others’ rights. We may refuse activation or revoke a license for material breach."
+        },
+        "ip": {
+          "title": "Intellectual property",
+          "body": "Rihla Mate trademarks, code, and marketing materials remain ours or our licensors’. Content you put in your install remains yours or your licensors’."
+        },
+        "liability": {
+          "title": "Disclaimer and liability",
+          "body": "The software is provided as is. To the extent permitted by law, we are not liable for indirect loss, data loss, or business interruption. Aggregate liability related to a license is limited to the fees you paid for that license in the preceding 12 months, unless mandatory law requires otherwise."
+        },
+        "changes": {
+          "title": "Changes",
+          "body": "We may update these terms. The current version is published on this page. Continued use after a change means you accept the updated terms."
+        },
+        "contact": {
+          "title": "Contact",
+          "body": "hello@rihla-mate.com — https://rihla.my.id"
+        }
+      }
     }
   }
 }
