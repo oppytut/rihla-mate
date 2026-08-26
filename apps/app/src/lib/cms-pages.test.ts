@@ -5,6 +5,8 @@ describe("isReservedPublicSlug", () => {
   it("blocks app routes that must not be CMS pages", () => {
     expect(isReservedPublicSlug("packages")).toBe(true);
     expect(isReservedPublicSlug("Dashboard")).toBe(true);
+    expect(isReservedPublicSlug("privacy")).toBe(true);
+    expect(isReservedPublicSlug("terms")).toBe(true);
     expect(isReservedPublicSlug("about-us")).toBe(false);
   });
 });

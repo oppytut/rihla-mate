@@ -175,6 +175,18 @@ export async function MarketingFooter({
               >
                 {t("nav.guide")}
               </Link>
+              <Link
+                href="/privacy"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.privacy")}
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t("footer.terms")}
+              </Link>
               <a
                 href="mailto:hello@rihla-mate.com"
                 className="text-sm text-muted-foreground transition-colors hover:text-foreground"

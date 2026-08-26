@@ -46,6 +46,8 @@ describe("site-mode", () => {
     expect(isMarketingPath("/marketing")).toBe(true);
     expect(isMarketingPath("/packages")).toBe(false);
     expect(isProductDocsPath("/guide")).toBe(true);
+    expect(isProductDocsPath("/privacy")).toBe(true);
+    expect(isProductDocsPath("/terms")).toBe(true);
     expect(isProductDocsPath("/packages")).toBe(false);
     expect(isBureauCatalogPath("/packages")).toBe(true);
     expect(isBureauCatalogPath("/packages/umrah-plus")).toBe(true);
@@ -67,6 +69,12 @@ describe("site-mode", () => {
     expect(surfaceRedirectUrl("demo.rihla.my.id", "/id/guide", locales)).toBe(
       `${PRODUCT_ORIGIN}/guide`,
     );
+    expect(surfaceRedirectUrl("demo.rihla.my.id", "/privacy", locales)).toBe(
+      `${PRODUCT_ORIGIN}/privacy`,
+    );
+    expect(surfaceRedirectUrl("demo.rihla.my.id", "/en/terms", locales)).toBe(
+      `${PRODUCT_ORIGIN}/terms`,
+    );
     expect(surfaceRedirectUrl("localhost", "/", locales)).toBeNull();
   });
 
@@ -76,6 +84,7 @@ describe("site-mode", () => {
       dashboard: { title: "Dash", sidebar: { packages: "Harga" } },
       auth: { signIn: "Masuk" },
       guide: { title: "Guide" },
+      legal: { privacy: { title: "Privasi" } },
       landing: { title: "SaaS" },
       packages: { title: "Paket" },
       validation: { required: "Wajib" },
@@ -107,6 +116,7 @@ describe("site-mode", () => {
     };
     const slim = pickBureauClientMessages(messages);
     expect(slim.guide).toBeUndefined();
+    expect(slim.legal).toBeUndefined();
     expect(slim.landing).toBeUndefined();
     expect(slim.dashboard).toBeUndefined();
     expect(slim.auth).toEqual({ signIn: "Masuk" });
