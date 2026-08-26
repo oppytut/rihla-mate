@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono, Cairo } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getBureauDisplayName } from "@/lib/bureau-brand";
-import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
+import { hostnameFromHostHeader, isBureauHostname, PRODUCT_ORIGIN } from "@/lib/site-mode";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -39,14 +39,32 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     };
   }
+  const description =
+    "Platform white-label travel Umrah self-hosted. Landing page branded, dashboard admin, dan booking engine untuk biro perjalanan.";
   return {
+    metadataBase: new URL(PRODUCT_ORIGIN),
     title: {
       default: "Rihla Mate",
       template: "%s · Rihla Mate",
     },
-    description:
-      "Platform white-label travel Umrah self-hosted. Landing page branded, dashboard admin, dan booking engine untuk biro perjalanan.",
+    description,
     applicationName: "Rihla Mate",
+    alternates: {
+      canonical: "/",
+    },
+    openGraph: {
+      type: "website",
+      locale: "id_ID",
+      url: PRODUCT_ORIGIN,
+      siteName: "Rihla Mate",
+      title: "Rihla Mate",
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Rihla Mate",
+      description,
+    },
   };
 }
 
