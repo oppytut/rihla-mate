@@ -11,6 +11,7 @@ vi.mock("../trpc/init", async () => {
     createTRPCRouter: t.router,
     createCallerFactory: t.createCallerFactory,
     adminProcedure: t.procedure,
+    protectedProcedure: t.procedure,
   };
 });
 
@@ -231,6 +232,80 @@ describe("settingsRouter.set", () => {
 
     expect(result).toHaveProperty("key", "theme");
     expect(result).toHaveProperty("value", "light");
+  });
+});
+
+describe("settingsRouter.getHomeSections", () => {
+  let db: ReturnType<typeof mockDb>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    db = mockDb();
+  });
+
+  it("returns parsed empty sections when no row", async () => {
+    const caller = createCaller(db);
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([] as never);
+
+    const result = await caller.getHomeSections();
+    expect(result.whyTitle).toBe("");
+    expect(result.whyItems).toHaveLength(4);
+  });
+
+  it("parses stored JSON value", async () => {
+    const caller = createCaller(db);
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ value: { whyTitle: "Why us" } }] as never);
+
+    const result = await caller.getHomeSections();
+    expect(result.whyTitle).toBe("Why us");
+  });
+});
+
+describe("settingsRouter.setHomeSections", () => {
+  let db: ReturnType<typeof mockDb>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    db = mockDb();
+  });
+
+  it("inserts when key is missing", async () => {
+    const caller = createCaller(db);
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([] as never);
+
+    vi.mocked(db.insert).mockReturnValueOnce(db as never);
+    vi.mocked(db.values).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ value: { whyTitle: "A" } }] as never);
+
+    const result = await caller.setHomeSections({ whyTitle: "A" });
+    expect(result.whyTitle).toBe("A");
+    expect(db.insert).toHaveBeenCalledTimes(1);
+  });
+
+  it("updates when key exists", async () => {
+    const caller = createCaller(db);
+    vi.mocked(db.select).mockReturnValueOnce(db as never);
+    vi.mocked(db.from).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.limit).mockResolvedValueOnce([{ key: "bureauHomeSections" }] as never);
+
+    vi.mocked(db.update).mockReturnValueOnce(db as never);
+    vi.mocked(db.set).mockReturnValueOnce(db as never);
+    vi.mocked(db.where).mockReturnValueOnce(db as never);
+    vi.mocked(db.returning).mockResolvedValueOnce([{ value: { howTitle: "How" } }] as never);
+
+    const result = await caller.setHomeSections({ howTitle: "How" });
+    expect(result.howTitle).toBe("How");
+    expect(db.update).toHaveBeenCalledTimes(1);
   });
 });
 
