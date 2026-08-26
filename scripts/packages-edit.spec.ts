@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 
 async function cleanupPlaywrightPackages(context: {
   request: {
@@ -63,10 +64,10 @@ test.describe("packages edit flow", () => {
       .locator('[data-testid="package-slug"]')
       .fill(`playwright-test-package-edit-${Date.now()}`);
     await page.locator('[data-testid="package-description"]').fill("Package for edit test");
-    await page.selectOption('[data-testid="package-category"]', "standard");
+    await selectNative(page, "package-category", "standard");
     await page.locator('[data-testid="package-duration-days"]').fill("3");
     await page.locator('[data-testid="package-price"]').fill("1000000");
-    await page.selectOption('[data-testid="package-status"]', "draft");
+    await selectNative(page, "package-status", "draft");
     await page
       .locator('[data-testid="package-itinerary"]')
       .fill('[{"day": 1, "description": "Test day"}]');
