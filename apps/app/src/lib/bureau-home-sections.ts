@@ -154,6 +154,18 @@ export function filledGallery(items: BureauGalleryItem[]): BureauGalleryItem[] {
   return items.filter((item) => item.src);
 }
 
+export function completeGallery(
+  items: BureauGalleryItem[],
+  fallbacks: readonly BureauGalleryItem[],
+  min = 4,
+): BureauGalleryItem[] {
+  const filled = filledGallery(items);
+  if (filled.length >= min) return filled;
+  const used = new Set(filled.map((item) => item.src));
+  const extras = fallbacks.filter((item) => item.src && !used.has(item.src));
+  return [...filled, ...extras].slice(0, Math.max(min, filled.length));
+}
+
 export function filledTestimonials(items: BureauTestimonialItem[]): BureauTestimonialItem[] {
   return items.filter((item) => item.quote || item.name);
 }
