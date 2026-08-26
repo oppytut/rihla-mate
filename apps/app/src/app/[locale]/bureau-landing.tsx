@@ -202,9 +202,10 @@ export async function BureauLanding({
                           title: t(`whyItems.${key}.title`),
                           body: t(`whyItems.${key}.body`),
                         }))
-                    ).map((item) => (
+                    ).map((item, index) => (
                       <li key={item.key} className="rounded-lg border border-border/60 bg-card p-5">
-                        <h3 className="font-medium text-foreground">{item.title}</h3>
+                        <p className="text-sm font-medium text-primary">{index + 1}</p>
+                        <h3 className="mt-2 font-medium text-foreground">{item.title}</h3>
                         <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
                       </li>
                     ))}
