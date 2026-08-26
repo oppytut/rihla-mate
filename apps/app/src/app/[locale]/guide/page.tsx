@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
+import { hostnameFromHostHeader, staffSignInHrefForHost } from "@/lib/site-mode";
 import { readGuideSection } from "./guide-section";
 
 const SECTIONS = [
@@ -25,6 +27,9 @@ const SECTIONS = [
 export default async function GuidePage() {
   const t = await getTranslations("guide");
   const sectionBag = t.raw("sections");
+  const hostname = hostnameFromHostHeader((await headers()).get("host"));
+  const signInHref = staffSignInHrefForHost(hostname);
+  const signInExternal = signInHref.startsWith("http");
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -130,17 +135,26 @@ export default async function GuidePage() {
               <p className="mt-2 text-sm text-primary-foreground/80">{t("cta.body")}</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  href="/installer"
+                  href="/activate"
                   className="inline-flex h-10 items-center rounded-md bg-background px-4 text-sm font-semibold text-foreground hover:bg-background/90"
                 >
                   {t("cta.installer")}
                 </Link>
-                <Link
-                  href="/sign-in"
-                  className="inline-flex h-10 items-center rounded-md border border-primary-foreground/30 px-4 text-sm font-medium hover:bg-primary-foreground/10"
-                >
-                  {t("cta.signIn")}
-                </Link>
+                {signInExternal ? (
+                  <a
+                    href={signInHref}
+                    className="inline-flex h-10 items-center rounded-md border border-primary-foreground/30 px-4 text-sm font-medium hover:bg-primary-foreground/10"
+                  >
+                    {t("cta.signIn")}
+                  </a>
+                ) : (
+                  <Link
+                    href="/sign-in"
+                    className="inline-flex h-10 items-center rounded-md border border-primary-foreground/30 px-4 text-sm font-medium hover:bg-primary-foreground/10"
+                  >
+                    {t("cta.signIn")}
+                  </Link>
+                )}
               </div>
             </section>
           </div>
