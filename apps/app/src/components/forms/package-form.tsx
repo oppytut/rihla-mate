@@ -4,7 +4,9 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
 import { validatePackage } from "@/lib/utils/validation";
@@ -309,7 +311,7 @@ export function PackageFormContent({
                 <label htmlFor="description" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.description")}
                 </label>
-                <textarea
+                <Textarea
                   id="description"
                   value={
                     copyLocale === "id"
@@ -328,7 +330,7 @@ export function PackageFormContent({
                   disabled={isSubmitting}
                   data-testid="package-description"
                   aria-label={t("packages.fields.description")}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                  className="resize-none"
                 />
               </div>
 
@@ -360,7 +362,7 @@ export function PackageFormContent({
                   >
                     {t("packages.fields.durationDays")} *
                   </label>
-                  <input
+                  <Input
                     id="durationDays"
                     type="number"
                     min={1}
@@ -375,7 +377,6 @@ export function PackageFormContent({
                     aria-label={t("packages.fields.durationDays")}
                     aria-describedby={fieldErrors.durationDays ? "durationDays-error" : undefined}
                     className={cn(
-                      "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
                       fieldErrors.durationDays ? "border-destructive" : "border-border",
                     )}
                   />
@@ -516,7 +517,7 @@ export function PackageFormContent({
                 <label htmlFor="gallery" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.gallery")}
                 </label>
-                <textarea
+                <Textarea
                   id="gallery"
                   value={form.gallery}
                   onChange={(e) => updateField("gallery", e.target.value)}
@@ -527,7 +528,7 @@ export function PackageFormContent({
                   aria-label={t("packages.fields.gallery")}
                   aria-describedby={fieldErrors.gallery ? "gallery-error" : undefined}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "resize-none font-mono text-sm",
                     fieldErrors.gallery ? "border-destructive" : "border-border",
                   )}
                 />
@@ -552,7 +553,7 @@ export function PackageFormContent({
                 <label htmlFor="itinerary" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.itinerary")}
                 </label>
-                <textarea
+                <Textarea
                   id="itinerary"
                   value={form.itinerary}
                   onChange={(e) => updateField("itinerary", e.target.value)}
@@ -563,7 +564,7 @@ export function PackageFormContent({
                   aria-label={t("packages.fields.itinerary")}
                   aria-describedby={fieldErrors.itinerary ? "itinerary-error" : undefined}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "resize-none font-mono text-sm",
                     fieldErrors.itinerary ? "border-destructive" : "border-border",
                   )}
                 />
@@ -582,7 +583,7 @@ export function PackageFormContent({
                 <label htmlFor="inclusions" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.inclusions")}
                 </label>
-                <textarea
+                <Textarea
                   id="inclusions"
                   value={form.inclusions}
                   onChange={(e) => updateField("inclusions", e.target.value)}
@@ -593,7 +594,7 @@ export function PackageFormContent({
                   aria-label={t("packages.fields.inclusions")}
                   aria-describedby={fieldErrors.inclusions ? "inclusions-error" : undefined}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "resize-none font-mono text-sm",
                     fieldErrors.inclusions ? "border-destructive" : "border-border",
                   )}
                 />
@@ -612,7 +613,7 @@ export function PackageFormContent({
                 <label htmlFor="exclusions" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.exclusions")}
                 </label>
-                <textarea
+                <Textarea
                   id="exclusions"
                   value={form.exclusions}
                   onChange={(e) => updateField("exclusions", e.target.value)}
@@ -623,7 +624,7 @@ export function PackageFormContent({
                   aria-label={t("packages.fields.exclusions")}
                   aria-describedby={fieldErrors.exclusions ? "exclusions-error" : undefined}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "resize-none font-mono text-sm",
                     fieldErrors.exclusions ? "border-destructive" : "border-border",
                   )}
                 />
@@ -645,7 +646,7 @@ export function PackageFormContent({
                 >
                   {t("packages.fields.availableDates")}
                 </label>
-                <textarea
+                <Textarea
                   id="availableDates"
                   value={form.availableDates}
                   onChange={(e) => updateField("availableDates", e.target.value)}
@@ -656,7 +657,7 @@ export function PackageFormContent({
                   aria-label={t("packages.fields.availableDates")}
                   aria-describedby={fieldErrors.availableDates ? "availableDates-error" : undefined}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none font-mono text-sm",
+                    "resize-none font-mono text-sm",
                     fieldErrors.availableDates ? "border-destructive" : "border-border",
                   )}
                 />

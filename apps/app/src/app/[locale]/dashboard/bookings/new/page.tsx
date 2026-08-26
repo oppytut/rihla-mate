@@ -4,7 +4,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -269,7 +271,7 @@ export default function BookingCreatePage() {
                   <label htmlFor="travelers" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.travelers")} *
                   </label>
-                  <input
+                  <Input
                     id="travelers"
                     type="number"
                     min={1}
@@ -283,10 +285,7 @@ export default function BookingCreatePage() {
                     disabled={isSubmitting}
                     aria-label={t("bookings.fields.travelers")}
                     aria-describedby={fieldErrors.travelers ? "travelers-error" : undefined}
-                    className={cn(
-                      "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                      fieldErrors.travelers ? "border-destructive" : "border-border",
-                    )}
+                    className={cn(fieldErrors.travelers ? "border-destructive" : "border-border")}
                   />
                   {fieldErrors.travelers && (
                     <p
@@ -433,7 +432,7 @@ export default function BookingCreatePage() {
                 <label htmlFor="notes" className="block text-sm font-medium text-foreground">
                   {t("bookings.fields.notes")}
                 </label>
-                <textarea
+                <Textarea
                   id="notes"
                   value={form.notes}
                   onChange={(e) => updateField("notes", e.target.value)}
@@ -441,7 +440,7 @@ export default function BookingCreatePage() {
                   disabled={isSubmitting}
                   data-testid="booking-notes"
                   aria-label={t("bookings.fields.notes")}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                  className="resize-none"
                 />
               </div>
             </section>
