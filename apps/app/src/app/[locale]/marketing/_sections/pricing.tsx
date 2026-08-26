@@ -107,7 +107,7 @@ export function PricingSection() {
 
                 {key === "enterprise" ? (
                   <a
-                    href="mailto:hello@rihla-mate.com"
+                    href="mailto:mail@rihla.my.id"
                     className="inline-flex h-11 w-full items-center justify-center rounded-xl border-2 border-primary/40 bg-primary/10 text-sm font-semibold text-primary shadow-sm transition-all hover:border-primary hover:bg-primary/15"
                   >
                     {t(`pricing.${key}.cta`)}
