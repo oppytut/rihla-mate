@@ -18,30 +18,23 @@ import {
   type BureauTextItem,
 } from "@/lib/bureau-home-sections";
 
-function cloneEmpty(): BureauHomeSections {
-  return parseBureauHomeSections(null);
-}
-
 export default function HomeSectionsPage() {
   const t = useTranslations("homeSections");
   const trpc = useTRPC();
-  const [form, setForm] = useState<BureauHomeSections>(cloneEmpty);
+  const [draft, setDraft] = useState<BureauHomeSections | null>(null);
 
   useEffect(() => {
     document.title = t("title");
   }, [t]);
 
   const settingsQuery = useQuery(trpc.settings.getHomeSections.queryOptions());
-
-  useEffect(() => {
-    if (!settingsQuery.data) return;
-    setForm(parseBureauHomeSections(settingsQuery.data));
-  }, [settingsQuery.data]);
+  const form = draft ?? parseBureauHomeSections(settingsQuery.data ?? null);
 
   const saveMutation = useMutation(
     trpc.settings.setHomeSections.mutationOptions({
       onSuccess: () => {
         toast.success(t("saved"));
+        setDraft(null);
         settingsQuery.refetch();
       },
       onError: (error) => {
@@ -50,39 +43,50 @@ export default function HomeSectionsPage() {
     }),
   );
 
+  const serverForm = parseBureauHomeSections(settingsQuery.data ?? null);
+
   const update = useCallback(
     <K extends keyof BureauHomeSections>(key: K, value: BureauHomeSections[K]) => {
-      setForm((prev) => ({ ...prev, [key]: value }));
+      setDraft((prev) => ({ ...(prev ?? serverForm), [key]: value }));
     },
-    [],
+    [serverForm],
   );
 
   const updateTextItem = useCallback(
     (field: "whyItems" | "howSteps", index: number, patch: Partial<BureauTextItem>) => {
-      setForm((prev) => {
-        const next = [...prev[field]];
+      setDraft((prev) => {
+        const base = prev ?? serverForm;
+        const next = [...base[field]];
         next[index] = { ...next[index], ...patch };
-        return { ...prev, [field]: next };
+        return { ...base, [field]: next };
       });
     },
-    [],
+    [serverForm],
   );
 
-  const updateGallery = useCallback((index: number, patch: Partial<BureauGalleryItem>) => {
-    setForm((prev) => {
-      const next = [...prev.gallery];
-      next[index] = { ...next[index], ...patch };
-      return { ...prev, gallery: next };
-    });
-  }, []);
+  const updateGallery = useCallback(
+    (index: number, patch: Partial<BureauGalleryItem>) => {
+      setDraft((prev) => {
+        const base = prev ?? serverForm;
+        const next = [...base.gallery];
+        next[index] = { ...next[index], ...patch };
+        return { ...base, gallery: next };
+      });
+    },
+    [serverForm],
+  );
 
-  const updateTestimonial = useCallback((index: number, patch: Partial<BureauTestimonialItem>) => {
-    setForm((prev) => {
-      const next = [...prev.testimonials];
-      next[index] = { ...next[index], ...patch };
-      return { ...prev, testimonials: next };
-    });
-  }, []);
+  const updateTestimonial = useCallback(
+    (index: number, patch: Partial<BureauTestimonialItem>) => {
+      setDraft((prev) => {
+        const base = prev ?? serverForm;
+        const next = [...base.testimonials];
+        next[index] = { ...next[index], ...patch };
+        return { ...base, testimonials: next };
+      });
+    },
+    [serverForm],
+  );
 
   const handleSave = useCallback(() => {
     saveMutation.mutate(parseBureauHomeSections(form));
