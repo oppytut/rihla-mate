@@ -119,7 +119,7 @@ export async function sendBookingConfirmation(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Rihla Mate <noreply@rihla-mate.com>",
+        from: "Rihla Mate <noreply@rihla.my.id>",
         to: [params.customerEmail],
         subject: t("subject", { package: params.packageTitle }),
         html,

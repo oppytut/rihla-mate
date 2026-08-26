@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { logger } from "@/lib/utils/logger";
 
 const RESEND_API = "https://api.resend.com/emails";
-const FROM = "Rihla Mate <noreply@rihla-mate.com>";
+const FROM = "Rihla Mate <noreply@rihla.my.id>";
 
 export type SendResendEmailParams = {
   to: string;
