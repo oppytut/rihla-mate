@@ -798,7 +798,10 @@
       "contactLead": "Questions? Contact our office.",
       "contactHours": "Mon–Fri 09:00–17:00 WIB · Sat 09:00–13:00 WIB",
       "whatsappCta": "WhatsApp consult",
-      "trustPpiu": "PPIU (demo) — licensed pilgrimage travel",
+      "trustPpiu": "PPIU — licensed pilgrimage travel",
+      "packagesTitle": "Umrah packages",
+      "packagesLead": "Compare duration, departure city, and price. Open a package for itinerary and quota.",
+      "contactTitle": "Contact us",
       "trustHotel": "Hotels within walking distance of the Haram",
       "trustMutawwif": "Indonesian-speaking mutawwif",
       "trustQuota": "Departure quotas announced well in advance",
@@ -832,6 +835,10 @@
         "two": {
           "quote": "The mutawwif patiently explained tawaf. Raudhah quota on the plus package matched what Senen staff promised.",
           "name": "Bapak Andi, Surabaya departure"
+        },
+        "three": {
+          "quote": "Office staff explained double vs triple rooms before the deposit. No surprises in Makkah.",
+          "name": "Ibu Rina, Ramadan group"
         }
       },
       "catalogTitle": "Umrah packages",

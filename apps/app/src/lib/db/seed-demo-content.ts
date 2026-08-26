@@ -15,7 +15,7 @@ export type DemoPageSeed = {
 };
 
 export const DEMO_OG_IMAGE =
-  "https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1600&q=80";
+  "https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=1600&q=80";
 
 const OG_MAKKAH = DEMO_OG_IMAGE;
 const OG_MADINAH =

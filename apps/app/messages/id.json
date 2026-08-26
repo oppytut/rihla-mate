@@ -793,7 +793,10 @@
       "contactLead": "Ada pertanyaan? Hubungi kantor kami.",
       "contactHours": "Senin–Jumat 09.00–17.00 WIB · Sabtu 09.00–13.00 WIB",
       "whatsappCta": "Konsultasi WhatsApp",
-      "trustPpiu": "PPIU (demo) — izin perjalanan ibadah",
+      "trustPpiu": "PPIU — izin perjalanan ibadah",
+      "packagesTitle": "Paket Umrah",
+      "packagesLead": "Bandingkan durasi, embarkasi, dan harga. Buka detail untuk itinerary dan kuota.",
+      "contactTitle": "Hubungi kami",
       "trustHotel": "Hotel walking distance ke Haram",
       "trustMutawwif": "Mutawwif berbahasa Indonesia",
       "trustQuota": "Kuota keberangkatan diumumkan jauh-jauh hari",
@@ -827,6 +830,10 @@
         "two": {
           "quote": "Mutawwif sabar menjelaskan thawaf. Kuota Raudhah di paket plus sesuai yang dijanjikan staf Senen.",
           "name": "Bapak Andi, embarkasi Surabaya"
+        },
+        "three": {
+          "quote": "Staf kantor jelaskan beda kamar double dan triple sebelum DP. Tidak ada kejutan di Makkah.",
+          "name": "Ibu Rina, kloter Ramadan"
         }
       },
       "catalogTitle": "Paket Umrah",
