@@ -86,7 +86,7 @@ Payload berisi informasi lisensi dalam format JSON:
   "gracePeriodDays": 7,
   "isTrial": false,
   "trialDays": 14,
-  "apiUrl": "https://license.rihla.my.id/api/v1"
+  "apiUrl": "http://localhost:3001/api/v1"
 }
 ```
 
@@ -297,7 +297,7 @@ Jika offline verification sukses, aplikasi mengirim request ke license server:
 
 ```http
 POST /api/v1/activate HTTP/1.1
-Host: license.rihla.my.id
+Host: <LICENSE_SERVER_URL host>
 Content-Type: application/json
 X-API-Key: <internal-api-key>
 
@@ -376,7 +376,7 @@ Aplikasi melakukan check-in periodik ke license server.
 
 ```http
 POST /api/v1/checkin HTTP/1.1
-Host: license.rihla.my.id
+Host: <LICENSE_SERVER_URL host>
 Content-Type: application/json
 X-API-Key: <internal-api-key>
 

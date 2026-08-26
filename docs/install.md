@@ -65,13 +65,9 @@ Instalasi cepat untuk memulai dalam 5 menit.
 ### Langkah 1: Download File
 
 ```bash
-# Buat direktori untuk Rihla Mate
-mkdir -p ~/rihla-mate
-cd ~/rihla-mate
-
-# Download file konfigurasi
-curl -O https://releases.rihla.my.id/latest/docker-compose.yml
-curl -O https://releases.rihla.my.id/latest/.env.example
+# Clone repo (compose + .env.example ada di root)
+git clone --depth 1 https://github.com/oppytut/rihla-mate.git
+cd rihla-mate
 
 # Buat file .env dari template
 cp .env.example .env
@@ -135,9 +131,9 @@ File `.env` berisi semua konfigurasi yang diperlukan oleh aplikasi. Berikut penj
 
 ### Lisensi
 
-| Variabel          | Deskripsi                     | Contoh                               |
-| ----------------- | ----------------------------- | ------------------------------------ |
-| `LICENSE_API_URL` | URL license server Rihla Mate | `https://license.rihla.my.id/api/v1` |
+| Variabel             | Deskripsi                                                                                       | Contoh                  |
+| -------------------- | ----------------------------------------------------------------------------------------------- | ----------------------- |
+| `LICENSE_SERVER_URL` | URL license server (self-host atau yang Anda operasikan). Host `license.*` publik belum di-DNS. | `http://localhost:3001` |
 
 ### Email (Opsional)
 
@@ -192,7 +188,7 @@ PORT=3000
 APP_URL=https://travelanda.com
 
 # Lisensi
-LICENSE_API_URL=https://license.rihla.my.id/api/v1
+LICENSE_SERVER_URL=http://localhost:3001
 
 # Email
 RESEND_API_KEY=re_xxxxx
