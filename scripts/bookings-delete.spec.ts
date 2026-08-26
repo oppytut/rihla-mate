@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 import { pickFuturePlusDate } from "./helpers/seed-dates";
 
 const SEL = {
@@ -88,7 +89,7 @@ test.describe("booking delete flow", () => {
       .filter({ hasText: "Umrah Plus 12 Hari" })
       .getAttribute("value");
     if (!plusOptionValue) throw new Error("Umrah Plus 12 Hari option not found");
-    await page.locator(SEL.packageSelect).selectOption(plusOptionValue);
+    await selectNative(page, "booking-package", plusOptionValue);
     await expect(page.locator(SEL.packageSelect)).toHaveValue(plusOptionValue, { timeout: 5000 });
 
     // Open date picker and navigate to July 1, 2026
