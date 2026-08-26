@@ -45,9 +45,9 @@ pnpm dev
 ## Production Deployment (Customer Side)
 
 ```bash
-# 1. Download files
-curl -O https://releases.rihla-mate.com/latest/docker-compose.yml
-curl -O https://releases.rihla-mate.com/latest/.env.example
+# 1. Clone or copy compose files from GitHub (no separate releases host)
+git clone --depth 1 https://github.com/oppytut/rihla-mate.git
+cd rihla-mate
 cp .env.example .env
 
 # 2. Edit .env — set required secrets
@@ -294,10 +294,12 @@ Lihat `.env.example` untuk template lengkap. Kategori:
 ### Deployment Satu Perintah
 
 ```bash
-curl -fsSL https://releases.rihla-mate.com/install.sh | bash
+git clone --depth 1 https://github.com/oppytut/rihla-mate.git
+cd rihla-mate
+chmod +x install.sh && ./install.sh
 ```
 
-Script `install.sh` akan: cek Docker + Docker Compose → buat `.env` dari template → pull image → `docker compose up -d` → verifikasi health endpoint.
+Script `install.sh` akan: cek Docker + Docker Compose → buat `.env` dari template → pull image → `docker compose up -d` → verifikasi health endpoint. Compose dan installer diambil dari repo GitHub, bukan host `releases.*`.
 
 ## License Flow
 

@@ -23,7 +23,7 @@ Options:
   --expires-at <iso-date>          Expiration date (default: 1 year from now)
   --trial                          Mark as trial license
   --trial-days <n>                 Trial duration in days (default: 14)
-  --api-url <url>                  API URL for check-in
+  --api-url <url>                  API URL for check-in (default: LICENSE_SERVER_URL or http://localhost:3001/api/v1)
   --generate-keys                  Generate and print Ed25519 key pair
   --help                           Show this help
 `);
@@ -83,7 +83,11 @@ async function main() {
     gracePeriodDays: 7,
     isTrial: values.trial ?? false,
     trialDays: parseInt(values["trial-days"] ?? "14", 10),
-    apiUrl: values["api-url"] ?? "https://license.rihla-mate.com/api/v1",
+    apiUrl:
+      values["api-url"] ??
+      process.env.LICENSE_SERVER_URL ??
+      process.env.LICENSE_API_URL ??
+      "http://localhost:3001/api/v1",
   });
 
   console.log(`License ID: ${licenseId}`);

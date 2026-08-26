@@ -542,7 +542,7 @@ CREATE TABLE activations (
 
 ### License Server REST API
 
-Base URL: `https://license.rihla-mate.com/api/v1`
+Base URL: `LICENSE_SERVER_URL` (default lokal `http://localhost:3001/api/v1`). Tidak ada hostname publik `license.rihla.my.id` sampai DNS + origin di-provision.
 
 #### POST /activate
 

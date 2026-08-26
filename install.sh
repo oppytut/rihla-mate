@@ -5,9 +5,8 @@ set -euo pipefail
 # Rihla Mate — One-Command Install Script
 # =============================================
 # Usage:
-#   curl -fsSL https://releases.rihla-mate.com/install.sh | bash
-# or:
-#   chmod +x install.sh && ./install.sh
+#   git clone --depth 1 https://github.com/oppytut/rihla-mate.git
+#   cd rihla-mate && chmod +x install.sh && ./install.sh
 # =============================================
 
 RED='\033[0;31m'

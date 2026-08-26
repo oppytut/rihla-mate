@@ -79,39 +79,33 @@ Payload berisi informasi lisensi dalam format JSON:
   "customerId": "cust_xyz",
   "customerName": "PT Amanah Travel",
   "plan": "pro",
-  "features": [
-    "multi_tenant",
-    "custom_domain",
-    "white_label",
-    "seo",
-    "analytics"
-  ],
+  "features": ["multi_tenant", "custom_domain", "white_label", "seo", "analytics"],
   "maxTenants": 5,
   "maxMonthlyBookings": 500,
   "expiresAt": "2027-01-01T00:00:00Z",
   "gracePeriodDays": 7,
   "isTrial": false,
   "trialDays": 14,
-  "apiUrl": "https://license.rihla-mate.com/api/v1"
+  "apiUrl": "http://localhost:3001/api/v1"
 }
 ```
 
 ### Field Descriptions
 
-| Field | Tipe | Deskripsi |
-|-------|------|-----------|
-| `licenseId` | string | ID unik lisensi |
-| `customerId` | string | ID customer di sistem |
-| `customerName` | string | Nama perusahaan/agency |
-| `plan` | string | Jenis plan: `starter`, `pro`, `enterprise` |
-| `features` | array | Daftar fitur yang diaktifkan |
-| `maxTenants` | number | Maksimum tenant untuk multi-tenant |
-| `maxMonthlyBookings` | number | Limit booking per bulan |
-| `expiresAt` | string | Tanggal expired dalam ISO 8601 |
-| `gracePeriodDays` | number | Durasi grace period setelah expired |
-| `isTrial` | boolean | Apakah ini trial license |
-| `trialDays` | number | Durasi trial dalam hari |
-| `apiUrl` | string | URL license server untuk check-in |
+| Field                | Tipe    | Deskripsi                                  |
+| -------------------- | ------- | ------------------------------------------ |
+| `licenseId`          | string  | ID unik lisensi                            |
+| `customerId`         | string  | ID customer di sistem                      |
+| `customerName`       | string  | Nama perusahaan/agency                     |
+| `plan`               | string  | Jenis plan: `starter`, `pro`, `enterprise` |
+| `features`           | array   | Daftar fitur yang diaktifkan               |
+| `maxTenants`         | number  | Maksimum tenant untuk multi-tenant         |
+| `maxMonthlyBookings` | number  | Limit booking per bulan                    |
+| `expiresAt`          | string  | Tanggal expired dalam ISO 8601             |
+| `gracePeriodDays`    | number  | Durasi grace period setelah expired        |
+| `isTrial`            | boolean | Apakah ini trial license                   |
+| `trialDays`          | number  | Durasi trial dalam hari                    |
+| `apiUrl`             | string  | URL license server untuk check-in          |
 
 ---
 
@@ -147,14 +141,14 @@ Sistem menggunakan Ed25519 untuk verifikasi offline license key.
 ### Contoh Code Verification
 
 ```typescript
-import { verify } from '@noble/ed25519';
+import { verify } from "@noble/ed25519";
 
 async function verifyLicenseKey(
   licenseKey: string,
-  publicKey: Uint8Array
+  publicKey: Uint8Array,
 ): Promise<LicensePayload | null> {
-  const parts = licenseKey.split('.');
-  if (parts.length !== 3 || parts[0] !== 'RML1') {
+  const parts = licenseKey.split(".");
+  if (parts.length !== 3 || parts[0] !== "RML1") {
     return null;
   }
 
@@ -187,6 +181,7 @@ Trial mode memungkinkan calon customer mencoba aplikasi tanpa license key.
 ### Instance ID Binding
 
 Instance ID adalah hash dari:
+
 - MAC address
 - Hostname
 - Machine ID
@@ -220,39 +215,39 @@ Tiga tier lisensi tersedia dengan fitur berbeda.
 
 ### Starter
 
-| Fitur | Value |
-|-------|-------|
-| Landing page templates | 1 template |
-| Custom domain | Ya |
-| Multi-tenant | Tidak |
-| Max bookings/bulan | 50 |
-| Storage | Local filesystem |
-| Analytics | Basic |
-| Support | Email |
+| Fitur                  | Value            |
+| ---------------------- | ---------------- |
+| Landing page templates | 1 template       |
+| Custom domain          | Ya               |
+| Multi-tenant           | Tidak            |
+| Max bookings/bulan     | 50               |
+| Storage                | Local filesystem |
+| Analytics              | Basic            |
+| Support                | Email            |
 
 ### Pro
 
-| Fitur | Value |
-|-------|-------|
-| Landing page templates | 3 template |
-| Custom domain | Ya |
-| Multi-tenant | Ya, max 5 tenant |
-| Max bookings/bulan | 500 |
-| Storage | Local + S3 option |
-| Analytics | Advanced |
-| Support | Email + Chat |
+| Fitur                  | Value             |
+| ---------------------- | ----------------- |
+| Landing page templates | 3 template        |
+| Custom domain          | Ya                |
+| Multi-tenant           | Ya, max 5 tenant  |
+| Max bookings/bulan     | 500               |
+| Storage                | Local + S3 option |
+| Analytics              | Advanced          |
+| Support                | Email + Chat      |
 
 ### Enterprise
 
-| Fitur | Value |
-|-------|-------|
-| Landing page templates | Unlimited |
-| Custom domain | Ya |
-| Multi-tenant | Unlimited |
-| Max bookings/bulan | Unlimited |
-| Storage | Local + S3 |
-| Analytics | Full + Custom reports |
-| Support | Priority + Phone |
+| Fitur                  | Value                 |
+| ---------------------- | --------------------- |
+| Landing page templates | Unlimited             |
+| Custom domain          | Ya                    |
+| Multi-tenant           | Unlimited             |
+| Max bookings/bulan     | Unlimited             |
+| Storage                | Local + S3            |
+| Analytics              | Full + Custom reports |
+| Support                | Priority + Phone      |
 
 ### Feature Flags
 
@@ -260,26 +255,19 @@ Setiap plan memiliki kombinasi feature flags:
 
 ```typescript
 const PLAN_FEATURES = {
-  starter: ['landing_page', 'custom_domain', 'basic_analytics'],
-  pro: [
-    'landing_page',
-    'custom_domain',
-    'white_label',
-    'seo',
-    'analytics',
-    'multi_tenant'
-  ],
+  starter: ["landing_page", "custom_domain", "basic_analytics"],
+  pro: ["landing_page", "custom_domain", "white_label", "seo", "analytics", "multi_tenant"],
   enterprise: [
-    'landing_page',
-    'custom_domain',
-    'white_label',
-    'seo',
-    'analytics',
-    'multi_tenant',
-    'priority_support',
-    'custom_templates',
-    'api_access'
-  ]
+    "landing_page",
+    "custom_domain",
+    "white_label",
+    "seo",
+    "analytics",
+    "multi_tenant",
+    "priority_support",
+    "custom_templates",
+    "api_access",
+  ],
 };
 ```
 
@@ -309,7 +297,7 @@ Jika offline verification sukses, aplikasi mengirim request ke license server:
 
 ```http
 POST /api/v1/activate HTTP/1.1
-Host: license.rihla-mate.com
+Host: <LICENSE_SERVER_URL host>
 Content-Type: application/json
 X-API-Key: <internal-api-key>
 
@@ -324,6 +312,7 @@ X-API-Key: <internal-api-key>
 ### Step 4: Server-side Validation
 
 License server melakukan:
+
 - Cek apakah license exists dan aktif
 - Cek apakah license sudah di-activate di instance lain
 - Jika sudah, cek apakah domain sama (re-activation allowed)
@@ -362,14 +351,14 @@ Server mengembalikan status aktivasi:
 
 ### Error Scenarios
 
-| Error Code | Deskripsi |
-|------------|-----------|
-| `INVALID_LICENSE` | License key tidak valid atau corrupted |
-| `LICENSE_EXPIRED` | License sudah expired |
-| `LICENSE_REVOKED` | License telah di-revoke |
-| `LICENSE_ALREADY_USED` | License sudah di-activate di instance lain |
-| `ACTIVATION_LIMIT` | Batas aktivasi tercapai (untuk plan tertentu) |
-| `SERVER_ERROR` | Error di license server |
+| Error Code             | Deskripsi                                     |
+| ---------------------- | --------------------------------------------- |
+| `INVALID_LICENSE`      | License key tidak valid atau corrupted        |
+| `LICENSE_EXPIRED`      | License sudah expired                         |
+| `LICENSE_REVOKED`      | License telah di-revoke                       |
+| `LICENSE_ALREADY_USED` | License sudah di-activate di instance lain    |
+| `ACTIVATION_LIMIT`     | Batas aktivasi tercapai (untuk plan tertentu) |
+| `SERVER_ERROR`         | Error di license server                       |
 
 ---
 
@@ -387,7 +376,7 @@ Aplikasi melakukan check-in periodik ke license server.
 
 ```http
 POST /api/v1/checkin HTTP/1.1
-Host: license.rihla-mate.com
+Host: <LICENSE_SERVER_URL host>
 Content-Type: application/json
 X-API-Key: <internal-api-key>
 
@@ -423,6 +412,7 @@ Server mengembalikan status terbaru:
 ### Failsafe
 
 Jika license server tidak bisa diakses dalam waktu lama:
+
 - Aplikasi tetap berjalan dengan status terakhir yang tersimpan
 - Tidak ada pemblokiran drastis (filosofi uptime first)
 - Log warning untuk administrator
@@ -440,14 +430,15 @@ Grace period memberikan buffer waktu setelah license expired.
 
 ### Perilaku Grace Period
 
-| Hari | Status | Fitur |
-|------|--------|-------|
-| 0-7 | `grace_period` | Semua fitur tetap aktif |
-| 8+ | `expired` | Hanya starter features |
+| Hari | Status         | Fitur                   |
+| ---- | -------------- | ----------------------- |
+| 0-7  | `grace_period` | Semua fitur tetap aktif |
+| 8+   | `expired`      | Hanya starter features  |
 
 ### Notifikasi
 
 Selama grace period:
+
 - Banner warning di dashboard admin
 - Email notifikasi ke admin
 - Check-in response menyertakan `daysRemaining`
@@ -484,13 +475,13 @@ State lisensi menentukan perilaku aplikasi.
 
 ### State Definitions
 
-| State | Deskripsi | Fitur Access |
-|-------|-----------|--------------|
-| `trial` | Trial 14 hari aktif | Semua fitur |
-| `active` | License valid dan aktif | Sesuai plan |
-| `grace_period` | Dalam 7 hari setelah expired | Semua fitur |
-| `expired` | License expired > 7 hari | Starter features only |
-| `revoked` | License dicabut manual | Tidak ada akses |
+| State          | Deskripsi                    | Fitur Access          |
+| -------------- | ---------------------------- | --------------------- |
+| `trial`        | Trial 14 hari aktif          | Semua fitur           |
+| `active`       | License valid dan aktif      | Sesuai plan           |
+| `grace_period` | Dalam 7 hari setelah expired | Semua fitur           |
+| `expired`      | License expired > 7 hari     | Starter features only |
+| `revoked`      | License dicabut manual       | Tidak ada akses       |
 
 ### State Storage
 
@@ -536,11 +527,11 @@ Untuk upgrade dari Starter ke Pro atau Enterprise:
 
 ### Perbedaan
 
-| | Renewal | Upgrade |
-|---|---------|---------|
-| Perubahan | `expiresAt` | `plan`, `features`, limits |
-| License key | Tidak berubah | Mungkin baru |
-| Proses | Otomatis via check-in | Otomatis via check-in |
+|             | Renewal               | Upgrade                    |
+| ----------- | --------------------- | -------------------------- |
+| Perubahan   | `expiresAt`           | `plan`, `features`, limits |
+| License key | Tidak berubah         | Mungkin baru               |
+| Proses      | Otomatis via check-in | Otomatis via check-in      |
 
 ---
 
@@ -567,6 +558,7 @@ Untuk upgrade dari Starter ke Pro atau Enterprise:
 ### Rate Limiting
 
 License server menggunakan rate limiting:
+
 - Per-license: 100 requests/jam
 - Per-IP: 1000 requests/jam
 - Menggunakan Upstash Redis
@@ -626,4 +618,4 @@ Tidak. Data tetap ada dan bisa diakses. Fitur premium yang terkunci, bukan datan
 
 ---
 
-*Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate.*
+_Dokumen ini terakhir diperbarui berdasarkan development plan Rihla Mate._
