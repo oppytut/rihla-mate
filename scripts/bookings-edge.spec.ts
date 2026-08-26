@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { BASE_URL } from "./helpers/auth";
+import { selectNative } from "./helpers/native-select";
 import { pickFutureEkonomiDate } from "./helpers/seed-dates";
 
 const SEL = {
@@ -31,7 +32,7 @@ async function selectEkonomiPackage(page: Page) {
     .filter({ hasText: "Umrah Ekonomi 9 Hari" })
     .getAttribute("value");
   if (!ekonomiOptionValue) throw new Error("Umrah Ekonomi 9 Hari option not found");
-  await packageSelect.selectOption(ekonomiOptionValue);
+  await selectNative(page, "booking-package", ekonomiOptionValue);
   await expect(packageSelect).toHaveValue(ekonomiOptionValue, { timeout: 5000 });
 }
 
