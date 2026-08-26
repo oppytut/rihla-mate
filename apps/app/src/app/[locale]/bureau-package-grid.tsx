@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatPrice } from "@/lib/utils/format";
 import { isKnownPackageCategory, packageCategorySlug } from "@/lib/bureau-package-category";
+import { NativeSelect } from "@/components/ui/native-select";
 import type { BureauPackageCard } from "./bureau-landing";
 
 export function BureauPackageGrid({
@@ -79,19 +80,18 @@ export function BureauPackageGrid({
               <label htmlFor="catalog-category" className="text-sm font-medium text-foreground">
                 {t("filterCategory")}
               </label>
-              <select
+              <NativeSelect
                 id="catalog-category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              >
-                <option value="">{t("filterAll")}</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {categoryLabel(cat)}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setCategory}
+                placeholder={t("filterAll")}
+                data-testid="catalog-category"
+                className="w-auto min-w-40"
+                options={categories.map((cat) => ({
+                  value: cat,
+                  label: categoryLabel(cat),
+                }))}
+              />
             </div>
           ) : null}
           {showCityFilter && cities.length > 1 ? (
@@ -99,19 +99,14 @@ export function BureauPackageGrid({
               <label htmlFor="catalog-city" className="text-sm font-medium text-foreground">
                 {t("filterCity")}
               </label>
-              <select
+              <NativeSelect
                 id="catalog-city"
                 value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              >
-                <option value="">{t("filterAllCities")}</option>
-                {cities.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setCity}
+                placeholder={t("filterAllCities")}
+                className="w-auto min-w-40"
+                options={cities.map((c) => ({ value: c, label: c }))}
+              />
             </div>
           ) : null}
           {showDurationFilter && durations.length > 1 ? (
@@ -119,19 +114,17 @@ export function BureauPackageGrid({
               <label htmlFor="catalog-duration" className="text-sm font-medium text-foreground">
                 {t("filterDuration")}
               </label>
-              <select
+              <NativeSelect
                 id="catalog-duration"
                 value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              >
-                <option value="">{t("filterAllDurations")}</option>
-                {durations.map((d) => (
-                  <option key={d} value={String(d)}>
-                    {t("durationDays", { days: d })}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setDuration}
+                placeholder={t("filterAllDurations")}
+                className="w-auto min-w-40"
+                options={durations.map((d) => ({
+                  value: String(d),
+                  label: t("durationDays", { days: d }),
+                }))}
+              />
             </div>
           ) : null}
         </div>
