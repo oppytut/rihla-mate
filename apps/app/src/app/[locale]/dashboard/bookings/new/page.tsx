@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -158,26 +159,22 @@ export default function BookingCreatePage() {
                 <label htmlFor="packageId" className="block text-sm font-medium text-foreground">
                   {t("bookings.fields.package")} *
                 </label>
-                <select
+                <NativeSelect
                   id="packageId"
                   data-testid="booking-package"
                   value={form.packageId}
-                  onChange={(e) => updateField("packageId", e.target.value)}
+                  onValueChange={(value) => updateField("packageId", value)}
                   disabled={isSubmitting}
                   aria-label={t("bookings.fields.package")}
                   aria-describedby={fieldErrors.packageId ? "packageId-error" : undefined}
-                  className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                    fieldErrors.packageId ? "border-destructive" : "border-border",
-                  )}
-                >
-                  <option value="">{t("bookings.selectPackage")}</option>
-                  {packages.map((pkg) => (
-                    <option key={pkg.id} value={pkg.id}>
-                      {pkg.title}
-                    </option>
-                  ))}
-                </select>
+                  aria-invalid={Boolean(fieldErrors.packageId)}
+                  placeholder={t("bookings.selectPackage")}
+                  triggerClassName={fieldErrors.packageId ? "border-destructive" : undefined}
+                  options={packages.map((pkg) => ({
+                    value: pkg.id,
+                    label: pkg.title,
+                  }))}
+                />
                 {fieldErrors.packageId && (
                   <p
                     id="packageId-error"
@@ -251,21 +248,21 @@ export default function BookingCreatePage() {
                   <label htmlFor="status" className="block text-sm font-medium text-foreground">
                     {t("bookings.fields.status")}
                   </label>
-                  <select
+                  <NativeSelect
                     id="status"
                     value={form.status}
-                    onChange={(e) => updateField("status", e.target.value)}
+                    onValueChange={(value) => updateField("status", value)}
                     disabled={isSubmitting}
                     data-testid="booking-status"
                     aria-label={t("bookings.fields.status")}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="pending">{t("bookings.status.pending")}</option>
-                    <option value="confirmed">{t("bookings.status.confirmed")}</option>
-                    <option value="cancelled">{t("bookings.status.cancelled")}</option>
-                    <option value="completed">{t("bookings.status.completed")}</option>
-                    <option value="paid">{t("bookings.status.paid")}</option>
-                  </select>
+                    options={[
+                      { value: "pending", label: t("bookings.status.pending") },
+                      { value: "confirmed", label: t("bookings.status.confirmed") },
+                      { value: "cancelled", label: t("bookings.status.cancelled") },
+                      { value: "completed", label: t("bookings.status.completed") },
+                      { value: "paid", label: t("bookings.status.paid") },
+                    ]}
+                  />
                 </div>
 
                 <div className="space-y-2">
