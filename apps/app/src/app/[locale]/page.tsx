@@ -6,6 +6,7 @@ import { BureauLanding } from "./bureau-landing";
 import {
   bureauCatalogMetadata,
   getBureauDisplayName,
+  getBureauHomeSections,
   getBureauPublicContact,
 } from "@/lib/bureau-brand";
 import { hostnameFromHostHeader, isBureauHostname } from "@/lib/site-mode";
@@ -102,13 +103,18 @@ export default async function HomePage() {
     return <MarketingLanding />;
   }
   const locale = await getLocale();
-  const [data, contact] = await Promise.all([loadBureauHome(locale), getBureauPublicContact()]);
+  const [data, contact, homeSections] = await Promise.all([
+    loadBureauHome(locale),
+    getBureauPublicContact(),
+    getBureauHomeSections(),
+  ]);
   return (
     <BureauLanding
       packages={data.packages}
       cmsTitle={data.cmsTitle}
       cmsBody={data.cmsBody}
       contact={contact}
+      homeSections={homeSections}
       variant="home"
     />
   );

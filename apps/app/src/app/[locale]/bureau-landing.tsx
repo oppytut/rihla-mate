@@ -7,6 +7,12 @@ import Image from "next/image";
 import { BureauPackageGrid } from "@/app/[locale]/bureau-package-grid";
 import { BureauWhatsAppFab } from "@/components/marketing/bureau-whatsapp-fab";
 import { whatsappHref, type BureauPublicContact } from "@/lib/bureau-contact";
+import {
+  filledGallery,
+  filledTestimonials,
+  filledTextItems,
+  type BureauHomeSections,
+} from "@/lib/bureau-home-sections";
 
 export type BureauPackageCard = {
   id: string;
@@ -25,6 +31,7 @@ type BureauLandingProps = {
   cmsTitle?: string | null;
   cmsBody?: string | null;
   contact?: BureauPublicContact | null;
+  homeSections?: BureauHomeSections | null;
   variant?: "home" | "catalog";
 };
 
@@ -56,11 +63,16 @@ export async function BureauLanding({
   cmsTitle,
   cmsBody,
   contact,
+  homeSections,
   variant = "home",
 }: BureauLandingProps) {
   const t = await getTranslations("marketing.bureau");
   const wa = whatsappHref(contact?.phone ?? null);
   const catalog = variant === "catalog";
+  const whyItems = filledTextItems(homeSections?.whyItems ?? []);
+  const howSteps = filledTextItems(homeSections?.howSteps ?? []);
+  const galleryItems = filledGallery(homeSections?.gallery ?? []);
+  const testimonials = filledTestimonials(homeSections?.testimonials ?? []);
 
   return (
     <div className="flex min-h-0 flex-col bg-background">
@@ -155,15 +167,28 @@ export async function BureauLanding({
           <>
             <section id="why" className="border-t border-border/40 bg-muted/20">
               <div className={`${bureauShellClass} py-12`}>
-                <h2 className="text-xl font-semibold text-foreground">{t("whyTitle")}</h2>
-                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t("whyLead")}</p>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {homeSections?.whyTitle.trim() || t("whyTitle")}
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  {homeSections?.whyLead.trim() || t("whyLead")}
+                </p>
                 <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {WHY_KEYS.map((key) => (
-                    <li key={key} className="rounded-lg border border-border/60 bg-card p-5">
-                      <h3 className="font-medium text-foreground">{t(`whyItems.${key}.title`)}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {t(`whyItems.${key}.body`)}
-                      </p>
+                  {(whyItems.length > 0
+                    ? whyItems.map((item, index) => ({
+                        key: `cms-why-${index}`,
+                        title: item.title,
+                        body: item.body,
+                      }))
+                    : WHY_KEYS.map((key) => ({
+                        key,
+                        title: t(`whyItems.${key}.title`),
+                        body: t(`whyItems.${key}.body`),
+                      }))
+                  ).map((item) => (
+                    <li key={item.key} className="rounded-lg border border-border/60 bg-card p-5">
+                      <h3 className="font-medium text-foreground">{item.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
                     </li>
                   ))}
                 </ul>
@@ -172,18 +197,29 @@ export async function BureauLanding({
 
             <section id="how" className="border-t border-border/40">
               <div className={`${bureauShellClass} py-12`}>
-                <h2 className="text-xl font-semibold text-foreground">{t("howTitle")}</h2>
-                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t("howLead")}</p>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {homeSections?.howTitle.trim() || t("howTitle")}
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  {homeSections?.howLead.trim() || t("howLead")}
+                </p>
                 <ol className="mt-8 grid gap-6 sm:grid-cols-3">
-                  {HOW_KEYS.map((key, index) => (
-                    <li key={key} className="rounded-lg border border-border/60 bg-card p-5">
+                  {(howSteps.length > 0
+                    ? howSteps.map((item, index) => ({
+                        key: `cms-how-${index}`,
+                        title: item.title,
+                        body: item.body,
+                      }))
+                    : HOW_KEYS.map((key) => ({
+                        key,
+                        title: t(`howSteps.${key}.title`),
+                        body: t(`howSteps.${key}.body`),
+                      }))
+                  ).map((item, index) => (
+                    <li key={item.key} className="rounded-lg border border-border/60 bg-card p-5">
                       <p className="text-sm font-medium text-primary">{index + 1}</p>
-                      <h3 className="mt-2 font-medium text-foreground">
-                        {t(`howSteps.${key}.title`)}
-                      </h3>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {t(`howSteps.${key}.body`)}
-                      </p>
+                      <h3 className="mt-2 font-medium text-foreground">{item.title}</h3>
+                      <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
                     </li>
                   ))}
                 </ol>
@@ -192,9 +228,11 @@ export async function BureauLanding({
 
             <section id="gallery" className="border-t border-border/40 bg-muted/20">
               <div className={`${bureauShellClass} py-12`}>
-                <h2 className="text-xl font-semibold text-foreground">{t("galleryTitle")}</h2>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {homeSections?.galleryTitle.trim() || t("galleryTitle")}
+                </h2>
                 <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  {GALLERY.map((item) => (
+                  {(galleryItems.length > 0 ? galleryItems : GALLERY).map((item) => (
                     <li
                       key={item.src}
                       className="overflow-hidden rounded-lg border border-border/60"
@@ -214,14 +252,25 @@ export async function BureauLanding({
 
             <section id="testimonials" className="border-t border-border/40">
               <div className={`${bureauShellClass} py-12`}>
-                <h2 className="text-xl font-semibold text-foreground">{t("testimonialsTitle")}</h2>
+                <h2 className="text-xl font-semibold text-foreground">
+                  {homeSections?.testimonialsTitle.trim() || t("testimonialsTitle")}
+                </h2>
                 <ul className="mt-6 grid gap-6 sm:grid-cols-2">
-                  {TESTIMONIAL_KEYS.map((key) => (
-                    <li key={key} className="rounded-lg border border-border/60 bg-card p-5">
-                      <p className="text-sm text-foreground">{t(`testimonials.${key}.quote`)}</p>
-                      <p className="mt-3 text-sm font-medium text-muted-foreground">
-                        {t(`testimonials.${key}.name`)}
-                      </p>
+                  {(testimonials.length > 0
+                    ? testimonials.map((item, index) => ({
+                        key: `cms-tes-${index}`,
+                        quote: item.quote,
+                        name: item.name,
+                      }))
+                    : TESTIMONIAL_KEYS.map((key) => ({
+                        key,
+                        quote: t(`testimonials.${key}.quote`),
+                        name: t(`testimonials.${key}.name`),
+                      }))
+                  ).map((item) => (
+                    <li key={item.key} className="rounded-lg border border-border/60 bg-card p-5">
+                      <p className="text-sm text-foreground">{item.quote}</p>
+                      <p className="mt-3 text-sm font-medium text-muted-foreground">{item.name}</p>
                     </li>
                   ))}
                 </ul>
