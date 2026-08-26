@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { NativeSelect } from "@/components/ui/native-select";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
 import { useState, useEffect } from "react";
@@ -365,7 +366,7 @@ export function PageFormContent({
                 <label htmlFor="content" className="block text-sm font-medium text-foreground">
                   {t("pages.fields.content")}
                 </label>
-                <textarea
+                <Textarea
                   id="content"
                   value={copyLocale === "id" ? form.content : form.locales[copyLocale].body}
                   onChange={(e) => {
@@ -391,7 +392,7 @@ export function PageFormContent({
                   aria-describedby={fieldErrors.content ? "content-error" : "content-hint"}
                   placeholder={t("pages.fields.contentPlaceholder")}
                   className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-y text-sm min-w-0 break-words",
+                    "resize-y text-sm min-w-0 break-words",
                     fieldErrors.content ? "border-destructive" : "border-border",
                   )}
                 />
@@ -482,7 +483,7 @@ export function PageFormContent({
                 >
                   {t("pages.fields.seo.description")}
                 </label>
-                <textarea
+                <Textarea
                   id="seoDescription"
                   value={
                     copyLocale === "id"
@@ -509,7 +510,7 @@ export function PageFormContent({
                   disabled={isSubmitting}
                   data-testid="page-seo-description"
                   aria-label={t("pages.fields.seo.description")}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed resize-none"
+                  className="resize-none"
                 />
               </div>
 
