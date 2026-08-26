@@ -542,7 +542,7 @@ CREATE TABLE activations (
 
 ### License Server REST API
 
-Base URL: `https://license.rihla-mate.com/api/v1`
+Base URL: `https://license.rihla.my.id/api/v1`
 
 #### POST /activate
 

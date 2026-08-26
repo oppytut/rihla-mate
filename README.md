@@ -46,8 +46,8 @@ pnpm dev
 
 ```bash
 # 1. Download files
-curl -O https://releases.rihla-mate.com/latest/docker-compose.yml
-curl -O https://releases.rihla-mate.com/latest/.env.example
+curl -O https://releases.rihla.my.id/latest/docker-compose.yml
+curl -O https://releases.rihla.my.id/latest/.env.example
 cp .env.example .env
 
 # 2. Edit .env — set required secrets
@@ -294,7 +294,7 @@ Lihat `.env.example` untuk template lengkap. Kategori:
 ### Deployment Satu Perintah
 
 ```bash
-curl -fsSL https://releases.rihla-mate.com/install.sh | bash
+curl -fsSL https://releases.rihla.my.id/install.sh | bash
 ```
 
 Script `install.sh` akan: cek Docker + Docker Compose → buat `.env` dari template → pull image → `docker compose up -d` → verifikasi health endpoint.

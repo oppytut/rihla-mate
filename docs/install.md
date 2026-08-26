@@ -70,8 +70,8 @@ mkdir -p ~/rihla-mate
 cd ~/rihla-mate
 
 # Download file konfigurasi
-curl -O https://releases.rihla-mate.com/latest/docker-compose.yml
-curl -O https://releases.rihla-mate.com/latest/.env.example
+curl -O https://releases.rihla.my.id/latest/docker-compose.yml
+curl -O https://releases.rihla.my.id/latest/.env.example
 
 # Buat file .env dari template
 cp .env.example .env
@@ -135,9 +135,9 @@ File `.env` berisi semua konfigurasi yang diperlukan oleh aplikasi. Berikut penj
 
 ### Lisensi
 
-| Variabel          | Deskripsi                     | Contoh                                  |
-| ----------------- | ----------------------------- | --------------------------------------- |
-| `LICENSE_API_URL` | URL license server Rihla Mate | `https://license.rihla-mate.com/api/v1` |
+| Variabel          | Deskripsi                     | Contoh                               |
+| ----------------- | ----------------------------- | ------------------------------------ |
+| `LICENSE_API_URL` | URL license server Rihla Mate | `https://license.rihla.my.id/api/v1` |
 
 ### Email (Opsional)
 
@@ -192,7 +192,7 @@ PORT=3000
 APP_URL=https://travelanda.com
 
 # Lisensi
-LICENSE_API_URL=https://license.rihla-mate.com/api/v1
+LICENSE_API_URL=https://license.rihla.my.id/api/v1
 
 # Email
 RESEND_API_KEY=re_xxxxx
