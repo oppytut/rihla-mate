@@ -5,6 +5,7 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatDisplayDate, formatPrice } from "@/lib/utils/format";
@@ -167,19 +168,20 @@ export default function BookingsPage() {
             aria-label={t("bookings.search")}
             className="min-h-11 flex-1 bg-card"
           />
-          <select
+          <NativeSelect
             value={status}
-            onChange={(e) => handleStatusChange(e.target.value)}
+            onValueChange={handleStatusChange}
             data-testid="bookings-status-filter"
             aria-label={t("bookings.allStatus")}
-            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <option value="">{t("bookings.allStatus")}</option>
-            <option value="pending">{t("bookings.status.pending")}</option>
-            <option value="confirmed">{t("bookings.status.confirmed")}</option>
-            <option value="cancelled">{t("bookings.status.cancelled")}</option>
-            <option value="completed">{t("bookings.status.completed")}</option>
-          </select>
+            placeholder={t("bookings.allStatus")}
+            className="sm:w-48"
+            options={[
+              { value: "pending", label: t("bookings.status.pending") },
+              { value: "confirmed", label: t("bookings.status.confirmed") },
+              { value: "cancelled", label: t("bookings.status.cancelled") },
+              { value: "completed", label: t("bookings.status.completed") },
+            ]}
+          />
         </div>
 
         {bookingsQuery.isError && (

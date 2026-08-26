@@ -5,6 +5,7 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatDateForDisplay } from "@/lib/utils/format";
@@ -269,21 +270,22 @@ export default function UsersPage() {
             aria-label={t("users.search")}
             className="min-h-11 flex-1 bg-card"
           />
-          <select
+          <NativeSelect
             value={roleFilter}
-            onChange={(e) => {
-              setRoleFilter(e.target.value);
+            onValueChange={(value) => {
+              setRoleFilter(value);
               setPage(1);
             }}
             data-testid="users-role-filter"
             aria-label={t("users.columns.role")}
-            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <option value="">{t("users.allRoles")}</option>
-            <option value="owner">{t("users.roles.owner")}</option>
-            <option value="admin">{t("users.roles.admin")}</option>
-            <option value="staff">{t("users.roles.staff")}</option>
-          </select>
+            placeholder={t("users.allRoles")}
+            className="sm:w-48"
+            options={[
+              { value: "owner", label: t("users.roles.owner") },
+              { value: "admin", label: t("users.roles.admin") },
+              { value: "staff", label: t("users.roles.staff") },
+            ]}
+          />
         </div>
 
         {formMode !== "closed" && (
@@ -357,17 +359,18 @@ export default function UsersPage() {
                 <label htmlFor="user-role" className="text-sm font-medium text-foreground">
                   {t("users.columns.role")}
                 </label>
-                <select
+                <NativeSelect
                   id="user-role"
                   data-testid="users-form-role"
                   value={formRole}
-                  onChange={(e) => setFormRole(e.target.value as UserRole)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                >
-                  <option value="staff">{t("users.roles.staff")}</option>
-                  <option value="admin">{t("users.roles.admin")}</option>
-                  <option value="owner">{t("users.roles.owner")}</option>
-                </select>
+                  onValueChange={(value) => setFormRole(value as UserRole)}
+                  triggerClassName="h-9 min-h-9"
+                  options={[
+                    { value: "staff", label: t("users.roles.staff") },
+                    { value: "admin", label: t("users.roles.admin") },
+                    { value: "owner", label: t("users.roles.owner") },
+                  ]}
+                />
               </div>
               <div className="flex flex-wrap gap-2 sm:col-span-2">
                 <Button type="submit" disabled={formBusy} data-testid="users-form-submit">

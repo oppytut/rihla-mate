@@ -5,6 +5,7 @@ import { useTRPC } from "@/lib/trpc/react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/utils/format";
@@ -106,21 +107,22 @@ export default function PackagesPage() {
             aria-label={t("packages.search")}
             className="min-h-11 flex-1 bg-card"
           />
-          <select
+          <NativeSelect
             value={status}
-            onChange={(e) => {
-              setStatus(e.target.value);
+            onValueChange={(value) => {
+              setStatus(value);
               setPage(1);
             }}
             data-testid="packages-status-filter"
             aria-label={t("packages.allStatus")}
-            className="min-h-11 rounded-md border border-input bg-card px-3 text-sm text-foreground shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          >
-            <option value="">{t("packages.allStatus")}</option>
-            <option value="draft">{t("packages.status.draft")}</option>
-            <option value="published">{t("packages.status.published")}</option>
-            <option value="archived">{t("packages.status.archived")}</option>
-          </select>
+            placeholder={t("packages.allStatus")}
+            className="sm:w-48"
+            options={[
+              { value: "draft", label: t("packages.status.draft") },
+              { value: "published", label: t("packages.status.published") },
+              { value: "archived", label: t("packages.status.archived") },
+            ]}
+          />
         </div>
 
         {packagesQuery.isError && (
