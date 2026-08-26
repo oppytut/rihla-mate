@@ -4,6 +4,11 @@ import { getDb } from "@/lib/db/client";
 import { packages } from "@/lib/db/schema/packages";
 import { settings } from "@/lib/db/schema/settings";
 import { parseBureauSettingsMap, type BureauPublicContact } from "@/lib/bureau-contact";
+import {
+  BUREAU_HOME_SECTIONS_KEY,
+  parseBureauHomeSections,
+  type BureauHomeSections,
+} from "@/lib/bureau-home-sections";
 import { cmsPackageCopy } from "@/lib/cms-content";
 
 function settingText(value: unknown): string | null {
@@ -23,6 +28,20 @@ export async function getBureauPublicContact(): Promise<BureauPublicContact> {
     return parseBureauSettingsMap(rows);
   } catch {
     return empty;
+  }
+}
+
+export async function getBureauHomeSections(): Promise<BureauHomeSections> {
+  try {
+    const db = await getDb();
+    const [row] = await db
+      .select()
+      .from(settings)
+      .where(eq(settings.key, BUREAU_HOME_SECTIONS_KEY))
+      .limit(1);
+    return parseBureauHomeSections(row?.value);
+  } catch {
+    return parseBureauHomeSections(null);
   }
 }
 

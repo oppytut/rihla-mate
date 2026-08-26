@@ -1,10 +1,44 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import { createTRPCRouter, adminProcedure } from "../init";
+import { createTRPCRouter, adminProcedure, protectedProcedure } from "../init";
 import { settings } from "@/lib/db/schema/settings";
+import { BUREAU_HOME_SECTIONS_KEY, parseBureauHomeSections } from "@/lib/bureau-home-sections";
 
 export const settingsRouter = createTRPCRouter({
+  getHomeSections: protectedProcedure.query(async ({ ctx }) => {
+    const [row] = await ctx.db
+      .select()
+      .from(settings)
+      .where(eq(settings.key, BUREAU_HOME_SECTIONS_KEY))
+      .limit(1);
+    return parseBureauHomeSections(row?.value);
+  }),
+
+  setHomeSections: protectedProcedure.input(z.any()).mutation(async ({ ctx, input }) => {
+    const value = parseBureauHomeSections(input);
+    const existing = await ctx.db
+      .select({ key: settings.key })
+      .from(settings)
+      .where(eq(settings.key, BUREAU_HOME_SECTIONS_KEY))
+      .limit(1);
+
+    if (existing.length > 0) {
+      const result = await ctx.db
+        .update(settings)
+        .set({ value, updatedAt: new Date() })
+        .where(eq(settings.key, BUREAU_HOME_SECTIONS_KEY))
+        .returning();
+      return parseBureauHomeSections(result[0]?.value);
+    }
+
+    const result = await ctx.db
+      .insert(settings)
+      .values({ key: BUREAU_HOME_SECTIONS_KEY, value })
+      .returning();
+    return parseBureauHomeSections(result[0]?.value);
+  }),
+
   list: adminProcedure.query(async ({ ctx }) => {
     const rows = await ctx.db.select().from(settings).orderBy(settings.key);
     const map: Record<string, unknown> = {};
