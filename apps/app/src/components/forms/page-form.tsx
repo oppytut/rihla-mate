@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { NativeSelect } from "@/components/ui/native-select";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
 import { useState, useEffect } from "react";
@@ -233,25 +235,21 @@ export function PageFormContent({
                 <label htmlFor="templateId" className="block text-sm font-medium text-foreground">
                   {t("pages.fields.templateId")} *
                 </label>
-                <select
+                <NativeSelect
                   id="templateId"
                   value={form.templateId}
-                  onChange={(e) => updateField("templateId", e.target.value)}
+                  onValueChange={(value) => updateField("templateId", value)}
                   disabled={isSubmitting}
                   data-testid="page-template-id"
                   aria-label={t("pages.fields.templateId")}
                   aria-describedby={fieldErrors.templateId ? "templateId-error" : undefined}
-                  className={cn(
-                    "w-full px-3 py-2 bg-background border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed",
-                    fieldErrors.templateId ? "border-destructive" : "border-border",
-                  )}
-                >
-                  {TEMPLATES.map((tmpl) => (
-                    <option key={tmpl.value} value={tmpl.value}>
-                      {t(tmpl.labelKey)}
-                    </option>
-                  ))}
-                </select>
+                  aria-invalid={Boolean(fieldErrors.templateId)}
+                  triggerClassName={fieldErrors.templateId ? "border-destructive" : undefined}
+                  options={TEMPLATES.map((tmpl) => ({
+                    value: tmpl.value,
+                    label: t(tmpl.labelKey),
+                  }))}
+                />
                 {fieldErrors.templateId && (
                   <p
                     id="templateId-error"
@@ -413,14 +411,12 @@ export function PageFormContent({
 
               <div className="flex flex-col sm:flex-row gap-6">
                 <div className="flex items-center gap-2">
-                  <input
+                  <Checkbox
                     id="isPublished"
-                    type="checkbox"
                     checked={form.isPublished}
                     onChange={(e) => updateField("isPublished", e.target.checked)}
                     disabled={isSubmitting}
                     data-testid="page-is-published"
-                    className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <label htmlFor="isPublished" className="text-sm font-medium text-foreground">
                     {t("pages.fields.isPublished")}
@@ -428,14 +424,12 @@ export function PageFormContent({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <input
+                  <Checkbox
                     id="isHomepage"
-                    type="checkbox"
                     checked={form.isHomepage}
                     onChange={(e) => updateField("isHomepage", e.target.checked)}
                     disabled={isSubmitting}
                     data-testid="page-is-homepage"
-                    className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <label htmlFor="isHomepage" className="text-sm font-medium text-foreground">
                     {t("pages.fields.isHomepage")}

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useTRPC } from "@/lib/trpc/react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/lib/utils/slug";
 import { validatePackage } from "@/lib/utils/validation";
@@ -336,20 +337,20 @@ export function PackageFormContent({
                   <label htmlFor="category" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.category")}
                   </label>
-                  <select
+                  <NativeSelect
                     id="category"
                     value={form.category}
-                    onChange={(e) => updateField("category", e.target.value)}
+                    onValueChange={(value) => updateField("category", value)}
                     disabled={isSubmitting}
                     data-testid="package-category"
                     aria-label={t("packages.fields.category")}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="standard">{t("packages.category.standard")}</option>
-                    <option value="premium">{t("packages.category.premium")}</option>
-                    <option value="vip">{t("packages.category.vip")}</option>
-                    <option value="economy">{t("packages.category.economy")}</option>
-                  </select>
+                    options={[
+                      { value: "standard", label: t("packages.category.standard") },
+                      { value: "premium", label: t("packages.category.premium") },
+                      { value: "vip", label: t("packages.category.vip") },
+                      { value: "economy", label: t("packages.category.economy") },
+                    ]}
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -413,19 +414,19 @@ export function PackageFormContent({
                 <label htmlFor="status" className="block text-sm font-medium text-foreground">
                   {t("packages.fields.status")}
                 </label>
-                <select
+                <NativeSelect
                   id="status"
                   value={form.status}
-                  onChange={(e) => updateField("status", e.target.value)}
+                  onValueChange={(value) => updateField("status", value)}
                   disabled={isSubmitting}
                   data-testid="package-status"
                   aria-label={t("packages.fields.status")}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <option value="draft">{t("packages.status.draft")}</option>
-                  <option value="published">{t("packages.status.published")}</option>
-                  <option value="archived">{t("packages.status.archived")}</option>
-                </select>
+                  options={[
+                    { value: "draft", label: t("packages.status.draft") },
+                    { value: "published", label: t("packages.status.published") },
+                    { value: "archived", label: t("packages.status.archived") },
+                  ]}
+                />
               </div>
             </section>
 
@@ -470,18 +471,18 @@ export function PackageFormContent({
                   <label htmlFor="currency" className="block text-sm font-medium text-foreground">
                     {t("packages.fields.currency")}
                   </label>
-                  <select
+                  <NativeSelect
                     id="currency"
                     value={form.currency}
-                    onChange={(e) => updateField("currency", e.target.value)}
+                    onValueChange={(value) => updateField("currency", value)}
                     disabled={isSubmitting}
                     data-testid="package-currency"
                     aria-label={t("packages.fields.currency")}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="IDR">IDR</option>
-                    <option value="USD">USD</option>
-                  </select>
+                    options={[
+                      { value: "IDR", label: "IDR" },
+                      { value: "USD", label: "USD" },
+                    ]}
+                  />
                 </div>
               </div>
             </section>
