@@ -38,6 +38,7 @@ export default async function PackagesIndexPage() {
     currency: string;
     departureCity: string | null;
     category: string | null;
+    featuredImage: string | null;
   }> = [];
   try {
     const db = await getDb();
@@ -52,6 +53,7 @@ export default async function PackagesIndexPage() {
         currency: packages.currency,
         departureCity: packages.departureCity,
         category: packages.category,
+        featuredImage: packages.featuredImage,
         i18n: packages.i18n,
       })
       .from(packages)
@@ -69,6 +71,7 @@ export default async function PackagesIndexPage() {
         currency: row.currency,
         departureCity: row.departureCity,
         category: row.category,
+        featuredImage: row.featuredImage,
       };
     });
   } catch {

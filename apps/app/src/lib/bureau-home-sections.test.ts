@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   EMPTY_BUREAU_HOME_SECTIONS,
+  completeGallery,
   filledGallery,
   filledTextItems,
   parseBureauHomeSections,
@@ -42,5 +43,29 @@ describe("parseBureauHomeSections", () => {
   it("filters blank text items", () => {
     expect(filledTextItems(EMPTY_BUREAU_HOME_SECTIONS.whyItems)).toEqual([]);
     expect(filledTextItems([{ title: "x", body: "" }])).toEqual([{ title: "x", body: "" }]);
+  });
+
+  it("fills missing gallery slots from fallbacks without duplicating src", () => {
+    const fallbacks = [
+      { src: "https://a.example/1.jpg", alt: "one" },
+      { src: "https://a.example/2.jpg", alt: "two" },
+      { src: "https://a.example/3.jpg", alt: "three" },
+      { src: "https://a.example/4.jpg", alt: "four" },
+    ];
+    const completed = completeGallery(
+      [
+        { src: "https://a.example/1.jpg", alt: "cms" },
+        { src: "", alt: "empty" },
+      ],
+      fallbacks,
+    );
+    expect(completed).toHaveLength(4);
+    expect(completed.map((item) => item.src)).toEqual([
+      "https://a.example/1.jpg",
+      "https://a.example/2.jpg",
+      "https://a.example/3.jpg",
+      "https://a.example/4.jpg",
+    ]);
+    expect(completed[0]?.alt).toBe("cms");
   });
 });

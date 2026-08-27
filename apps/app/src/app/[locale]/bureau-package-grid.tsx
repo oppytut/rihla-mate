@@ -12,6 +12,7 @@ const PACKAGE_IMAGES = [
   "https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1580418827493-f2b22c0dc311?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=800&q=80",
 ] as const;
 
 export function BureauPackageGrid({
@@ -146,7 +147,7 @@ export function BureauPackageGrid({
                 <div
                   className="aspect-[4/3] w-full bg-cover bg-center"
                   style={{
-                    backgroundImage: `url(${PACKAGE_IMAGES[index % PACKAGE_IMAGES.length]})`,
+                    backgroundImage: `url(${pkg.featuredImage?.trim() || PACKAGE_IMAGES[index % PACKAGE_IMAGES.length]})`,
                   }}
                   aria-hidden
                 />

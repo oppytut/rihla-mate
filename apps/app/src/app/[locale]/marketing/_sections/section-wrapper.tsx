@@ -6,6 +6,8 @@ export const bureauShellClass = "mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:p
 
 export const bureauInnerClass = "mx-auto w-full max-w-6xl";
 
+export const bureauMediaClass = "mx-auto w-full max-w-7xl";
+
 interface SectionWrapperProps {
   children: React.ReactNode;
   className?: string;

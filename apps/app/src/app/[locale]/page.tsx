@@ -37,6 +37,7 @@ async function loadBureauHome(locale: string) {
           currency: packages.currency,
           departureCity: packages.departureCity,
           category: packages.category,
+          featuredImage: packages.featuredImage,
           i18n: packages.i18n,
         })
         .from(packages)
@@ -67,6 +68,7 @@ async function loadBureauHome(locale: string) {
           currency: row.currency,
           departureCity: row.departureCity,
           category: row.category,
+          featuredImage: row.featuredImage,
         };
       }),
       cmsTitle: cmsPageTitle(cms?.title, cms?.content, locale),

@@ -4,14 +4,14 @@ import { MarketingHeader } from "@/components/marketing/marketing-header";
 import { MarketingFooter } from "@/components/marketing/marketing-footer";
 import {
   bureauInnerClass,
+  bureauMediaClass,
   bureauShellClass,
 } from "@/app/[locale]/marketing/_sections/section-wrapper";
-import Image from "next/image";
 import { BureauPackageGrid } from "@/app/[locale]/bureau-package-grid";
 import { BureauWhatsAppFab } from "@/components/marketing/bureau-whatsapp-fab";
 import { whatsappHref, type BureauPublicContact } from "@/lib/bureau-contact";
 import {
-  filledGallery,
+  completeGallery,
   filledTestimonials,
   filledTextItems,
   type BureauHomeSections,
@@ -27,6 +27,7 @@ export type BureauPackageCard = {
   currency: string;
   departureCity: string | null;
   category: string | null;
+  featuredImage: string | null;
 };
 
 type BureauLandingProps = {
@@ -77,7 +78,7 @@ export async function BureauLanding({
   const catalog = variant === "catalog";
   const whyItems = filledTextItems(homeSections?.whyItems ?? []);
   const howSteps = filledTextItems(homeSections?.howSteps ?? []);
-  const galleryItems = filledGallery(homeSections?.gallery ?? []);
+  const galleryItems = completeGallery(homeSections?.gallery ?? [], GALLERY);
   const testimonials = filledTestimonials(homeSections?.testimonials ?? []);
 
   return (
@@ -103,7 +104,7 @@ export async function BureauLanding({
               aria-hidden
             />
             <div
-              className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30"
+              className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/50 lg:to-black/20"
               aria-hidden
             />
             <div
@@ -155,7 +156,7 @@ export async function BureauLanding({
         )}
 
         <section id="packages" className={`${bureauShellClass} py-12`}>
-          <div className={bureauInnerClass}>
+          <div className={bureauMediaClass}>
             {catalog ? null : (
               <div className="mb-8">
                 <h2 className="text-xl font-semibold text-foreground">{t("packagesTitle")}</h2>
@@ -201,9 +202,10 @@ export async function BureauLanding({
                           title: t(`whyItems.${key}.title`),
                           body: t(`whyItems.${key}.body`),
                         }))
-                    ).map((item) => (
+                    ).map((item, index) => (
                       <li key={item.key} className="rounded-lg border border-border/60 bg-card p-5">
-                        <h3 className="font-medium text-foreground">{item.title}</h3>
+                        <p className="text-sm font-medium text-primary">{index + 1}</p>
+                        <h3 className="mt-2 font-medium text-foreground">{item.title}</h3>
                         <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
                       </li>
                     ))}
@@ -247,22 +249,21 @@ export async function BureauLanding({
 
             <section id="gallery" className="border-t border-border/40 bg-muted/20">
               <div className={`${bureauShellClass} py-12`}>
-                <div className={bureauInnerClass}>
+                <div className={bureauMediaClass}>
                   <h2 className="text-xl font-semibold text-foreground">
                     {homeSections?.galleryTitle.trim() || t("galleryTitle")}
                   </h2>
-                  <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {(galleryItems.length > 0 ? galleryItems : GALLERY).map((item, index) => (
+                  <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {galleryItems.map((item, index) => (
                       <li
-                        key={item.src}
-                        className={`relative overflow-hidden rounded-lg border border-border/60 ${index === 0 ? "sm:col-span-2" : ""}`}
+                        key={`${item.src}-${index}`}
+                        className={`relative overflow-hidden rounded-lg border border-border/60 ${index === 0 ? "sm:col-span-2 lg:col-span-3" : ""}`}
                       >
-                        <Image
-                          src={item.src}
-                          alt={item.alt}
-                          width={index === 0 ? 1200 : 600}
-                          height={index === 0 ? 640 : 400}
-                          className={`w-full object-cover ${index === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}
+                        <div
+                          role="img"
+                          aria-label={item.alt || undefined}
+                          className={`w-full bg-cover bg-center ${index === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}
+                          style={{ backgroundImage: `url(${item.src})` }}
                         />
                         {item.alt ? (
                           <p className="absolute inset-x-0 bottom-0 bg-black/55 px-3 py-2 text-sm text-white">
