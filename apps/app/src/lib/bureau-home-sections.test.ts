@@ -68,4 +68,26 @@ describe("parseBureauHomeSections", () => {
     ]);
     expect(completed[0]?.alt).toBe("cms");
   });
+
+  it("fills empty src slots in place so captions stay with a photo", () => {
+    const fallbacks = [
+      { src: "https://a.example/1.jpg", alt: "one" },
+      { src: "https://a.example/2.jpg", alt: "two" },
+      { src: "https://a.example/3.jpg", alt: "three" },
+      { src: "https://a.example/4.jpg", alt: "four" },
+    ];
+    const completed = completeGallery(
+      [
+        { src: "https://a.example/1.jpg", alt: "cms-one" },
+        { src: "", alt: "Masjid Nabawi, Madinah" },
+        { src: "https://a.example/3.jpg", alt: "cms-three" },
+        { src: "", alt: "" },
+      ],
+      fallbacks,
+    );
+    expect(completed).toHaveLength(4);
+    expect(completed.every((item) => item.src)).toBe(true);
+    expect(completed[1]?.alt).toBe("Masjid Nabawi, Madinah");
+    expect(completed[1]?.src).toBe("https://a.example/2.jpg");
+  });
 });
