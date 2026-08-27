@@ -52,12 +52,12 @@ const GALLERY = [
     alt: "Kaabah, Makkah",
   },
   {
-    src: "https://images.unsplash.com/photo-1580418827493-f2b22c0dc311?auto=format&fit=crop&w=1200&q=80",
+    src: "https://images.unsplash.com/photo-1646424857576-2a66db82a65c?auto=format&fit=crop&w=1200&q=80",
     alt: "Masjid Nabawi, Madinah",
   },
   {
-    src: "https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80",
-    alt: "Suasana masjid",
+    src: "https://images.unsplash.com/photo-1572358899655-f63ece97bfa5?auto=format&fit=crop&w=1200&q=80",
+    alt: "Halaman Masjid Nabawi, Madinah",
   },
 ] as const;
 
@@ -104,7 +104,7 @@ export async function BureauLanding({
               aria-hidden
             />
             <div
-              className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25 lg:bg-gradient-to-r lg:from-black/80 lg:via-black/50 lg:to-black/20"
+              className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/35 lg:bg-gradient-to-r lg:from-black/88 lg:via-black/62 lg:to-black/25"
               aria-hidden
             />
             <div
@@ -254,24 +254,26 @@ export async function BureauLanding({
                     {homeSections?.galleryTitle.trim() || t("galleryTitle")}
                   </h2>
                   <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {galleryItems.map((item, index) => (
-                      <li
-                        key={`${item.src}-${index}`}
-                        className={`relative overflow-hidden rounded-lg border border-border/60 ${index === 0 ? "sm:col-span-2 lg:col-span-3" : ""}`}
-                      >
-                        <div
-                          role="img"
-                          aria-label={item.alt || undefined}
-                          className={`w-full bg-cover bg-center ${index === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}
-                          style={{ backgroundImage: `url(${item.src})` }}
-                        />
-                        {item.alt ? (
-                          <p className="absolute inset-x-0 bottom-0 bg-black/55 px-3 py-2 text-sm text-white">
-                            {item.alt}
-                          </p>
-                        ) : null}
-                      </li>
-                    ))}
+                    {galleryItems
+                      .filter((item) => item.src)
+                      .map((item, index) => (
+                        <li
+                          key={`${item.src}-${index}`}
+                          className={`relative min-h-[12.5rem] overflow-hidden rounded-lg border border-border/60 ${index === 0 ? "sm:col-span-2 lg:col-span-3" : ""}`}
+                        >
+                          <div
+                            role="img"
+                            aria-label={item.alt || undefined}
+                            className={`min-h-[12.5rem] w-full bg-cover bg-center ${index === 0 ? "aspect-[16/9]" : "aspect-[4/3]"}`}
+                            style={{ backgroundImage: `url(${item.src})` }}
+                          />
+                          {item.alt ? (
+                            <p className="absolute inset-x-0 bottom-0 bg-black/55 px-3 py-2 text-sm text-white">
+                              {item.alt}
+                            </p>
+                          ) : null}
+                        </li>
+                      ))}
                   </ul>
                 </div>
               </div>
@@ -296,7 +298,11 @@ export async function BureauLanding({
                           name: t(`testimonials.${key}.name`),
                         }))
                     ).map((item) => {
-                      const initial = item.name.trim().charAt(0).toUpperCase() || "?";
+                      const parts = item.name.trim().split(/\s+/).filter(Boolean);
+                      const initial =
+                        parts.length >= 2
+                          ? `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase()
+                          : (item.name.trim().slice(0, 2) || "?").toUpperCase();
                       return (
                         <li
                           key={item.key}
@@ -340,7 +346,9 @@ export async function BureauLanding({
               {contact?.phone ? (
                 <p className="mt-1 text-sm text-foreground">{contact.phone}</p>
               ) : null}
-              <p className="mt-2 text-sm text-muted-foreground">{t("contactHours")}</p>
+              <p className="mt-2 text-sm text-muted-foreground whitespace-normal">
+                {t("contactHours")}
+              </p>
             </div>
             {wa ? (
               <a

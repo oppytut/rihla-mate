@@ -159,10 +159,23 @@ export function completeGallery(
   fallbacks: readonly BureauGalleryItem[],
   min = 4,
 ): BureauGalleryItem[] {
-  const filled = filledGallery(items);
+  const used = new Set<string>();
+  const unusedFallbacks = () => fallbacks.filter((item) => item.src && !used.has(item.src));
+
+  const patched = items.map((item) => {
+    if (item.src) {
+      used.add(item.src);
+      return item;
+    }
+    const next = unusedFallbacks()[0];
+    if (!next) return item;
+    used.add(next.src);
+    return { src: next.src, alt: item.alt || next.alt };
+  });
+
+  const filled = filledGallery(patched);
   if (filled.length >= min) return filled;
-  const used = new Set(filled.map((item) => item.src));
-  const extras = fallbacks.filter((item) => item.src && !used.has(item.src));
+  const extras = unusedFallbacks();
   return [...filled, ...extras].slice(0, Math.max(min, filled.length));
 }
 
